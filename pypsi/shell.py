@@ -1,5 +1,5 @@
 
-from pypsi.base import Plugin, Command, InputPreprocessor
+from pypsi.base import Plugin, Command, Preprocessor
 from pypsi.cmdline import StatementParser, StatementSyntaxError, StatementContext
 import readline
 
@@ -10,7 +10,8 @@ class Shell(object):
         self.shell_name = shell_name
         self.exit_rc = 1024
         self.commands = {}
-        self.plugins = {}
+        self.preprocessors = []
+        self.plugins = []
         self.prompt = "{name} )> ".format(name=shell_name)
 
         self.parser = StatementParser(True)
@@ -36,17 +37,32 @@ class Shell(object):
             '''
 
     def register(self, plugin):
+        self.plugins.append(plugin)
         if isinstance(plugin, Command):
             self.commands[plugin.name] = plugin
 
+        if isinstance(plugin, Preprocessor):
+            self.preprocessors.append(plugin)
+
         plugin.setup(self)
         return 0
+
+    def get_plugin(self, search):
+        for plugin in self.plugins:
+            if isinstance(plugin, search):
+                return plugin
+        return None
 
     def cmdloop(self):
         rc = 0
         while rc != self.exit_rc:
             try:
                 raw = raw_input(self.prompt)
+                for pp in self.preprocessors:
+                    raw = pp.on_input(self, raw)
+                    if not raw:
+                        break
+
                 rc = self.execute(raw)
             except EOFError:
                 rc = self.exit_rc
@@ -67,32 +83,30 @@ class Shell(object):
 
         rc = None
         if statement:
-            (ctx, op) = statement.next()
-            while ctx:
-                if ctx.name not in self.commands:
+            (params, op) = statement.next()
+            while params:
+                if params.name not in self.commands:
                     statement.ctx.reset_io()
-                    print "{}: {}: command not found".format(self.shell_name, ctx.name)
+                    print "{}: {}: command not found".format(self.shell_name, params.name)
                     return 1
 
-                cmd = self.commands[ctx.name]
+                cmd = self.commands[params.name]
 
-                statement.ctx.setup_io(cmd, ctx, op)
-                rc = self.run_cmd(cmd, ctx)
+                statement.ctx.setup_io(cmd, params, op)
+                rc = self.run_cmd(cmd, params, statement.ctx)
                 if op == '||':
                     if rc == 0:
                         return 0
-                elif op == '&&':
+                elif op == '&&' or op == '|':
                     if rc != 0:
                         return rc
-                elif op == '|':
-                    pass
 
-                (ctx, op) = statement.next()
+                (params, op) = statement.next()
 
         statement.ctx.reset_io()
-        print "reset IO!"
+
         return rc
 
-    def run_cmd(self, cmd, ctx):
-        return cmd.run(self, ctx)
+    def run_cmd(self, cmd, params, ctx):
+        return cmd.run(self, params.args, ctx)
 
