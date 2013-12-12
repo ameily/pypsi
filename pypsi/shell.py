@@ -63,10 +63,17 @@ class Shell(object):
 
         rc = None
         if statement:
-            (cmd, op) = statement.next()
-            while cmd:
-                statement.ctx.setup_io(cmd, op)
-                rc = self.run_cmd(cmd)
+            (ctx, op) = statement.next()
+            while ctx:
+                if ctx.name not in self.commands:
+                    statement.ctx.reset_io()
+                    print "{}: {}: command not found".format(self.shell_name, ctx.name)
+                    return 1
+
+                cmd = self.commands[ctx.name]
+
+                statement.ctx.setup_io(cmd, ctx, op)
+                rc = self.run_cmd(cmd, ctx)
                 if op == '||':
                     if rc == 0:
                         return 0
@@ -76,18 +83,11 @@ class Shell(object):
                 elif op == '|':
                     pass
 
-                (cmd, op) = statement.next()
+                (ctx, op) = statement.next()
 
         statement.ctx.reset_io()
         return rc
 
-    def run_cmd(self, cmd):
-        if cmd.name not in self.commands:
-            print "{}: {}: command not found".format(self.shell_name, cmd.name)
-            return 1
-
-        prog = self.commands[cmd.name]
-        rc = prog.run(self, cmd)
-
-        return rc
+    def run_cmd(self, cmd, ctx):
+        return cmd.run(self, ctx)
 
