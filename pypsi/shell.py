@@ -46,41 +46,39 @@ class Shell(object):
         rc = 0
         while rc != self.exit_rc:
             raw = raw_input(self.prompt)
-            tokens = self.parser.tokenize(raw)
-            if not tokens:
-                continue
+            rc = self.execute(raw)
+        return rc
 
-            try:
-                statement = self.parser.build(tokens)
-            except StatementSyntaxError as e:
-                print "{name}: {msg}".format(name=self.shell_name, msg=str(e))
-
-
-    def precmd(self, cmd):
-        pass
-
-    def postcmd(self, cmd):
-        pass
-
-    def onecmd(self, raw):
-        '''
+    def execute(self, raw):
         tokens = self.parser.tokenize(raw)
-        for pp in self.preprocessors:
-            pp.on_tokenize(self, tokens)
-            if not tokens:
-                break
-
+        statement = None
         if not tokens:
             return 0
 
-        cmdline = self.parser.build(tokens)
-        for pp in self.preprocessors:
-            pp.on_cmdline_built(cmdline)
+        try:
+            statement = self.parser.build(tokens)
+        except StatementSyntaxError as e:
+            print "{name}: {msg}".format(name=self.shell_name, msg=str(e))
+            return 1
 
-        if not cmdline:
-            return 0
+        rc = None
+        if statement:
+            (cmd, op) = statement.next()
+            while cmd:
+                #print "running:", cmd.name
+                rc = self.run_cmd(cmd)
+                if op:
+                    print ">>>", op
+                (cmd, op) = statement.next()
 
-        for cmd in cmdline:
-            self.run(cmd)
-        '''
-        pass
+        return rc
+
+    def run_cmd(self, cmd):
+        if cmd.name not in self.commands:
+            print "{}: {}: command not found".format(self.shell_name, cmd.name)
+            return 1
+
+        prog = self.commands[cmd.name]
+        rc = prog.run(self, cmd)
+
+        return rc
