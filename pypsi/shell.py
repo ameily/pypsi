@@ -1,6 +1,6 @@
 
 from pypsi.base import Plugin, Command, InputPreprocessor
-from pypsi.cmdline import StatementParser, StatementSyntaxError
+from pypsi.cmdline import StatementParser, StatementSyntaxError, StatementContext
 import readline
 
 
@@ -45,18 +45,22 @@ class Shell(object):
     def cmdloop(self):
         rc = 0
         while rc != self.exit_rc:
-            raw = raw_input(self.prompt)
-            rc = self.execute(raw)
+            try:
+                raw = raw_input(self.prompt)
+                rc = self.execute(raw)
+            except EOFError:
+                rc = self.exit_rc
+                print
         return rc
 
-    def execute(self, raw):
+    def execute(self, raw, ctx=StatementContext()):
         tokens = self.parser.tokenize(raw)
         statement = None
         if not tokens:
             return 0
 
         try:
-            statement = self.parser.build(tokens)
+            statement = self.parser.build(tokens, ctx)
         except StatementSyntaxError as e:
             print "{name}: {msg}".format(name=self.shell_name, msg=str(e))
             return 1
@@ -86,6 +90,7 @@ class Shell(object):
                 (ctx, op) = statement.next()
 
         statement.ctx.reset_io()
+        print "reset IO!"
         return rc
 
     def run_cmd(self, cmd, ctx):
