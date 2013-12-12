@@ -219,7 +219,7 @@ class StatementContext(object):
 
     def setup_io(self, cmd, ctx, op):
         if ctx.stdout_path:
-            sys.stdout = self.stdout = open(ctx.stdout_path, 'w')
+            sys.stdout = self.stdout = open(ctx.stdout_path, ctx.stdout_mode)
         elif op == '|':
             if cmd.pipe == 'str':
                 sys.stdout = self.stdout = StringIO()
@@ -259,7 +259,7 @@ class StatementContext(object):
 
 class CommandContext(object):
 
-    def __init__(self, name, args=[], stdout_path=None, stdout_mode='trunc',
+    def __init__(self, name, args=[], stdout_path=None, stdout_mode='w',
                  stderr_path=None, stdin_path=None):
         self.name = name
         self.args = args
@@ -388,7 +388,7 @@ class StatementParser(object):
                                 index=token.index
                             )
 
-                        cmd.stdout_mode = 'trunc' if token.operator == '>' else 'append'
+                        cmd.stdout_mode = 'w' if token.operator == '>' else 'a'
                         done = False
                     elif token.operator == '<':
                         if cmd.stdin_path:
