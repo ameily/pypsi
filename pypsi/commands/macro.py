@@ -1,5 +1,19 @@
 
 from pypsi.plugins.block import BlockCommand
+from pypsi.base import Command
+
+class Macro(Command):
+
+    def __init__(self, lines, **kwargs):
+        super(Macro, self).__init__(**kwargs)
+        self.lines = lines
+
+    def run(self, shell, args, ctx):
+        rc = None
+        for line in self.lines:
+            rc = shell.execute(line)
+        return rc
+
 
 class MacroCommand(BlockCommand):
 
@@ -11,7 +25,8 @@ class MacroCommand(BlockCommand):
         self.begin_block(shell)
 
     def end_block(self, shell, lines):
-        print "Macro DONE!"
-        for line in lines:
-            print ">>>>",line
+        shell.register(
+            Macro(lines=lines, name=self.macro_name)
+        )
+        self.macro_name = None
         return 0
