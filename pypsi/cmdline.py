@@ -217,12 +217,29 @@ class StatementContext(object):
         self.stderr = sys.stderr
         self.stdin = sys.stdin
 
+    def fork(self):
+        ctx = StatementContext()
+        ctx.backup_stdin = self.stdin
+        ctx.backup_stdout = self.stdout
+        ctx.backup_stderr = self.stderr
+        ctx.prev = self.prev
+        return ctx
+
+
     def setup_io(self, cmd, ctx, op):
+        if ctx.stdin_path:
+            sys.stdin = self.stdin = open(ctx.stdin_path, 'r')
+        elif self.prev and self.prev[1] == '|':
+            self.stdout.flush()
+            self.stdout.seek(0)
+            self.stdin = sys.stdin = self.stdout
+        else:
+            self.stdin = sys.stdin = self.backup_stdin
+
         if ctx.stdout_path:
             sys.stdout = self.stdout = open(ctx.stdout_path, ctx.stdout_mode)
         elif op == '|':
-            if cmd.pipe == 'str':
-                sys.stdout = self.stdout = StringIO()
+            sys.stdout = self.stdout = StringIO()
         else:
             self.stdout = sys.stdout = self.backup_stdout
 
@@ -231,27 +248,20 @@ class StatementContext(object):
         else:
             self.stderr = sys.stderr = self.backup_stderr
 
-        if ctx.stdin_path:
-            sys.stdin = self.stdin = open(ctx.stdin_path, 'r')
-        else:
-            self.stdin = sys.stdin = self.backup_stdin
-
-        if op == '|':
-            pass
-
-        prev = (cmd, ctx)
+        self.prev = (cmd, op)
 
         return 0
 
     def reset_io(self):
-        if self.stdout and self.stdout != self.backup_stdout:
+        if self.stdout != self.backup_stdout:
             self.stdout.close()
             sys.stdout = self.stdout = self.backup_stdout
 
-        if self.stderr and self.stderr != self.backup_stderr:
+        if self.stderr != self.backup_stderr:
             sys.stderr = self.stderr = self.backup_stderr
 
-        if self.stdin and self.stdin != self.backup_stdin:
+        if self.stdin != self.backup_stdin:
+            print "reseting stdin"
             self.stdin.close()
             sys.stdin = self.stdin = self.backup_stdin
         return 0
@@ -259,10 +269,10 @@ class StatementContext(object):
 
 class CommandContext(object):
 
-    def __init__(self, name, args=[], stdout_path=None, stdout_mode='w',
+    def __init__(self, name, args=None, stdout_path=None, stdout_mode='w',
                  stderr_path=None, stdin_path=None):
         self.name = name
-        self.args = args
+        self.args = args or []
         self.stdout_path = stdout_path
         self.stdout_mode = stdout_mode
         self.stderr_path = stderr_path
@@ -344,8 +354,8 @@ class StatementParser(object):
 
         return condensed
 
-    def build(self, tokens):
-        statement = Statement(StatementContext())
+    def build(self, tokens, ctx):
+        statement = Statement(ctx)
         cmd = None
         prev = None
         tokens = self.condense(tokens)
