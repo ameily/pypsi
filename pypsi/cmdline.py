@@ -223,6 +223,7 @@ class StatementContext(object):
         ctx.backup_stdout = self.stdout
         ctx.backup_stderr = self.stderr
         ctx.prev = self.prev
+        ctx.pipe = self.pipe
         return ctx
 
 
@@ -267,7 +268,7 @@ class StatementContext(object):
         return 0
 
 
-class CommandContext(object):
+class CommandParams(object):
 
     def __init__(self, name, args=None, stdout_path=None, stdout_mode='w',
                  stderr_path=None, stdin_path=None):
@@ -426,7 +427,7 @@ class StatementParser(object):
                         cmd = None
             else:
                 if isinstance(token, StringToken):
-                    cmd = CommandContext(token.text)
+                    cmd = CommandParams(token.text)
                 elif not isinstance(token, WhitespaceToken):
                     raise StatementSyntaxError(
                         message="unexpected token: {}".format(str(token)),

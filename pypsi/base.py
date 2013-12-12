@@ -4,7 +4,7 @@ class Plugin(object):
     pass
 
 
-class InputPreprocessor(object):
+class Preprocessor(object):
     pass
 
 
@@ -16,7 +16,7 @@ class Command(object):
         self.category = category
         self.pipe = pipe
 
-    def run(self, shell, ctx):
+    def run(self, shell, args, ctx):
         raise NotImplementedError()
 
     def setup(self, shell):
