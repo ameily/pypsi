@@ -211,6 +211,34 @@ class StatementContext(object):
         self.stderr = sys.stderr
         self.stdin = sys.stdin
 
+    def setup_io(self, cmd, op):
+        if cmd.stdout_path:
+            sys.stdout = self.stdout = open(cmd.stdout_path, 'w')
+
+        if cmd.stderr_path:
+            sys.stderr = self.stderr = open(cmd.stderr_path, 'w')
+
+        if cmd.stdin_path:
+            sys.stdin = self.stdin = open(cmd.stdin_path, 'r')
+
+        if op == '|':
+            pass
+
+        return 0
+
+    def reset_io(self):
+        if self.stdout and self.stdout != self.backup_stdout:
+            self.stdout.close()
+            sys.stdout = self.stdout = self.backup_stdout
+
+        if self.stderr and self.stderr != self.backup_stderr:
+            sys.stderr = self.stderr = self.backup_stderr
+
+        if self.stdin and self.stdin != self.backup_stdin:
+            self.stdin.close()
+            sys.stdin = self.stdin = self.backup_stdin
+        return 0
+
 
 class CommandContext(object):
 
