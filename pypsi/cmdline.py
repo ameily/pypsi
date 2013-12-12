@@ -1,5 +1,10 @@
 
 import sys
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StrignIO import StringIO
+
 
 TokenContinue = 0   # keep going
 TokenEnd = 1        # c ends token, process c again
@@ -202,6 +207,7 @@ class Statement(object):
 class StatementContext(object):
 
     def __init__(self):
+        self.prev = None
         self.pipe = None
         self.backup_stdout = sys.stdout
         self.backup_stderr = sys.stderr
@@ -211,18 +217,29 @@ class StatementContext(object):
         self.stderr = sys.stderr
         self.stdin = sys.stdin
 
-    def setup_io(self, cmd, op):
-        if cmd.stdout_path:
-            sys.stdout = self.stdout = open(cmd.stdout_path, 'w')
+    def setup_io(self, cmd, ctx, op):
+        if ctx.stdout_path:
+            sys.stdout = self.stdout = open(ctx.stdout_path, 'w')
+        elif op == '|':
+            if cmd.pipe == 'str':
+                sys.stdout = self.stdout = StringIO()
+        else:
+            self.stdout = sys.stdout = self.backup_stdout
 
-        if cmd.stderr_path:
-            sys.stderr = self.stderr = open(cmd.stderr_path, 'w')
+        if ctx.stderr_path:
+            sys.stderr = self.stderr = open(ctx.stderr_path, 'w')
+        else:
+            self.stderr = sys.stderr = self.backup_stderr
 
-        if cmd.stdin_path:
-            sys.stdin = self.stdin = open(cmd.stdin_path, 'r')
+        if ctx.stdin_path:
+            sys.stdin = self.stdin = open(ctx.stdin_path, 'r')
+        else:
+            self.stdin = sys.stdin = self.backup_stdin
 
         if op == '|':
             pass
+
+        prev = (cmd, ctx)
 
         return 0
 
@@ -407,7 +424,9 @@ class StatementParser(object):
                     )
             prev = token
 
-        if not isinstance(prev, StringToken):
+        if isinstance(prev, StringToken) or (isinstance(prev, OperatorToken) and prev.operator == ';'):
+            pass
+        else:
             raise StatementSyntaxError(
                 message="unexpected token: {}".format(str(prev)),
                 index=prev.index
