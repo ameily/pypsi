@@ -65,12 +65,20 @@ class Shell(object):
         if statement:
             (cmd, op) = statement.next()
             while cmd:
-                #print "running:", cmd.name
+                statement.ctx.setup_io(cmd, op)
                 rc = self.run_cmd(cmd)
-                if op:
-                    print ">>>", op
+                if op == '||':
+                    if rc == 0:
+                        return 0
+                elif op == '&&':
+                    if rc != 0:
+                        return rc
+                elif op == '|':
+                    pass
+
                 (cmd, op) = statement.next()
 
+        statement.ctx.reset_io()
         return rc
 
     def run_cmd(self, cmd):
@@ -82,3 +90,4 @@ class Shell(object):
         rc = prog.run(self, cmd)
 
         return rc
+
