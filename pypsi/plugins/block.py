@@ -11,6 +11,7 @@ class BlockCommand(Command):
     def begin_block(self, shell):
         plugin = shell.get_plugin(BlockPlugin)
         plugin.begin_block(shell, self)
+        self.old_prompt = shell.prompt
         shell.prompt = self.prompt
 
     def end_block(self, shell, lines):
@@ -44,6 +45,7 @@ class BlockPlugin(Plugin, Preprocessor):
         return 0
 
     def end_block(self, shell):
+        shell.prompt = self.block['cmd'].old_prompt
         self.block['cmd'].end_block(shell, self.block['lines'])
         self.block = None
         return 0
