@@ -18,3 +18,6 @@ class Command(object):
     def run(self, shell, ctx):
         raise NotImplementedError()
 
+    def setup(self, shell):
+        return 0
+
