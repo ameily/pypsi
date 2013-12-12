@@ -58,18 +58,21 @@ class Shell(object):
         while rc != self.exit_rc:
             try:
                 raw = raw_input(self.prompt)
-                for pp in self.preprocessors:
-                    raw = pp.on_input(self, raw)
-                    if not raw:
-                        break
-
                 rc = self.execute(raw)
             except EOFError:
                 rc = self.exit_rc
-                print
+                print "exiting...."
         return rc
 
-    def execute(self, raw, ctx=StatementContext()):
+    def execute(self, raw, ctx=None):
+        if not ctx:
+            ctx = StatementContext()
+
+        for pp in self.preprocessors:
+            raw = pp.on_input(self, raw)
+            if not raw:
+                return 0
+
         tokens = self.parser.tokenize(raw)
         statement = None
         if not tokens:
