@@ -154,6 +154,7 @@ class VariableToken(Token):
 
 
 class OperatorToken(Token):
+    Operators = '<>|&;'
 
     def __init__(self, index, operator):
         super(OperatorToken, self).__init__(index)
@@ -169,14 +170,16 @@ class OperatorToken(Token):
         return "OperatorToken({})".format(self.operator)
 
 
-class Command(object):
 
-    def __init__(self, name, args=[], next=None, stdout=None, stdin=None):
+
+class CommandContext(object):
+
+    def __init__(self, name, args=[], stdout=None, stdin=None, pipe=None):
         self.name = name
         self.args = args
-        self.next = next
         self.stdout = stdout
         self.stdin = stdin
+        self.pipe = pipe
 
     def __str__(self):
         s = '"' + self.name.replace('"', '\\"') + '"'
@@ -189,23 +192,23 @@ class Command(object):
         if self.stdin:
             s += '< ' + self.stdin + ' '
 
-        if self.next:
-            s += "<" + self.next + ">"
+        #if self.next:
+        #    s += "<" + self.next + ">"
         return s
 
 
 
-class CommandSyntaxError(Exception):
+class StatementSyntaxError(Exception):
 
     def __init__(self, message, index):
         self.message = message
         self.index = index
 
     def __str__(self):
-        return "error at index {}: {}".format(self.index, self.message)
+        return "syntax error at {}: {}".format(self.index, self.message)
 
 
-class CmdlineParser(object):
+class StatementParser(object):
 
     def __init__(self, case_sensitive):
         self.case_sensitive = case_sensitive
@@ -253,8 +256,6 @@ class CmdlineParser(object):
         if self.token:
             self.tokens.append(self.token)
 
-        for token in self.tokens:
-            print str(token)
         return self.tokens
 
     def condense(self, tokens):
@@ -287,7 +288,7 @@ class CmdlineParser(object):
                         elif prev.operator == '<':
                             cmd.stdin = token.text
                     else:
-                        raise CommandSyntaxError(
+                        raise StatementSyntaxError(
                             message="unexpected token: {}".format(str(token)),
                             index=token.index
                         )
@@ -303,7 +304,7 @@ class CmdlineParser(object):
                         cmd.next = 'chain'
                     elif token.operator == '|':
                         if cmd.stdout:
-                            raise CommandSyntaxError(
+                            raise StatementSyntaxError(
                                 message="unexpected token: {}".format(str(token)),
                                 index=token.index
                             )
@@ -311,7 +312,7 @@ class CmdlineParser(object):
                         cmd.next = 'pipe'
                     elif token.operator in ('>', '>>'):
                         if cmd.stdout:
-                            raise CommandSyntaxError(
+                            raise StatementSyntaxError(
                                 message="unexpected token: {}".format(str(token)),
                                 index=token.index
                             )
@@ -320,13 +321,13 @@ class CmdlineParser(object):
                         done = False
                     elif token.operator == '<':
                         if cmd.stdin:
-                            raise CommandSyntaxError(
+                            raise StatementSyntaxError(
                                 message="unexpected token: {}".format(str(token)),
                                 index=token.index
                             )
 
                         if cmds and cmds[-1].next == 'pipe':
-                            raise CommandSyntaxError(
+                            raise StatementSyntaxError(
                                 message="unexpected token: {}".format(str(token)),
                                 index=token.index
                             )
@@ -334,7 +335,7 @@ class CmdlineParser(object):
                         cmd.stdin = ''
                         done = False
                     else:
-                        raise CommandSyntaxError(
+                        raise StatementSyntaxError(
                             message="unknown operator: {}".format(token.operator),
                             index=token.index
                         )
@@ -344,16 +345,16 @@ class CmdlineParser(object):
                         cmd = None
             else:
                 if isinstance(token, StringToken):
-                    cmd = Command(token.text)
+                    cmd = CommandContext(token.text)
                 elif not isinstance(token, WhitespaceToken):
-                    raise CommandSyntaxError(
+                    raise StatementSyntaxError(
                         message="unexpected token: {}".format(str(token)),
                         index=token.index
                     )
             prev = token
 
         if not isinstance(prev, StringToken):
-            raise CommandSyntaxError(
+            raise StatementSyntaxError(
                 message="unexpected token: {}".format(str(prev)),
                 index=prev.index
             )
@@ -365,7 +366,7 @@ class CmdlineParser(object):
 
 
 if __name__ == "__main__":
-    parser = CmdlineParser(False)
+    parser = StatementParser(False)
     vars = { '$': { 'name': 'Adam Meily', 'x': '2 + 3'}}
     t = r'   some-cmd $name "long String $X"adam <file.txt | other-cmd || last > output'
     print t
