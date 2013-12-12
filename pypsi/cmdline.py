@@ -227,9 +227,9 @@ class StatementContext(object):
         return ctx
 
 
-    def setup_io(self, cmd, ctx, op):
-        if ctx.stdin_path:
-            sys.stdin = self.stdin = open(ctx.stdin_path, 'r')
+    def setup_io(self, cmd, params, op):
+        if params.stdin_path:
+            sys.stdin = self.stdin = open(params.stdin_path, 'r')
         elif self.prev and self.prev[1] == '|':
             self.stdout.flush()
             self.stdout.seek(0)
@@ -237,15 +237,15 @@ class StatementContext(object):
         else:
             self.stdin = sys.stdin = self.backup_stdin
 
-        if ctx.stdout_path:
-            sys.stdout = self.stdout = open(ctx.stdout_path, ctx.stdout_mode)
+        if params.stdout_path:
+            sys.stdout = self.stdout = open(params.stdout_path, params.stdout_mode)
         elif op == '|':
             sys.stdout = self.stdout = StringIO()
         else:
             self.stdout = sys.stdout = self.backup_stdout
 
-        if ctx.stderr_path:
-            sys.stderr = self.stderr = open(ctx.stderr_path, 'w')
+        if params.stderr_path:
+            sys.stderr = self.stderr = open(params.stderr_path, 'w')
         else:
             self.stderr = sys.stderr = self.backup_stderr
 
@@ -255,7 +255,7 @@ class StatementContext(object):
 
     def reset_io(self):
         if self.stdout != self.backup_stdout:
-            self.stdout.close()
+            #self.stdout.close()
             sys.stdout = self.stdout = self.backup_stdout
 
         if self.stderr != self.backup_stderr:
