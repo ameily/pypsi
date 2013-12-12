@@ -1,4 +1,6 @@
 
+import sys
+
 TokenContinue = 0   # keep going
 TokenEnd = 1        # c ends token, process c again
 TokenTerm = 2       # c terms token
@@ -170,32 +172,56 @@ class OperatorToken(Token):
         return "OperatorToken({})".format(self.operator)
 
 
+class Statement(object):
+
+    def __init__(self, ctx):
+        self.ctx = ctx
+        self.cmds = []
+        self.ops = []
+        self.index = -1
+
+    def __len__(self):
+        return len(self.cmds)
+
+    @property
+    def cmd(self):
+        return self.cmds[self.index] if self.index < len(self.cmds) else None
+
+    @property
+    def op(self):
+        return self.ops[self.index] if self.index < len(self.ops) else None
+
+    def next(self):
+        self.index += 1
+        return (
+            self.cmds[self.index] if self.index < len(self.cmds) else None,
+            self.ops[self.index] if self.index < len(self.ops) else None
+        )
+
+
+class StatementContext(object):
+
+    def __init__(self):
+        self.pipe = None
+        self.backup_stdout = sys.stdout
+        self.backup_stderr = sys.stderr
+        self.backup_stdin = sys.stdin
+
+        self.stdout = sys.stdout
+        self.stderr = sys.stderr
+        self.stdin = sys.stdin
 
 
 class CommandContext(object):
 
-    def __init__(self, name, args=[], stdout=None, stdin=None, pipe=None):
+    def __init__(self, name, args=[], stdout_path=None, stdout_mode='trunc',
+                 stderr_path=None, stdin_path=None):
         self.name = name
         self.args = args
-        self.stdout = stdout
-        self.stdin = stdin
-        self.pipe = pipe
-
-    def __str__(self):
-        s = '"' + self.name.replace('"', '\\"') + '"'
-        s += ' '
-        s += str(self.args)
-        s += ' '
-        if self.stdout:
-            s += self.stdout[0] + " " + self.stdout[1] + ' '
-
-        if self.stdin:
-            s += '< ' + self.stdin + ' '
-
-        #if self.next:
-        #    s += "<" + self.next + ">"
-        return s
-
+        self.stdout_path = stdout_path
+        self.stdout_mode = stdout_mode
+        self.stderr_path = stderr_path
+        self.stdin_path = stdin_path
 
 
 class StatementSyntaxError(Exception):
@@ -274,7 +300,7 @@ class StatementParser(object):
         return condensed
 
     def build(self, tokens):
-        cmds = []
+        statement = Statement(StatementContext())
         cmd = None
         prev = None
         tokens = self.condense(tokens)
@@ -284,9 +310,9 @@ class StatementParser(object):
                 if isinstance(prev, OperatorToken) and prev.operator in ('>', '<', '>>'):
                     if isinstance(token, StringToken):
                         if prev.operator in ('>', '>>'):
-                            cmd.stdout[1] = token.text
+                            cmd.stdout_path = token.text
                         elif prev.operator == '<':
-                            cmd.stdin = token.text
+                            cmd.stdin_path = token.text
                     else:
                         raise StatementSyntaxError(
                             message="unexpected token: {}".format(str(token)),
@@ -297,42 +323,42 @@ class StatementParser(object):
                 elif isinstance(token, OperatorToken):
                     done = True
                     if token.operator == '||':
-                        cmd.next = 'or'
+                        statement.ops.append('||')
                     elif token.operator == '&&':
-                        cmd.next = 'and'
+                        statement.ops.append('&&')
                     elif token.operator == ';':
-                        cmd.next = 'chain'
+                        statement.ops.append(';')
                     elif token.operator == '|':
-                        if cmd.stdout:
+                        if cmd.stdout_path:
                             raise StatementSyntaxError(
                                 message="unexpected token: {}".format(str(token)),
                                 index=token.index
                             )
 
-                        cmd.next = 'pipe'
+                        statement.ops.append('|')
                     elif token.operator in ('>', '>>'):
-                        if cmd.stdout:
+                        if cmd.stdout_path:
                             raise StatementSyntaxError(
                                 message="unexpected token: {}".format(str(token)),
                                 index=token.index
                             )
 
-                        cmd.stdout = ['trunc' if token.operator == '>' else 'append', '']
+                        cmd.stdout_mode = 'trunc' if token.operator == '>' else 'append'
                         done = False
                     elif token.operator == '<':
-                        if cmd.stdin:
+                        if cmd.stdin_path:
                             raise StatementSyntaxError(
                                 message="unexpected token: {}".format(str(token)),
                                 index=token.index
                             )
 
-                        if cmds and cmds[-1].next == 'pipe':
+                        if statement.ops and statement.ops[-1] == '|':
                             raise StatementSyntaxError(
                                 message="unexpected token: {}".format(str(token)),
                                 index=token.index
                             )
 
-                        cmd.stdin = ''
+                        cmd.stdin_path = ''
                         done = False
                     else:
                         raise StatementSyntaxError(
@@ -341,7 +367,7 @@ class StatementParser(object):
                         )
 
                     if done:
-                        cmds.append(cmd)
+                        statement.cmds.append(cmd)
                         cmd = None
             else:
                 if isinstance(token, StringToken):
@@ -360,9 +386,9 @@ class StatementParser(object):
             )
 
         if cmd:
-            cmds.append(cmd)
+            statement.cmds.append(cmd)
 
-        return cmds
+        return statement
 
 
 if __name__ == "__main__":
