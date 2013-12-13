@@ -204,6 +204,8 @@ class Statement(object):
         )
 
 
+RealStdout = sys.stdout
+
 class StatementContext(object):
 
     def __init__(self):
@@ -218,19 +220,21 @@ class StatementContext(object):
         self.stdin = sys.stdin
 
     def fork(self):
+        RealStdout.write("Fork()\n")
         ctx = StatementContext()
-        ctx.backup_stdin = self.stdin
-        ctx.backup_stdout = self.stdout
-        ctx.backup_stderr = self.stderr
-        ctx.prev = self.prev
+        ctx.stdin = ctx.backup_stdin = self.stdin
+        ctx.stdout = ctx.backup_stdout = self.stdout
+        ctx.stderr = ctx.backup_stderr = self.stderr
+        ctx.prev = None
         ctx.pipe = self.pipe
         return ctx
 
-
     def setup_io(self, cmd, params, op):
+        RealStdout.write("setup_io( " + cmd.name + " )\n")
         if params.stdin_path:
             sys.stdin = self.stdin = open(params.stdin_path, 'r')
         elif self.prev and self.prev[1] == '|':
+            RealStdout.write("Previous was a pipe: " + self.prev[0].name + "\n")
             self.stdout.flush()
             self.stdout.seek(0)
             self.stdin = sys.stdin = self.stdout
@@ -255,14 +259,18 @@ class StatementContext(object):
 
     def reset_io(self):
         if self.stdout != self.backup_stdout:
-            #self.stdout.close()
+            RealStdout.write("closing stdout\n")
+            self.stdout.close()
             sys.stdout = self.stdout = self.backup_stdout
 
         if self.stderr != self.backup_stderr:
             sys.stderr = self.stderr = self.backup_stderr
 
         if self.stdin != self.backup_stdin:
-            print "reseting stdin"
+            RealStdout.write("closing stdin: "+str(type(self.stdin))+"\n")
+            RealStdout.write(
+                str(self.stdin) + " != " + str(self.backup_stdin) + "\n"
+            )
             self.stdin.close()
             sys.stdin = self.stdin = self.backup_stdin
         return 0
