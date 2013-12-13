@@ -18,7 +18,7 @@ class Macro(Command):
         next = ctx.fork()
         for line in self.lines:
             rc = shell.execute(line, next)
-        ctx.stdout = next.stdout
+        #ctx.stdout = next.stdout
         return rc
 
 
