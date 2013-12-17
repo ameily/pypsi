@@ -86,23 +86,27 @@ class StringToken(Token):
             else:
                 return
 
+        # TODO: \\ handling better for multiline
         ret = TokenContinue
         if self.escape:
             self.escape = False
             if self.quote:
                 if c == self.quote:
                     self.text += c
-                elif c == '\\':
-                    self.escape = True
-                    self.text += '\\'
+                #elif c == '\\':
+                #    #self.escape = True
+                #    self.text += '\\\\'
                 else:
                     self.text += '\\'
                     self.text += c
+            elif c in (' ', '\t') or c in OperatorToken.Operators:
+                self.text += c
             else:
+                self.text += '\\'
                 self.text += c
         elif self.quote:
             if c == self.quote:
-                self.quote = False
+                ret = TokenTerm
             elif c in ('$', '%'):
                 self.var = VariableToken(self.index + len(self.text), self.ctx, c)
             elif c == '\\':
@@ -111,11 +115,12 @@ class StringToken(Token):
                 self.text += c
         else:
             if c == '\\':
-                self.esacpe = True
-            elif c in (' ', '\t', ';', '|', '&', '>', '<', '$', '%'):
+                self.escape = True
+            elif c in (' ', '\t', ';', '|', '&', '>', '<'):
                 ret = TokenEnd
             else:
                 self.text += c
+
         return ret
 
     def __str__(self):
@@ -187,6 +192,9 @@ class Statement(object):
 
     def __len__(self):
         return len(self.cmds)
+
+    def __iter__(self):
+        return iter(self.cmds)
 
     @property
     def cmd(self):
@@ -344,9 +352,30 @@ class StatementParser(object):
             index += 1
 
         if self.token:
+            if isinstance(self.token, StringToken):
+                if self.token.escape:
+                    self.token.text += '\\'
             self.tokens.append(self.token)
 
         return self.tokens
+
+    def clean_escapes(self, tokens):
+        for token in tokens:
+            if not isinstance(token, StringToken) or ('\\' not in token.text or token.quote):
+                continue
+
+            text = ''
+            escape = False
+            for c in token.text:
+                if escape:
+                    text += c
+                    escape = False
+                elif c == '\\':
+                    escape = True
+                else:
+                    text += c
+
+            token.text = text
 
     def condense(self, tokens):
         prev = None
@@ -367,6 +396,7 @@ class StatementParser(object):
         statement = Statement(ctx)
         cmd = None
         prev = None
+        self.clean_escapes(tokens)
         tokens = self.condense(tokens)
 
         for token in tokens:
