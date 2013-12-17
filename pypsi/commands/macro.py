@@ -22,18 +22,46 @@ class Macro(Command):
         return rc
 
 
+MacroCmdUsage = """usage: {name} -l
+   or: {name} NAME
+   or: {name} -[dr] NAME
+Manage registered macros"""
+
+
 class MacroCommand(BlockCommand):
 
-    def __init__(self, name='macro', macros={}, **kwargs):
-        super(MacroCommand, self).__init__(name=name, **kwargs)
+    def __init__(self, name='macro', macros={}, usage=MacroCmdUsage, **kwargs):
+        super(MacroCommand, self).__init__(name=name, usage=usage, **kwargs)
+        self.macros = macros or {}
+
+    def setup(self, shell):
+        for name in self.macros:
+            self.add_macro(shell, name, self.macros[name])
+        return 0
 
     def run(self, shell, args, ctx):
-        self.macro_name = args[0]
-        self.begin_block(shell)
+        argc = len(args)
+        rc = 0
+        if argc == 0:
+            rc = 1
+        elif argc == 1:
+            rc = 0
+            if args[0] == '-l':
+                for name in self.macros:
+                    print name
+            else:
+                self.macro_name = args[0]
+                self.begin_block(shell)
+        return rc
 
     def end_block(self, shell, lines):
-        shell.register(
-            Macro(lines=lines, name=self.macro_name)
-        )
+        self.add_macro(shell, self.macro_name, lines)
         self.macro_name = None
+        return 0
+
+    def add_macro(self, shell, name, lines):
+        shell.register(
+            Macro(lines=lines, name=name)
+        )
+        self.macros[name] = lines
         return 0
