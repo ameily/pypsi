@@ -9,6 +9,7 @@ from pypsi.commands.system import SystemCommand
 from pypsi.plugins.multiline import MultilinePlugin
 from pypsi.commands.xargs import XArgsCommand
 from pypsi.commands.exit import ExitCommand
+from pypsi.plugins.variable import VariablePlugin
 import sys
 
 class TestCommand(Command):
@@ -47,6 +48,7 @@ class DevShell(Shell):
     ml_plugin = MultilinePlugin()
     xargs_cmd = XArgsCommand()
     exit_cmd = ExitCommand()
+    var_plugin = VariablePlugin(locals={ 'hello': 'adam meily'})
 
     def __init__(self):
         super(DevShell, self).__init__()
