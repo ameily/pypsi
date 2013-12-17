@@ -58,9 +58,9 @@ class WhitespaceToken(Token):
 
 class StringToken(Token):
 
-    def __init__(self, index, ctx, c, literal=False):
+    def __init__(self, index, ctx, c, quote=None, literal=False):
         super(StringToken, self).__init__(index, ctx)
-        self.quote = None
+        self.quote = quote
         self.escape = False
         self.text = ''
         self.var = None
@@ -107,8 +107,8 @@ class StringToken(Token):
         elif self.quote:
             if c == self.quote:
                 ret = TokenTerm
-            elif c in ('$', '%'):
-                self.var = VariableToken(self.index + len(self.text), self.ctx, c)
+            #elif c in ('$', '%'):
+            #    self.var = VariableToken(self.index + len(self.text), self.ctx, c)
             elif c == '\\':
                 self.escape = True
             else:
@@ -336,8 +336,8 @@ class StatementParser(object):
         else:
             if c in (' ', '\t'):
                 self.token = WhitespaceToken(index)
-            elif c in ('$', '%'):
-                self.token = VariableToken(index, self.ctx, c)
+            #elif c in ('$', '%'):
+            #    self.token = VariableToken(index, self.ctx, c)
             elif c in ('>', '<', '|', '&', ';'):
                 self.token = OperatorToken(index, c)
             else:
@@ -384,6 +384,7 @@ class StatementParser(object):
             if isinstance(token, StringToken):
                 if isinstance(prev, StringToken):
                     prev.text += token.text
+                    token = prev
                 else:
                     condensed.append(token)
             elif not isinstance(token, WhitespaceToken):
