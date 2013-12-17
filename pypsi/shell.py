@@ -2,13 +2,17 @@
 from pypsi.base import Plugin, Command, Preprocessor
 from pypsi.cmdline import StatementParser, StatementSyntaxError, StatementContext
 import readline
-
+import sys
 
 class Shell(object):
 
     def __init__(self, shell_name='pypsi', exit_rc=-1024):
+        self.real_stdout = sys.stdout
+        self.real_stdin = sys.stdin
+        self.real_stderr = sys.stderr
+
         self.shell_name = shell_name
-        self.exit_rc = 1024
+        self.exit_rc = exit_rc
         self.commands = {}
         self.preprocessors = []
         self.plugins = []
@@ -61,7 +65,12 @@ class Shell(object):
                 rc = self.execute(raw)
             except EOFError:
                 rc = self.exit_rc
+                print
                 print "exiting...."
+            except KeyboardInterrupt:
+                print
+                for pp in self.preprocessors:
+                    pp.on_input_canceled(self)
         return rc
 
     def execute(self, raw, ctx=None):
@@ -75,6 +84,11 @@ class Shell(object):
 
         tokens = self.parser.tokenize(raw)
         statement = None
+        for pp in self.preprocessors:
+            tokens = pp.on_tokenize(self, tokens)
+            if not tokens:
+                break
+
         if not tokens:
             return 0
 
@@ -88,6 +102,7 @@ class Shell(object):
         if statement:
             (params, op) = statement.next()
             while params:
+                self.real_stderr.write("while->begin()\n")
                 if params.name not in self.commands:
                     statement.ctx.reset_io()
                     print "{}: {}: command not found".format(self.shell_name, params.name)
@@ -96,20 +111,30 @@ class Shell(object):
                 cmd = self.commands[params.name]
 
                 statement.ctx.setup_io(cmd, params, op)
+                self.real_stderr.write("run_cmd( {} )\n".format(cmd.name))
                 rc = self.run_cmd(cmd, params, statement.ctx)
+                self.real_stderr.write("done( {} )\n".format(cmd.name))
                 if op == '||':
                     if rc == 0:
+                        statement.ctx.reset_io()
                         return 0
                 elif op == '&&' or op == '|':
                     if rc != 0:
+                        statement.ctx.reset_io()
                         return rc
 
+                self.real_stderr.write("pre-next()\n")
                 (params, op) = statement.next()
+                self.real_stderr.write("post-next()\n")
 
         statement.ctx.reset_io()
 
         return rc
 
     def run_cmd(self, cmd, params, ctx):
-        return cmd.run(self, params.args, ctx)
+        rc = cmd.run(self, params.args, ctx)
+        if rc > 0:
+            ctx.stderr.write(cmd.usage.format(name=cmd.name, shell=self.shell_name))
+            ctx.stderr.write("\n")
+        return rc
 
