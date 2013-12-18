@@ -1,8 +1,11 @@
 
 from pypsi.base import Plugin, Command, Preprocessor
 from pypsi.cmdline import StatementParser, StatementSyntaxError, StatementContext
+from pypsi.namespace import Namespace
+from pypsi.stream import PypsiStream
 import readline
 import sys
+
 
 class Shell(object):
 
@@ -17,9 +20,19 @@ class Shell(object):
         self.preprocessors = []
         self.plugins = []
         self.prompt = "{name} )> ".format(name=shell_name)
+        self.features = Namespace('globals')
 
-        self.parser = StatementParser(True)
+        self.streams = { }
+        self.add_stream('error', PypsiStream(sys.stderr))
+        self.add_stream('warn', PypsiStream(sys.stderr))
+        self.add_stream('info', PypsiStream(sys.stdout))
+
+        self.parser = StatementParser()
         self.register_base_plugins()
+
+    def add_stream(self, name, stream):
+        self.streams[name] = stream
+        setattr(self, name, stream)
 
     def register_base_plugins(self):
         cls = self.__class__
@@ -65,7 +78,6 @@ class Shell(object):
                 rc = self.execute(raw)
             except EOFError:
                 rc = self.exit_rc
-                print
                 print "exiting...."
             except KeyboardInterrupt:
                 print
@@ -95,25 +107,22 @@ class Shell(object):
         try:
             statement = self.parser.build(tokens, ctx)
         except StatementSyntaxError as e:
-            print "{name}: {msg}".format(name=self.shell_name, msg=str(e))
+            self.error(self.shell_name, ": ", str(e), '\n')
             return 1
 
         rc = None
         if statement:
             (params, op) = statement.next()
             while params:
-                self.real_stderr.write("while->begin()\n")
                 if params.name not in self.commands:
                     statement.ctx.reset_io()
-                    print "{}: {}: command not found".format(self.shell_name, params.name)
+                    self.error(self.shell_name, ": ", params.name, ": command not found\n")
                     return 1
 
                 cmd = self.commands[params.name]
 
                 statement.ctx.setup_io(cmd, params, op)
-                self.real_stderr.write("run_cmd( {} )\n".format(cmd.name))
                 rc = self.run_cmd(cmd, params, statement.ctx)
-                self.real_stderr.write("done( {} )\n".format(cmd.name))
                 if op == '||':
                     if rc == 0:
                         statement.ctx.reset_io()
@@ -123,9 +132,7 @@ class Shell(object):
                         statement.ctx.reset_io()
                         return rc
 
-                self.real_stderr.write("pre-next()\n")
                 (params, op) = statement.next()
-                self.real_stderr.write("post-next()\n")
 
         statement.ctx.reset_io()
 
@@ -134,7 +141,6 @@ class Shell(object):
     def run_cmd(self, cmd, params, ctx):
         rc = cmd.run(self, params.args, ctx)
         if rc > 0:
-            ctx.stderr.write(cmd.usage.format(name=cmd.name, shell=self.shell_name))
-            ctx.stderr.write("\n")
+            self.warn(cmd.usage)
         return rc
 
