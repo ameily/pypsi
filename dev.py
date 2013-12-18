@@ -10,7 +10,10 @@ from pypsi.plugins.multiline import MultilinePlugin
 from pypsi.commands.xargs import XArgsCommand
 from pypsi.commands.exit import ExitCommand
 from pypsi.plugins.variable import VariablePlugin
+from pypsi.plugins.history import HistoryPlugin
+from pypsi.commands.echo import EchoCommand
 import sys
+
 
 class TestCommand(Command):
 
@@ -22,25 +25,10 @@ class TestCommand(Command):
         return 0
 
 
-class PrintCommand(Command):
-
-    def __init__(self, name='print', **kwargs):
-        super(PrintCommand, self).__init__(name=name, **kwargs)
-
-    def run(self, shell, args, ctx):
-        if args and args[0] == '-i':
-            for line in sys.stdin:
-                print "line:",line.strip()
-        else:
-            print ' '.join(args)
-
-        return 0
-
-
 class DevShell(Shell):
 
     test_cmd = TestCommand()
-    print_cmd = PrintCommand()
+    echo_cmd = EchoCommand()
     block_plugin = BlockPlugin()
     hexcode_plugin = HexCodePlugin()
     macro_cmd = MacroCommand()
@@ -48,10 +36,16 @@ class DevShell(Shell):
     ml_plugin = MultilinePlugin()
     xargs_cmd = XArgsCommand()
     exit_cmd = ExitCommand()
+    history_plugin = HistoryPlugin()
     var_plugin = VariablePlugin(locals={ 'hello': 'adam meily'})
 
     def __init__(self):
         super(DevShell, self).__init__()
+        self.error.prefix = "\x1b[1;31m"
+        self.warn.postfix = self.error.postfix = "\x1b[0m"
+
+        self.warn.prefix = "\x1b[1;33m"
+
 
 
 if __name__ == '__main__':
