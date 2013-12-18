@@ -9,37 +9,12 @@ except ImportError:
 TokenContinue = 0   # keep going
 TokenEnd = 1        # c ends token, process c again
 TokenTerm = 2       # c terms token
-TokenTransform = 3  # transform token
-
-
-class ParserContext(object):
-
-    def __init__(self, case_sensitive, vars):
-        self.case_sensitive = case_sensitive
-        self.vars = vars
-
-    def expand_var(self, prefix, name):
-        if not self.vars:
-            return ''
-
-        if prefix not in self.vars:
-            return ''
-
-        if not self.case_sensitive:
-            name = name.lower()
-
-        if name in self.vars[prefix]:
-            return self.vars[prefix][name]
-
-        return ''
 
 
 class Token(object):
 
-    def __init__(self, index, ctx=None):
+    def __init__(self, index):
         self.index = index
-        self.ctx = ctx
-        self.transform = None
 
 
 class WhitespaceToken(Token):
@@ -58,44 +33,26 @@ class WhitespaceToken(Token):
 
 class StringToken(Token):
 
-    def __init__(self, index, ctx, c, quote=None, literal=False):
-        super(StringToken, self).__init__(index, ctx)
+    def __init__(self, index, c, quote=None):
+        super(StringToken, self).__init__(index)
         self.quote = quote
         self.escape = False
         self.text = ''
-        self.var = None
 
-        if literal:
-            self.text = c
+        if c in ('"', "'"):
+            self.quote = c
+        elif c == '\\':
+            self.escape = True
         else:
-            if c in ('"', "'"):
-                self.quote = c
-            elif c == '\\':
-                self.escape = True
-            else:
-                self.text += c
-
-    def expand_var(self):
-        self.text += self.var.expand(True)
-        self.var = None
+            self.text += c
 
     def add_char(self, c):
-        if self.var:
-            if self.var.add_char(c) == TokenEnd:
-                self.expand_var()
-            else:
-                return
-
-        # TODO: \\ handling better for multiline
         ret = TokenContinue
         if self.escape:
             self.escape = False
             if self.quote:
                 if c == self.quote:
                     self.text += c
-                #elif c == '\\':
-                #    #self.escape = True
-                #    self.text += '\\\\'
                 else:
                     self.text += '\\'
                     self.text += c
@@ -107,8 +64,6 @@ class StringToken(Token):
         elif self.quote:
             if c == self.quote:
                 ret = TokenTerm
-            #elif c in ('$', '%'):
-            #    self.var = VariableToken(self.index + len(self.text), self.ctx, c)
             elif c == '\\':
                 self.escape = True
             else:
@@ -124,46 +79,10 @@ class StringToken(Token):
         return ret
 
     def __str__(self):
-        return "String({quote}{text}{quote})".format(
+        return "String( {quote}{text}{quote} )".format(
             quote=self.quote or '',
             text=self.text
         )
-
-
-class VariableToken(Token):
-
-    def __init__(self, index, ctx, prefix):
-        super(VariableToken, self).__init__(index, ctx)
-        self.prefix = prefix
-        self.var = ''
-
-    def add_char(self, c):
-        if c in ('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_'):
-            self.var += c
-            return TokenContinue
-        return TokenEnd
-
-    def expand(self, literal):
-        expanded = self.ctx.expand_var(self.prefix, self.var)
-        if literal:
-            return expanded
-
-        words = expanded.split()
-        count = len(words)
-        tokens = []
-        for i in range(count):
-            if i > 0:
-                tokens.append(WhitespaceToken(self.index))
-            tokens.append(StringToken(self.index, None, words[i], True))
-
-        return tokens
-
-    def __str__(self):
-        return "VariableToken({}{})".format(
-            self.prefix,
-            self.var
-        )
-
 
 class OperatorToken(Token):
     Operators = '<>|&;'
@@ -179,7 +98,7 @@ class OperatorToken(Token):
         return TokenEnd
 
     def __str__(self):
-        return "OperatorToken({})".format(self.operator)
+        return "OperatorToken( {} )".format(self.operator)
 
 
 class Statement(object):
@@ -212,8 +131,6 @@ class Statement(object):
         )
 
 
-RealStdout = sys.stdout
-
 class StatementContext(object):
 
     def __init__(self):
@@ -228,7 +145,6 @@ class StatementContext(object):
         self.stdin = sys.stdin
 
     def fork(self):
-        RealStdout.write("Fork()\n")
         ctx = StatementContext()
         ctx.stdin = ctx.backup_stdin = self.stdin
         ctx.stdout = ctx.backup_stdout = self.stdout
@@ -238,11 +154,9 @@ class StatementContext(object):
         return ctx
 
     def setup_io(self, cmd, params, op):
-        RealStdout.write("setup_io( " + cmd.name + " )\n")
         if params.stdin_path:
             sys.stdin = self.stdin = open(params.stdin_path, 'r')
         elif self.prev and self.prev[1] == '|':
-            RealStdout.write("Previous was a pipe: " + self.prev[0].name + "\n")
             self.stdout.flush()
             self.stdout.seek(0)
             self.stdin = sys.stdin = self.stdout
@@ -267,7 +181,6 @@ class StatementContext(object):
 
     def reset_io(self):
         if self.stdout != self.backup_stdout:
-            RealStdout.write("closing stdout\n")
             self.stdout.close()
             sys.stdout = self.stdout = self.backup_stdout
 
@@ -275,10 +188,6 @@ class StatementContext(object):
             sys.stderr = self.stderr = self.backup_stderr
 
         if self.stdin != self.backup_stdin:
-            RealStdout.write("closing stdin: "+str(type(self.stdin))+"\n")
-            RealStdout.write(
-                str(self.stdin) + " != " + str(self.backup_stdin) + "\n"
-            )
             self.stdin.close()
             sys.stdin = self.stdin = self.backup_stdin
         return 0
@@ -308,24 +217,18 @@ class StatementSyntaxError(Exception):
 
 class StatementParser(object):
 
-    def __init__(self, case_sensitive):
-        self.case_sensitive = case_sensitive
+    def __init__(self):
+        pass
 
     def reset(self):
         self.tokens = []
         self.token = None
-        self.ctx = None
 
     def process(self, index, c):
         if self.token:
             action = self.token.add_char(c)
-            if action == TokenTransform:
-                self.token = self.token.transform
-            elif action == TokenEnd:
-                if isinstance(self.token, VariableToken):
-                    self.tokens.extend(self.token.expand(False))
-                else:
-                    self.tokens.append(self.token)
+            if action == TokenEnd:
+                self.tokens.append(self.token)
                 self.token = None
                 self.process(index, c)
             elif action == TokenTerm:
@@ -336,16 +239,13 @@ class StatementParser(object):
         else:
             if c in (' ', '\t'):
                 self.token = WhitespaceToken(index)
-            #elif c in ('$', '%'):
-            #    self.token = VariableToken(index, self.ctx, c)
             elif c in ('>', '<', '|', '&', ';'):
                 self.token = OperatorToken(index, c)
             else:
-                self.token = StringToken(index, self.ctx, c)
+                self.token = StringToken(index, c)
 
-    def tokenize(self, line, vars=None):
+    def tokenize(self, line):
         self.reset()
-        self.ctx = ParserContext(self.case_sensitive, vars)
         index = 0
         for c in line:
             self.process(index, c)
@@ -486,20 +386,3 @@ class StatementParser(object):
             statement.cmds.append(cmd)
 
         return statement
-
-
-if __name__ == "__main__":
-    parser = StatementParser(False)
-    vars = { '$': { 'name': 'Adam Meily', 'x': '2 + 3'}}
-    t = r'   some-cmd $name "long String $X"adam <file.txt | other-cmd || last > output'
-    print t
-    tokens = parser.tokenize(
-        t, vars
-    )
-
-    cmdline = parser.build(tokens)
-
-    print
-    print "=== Commands ==="
-    for cmd in cmdline:
-        print str(cmd)
