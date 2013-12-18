@@ -1,4 +1,6 @@
 
+import argparse
+
 
 class Plugin(object):
 
@@ -26,9 +28,29 @@ class Command(object):
         self.category = category
         self.pipe = pipe
 
+    def error(self, shell, msg):
+        shell.error(self.name, ": ", msg, '\n')
+
     def run(self, shell, args, ctx):
         raise NotImplementedError()
 
     def setup(self, shell):
         return 0
 
+
+class PypsiArgParser(argparse.ArgumentParser):
+
+    def __init__(self, *args, **kwargs):
+        kwargs['add_help'] = False
+        super(PypsiArgParser, self).__init__(*args, **kwargs)
+        self.add_argument(
+            '-h', '--help', help='print this help message', action='store_true'
+        )
+        self.last_error = None
+
+    def parse_args(self, *args, **kwargs):
+        self.last_error = None
+        return super(PypsiArgParser, self).parse_args(*args, **kwargs)
+
+    def error(self, message):
+        self.last_error = message
