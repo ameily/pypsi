@@ -37,14 +37,14 @@ class DevShell(Shell):
     xargs_cmd = XArgsCommand()
     exit_cmd = ExitCommand()
     history_plugin = HistoryPlugin()
-    var_plugin = VariablePlugin(locals={ 'hello': 'adam meily'})
+    var_plugin = VariablePlugin(locals={ 'hello': 'adam     meily'}, case_sensitive=False)
 
     def __init__(self):
         super(DevShell, self).__init__()
         self.error.prefix = "\x1b[1;31m"
         self.warn.postfix = self.error.postfix = "\x1b[0m"
-
         self.warn.prefix = "\x1b[1;33m"
+        self.fallback_cmd = self.system_cmd
 
 
 
