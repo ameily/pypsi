@@ -20,7 +20,7 @@ class Shell(object):
         self.preprocessors = []
         self.plugins = []
         self.prompt = "{name} )> ".format(name=shell_name)
-        self.features = Namespace('globals')
+        self.ctx = Namespace('features', True)
 
         self.streams = { }
         self.add_stream('error', PypsiStream(sys.stderr))
@@ -28,6 +28,7 @@ class Shell(object):
         self.add_stream('info', PypsiStream(sys.stdout))
 
         self.parser = StatementParser()
+        self.default_cmd = None
         self.register_base_plugins()
 
     def add_stream(self, name, stream):
@@ -114,12 +115,16 @@ class Shell(object):
         if statement:
             (params, op) = statement.next()
             while params:
-                if params.name not in self.commands:
+                cmd = None
+                if params.name in self.commands:
+                    cmd = self.commands[params.name]
+                elif self.fallback_cmd:
+                    cmd = self.fallback_cmd.fallback(self, params.name, params.args, statement.ctx)
+
+                if not cmd:
                     statement.ctx.reset_io()
                     self.error(self.shell_name, ": ", params.name, ": command not found\n")
                     return 1
-
-                cmd = self.commands[params.name]
 
                 statement.ctx.setup_io(cmd, params, op)
                 rc = self.run_cmd(cmd, params, statement.ctx)
