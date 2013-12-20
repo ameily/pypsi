@@ -1,7 +1,8 @@
 
 from pypsi.base import Plugin, Preprocessor, Command
 from pypsi.namespace import Namespace
-from pypsi.cmdline import StringToken, WhitespaceToken
+from pypsi.cmdline import Token, StringToken, WhitespaceToken, TokenContinue, TokenEnd
+
 try:
     from cStringIO import StringIO
 except:
@@ -22,127 +23,83 @@ Set a local variable."""
         return 0
 
 
-class VariableExpander(object):
+class VariableToken(Token):
 
-    def __init__(self, prefix, namespace):
+    VarChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_'
+
+    def __init__(self, prefix, index, var=''):
+        super(VariableToken, self).__init__(index)
         self.prefix = prefix
-        self.namespace = namespace
-        self.reset()
+        self.var = var
 
-    def reset(self):
-        self.escape = False
-        self.var = None
-        self.tokens = []
-        self.text = StringIO()
-        self.token = None
+    def add_char(self, c):
+        if c in self.VarChars:
+            self.var += c
+            return TokenContinue
+        return TokenEnd
 
-    def expand(self, name):
-        value = self.namespace[name] if name in self.namespace else ''
-        if not self.token.quote:
-            first = True
-            for s in value.split():
-                if first:
-                    first = False
+
+def get_subtokens(token, prefix):
+    escape = False
+    index = token.index
+    subt = ''
+    var = None
+    for c in token.text:
+        if escape:
+            escape = False
+            if c != prefix:
+                subt.text += '\\'
+            subt.text += c
+        elif var:
+            rc = var.add_char(c)
+            if rc == TokenEnd:
+                yield var
+                if c == prefix:
+                    var = VariableToken(index, c)
                 else:
-                    self.tokens.append(WhitespaceToken(self.token.index))
-
-                self.tokens.append(
-                    StringToken(
-                        c=s,
-                        ctx=None,
-                        index=self.token.index,
-                        quote=self.token.quote
-                    )
-                )
+                    if c == '\\':
+                        escape = True
+                        c = ''
+                    subt = StringToken(index, c, token.quote)
+        elif c == prefix:
+            if subt:
+                yield subt
+                subt = None
+            var = VariableToken(c, index)
         else:
-            self.tokens.append(
-                StringToken(
-                    c=value,
-                    ctx=None,
-                    index=self.token.index,
-                    quote=self.token.quote
-                )
-            )
+            if c == '\\':
+                escape = True
+                c = ''
 
-    def process(self, c, index):
-        if self.escape:
-            self.escape = False
-            if c != self.prefix:
-                self.text.write('\\')
-            self.text.write(c)
-        elif self.var is not None:
-            if c in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_?#':
-                self.var += c
+            if not subt:
+                subt = StringToken(index, c, token.quote)
             else:
-                self.expand(self.var)
-                self.var = None
-                self.process(c, index)
-        elif c == self.prefix:
-            self.var = ''
-            val = self.text.getvalue()
-            if val:
-                self.tokens.append(
-                    StringToken(
-                        c=val,
-                        ctx=None,
-                        index=self.token.index,
-                        quote=self.token.quote
-                    )
-                )
-                self.text = StringIO()
-        else:
-            self.text.write(c)
+                subt.text += c
+        index += 1
 
-    def get_tokens(self, token):
-        self.reset()
-        self.token = token
-        index = 0
-        for c in token.text:
-            self.process(c, index)
-            index += 1
-
-        if self.var:
-            self.expand(self.var)
-        elif self.var == '':
-            self.tokens.append(
-                StringToken(
-                    c=self.prefix,
-                    quote=self.token.prefix,
-                    ctx=None,
-                    index=self.token.index+index
-                )
-            )
-
-        value = self.text.getvalue()
-        if value:
-            print "value:",value
-            self.tokens.append(
-                StringToken(
-                    c=value,
-                    index=self.token.index+index,
-                    quote=self.token.quote,
-                    ctx=None
-                )
-            )
-            print "tokens:", ', '.join([t.text for t in self.tokens])
-
-        self.token = None
-        return self.tokens
+    if subt:
+        yield subt
+    elif var:
+        yield var
 
 
 class VariablePlugin(Plugin, Preprocessor):
 
-    def __init__(self, var_cmd='var', prefix='$', locals={}, **kwargs):
+    def __init__(self, var_cmd='var', prefix='$', locals={}, case_sensitive=True, **kwargs):
         super(VariablePlugin, self).__init__(**kwargs)
         self.var_cmd = VariableCommand(name=var_cmd)
         self.prefix = prefix
-        self.namespace = Namespace('locals', **locals)
-        self.parser = VariableExpander(self.prefix, self.namespace)
+        self.namespace = Namespace('locals', case_sensitive, **locals)
 
     def setup(self, shell):
         shell.register(self.var_cmd)
+        shell.ctx.vars = self.namespace
 
-
+    def expand(self, vart):
+        name = vart.var
+        if name in self.namespace:
+            return self.namespace[name]
+        return ''
 
     def on_tokenize(self, shell, tokens):
         ret = []
@@ -151,7 +108,22 @@ class VariablePlugin(Plugin, Preprocessor):
                 ret.append(token)
                 continue
 
-            ret.extend(self.parser.get_tokens(token))
+            for subt in get_subtokens(token, self.prefix):
+                if isinstance(subt, StringToken):
+                    ret.append(subt)
+                    continue
+
+                expanded = self.expand(subt)
+                if token.quote:
+                    ret.append(StringToken(subt.index, expanded, token.quote))
+                else:
+                    ws = False
+                    for part in expanded.split():
+                        if ws:
+                            ret.append(WhitespaceToken(subt.index))
+                        else:
+                            ws = True
+                        ret.append(StringToken(subt.index, part))
 
         return ret
 
