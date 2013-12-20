@@ -37,6 +37,9 @@ class Command(object):
     def setup(self, shell):
         return 0
 
+    def fallback(self, *args):
+        return None
+
 
 class PypsiArgParser(argparse.ArgumentParser):
 
