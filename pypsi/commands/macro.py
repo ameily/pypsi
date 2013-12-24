@@ -15,11 +15,30 @@ class Macro(Command):
 
     def run(self, shell, args, ctx):
         rc = None
+        self.add_var_args(shell, args)
+
         next = ctx.fork()
         for line in self.lines:
             rc = shell.execute(line, next)
-        #ctx.stdout = next.stdout
+
+        self.remove_var_args(shell)
         return rc
+
+    def add_var_args(self, shell, args):
+        if 'vars' in shell.ctx:
+            shell.ctx.vars['0'] = self.name
+            for i in range(0, 9):
+                if i < len(args):
+                    shell.ctx.vars[str(i+1)] = args[i]
+                else:
+                    shell.ctx.vars[str(i+1)] = ''
+
+    def remove_var_args(self, shell):
+        if 'vars' in shell.ctx:
+            for i in range(0, 10):
+                s = str(i)
+                if s in shell.ctx.vars:
+                    del shell.ctx.vars[s]
 
 
 MacroCmdUsage = """usage: {name} -l
@@ -48,7 +67,7 @@ class MacroCommand(BlockCommand):
             rc = 0
             if args[0] == '-l':
                 for name in self.macros:
-                    print name
+                    shell.info(name, '\n')
             else:
                 self.macro_name = args[0]
                 self.begin_block(shell)
