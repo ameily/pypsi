@@ -1,7 +1,9 @@
 
 from pypsi.base import Plugin, Preprocessor, Command
-from pypsi.namespace import Namespace
+from pypsi.namespace import ScopedNamespace
 from pypsi.cmdline import Token, StringToken, WhitespaceToken, TokenContinue, TokenEnd
+import os
+from datetime import datetime
 
 try:
     from cStringIO import StringIO
@@ -9,6 +11,19 @@ except:
     from StrigIO import StringIO
 
 
+class ManagedVariable(object):
+
+    def __init__(self, getter, setter=None):
+        self.getter = getter
+        self.setter = setter
+
+    def set(self, shell, value):
+        if self.setter:
+            self.setter(shell, value)
+        raise ValueError("read-only variable")
+
+    def get(self, shell):
+        return self.getter(shell)
 
 
 class VariableCommand(Command):
@@ -85,20 +100,35 @@ def get_subtokens(token, prefix):
 
 class VariablePlugin(Plugin, Preprocessor):
 
-    def __init__(self, var_cmd='var', prefix='$', locals={}, case_sensitive=True, **kwargs):
+    def __init__(self, var_cmd='var', prefix='$', locals=None, case_sensitive=True, **kwargs):
         super(VariablePlugin, self).__init__(**kwargs)
         self.var_cmd = VariableCommand(name=var_cmd)
         self.prefix = prefix
-        self.namespace = Namespace('locals', case_sensitive, **locals)
+        self.namespace = ScopedNamespace('globals', case_sensitive, os.environ)
+        if locals:
+            for (k, v) in locals:
+                self.namespace[k] = v
 
     def setup(self, shell):
         shell.register(self.var_cmd)
         shell.ctx.vars = self.namespace
+        shell.ctx.vars.date = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.datefmt))
+        shell.ctx.vars.time = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.timefmt))
+        shell.ctx.vars.datetime = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.datetimefmt))
+        shell.ctx.vars.prompt = ManagedVariable(lambda shell: shell.prompt)
+        shell.ctx.vars.datefmt = "%x"
+        shell.ctx.vars.timefmt = "%X"
+        shell.ctx.vars.datetimefmt = "%c"
 
-    def expand(self, vart):
+    def expand(self, shell, vart):
         name = vart.var
         if name in self.namespace:
-            return self.namespace[name]
+            s = self.namespace[name]
+            if callable(s):
+                return s()
+            elif isinstance(s, ManagedVariable):
+                return s.getter(shell)
+            return s
         return ''
 
     def on_tokenize(self, shell, tokens):
@@ -113,7 +143,7 @@ class VariablePlugin(Plugin, Preprocessor):
                     ret.append(subt)
                     continue
 
-                expanded = self.expand(subt)
+                expanded = self.expand(shell, subt)
                 if token.quote:
                     ret.append(StringToken(subt.index, expanded, token.quote))
                 else:
