@@ -37,7 +37,7 @@ class DevShell(Shell):
     xargs_cmd = XArgsCommand()
     exit_cmd = ExitCommand()
     history_plugin = HistoryPlugin()
-    var_plugin = VariablePlugin(locals={ 'hello': 'adam     meily'}, case_sensitive=False)
+    var_plugin = VariablePlugin(case_sensitive=False)
 
     def __init__(self):
         super(DevShell, self).__init__()
