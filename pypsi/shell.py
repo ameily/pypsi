@@ -20,7 +20,7 @@ class Shell(object):
         self.preprocessors = []
         self.plugins = []
         self.prompt = "{name} )> ".format(name=shell_name)
-        self.ctx = Namespace('features', True)
+        self.ctx = Namespace() #('features', True)
 
         self.streams = { }
         self.add_stream('error', PypsiStream(sys.stderr))
