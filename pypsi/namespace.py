@@ -58,7 +58,7 @@ class ScopedNamespace(object):
         if not ctx.case_sensitive:
             name = name.lower()
 
-        return ctx.locals[name]
+        return ctx.locals[name] if name in ctx.locals else ''
 
     def __setattr__(self, name, value):
         if name[0] == '_':
