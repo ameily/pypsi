@@ -49,8 +49,8 @@ Manage registered macros"""
 
 class MacroCommand(BlockCommand):
 
-    def __init__(self, name='macro', macros={}, usage=MacroCmdUsage, **kwargs):
-        super(MacroCommand, self).__init__(name=name, usage=usage, **kwargs)
+    def __init__(self, name='macro', topic='shell', macros={}, **kwargs):
+        super(MacroCommand, self).__init__(name=name, usage=MacroCmdUsage, brief='manage registered macros', topic=topic, **kwargs)
         self.macros = macros or {}
 
     def setup(self, shell):

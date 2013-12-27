@@ -7,7 +7,7 @@ XArgsUsage = "%(prog)s [-h] [-I repstr] command"
 
 class XArgsCommand(Command):
 
-    def __init__(self, name='xargs', **kwargs):
+    def __init__(self, name='xargs', topic='shell', **kwargs):
         self.parser = PypsiArgParser(
             prog=name,
             description='build and execute command lines from stdin',
@@ -24,7 +24,10 @@ class XArgsCommand(Command):
             'command', nargs=argparse.REMAINDER, help="command to execute"
         )
 
-        super(XArgsCommand, self).__init__(name=name, usage=self.parser.format_help(), **kwargs)
+        super(XArgsCommand, self).__init__(
+            name=name, topic=topic, usage=self.parser.format_help(),
+            brief='build and execute command lines from stdin', **kwargs
+        )
 
     def run(self, shell, args, ctx):
         ns = self.parser.parse_args(args)

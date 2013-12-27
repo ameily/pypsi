@@ -4,8 +4,8 @@ import subprocess
 
 class SystemCommand(Command):
 
-    def __init__(self, name='system', **kwargs):
-        super(SystemCommand, self).__init__(name=name, **kwargs)
+    def __init__(self, name='system', topic='shell', **kwargs):
+        super(SystemCommand, self).__init__(name=name, topic=topic, brief='execute a system shell command', **kwargs)
 
     def run(self, shell, args, ctx):
         rc = None
