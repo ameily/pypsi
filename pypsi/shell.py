@@ -16,6 +16,7 @@ class Shell(object):
 
         self.shell_name = shell_name
         self.exit_rc = exit_rc
+        self.errno = 0
         self.commands = {}
         self.preprocessors = []
         self.plugins = []
@@ -144,8 +145,8 @@ class Shell(object):
         return rc
 
     def run_cmd(self, cmd, params, ctx):
-        rc = cmd.run(self, params.args, ctx)
-        if rc > 0:
+        self.errno = cmd.run(self, params.args, ctx)
+        if self.errno > 0:
             self.warn(cmd.usage)
-        return rc
+        return self.errno
 
