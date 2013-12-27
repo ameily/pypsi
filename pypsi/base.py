@@ -22,11 +22,12 @@ class Preprocessor(object):
 
 class Command(object):
 
-    def __init__(self, name, usage=None, category=None, pipe='str'):
+    def __init__(self, name, usage=None, brief=None, topic=None, pipe='str'):
         self.name = name
         self.usage = usage or ''
-        self.category = category
-        self.pipe = pipe
+        self.brief = brief or ''
+        self.topic = topic or 'misc'
+        self.pipe = pipe or 'str'
 
     def error(self, shell, msg):
         shell.error(self.name, ": ", msg, '\n')
