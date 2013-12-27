@@ -12,6 +12,8 @@ from pypsi.commands.exit import ExitCommand
 from pypsi.plugins.variable import VariablePlugin
 from pypsi.plugins.history import HistoryPlugin
 from pypsi.commands.echo import EchoCommand
+from pypsi.commands.include import IncludeCommand
+from pypsi.commands.help import HelpCommand
 import sys
 
 
@@ -37,6 +39,10 @@ class DevShell(Shell):
     xargs_cmd = XArgsCommand()
     exit_cmd = ExitCommand()
     history_plugin = HistoryPlugin()
+    include_cmd = IncludeCommand()
+    help_cmd = HelpCommand(
+        topics=(('shell', "Shell"), ('misc', 'Miscellaneous'))
+    )
     var_plugin = VariablePlugin(case_sensitive=False)
 
     def __init__(self):
