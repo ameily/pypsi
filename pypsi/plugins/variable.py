@@ -112,13 +112,11 @@ class VariablePlugin(Plugin, Preprocessor):
     def setup(self, shell):
         shell.register(self.var_cmd)
         shell.ctx.vars = self.namespace
-        shell.ctx.vars.date = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.datefmt))
-        shell.ctx.vars.time = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.timefmt))
-        shell.ctx.vars.datetime = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.datetimefmt))
+        shell.ctx.vars.date = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.datefmt or "%x"))
+        shell.ctx.vars.time = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.timefmt or "%X"))
+        shell.ctx.vars.datetime = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.datetimefmt or "%c"))
         shell.ctx.vars.prompt = ManagedVariable(lambda shell: shell.prompt)
-        shell.ctx.vars.datefmt = "%x"
-        shell.ctx.vars.timefmt = "%X"
-        shell.ctx.vars.datetimefmt = "%c"
+        shell.ctx.vars.errno = ManagedVariable(lambda shell: str(shell.errno))
 
     def expand(self, shell, vart):
         name = vart.var
