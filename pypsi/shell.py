@@ -146,7 +146,7 @@ class Shell(object):
 
     def run_cmd(self, cmd, params, ctx):
         self.errno = cmd.run(self, params.args, ctx)
-        if self.errno > 0:
-            self.warn(cmd.usage)
+        #if self.errno > 0:
+        #    self.warn(cmd.usage)
         return self.errno
 
