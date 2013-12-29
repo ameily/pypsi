@@ -1,5 +1,6 @@
 
 from pypsi.base import Command
+from pypsi.utils import Title
 
 
 class HelpCommand(Command):
@@ -32,16 +33,15 @@ class HelpCommand(Command):
 
             first = True
             for topic in self.order:
+                if print_topic and print_topic != topic:
+                    continue
+
                 if first:
                     first = False
                 else:
                     shell.warn('\n')
 
-                title = "{} Commands".format(self.topics[topic])
-                shell.warn(
-                    title, "\n",
-                    '=' * len(title), '\n'
-                )
+                shell.warn(Title("{} Commands".format(self.topics[topic])))
 
                 cmds = sorted(sections[topic], key=lambda i: i.name)
                 for cmd in cmds:
@@ -61,7 +61,7 @@ class HelpCommand(Command):
             self.print_commands(shell)
         elif len(args) > 1:
             return 1
-        elif args[0] in self.catmap:
+        elif args[0] in self.topics:
             self.print_commands(shell, args[0])
         else:
             if args[0] in shell.commands:
