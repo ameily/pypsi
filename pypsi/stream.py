@@ -14,7 +14,10 @@ class PypsiStream(object):
             self.fobj.write(self.prefix)
 
         for s in args:
-            self.fobj.write(s)
+            if isinstance(s, str):
+                self.fobj.write(s)
+            else:
+                self.fobj.write(str(s))
 
         if self.postfix:
             self.fobj.write(self.postfix)
