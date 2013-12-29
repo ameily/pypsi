@@ -91,3 +91,6 @@ class ScopedNamespace(object):
         if not ctx.case_sensitive:
             name = name.lower()
         return name in ctx.locals
+
+    def __iter__(self):
+        return iter(self._ctx.locals)
