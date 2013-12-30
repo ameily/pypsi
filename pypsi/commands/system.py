@@ -15,15 +15,19 @@ class SystemCommand(Command):
                 proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=ctx.stderr)
             else:
                 proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=ctx.stderr)
-                proc.stdin.write(ctx.stdin.read())
+                buff = ctx.stdin.read()
+                if isinstance(buff, str):
+                    buff = buff.encode('utf-8')
+
+                proc.stdin.write(buff)
                 proc.stdin.close()
         except OSError as e:
             if e.errno == 2:
                 shell.error(self.name, ": executable not found\n")
                 return -1
 
-        for line in iter(proc.stdout.readline, ''):
-            ctx.stdout.write(line)
+        for line in proc.stdout:
+            ctx.stdout.write(line.decode('utf-8'))
         rc = proc.wait()
         return rc if rc <= 0 else -1
 
