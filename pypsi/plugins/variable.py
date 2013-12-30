@@ -5,10 +5,7 @@ from pypsi.cmdline import Token, StringToken, WhitespaceToken, TokenContinue, To
 import os
 from datetime import datetime
 
-try:
-    from cStringIO import StringIO
-except:
-    from StrigIO import StringIO
+from io import StringIO
 
 
 class ManagedVariable(object):
@@ -20,7 +17,8 @@ class ManagedVariable(object):
     def set(self, shell, value):
         if self.setter:
             self.setter(shell, value)
-        raise ValueError("read-only variable")
+        else:
+            raise ValueError("read-only variable")
 
     def get(self, shell):
         return self.getter(shell)
@@ -29,13 +27,47 @@ class ManagedVariable(object):
 class VariableCommand(Command):
 
     Usage = """usage: var name = value
-Set a local variable."""
+   or: var -l
+   or: var -d name
+Manage local variables."""
 
     def __init__(self, name='var', usage=Usage, **kwargs):
         super(VariableCommand, self).__init__(name=name, usage=usage, **kwargs)
 
     def run(self, shell, args, ctx):
+        if not args:
+            shell.error(self.name, ": missing required argument.\n")
+            return 1
+
+        if args[0] == '-l':
+            vars = []
+            col1 = 0
+            for name in shell.ctx.vars:
+                s = shell.ctx.vars[name]
+                col1 = max(col1, len(name))
+                if callable(s):
+                    s = s()
+                elif isinstance(s, ManagedVariable):
+                    s = s.getter(shell)
+                vars.append((name, s))
+            vars = sorted(vars, key=lambda x: x[0])
+            for v in vars:
+                shell.info(
+                    v[0], ' ' * (col1 - len(v[0])), '    ', v[1], '\n'
+                )
+        else:
+            name = args[0]
+            value = args[2]
+            try:
+                if name in shell.ctx.vars and isinstance(shell.ctx.vars[name], ManagedVariable):
+                    shell.ctx.vars[name].set(shell, value)
+                else:
+                    shell.ctx.vars[name] = value
+            except ValueError as e:
+                self.error(shell, "error setting variable ", name, ": ", e.message, '\n')
+
         return 0
+
 
 
 class VariableToken(Token):
