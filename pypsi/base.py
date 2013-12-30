@@ -44,23 +44,25 @@ class Command(object):
 
 
 class PrintHelpMessage(Exception):
-    pass
+
+    def __init__(self, message):
+        self.message = message
+
 
 class ArgumentError(Exception):
-    pass
+
+    def __init__(self, message):
+        self.message = message
+
 
 class PypsiArgParser(argparse.ArgumentParser):
 
     def __init__(self, *args, **kwargs):
-        #kwargs['add_help'] = False
         super(PypsiArgParser, self).__init__(*args, **kwargs)
-        #self.add_argument(
-        #    '-h', '--help', help='print this help message', action=HelpAction
-        #)
-        self.last_error = None
 
     def parse_args(self, shell, *args, **kwargs):
         self.rc = None
+        self.help_msg = None
         try:
             return super(PypsiArgParser, self).parse_args(*args, **kwargs)
         except PrintHelpMessage as e:
@@ -73,22 +75,10 @@ class PypsiArgParser(argparse.ArgumentParser):
         return None
 
     def error(self, message):
-        #self.last_error = message
-        #raise PrintHelpMessage()
         raise ArgumentError(message)
 
     def exit(self, status=0, message=None):
-        #print "exit:", self.help_msg
         raise PrintHelpMessage(self.help_msg)
 
     def _print_message(self, msg, file=None):
         self.help_msg = msg
-        #print "_print_message(", self.help_msg, ")"
-
-    #def print_help(self, file=None):
-    #    self.help_msg = self.format_help()
-    #    print "HELP:", self.help_msg
-
-    #def print_usage(self, file=None):
-    #    self.help_msg = self.format_usage()
-    #    print "USAGE:", self.help_msg

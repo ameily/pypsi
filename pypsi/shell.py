@@ -24,9 +24,9 @@ class Shell(object):
         self.ctx = Namespace() #('features', True)
 
         self.streams = { }
-        self.add_stream('error', PypsiStream(sys.stderr))
-        self.add_stream('warn', PypsiStream(sys.stderr))
-        self.add_stream('info', PypsiStream(sys.stdout))
+        self.add_stream('error', PypsiStream(lambda: sys.stderr))
+        self.add_stream('warn', PypsiStream(lambda: sys.stderr))
+        self.add_stream('info', PypsiStream(lambda: sys.stdout))
 
         self.parser = StatementParser()
         self.default_cmd = None
@@ -76,13 +76,13 @@ class Shell(object):
         rc = 0
         while rc != self.exit_rc:
             try:
-                raw = raw_input(self.prompt)
+                raw = input(self.prompt)
                 rc = self.execute(raw)
             except EOFError:
                 rc = self.exit_rc
-                print "exiting...."
+                print("exiting....")
             except KeyboardInterrupt:
-                print
+                print()
                 for pp in self.preprocessors:
                     pp.on_input_canceled(self)
         return rc

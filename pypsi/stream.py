@@ -10,14 +10,15 @@ class PypsiStream(object):
         return self.write(*args)
 
     def write(self, *args):
+        stream = self.fobj if not callable(self.fobj) else self.fobj()
         if self.prefix:
-            self.fobj.write(self.prefix)
+            stream.write(self.prefix)
 
         for s in args:
             if isinstance(s, str):
-                self.fobj.write(s)
-            else:
-                self.fobj.write(str(s))
+                stream.write(s)
+            elif s is not None:
+                stream.write(str(s))
 
         if self.postfix:
-            self.fobj.write(self.postfix)
+            stream.write(self.postfix)

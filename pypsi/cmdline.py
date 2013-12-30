@@ -1,9 +1,6 @@
 
 import sys
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StrignIO import StringIO
+from io import StringIO
 
 
 TokenContinue = 0   # keep going

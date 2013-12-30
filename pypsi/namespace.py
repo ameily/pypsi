@@ -3,7 +3,7 @@
 class Namespace(object):
 
     def __init__(self, **kwargs):
-        for (k, v) in kwargs.iteritems():
+        for (k, v) in kwargs.items():
             super(Namespace, self).__setattr__(k, v)
 
     def __setattr__(self, name, value):
@@ -44,7 +44,7 @@ class ScopedNamespace(object):
             parent=parent
         )
 
-        for (k, v) in locals.iteritems():
+        for (k, v) in locals.items():
             if not case_sensitive:
                 k = k.lower()
             ctx.locals[k] = v
