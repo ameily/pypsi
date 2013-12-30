@@ -26,6 +26,7 @@ class HistoryCommand(Command):
         )
 
         subcmd = self.parser.add_subparsers(prog='history', dest='subcmd')
+        subcmd.required = True
 
         ls = subcmd.add_parser('list', help='list history events')
         ls.add_argument(
