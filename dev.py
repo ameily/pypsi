@@ -23,7 +23,7 @@ class TestCommand(Command):
         super(TestCommand, self).__init__(name=name, **kwargs)
 
     def run(self, shell, args, ctx):
-        print "TEST!"
+        print("TEST!")
         return 0
 
 
@@ -51,8 +51,6 @@ class DevShell(Shell):
         self.warn.postfix = self.error.postfix = "\x1b[0m"
         self.warn.prefix = "\x1b[1;33m"
         self.fallback_cmd = self.system_cmd
-
-
 
 if __name__ == '__main__':
     shell = DevShell()
