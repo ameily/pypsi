@@ -9,7 +9,7 @@ class BlockCommand(Command):
         self.prompt = prompt
 
     def begin_block(self, shell):
-        plugin = shell.get_plugin(BlockPlugin)
+        plugin = shell.ctx.block
         plugin.begin_block(shell, self)
         self.old_prompt = shell.prompt
         shell.prompt = self.prompt
@@ -26,6 +26,8 @@ class BlockPlugin(Plugin, Preprocessor):
         self.block = None
 
     def setup(self, shell):
+        if 'block' not in shell.ctx:
+            shell.ctx.block = self
         return 0
 
     def on_input(self, shell, line):
