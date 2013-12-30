@@ -3,7 +3,8 @@ from pypsi.base import Command, PypsiArgParser
 import sys
 import argparse
 
-XArgsUsage = "%(prog)s [-h] [-I repstr] command"
+XArgsUsage = """{name} [-h] [-I repstr] command"""
+
 
 class XArgsCommand(Command):
 
@@ -11,7 +12,7 @@ class XArgsCommand(Command):
         self.parser = PypsiArgParser(
             prog=name,
             description='build and execute command lines from stdin',
-            usage=XArgsUsage
+            usage=XArgsUsage.format(name=name)
         )
 
         self.parser.add_argument(
@@ -31,9 +32,8 @@ class XArgsCommand(Command):
 
     def run(self, shell, args, ctx):
         ns = self.parser.parse_args(args)
-        if self.parser.last_error:
-            self.error(shell, self.parser.last_error)
-            return 1
+        if self.parser.rc is not None:
+            return self.parser.rc
 
         if not ns.command:
             self.error(shell, "missing command")
