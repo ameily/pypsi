@@ -23,7 +23,7 @@ class HelpCommand(Command):
         if self.topics:
             col1 = 0
             sections = {i: [] for i in self.order}
-            for (name, cmd) in shell.commands.iteritems():
+            for (name, cmd) in shell.commands.items():
                 topic = cmd.topic if cmd.topic in self.topics else 'misc'
                 if print_topic and print_topic != cmd.topic:
                     continue
@@ -49,7 +49,7 @@ class HelpCommand(Command):
         else:
             col1 = 0
             cmds = []
-            for (name, cmd) in shell.commands.iteritems():
+            for (name, cmd) in shell.commands.items():
                 col1 = max(col1, len(name))
                 cmds.append(cmd)
             cmds = sorted(cmds, key=lambda x: x.name)
@@ -65,7 +65,15 @@ class HelpCommand(Command):
             self.print_commands(shell, args[0])
         else:
             if args[0] in shell.commands:
-                shell.warn(shell.commands[args[0]].usage or 'No help information', '\n')
+                usage = shell.commands[args[0]].usage
+                if usage and callable(usage):
+                    msg = usage()
+                    if isinstance(msg, str) and msg:
+                        shell.warn(msg)
+                        if msg[-1] != '\n':
+                            shell.warn('\n')
+                else:
+                    shell.warn(usage or 'No help information', '\n')
             else:
                 shell.error("No help for topic ", args[0], '\n')
 
