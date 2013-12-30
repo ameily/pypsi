@@ -12,6 +12,9 @@ setup(
     url='https://github.com/ameily/pypsi',
     packages=['pypsi', 'pypsi.commands', 'pypsi.plugins'],
     platforms=[],
+    install_requires=[
+        'chardet==2.0.1'
+    ],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Console',
