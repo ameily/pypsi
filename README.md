@@ -1,4 +1,4 @@
 pypsi
 =====
 
-Python Pragmatic Shell Interface
+Python Pluggable Shell Interface
