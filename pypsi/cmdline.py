@@ -70,6 +70,8 @@ class StringToken(Token):
                 self.escape = True
             elif c in (' ', '\t', ';', '|', '&', '>', '<'):
                 ret = TokenEnd
+            elif c in ('"', "'"):
+                ret = TokenEnd
             else:
                 self.text += c
 
