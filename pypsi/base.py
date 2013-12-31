@@ -29,6 +29,9 @@ class Command(object):
         self.topic = topic or 'misc'
         self.pipe = pipe or 'str'
 
+    def complete(self, shell, args, prefix):
+        return []
+
     def error(self, shell, *args):
         shell.error(self.name, ": ", *args)
 

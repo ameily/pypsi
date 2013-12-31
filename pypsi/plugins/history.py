@@ -1,6 +1,7 @@
 
 from pypsi.base import Command, Plugin, PypsiArgParser
 from pypsi.utils import safe_open
+from pypsi.completers import path_completer
 import argparse
 import readline
 import os
@@ -17,6 +18,15 @@ class HistoryCommand(Command):
     def __init__(self, name='history', **kwargs):
         self.setup_parser()
         super(HistoryCommand, self).__init__(name=name, usage=self.parser.format_help(), **kwargs)
+
+    def complete(self, shell, args, prefix):
+        if len(args) == 1:
+            return [x for x in ('clear', 'delete', 'exec', 'list', 'load', 'save') if x.startswith(prefix)]
+
+        if len(args) == 2:
+            if args[0] == 'save' or args[0] == 'load':
+                return path_completer(shell, args, prefix)
+        return []
 
     def setup_parser(self):
         self.parser = PypsiArgParser(

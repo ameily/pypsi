@@ -3,13 +3,15 @@ from pypsi.base import Plugin, Command, Preprocessor
 from pypsi.cmdline import StatementParser, StatementSyntaxError, StatementContext
 from pypsi.namespace import Namespace
 from pypsi.stream import PypsiStream
+from pypsi.cmdline import StringToken, OperatorToken, WhitespaceToken
+from pypsi.completers import path_completer
 import readline
 import sys
 
 
 class Shell(object):
 
-    def __init__(self, shell_name='pypsi', exit_rc=-1024):
+    def __init__(self, shell_name='pypsi', exit_rc=-1024, ctx=None):
         self.real_stdout = sys.stdout
         self.real_stdin = sys.stdin
         self.real_stderr = sys.stderr
@@ -21,7 +23,7 @@ class Shell(object):
         self.preprocessors = []
         self.plugins = []
         self.prompt = "{name} )> ".format(name=shell_name)
-        self.ctx = Namespace() #('features', True)
+        self.ctx = ctx or Namespace()
 
         self.streams = { }
         self.add_stream('error', PypsiStream(lambda: sys.stderr))
@@ -31,6 +33,9 @@ class Shell(object):
         self.parser = StatementParser()
         self.default_cmd = None
         self.register_base_plugins()
+        readline.parse_and_bind("tab: complete")
+        readline.set_completer(self.complete)
+        #readline.set_completion_display_matches_hook(self.print_completion_matches)
 
     def add_stream(self, name, stream):
         self.streams[name] = stream
@@ -40,20 +45,8 @@ class Shell(object):
         cls = self.__class__
         for name in dir(cls):
             attr = getattr(cls, name)
-            if isinstance(attr, Command) or isinstance(attr, Plugin):
+            if isinstance(attr, Command) or isinstance(attr, Preprocessor) or isinstance(attr, Plugin):
                 self.register(attr)
-            '''
-            elif callable(attr) and name.startswith("do_"):
-                usage = ''
-                cmd_name = name[3:]
-                if hasattr(cls, 'help_'+cmd_name):
-                    usage = getattr(cls, 'help_'+cmd_name)
-                else:
-                    usage = attr.__doc__
-
-                wrapper = FunctionCommandWrapper(name[3:], attr, usage)
-                self.register(wrapper)
-            '''
 
     def register(self, plugin):
         self.plugins.append(plugin)
@@ -65,12 +58,6 @@ class Shell(object):
 
         plugin.setup(self)
         return 0
-
-    def get_plugin(self, search):
-        for plugin in self.plugins:
-            if isinstance(plugin, search):
-                return plugin
-        return None
 
     def cmdloop(self):
         rc = 0
@@ -146,7 +133,69 @@ class Shell(object):
 
     def run_cmd(self, cmd, params, ctx):
         self.errno = cmd.run(self, params.args, ctx)
-        #if self.errno > 0:
-        #    self.warn(cmd.usage)
         return self.errno
 
+    def complete(self, text, state):
+        if state == 0:
+            self.completion_matches = []
+            begidx = readline.get_begidx()
+            endidx = readline.get_endidx()
+            line = readline.get_line_buffer()
+            prefix = line[begidx:endidx] if line else ''
+
+            line = line[:endidx]
+            tokens = self.parser.tokenize(line)
+            cmd_name = None
+            loc = None
+            args = []
+            next_arg = True
+            prev = None
+            for token in tokens:
+                if isinstance(token, StringToken):
+                    if not cmd_name:
+                        cmd_name = token.text
+                        loc = 'name'
+                    elif loc == 'name':
+                        cmd_name += token.text
+                    else:
+                        if next_arg:
+                            args.append(token.text)
+                            next_arg = False
+                        else:
+                            args[-1] += token.text
+                elif isinstance(token, OperatorToken):
+                    if token.operator in ('|', ';', '&&', '||'):
+                        cmd_name = None
+                        args = []
+                        next_arg = True
+                    elif token.operator in ('>', '<', '>>'):
+                        loc = 'path'
+                        args = []
+                elif isinstance(token, WhitespaceToken):
+                    if loc == 'name':
+                        loc = None
+                    next_arg = True
+                prev = token
+
+            if loc == 'path':
+                self.completion_matches = path_completer(self, args, prefix)
+            elif not cmd_name or loc == 'name':
+                self.completion_matches = [cmd for cmd in self.commands if cmd.startswith(prefix)]
+            else:
+                if cmd_name not in self.commands:
+                    self.completion_matches = []
+                else:
+                    if next_arg:
+                        args.append('')
+
+                    cmd = self.commands[cmd_name]
+                    self.completion_matches = cmd.complete(self, args, prefix)
+
+        if state < len(self.completion_matches):
+            return self.completion_matches[state]
+        return None
+
+    def print_completion_matches(self, substitution, matches, max_len):
+        print("substitution:", substitution)
+        print("matches:     ", matches)
+        print("max_len:     ", max_len)
