@@ -4,11 +4,12 @@ import argparse
 
 class Plugin(object):
 
+    def __init__(self, preprocess=None, postprocess=None):
+        self.preprocess = preprocess
+        self.postprocess = postprocess
+
     def setup(self, shell):
         return 0
-
-
-class Preprocessor(object):
 
     def on_input(self, shell, line):
         return line
@@ -17,6 +18,9 @@ class Preprocessor(object):
         return tokens
 
     def on_input_canceled(self, shell):
+        return 0
+
+    def on_statement_finished(self, shell):
         return 0
 
 

@@ -1,12 +1,12 @@
 
-from pypsi.base import Plugin, Preprocessor
+from pypsi.base import Plugin
 from pypsi.cmdline import StringToken
 
 
-class HexCodePlugin(Plugin, Preprocessor):
+class HexCodePlugin(Plugin):
 
-    def __init__(self, **kwargs):
-        super(HexCodePlugin, self).__init__(**kwargs)
+    def __init__(self, preprocess=5, **kwargs):
+        super(HexCodePlugin, self).__init__(preprocess=preprocess, **kwargs)
 
     def on_tokenize(self, shell, tokens):
         for token in tokens:

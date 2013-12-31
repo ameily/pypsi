@@ -1,5 +1,5 @@
 
-from pypsi.base import Plugin, Preprocessor, Command
+from pypsi.base import Plugin, Command
 from pypsi.namespace import ScopedNamespace
 from pypsi.cmdline import Token, StringToken, WhitespaceToken, TokenContinue, TokenEnd
 import os
@@ -85,6 +85,9 @@ class VariableToken(Token):
             return TokenContinue
         return TokenEnd
 
+    def __str__(self):
+        return "VariableToken( {} )".format(self.var)
+
 
 def get_subtokens(token, prefix):
     escape = False
@@ -101,6 +104,7 @@ def get_subtokens(token, prefix):
             rc = var.add_char(c)
             if rc == TokenEnd:
                 yield var
+                var = None
                 if c == prefix:
                     var = VariableToken(index, c)
                 else:
@@ -130,10 +134,11 @@ def get_subtokens(token, prefix):
         yield var
 
 
-class VariablePlugin(Plugin, Preprocessor):
+class VariablePlugin(Plugin):
 
-    def __init__(self, var_cmd='var', prefix='$', locals=None, case_sensitive=True, **kwargs):
-        super(VariablePlugin, self).__init__(**kwargs)
+    def __init__(self, var_cmd='var', prefix='$', locals=None,
+                 case_sensitive=True, preprocess=10, postprocess=90, **kwargs):
+        super(VariablePlugin, self).__init__(preprocess=preprocess, postprocess=postprocess, **kwargs)
         self.var_cmd = VariableCommand(name=var_cmd)
         self.prefix = prefix
         self.namespace = ScopedNamespace('globals', case_sensitive, os.environ)
@@ -187,3 +192,5 @@ class VariablePlugin(Plugin, Preprocessor):
 
         return ret
 
+    def on_statement_finished(self, shell):
+        pass

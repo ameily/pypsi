@@ -1,5 +1,5 @@
 
-from pypsi.base import Command, Plugin, Preprocessor
+from pypsi.base import Command, Plugin
 
 
 class BlockCommand(Command):
@@ -18,10 +18,10 @@ class BlockCommand(Command):
         raise NotImplementedError()
 
 
-class BlockPlugin(Plugin, Preprocessor):
+class BlockPlugin(Plugin):
 
-    def __init__(self, end_cmd='end', **kwargs):
-        super(BlockPlugin, self).__init__(**kwargs)
+    def __init__(self, end_cmd='end', preprocess=20, **kwargs):
+        super(BlockPlugin, self).__init__(preprocess=preprocess, **kwargs)
         self.end_cmd = end_cmd
         self.block = None
 

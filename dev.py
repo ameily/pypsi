@@ -47,6 +47,7 @@ class DevShell(Shell):
 
     def __init__(self):
         super(DevShell, self).__init__()
+        self.prompt = "\\x1b[1;32mpypsi @ $date-$time )>\\x1b[0m "
         self.error.prefix = "\x1b[1;31m"
         self.warn.postfix = self.error.postfix = "\x1b[0m"
         self.warn.prefix = "\x1b[1;33m"

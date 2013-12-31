@@ -1,12 +1,12 @@
 
-from pypsi.base import Plugin, Preprocessor
+from pypsi.base import Plugin
 from pypsi.cmdline import StringToken
 
 
-class MultilinePlugin(Plugin, Preprocessor):
+class MultilinePlugin(Plugin):
 
-    def __init__(self, prompt='> ', **kwargs):
-        super(MultilinePlugin, self).__init__(**kwargs)
+    def __init__(self, prompt='> ', preprocess=30, **kwargs):
+        super(MultilinePlugin, self).__init__(preprocess=preprocess, **kwargs)
         self.prompt = prompt
         self.orig_prompt = None
         self.buffer = None
