@@ -1,5 +1,5 @@
 
-from pypsi.base import Plugin, Command, Preprocessor
+from pypsi.base import Plugin, Command
 from pypsi.cmdline import StatementParser, StatementSyntaxError, StatementContext
 from pypsi.namespace import Namespace
 from pypsi.stream import PypsiStream
@@ -21,6 +21,7 @@ class Shell(object):
         self.errno = 0
         self.commands = {}
         self.preprocessors = []
+        self.postprocessors = []
         self.plugins = []
         self.prompt = "{name} )> ".format(name=shell_name)
         self.ctx = ctx or Namespace()
@@ -35,7 +36,6 @@ class Shell(object):
         self.register_base_plugins()
         readline.parse_and_bind("tab: complete")
         readline.set_completer(self.complete)
-        #readline.set_completion_display_matches_hook(self.print_completion_matches)
 
     def add_stream(self, name, stream):
         self.streams[name] = stream
@@ -45,25 +45,30 @@ class Shell(object):
         cls = self.__class__
         for name in dir(cls):
             attr = getattr(cls, name)
-            if isinstance(attr, Command) or isinstance(attr, Preprocessor) or isinstance(attr, Plugin):
+            if isinstance(attr, Command) or isinstance(attr, Plugin):
                 self.register(attr)
 
-    def register(self, plugin):
-        self.plugins.append(plugin)
-        if isinstance(plugin, Command):
-            self.commands[plugin.name] = plugin
+    def register(self, obj):
+        if isinstance(obj, Command):
+            self.commands[obj.name] = obj
 
-        if isinstance(plugin, Preprocessor):
-            self.preprocessors.append(plugin)
+        if isinstance(obj, Plugin):
+            self.plugins.append(obj)
+            if obj.preprocess is not None:
+                self.preprocessors.append(obj)
+                self.preprocessors = sorted(self.preprocessors, key=lambda x: x.preprocess)
+            if obj.postprocess is not None:
+                self.postprocessors.append(obj)
+                self.postprocessors = sorted(self.postprocessors, key=lambda x: x.postprocess)
 
-        plugin.setup(self)
+        obj.setup(self)
         return 0
 
     def cmdloop(self):
         rc = 0
         while rc != self.exit_rc:
             try:
-                raw = input(self.prompt)
+                raw = input(self.preprocess_single(self.prompt))
                 rc = self.execute(raw)
             except EOFError:
                 rc = self.exit_rc
@@ -78,20 +83,11 @@ class Shell(object):
         if not ctx:
             ctx = StatementContext()
 
-        for pp in self.preprocessors:
-            raw = pp.on_input(self, raw)
-            if not raw:
-                return 0
-
-        tokens = self.parser.tokenize(raw)
-        statement = None
-        for pp in self.preprocessors:
-            tokens = pp.on_tokenize(self, tokens)
-            if not tokens:
-                break
-
+        tokens = self.preprocess(raw)        
         if not tokens:
             return 0
+
+        statement = None
 
         try:
             statement = self.parser.build(tokens, ctx)
@@ -129,11 +125,43 @@ class Shell(object):
 
         statement.ctx.reset_io()
 
+        for pp in self.postprocessors:
+            pp.on_statement_finished(self)
+
         return rc
 
     def run_cmd(self, cmd, params, ctx):
         self.errno = cmd.run(self, params.args, ctx)
         return self.errno
+
+    def preprocess(self, raw):
+        for pp in self.preprocessors:
+            raw = pp.on_input(self, raw)
+            if not raw:
+                return None
+
+        tokens = self.parser.tokenize(raw)
+        for pp in self.preprocessors:
+            tokens = pp.on_tokenize(self, tokens)
+            if not tokens:
+                break
+
+        return tokens
+
+    def preprocess_single(self, raw):
+        tokens = [StringToken(0, raw, quote='"')]
+        for pp in self.preprocessors:
+            tokens = pp.on_tokenize(self, tokens)
+            if not tokens:
+                break
+
+        if tokens:
+            self.parser.clean_escapes(tokens)
+            ret = ''
+            for token in tokens:
+                ret += token.text
+            return ret
+        return ''
 
     def complete(self, text, state):
         if state == 0:
