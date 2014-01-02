@@ -1,7 +1,7 @@
 
 from pypsi.base import Plugin, Command
 from pypsi.namespace import ScopedNamespace
-from pypsi.cmdline import Token, StringToken, WhitespaceToken, TokenContinue, TokenEnd
+from pypsi.cmdline import Token, StringToken, WhitespaceToken, TokenContinue, TokenEnd, Expression
 import os
 from datetime import datetime
 
@@ -36,10 +36,20 @@ Manage local variables."""
 
     def run(self, shell, args, ctx):
         if not args:
-            shell.error(self.name, ": missing required argument.\n")
+            self.usage_error(shell, "missing required argument")
             return 1
 
-        if args[0] == '-l':
+        count = len(args)
+
+        if args[0] == '-h':
+            shell.warn(self.usage, '\n')
+            return 0
+        elif args[0] == '-l':
+            if count != 1:
+                self.error(shell, "invalid arguments\n")
+                shell.warn(self.usage)
+                return 1
+
             vars = []
             col1 = 0
             for name in shell.ctx.vars:
@@ -55,10 +65,42 @@ Manage local variables."""
                 shell.info(
                     v[0], ' ' * (col1 - len(v[0])), '    ', v[1], '\n'
                 )
+        elif args[0] == '-d':
+            if count != 2:
+                self.error(shell, "invalid arguments\n")
+                shell.warn(self.usage)
+                return 1
+
+            name = args[1]
+            if name in shell.ctx.vars:
+                del shell.ctx.vars[name]
+            return 0
         else:
-            name = args[0]
-            value = args[2]
+            (remaining, exp) = Expression.parse(args)
+            if remaining:
+                self.usage_error(shell, "cannot set multiple variables")
+                return 1
+
+            if exp.operand is None:
+                self.usage_error(shell, "missing variable name")
+                return 1
+
+            if exp.operator is None:
+                self.usage_error(shell, "missing operator")
+                return 1
+
+            if exp.operator != '=':
+                self.usage_error(shell, "invalid operator ", exp.operator)
+                return 1
+
+            if exp.value is None:
+                #self.usage_error(shell, "missing value")
+                #return 1
+                exp.value = ''
+
             try:
+                name = exp.operand
+                value = exp.value
                 if name in shell.ctx.vars and isinstance(shell.ctx.vars[name], ManagedVariable):
                     shell.ctx.vars[name].set(shell, value)
                 else:
