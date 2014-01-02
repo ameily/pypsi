@@ -36,6 +36,11 @@ class Command(object):
     def complete(self, shell, args, prefix):
         return []
 
+    def usage_error(self, shell, *args):
+        shell.error(self.name, ": ", *args)
+        shell.error('\n')
+        shell.warn(self.usage, '\n')
+
     def error(self, shell, *args):
         shell.error(self.name, ": ", *args)
 
