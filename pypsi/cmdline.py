@@ -385,3 +385,66 @@ class StatementParser(object):
             statement.cmds.append(cmd)
 
         return statement
+
+
+class Expression(object):
+
+    Operators = '-+=/*'
+    Whitespace = ' \t'
+
+    def __init__(self, operand, operator, value):
+        self.operand = operand
+        self.operator = operator
+        self.value = value
+
+    def __str__(self):
+        return "{} {} {}".format(self.operand, self.operator, self.value)
+
+    @classmethod
+    def parse(cls, args):
+        state = 'operand'
+        operand = operator = value = None
+        done = False
+        remaining = list(args)
+        for arg in args:
+            for c in arg:
+                if state == 'operand':
+                    if c in Expression.Whitespace:
+                        if operand:
+                            state = 'operator'
+                    elif c in Expression.Operators:
+                        state = 'operator'
+                        operator = c
+                    else:
+                        if operand is None:
+                            operand = c
+                        else:
+                            operand += c
+                elif state == 'operator':
+                    if c in Expression.Operators:
+                        if operator is None:
+                            operator = c
+                        else:
+                            operator += c
+                    elif c in Expression.Whitespace:
+                        if operator:
+                            state = 'value'
+                    else:
+                        state = 'value'
+                        value = c
+                        done = True
+                elif state == 'value':
+                    if c in Expression.Whitespace and not value:
+                        pass
+                    else:
+                        if value is None:
+                            done = True
+                            value = c
+                        else:
+                            value += c
+            remaining.pop(0)
+            if done:
+                break
+
+        return (remaining, Expression(operand, operator, value))
+
