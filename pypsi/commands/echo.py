@@ -2,7 +2,7 @@
 from pypsi.base import Command, PypsiArgParser
 import argparse
 
-EchoCmdUsage = "%(prog)s [-hewi] message"
+EchoCmdUsage = "%(prog)s [-hewi] [-n] [-h] message"
 
 
 class EchoCommand(Command):
@@ -29,6 +29,10 @@ class EchoCommand(Command):
             'message', help='message to print', nargs=argparse.REMAINDER
         )
 
+        self.parser.add_argument(
+            '-n', '--nolf', help="don't print newline character", action='store_true'
+        )
+
         super(EchoCommand, self).__init__(name=name, usage=self.parser.format_help(), topic=topic, brief='print a line of text', **kwargs)
 
     def run(self, shell, args, ctx):
@@ -42,6 +46,8 @@ class EchoCommand(Command):
         elif ns.warn:
             fn = shell.warn
 
-        fn.write(' '.join(ns.message), '\n')
+        tail = '' if ns.nolf else '\n'
+
+        fn.write(' '.join(ns.message), tail)
 
         return 0
