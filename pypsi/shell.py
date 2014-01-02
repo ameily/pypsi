@@ -36,6 +36,7 @@ class Shell(object):
         self.register_base_plugins()
         readline.parse_and_bind("tab: complete")
         readline.set_completer(self.complete)
+        self.fallback_cmd = None
 
     def add_stream(self, name, stream):
         self.streams[name] = stream
