@@ -23,7 +23,10 @@ class MultilinePlugin(Plugin):
             shell.prompt = self.orig_prompt
             self.orig_prompt = ''
 
-    def on_tokenize(self, shell, tokens):
+    def on_tokenize(self, shell, tokens, origin):
+        if origin != 'input':
+            return tokens
+
         if not tokens:
             if self.buffer:
                 self.reset_prompt(shell)

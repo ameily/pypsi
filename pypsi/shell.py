@@ -68,7 +68,7 @@ class Shell(object):
         rc = 0
         while rc != self.exit_rc:
             try:
-                raw = input(self.preprocess_single(self.prompt))
+                raw = input(self.preprocess_single(self.prompt, 'prompt'))
                 rc = self.execute(raw)
             except EOFError:
                 rc = self.exit_rc
@@ -83,7 +83,7 @@ class Shell(object):
         if not ctx:
             ctx = StatementContext()
 
-        tokens = self.preprocess(raw)        
+        tokens = self.preprocess(raw, 'input')
         if not tokens:
             return 0
 
@@ -134,7 +134,7 @@ class Shell(object):
         self.errno = cmd.run(self, params.args, ctx)
         return self.errno
 
-    def preprocess(self, raw):
+    def preprocess(self, raw, origin):
         for pp in self.preprocessors:
             raw = pp.on_input(self, raw)
             if not raw:
@@ -142,16 +142,16 @@ class Shell(object):
 
         tokens = self.parser.tokenize(raw)
         for pp in self.preprocessors:
-            tokens = pp.on_tokenize(self, tokens)
+            tokens = pp.on_tokenize(self, tokens, origin)
             if not tokens:
                 break
 
         return tokens
 
-    def preprocess_single(self, raw):
+    def preprocess_single(self, raw, origin):
         tokens = [StringToken(0, raw, quote='"')]
         for pp in self.preprocessors:
-            tokens = pp.on_tokenize(self, tokens)
+            tokens = pp.on_tokenize(self, tokens, origin)
             if not tokens:
                 break
 

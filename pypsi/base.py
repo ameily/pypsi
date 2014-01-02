@@ -14,7 +14,7 @@ class Plugin(object):
     def on_input(self, shell, line):
         return line
 
-    def on_tokenize(self, shell, tokens):
+    def on_tokenize(self, shell, tokens, origin):
         return tokens
 
     def on_input_canceled(self, shell):
