@@ -8,7 +8,7 @@ class HexCodePlugin(Plugin):
     def __init__(self, preprocess=5, **kwargs):
         super(HexCodePlugin, self).__init__(preprocess=preprocess, **kwargs)
 
-    def on_tokenize(self, shell, tokens):
+    def on_tokenize(self, shell, tokens, origin):
         for token in tokens:
             if not isinstance(token, StringToken) or '\\' not in token.text:
                 continue
@@ -39,5 +39,9 @@ class HexCodePlugin(Plugin):
 
             if hexcode:
                 text += '\\x' + hexcode
+
+            if escape:
+                text += '\\'
+
             token.text = text
         return tokens
