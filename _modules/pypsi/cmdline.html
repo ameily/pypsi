@@ -1,0 +1,681 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pypsi.cmdline &mdash; pypsi 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="pypsi 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">pypsi 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for pypsi.cmdline</h1><div class="highlight"><pre>
+<span class="c">#</span>
+<span class="c"># Copyright (c) 2014, Adam Meily</span>
+<span class="c"># All rights reserved.</span>
+<span class="c">#</span>
+<span class="c"># Redistribution and use in source and binary forms, with or without modification,</span>
+<span class="c"># are permitted provided that the following conditions are met:</span>
+<span class="c">#</span>
+<span class="c"># * Redistributions of source code must retain the above copyright notice, this</span>
+<span class="c">#   list of conditions and the following disclaimer.</span>
+<span class="c">#</span>
+<span class="c"># * Redistributions in binary form must reproduce the above copyright notice, this</span>
+<span class="c">#   list of conditions and the following disclaimer in the documentation and/or</span>
+<span class="c">#   other materials provided with the distribution.</span>
+<span class="c">#</span>
+<span class="c"># * Neither the name of the {organization} nor the names of its</span>
+<span class="c">#   contributors may be used to endorse or promote products derived from</span>
+<span class="c">#   this software without specific prior written permission.</span>
+<span class="c">#</span>
+<span class="c"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
+<span class="c"># ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
+<span class="c"># WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="c"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="c"># ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
+<span class="c"># (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<span class="c"># LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON</span>
+<span class="c"># ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<span class="c"># (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
+<span class="c"># SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="c">#</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Classes used for parsing user input.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
+
+
+<span class="n">TokenContinue</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="sd">&#39;&#39;&#39;The token accepts more characters.&#39;&#39;&#39;</span>
+
+<span class="n">TokenEnd</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="sd">&#39;&#39;&#39;The token does not accept the current character.&#39;&#39;&#39;</span>
+
+<span class="n">TokenTerm</span> <span class="o">=</span> <span class="mi">2</span> 
+<span class="sd">&#39;&#39;&#39;The token is finished and the current character should not be processed again.&#39;&#39;&#39;</span>
+
+
+<div class="viewcode-block" id="Token"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.Token">[docs]</a><span class="k">class</span> <span class="nc">Token</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Base class for all tokens.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+<div class="viewcode-block" id="Token.__init__"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.Token.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :param int index: the starting index of this token</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">index</span>
+
+</div></div>
+<div class="viewcode-block" id="WhitespaceToken"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.WhitespaceToken">[docs]</a><span class="k">class</span> <span class="nc">WhitespaceToken</span><span class="p">(</span><span class="n">Token</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Whitespace token that can contain any number of whitespace characters.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+<div class="viewcode-block" id="WhitespaceToken.__init__"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.WhitespaceToken.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WhitespaceToken</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="WhitespaceToken.add_char"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.WhitespaceToken.add_char">[docs]</a>    <span class="k">def</span> <span class="nf">add_char</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add a character to this token.</span>
+
+<span class="sd">        :param str c: the current character</span>
+<span class="sd">        :returns int: TokenEnd or TokenContinue</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">TokenContinue</span>
+        <span class="k">return</span> <span class="n">TokenEnd</span>
+</div>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;WhitespaceToken()&quot;</span>
+
+</div>
+<div class="viewcode-block" id="StringToken"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StringToken">[docs]</a><span class="k">class</span> <span class="nc">StringToken</span><span class="p">(</span><span class="n">Token</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A string token.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+<div class="viewcode-block" id="StringToken.__init__"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StringToken.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">quote</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :param str c: the current string or character</span>
+<span class="sd">        :param str quote: the surrounding quotes, `None` if there isn&#39;t any</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">StringToken</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quote</span> <span class="o">=</span> <span class="n">quote</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">escape</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s">&quot;&#39;&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">quote</span> <span class="o">=</span> <span class="n">c</span>
+        <span class="k">elif</span> <span class="n">c</span> <span class="o">==</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">escape</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="n">c</span>
+</div>
+<div class="viewcode-block" id="StringToken.add_char"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StringToken.add_char">[docs]</a>    <span class="k">def</span> <span class="nf">add_char</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add a character to this token.</span>
+
+<span class="sd">        :param str c: the current character</span>
+<span class="sd">        :returns int: TokenEnd or TokenContinue</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">TokenContinue</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">escape</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">escape</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">quote</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">quote</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="n">c</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">&#39;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="n">c</span>
+            <span class="k">elif</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">OperatorToken</span><span class="o">.</span><span class="n">Operators</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="n">c</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="n">c</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">quote</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">quote</span><span class="p">:</span>
+                <span class="n">ret</span> <span class="o">=</span> <span class="n">TokenTerm</span>
+            <span class="k">elif</span> <span class="n">c</span> <span class="o">==</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">escape</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="n">c</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">escape</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">elif</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">&#39;;&#39;</span><span class="p">,</span> <span class="s">&#39;|&#39;</span><span class="p">,</span> <span class="s">&#39;&amp;&#39;</span><span class="p">,</span> <span class="s">&#39;&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;&lt;&#39;</span><span class="p">):</span>
+                <span class="n">ret</span> <span class="o">=</span> <span class="n">TokenEnd</span>
+            <span class="k">elif</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s">&quot;&#39;&quot;</span><span class="p">):</span>
+                <span class="n">ret</span> <span class="o">=</span> <span class="n">TokenEnd</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="n">c</span>
+
+        <span class="k">return</span> <span class="n">ret</span>
+</div>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;String( {quote}{text}{quote} )&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">quote</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">quote</span> <span class="ow">or</span> <span class="s">&#39;&#39;</span><span class="p">,</span>
+            <span class="n">text</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span>
+        <span class="p">)</span>
+</div>
+<div class="viewcode-block" id="OperatorToken"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.OperatorToken">[docs]</a><span class="k">class</span> <span class="nc">OperatorToken</span><span class="p">(</span><span class="n">Token</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    An operator token. An operator can consist of one or more repetitions of the</span>
+<span class="sd">    same operator character. For example, the string &quot;&gt;&gt;&quot; would be parsed as one</span>
+<span class="sd">    `OperatorToken`, whereas the string &quot;&lt;&gt;&quot; would be parsed as two separate</span>
+<span class="sd">    `OperatorToken` objects.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">Operators</span> <span class="o">=</span> <span class="s">&#39;&lt;&gt;|&amp;;&#39;</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Valid operator characters.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+<div class="viewcode-block" id="OperatorToken.__init__"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.OperatorToken.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">operator</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :param str operator: the operator</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">OperatorToken</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">operator</span> <span class="o">=</span> <span class="n">operator</span>
+</div>
+<div class="viewcode-block" id="OperatorToken.add_char"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.OperatorToken.add_char">[docs]</a>    <span class="k">def</span> <span class="nf">add_char</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add a character to this token.</span>
+
+<span class="sd">        :param str c: the current character</span>
+<span class="sd">        :returns int: TokenEnd or TokenContinue</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">operator</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">operator</span> <span class="o">+=</span> <span class="n">c</span>
+            <span class="k">return</span> <span class="n">TokenContinue</span>
+        <span class="k">return</span> <span class="n">TokenEnd</span>
+</div>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;OperatorToken( {} )&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">operator</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="Statement"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.Statement">[docs]</a><span class="k">class</span> <span class="nc">Statement</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A parsed statement to be executed. A statement may contain the following:</span>
+
+<span class="sd">    - Commands and arguments</span>
+<span class="sd">    - Command pipes</span>
+<span class="sd">    - I/O redirections</span>
+<span class="sd">    - Command chaining</span>
+
+<span class="sd">    Command chaining describes how multiple commands are executed sequentially.</span>
+<span class="sd">    The chain operators can be one of the following:</span>
+
+<span class="sd">    - **|** (pipe) - pass previous `stdout` to current `stdin` and stop the</span>
+<span class="sd">      statement execution if a command fails</span>
+<span class="sd">    - **||** (or) - only run the subsequent command if the current fails</span>
+<span class="sd">    - **&amp;&amp;** (and) - only run subsequent commands if the current succeeds</span>
+<span class="sd">    - **;** (chain) - execute next command regardless of return codes</span>
+
+<span class="sd">    Commands are considered to succeed if they return 0 and fail if they don&#39;t.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+<div class="viewcode-block" id="Statement.__init__"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.Statement.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :param StatementContext ctx: the current statement context</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c">#:current :class:`StatementContext` for this statement</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx</span> <span class="o">=</span> <span class="n">ctx</span>
+
+        <span class="c">#:`list` of :class:`CommandParams` describing the commands</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmds</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c">#:`list` of chaining operators, `str`</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ops</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+</div>
+<div class="viewcode-block" id="Statement.__len__"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.Statement.__len__">[docs]</a>    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :returns int: the number of commands in this statement</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmds</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="Statement.__iter__"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.Statement.__iter__">[docs]</a>    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :returns iter: an iterator for :attr:`cmds`</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmds</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Statement.cmd"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.Statement.cmd">[docs]</a>    <span class="k">def</span> <span class="nf">cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        the current :class:`CommandParams`</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmds</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmds</span><span class="p">)</span> <span class="k">else</span> <span class="bp">None</span>
+</div>
+    <span class="nd">@property</span>
+<div class="viewcode-block" id="Statement.op"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.Statement.op">[docs]</a>    <span class="k">def</span> <span class="nf">op</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        the current chaining operator, `str`</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ops</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ops</span><span class="p">)</span> <span class="k">else</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="Statement.next"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.Statement.next">[docs]</a>    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Begin processing of the next command.</span>
+
+<span class="sd">        :returns tuple: a `tuple` of :class:`CommandParams` and operator (`str`)</span>
+<span class="sd">            defining the next command, and `(None, None)` if there are no more</span>
+<span class="sd">            commands to execute</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cmds</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmds</span><span class="p">)</span> <span class="k">else</span> <span class="bp">None</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ops</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ops</span><span class="p">)</span> <span class="k">else</span> <span class="bp">None</span>
+        <span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="StatementContext"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StatementContext">[docs]</a><span class="k">class</span> <span class="nc">StatementContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="StatementContext.__init__"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StatementContext.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pipe</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">backup_stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">backup_stderr</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">backup_stdin</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span>
+</div>
+    <span class="k">def</span> <span class="nf">fork</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ctx</span> <span class="o">=</span> <span class="n">StatementContext</span><span class="p">()</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">backup_stdin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdin</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">backup_stdout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">backup_stderr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">pipe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pipe</span>
+        <span class="k">return</span> <span class="n">ctx</span>
+
+    <span class="k">def</span> <span class="nf">setup_io</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">params</span><span class="o">.</span><span class="n">stdin_path</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">stdin_path</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">prev</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">prev</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;|&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backup_stdin</span>
+
+        <span class="k">if</span> <span class="n">params</span><span class="o">.</span><span class="n">stdout_path</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">stdout_path</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">stdout_mode</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">op</span> <span class="o">==</span> <span class="s">&#39;|&#39;</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backup_stdout</span>
+
+        <span class="k">if</span> <span class="n">params</span><span class="o">.</span><span class="n">stderr_path</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">stderr_path</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backup_stderr</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">reset_io</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backup_stdout</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backup_stdout</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backup_stderr</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backup_stderr</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdin</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backup_stdin</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backup_stdin</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+</div>
+<div class="viewcode-block" id="CommandParams"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.CommandParams">[docs]</a><span class="k">class</span> <span class="nc">CommandParams</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Wrapper around a called command&#39;s parameters and information.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+<div class="viewcode-block" id="CommandParams.__init__"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.CommandParams.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stdout_path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stdout_mode</span><span class="o">=</span><span class="s">&#39;w&#39;</span><span class="p">,</span>
+                 <span class="n">stderr_path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stdin_path</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="c">#:(`str`) name of the command</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="c">#:(`list`) list of `str` arguments passed in by the user</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="c">#:(`str`) path to `stdout` if redirecting to a file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stdout_path</span> <span class="o">=</span> <span class="n">stdout_path</span>
+        <span class="c">#:(`str`) mode to pass to `open()` when opening the `stdout` redirection file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stdout_mode</span> <span class="o">=</span> <span class="n">stdout_mode</span>
+        <span class="c">#:(`str`) path to `stderr` if redirecting to a file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stderr_path</span> <span class="o">=</span> <span class="n">stderr_path</span>
+        <span class="c">#:(`str`) path to `stdin` if redirecting from a file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stdin_path</span> <span class="o">=</span> <span class="n">stdin_path</span>
+
+</div></div>
+<div class="viewcode-block" id="StatementSyntaxError"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StatementSyntaxError">[docs]</a><span class="k">class</span> <span class="nc">StatementSyntaxError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+
+<div class="viewcode-block" id="StatementSyntaxError.__init__"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StatementSyntaxError.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">index</span>
+</div>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;syntax error at {}: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="StatementParser"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StatementParser">[docs]</a><span class="k">class</span> <span class="nc">StatementParser</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="StatementParser.__init__"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StatementParser.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="StatementParser.reset"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StatementParser.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tokens</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="bp">None</span>
+</div>
+<div class="viewcode-block" id="StatementParser.process"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StatementParser.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">:</span>
+            <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="o">.</span><span class="n">add_char</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="n">TokenEnd</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="bp">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="n">TokenTerm</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">WhitespaceToken</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s">&#39;|&#39;</span><span class="p">,</span> <span class="s">&#39;&amp;&#39;</span><span class="p">,</span> <span class="s">&#39;;&#39;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">OperatorToken</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">StringToken</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="StatementParser.tokenize"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StatementParser.tokenize">[docs]</a>    <span class="k">def</span> <span class="nf">tokenize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+            <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">,</span> <span class="n">StringToken</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="o">.</span><span class="n">escape</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokens</span>
+</div>
+<div class="viewcode-block" id="StatementParser.clean_escapes"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StatementParser.clean_escapes">[docs]</a>    <span class="k">def</span> <span class="nf">clean_escapes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">StringToken</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s">&#39;</span><span class="se">\\</span><span class="s">&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">token</span><span class="o">.</span><span class="n">text</span> <span class="ow">or</span> <span class="n">token</span><span class="o">.</span><span class="n">quote</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="n">text</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+            <span class="n">escape</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">token</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">escape</span><span class="p">:</span>
+                    <span class="n">text</span> <span class="o">+=</span> <span class="n">c</span>
+                    <span class="n">escape</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="k">elif</span> <span class="n">c</span> <span class="o">==</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">&#39;</span><span class="p">:</span>
+                    <span class="n">escape</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">text</span> <span class="o">+=</span> <span class="n">c</span>
+
+            <span class="n">token</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
+</div>
+<div class="viewcode-block" id="StatementParser.condense"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StatementParser.condense">[docs]</a>    <span class="k">def</span> <span class="nf">condense</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">):</span>
+        <span class="n">prev</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">condensed</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">StringToken</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prev</span><span class="p">,</span> <span class="n">StringToken</span><span class="p">):</span>
+                    <span class="n">prev</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="n">token</span><span class="o">.</span><span class="n">text</span>
+                    <span class="n">token</span> <span class="o">=</span> <span class="n">prev</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">condensed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">WhitespaceToken</span><span class="p">):</span>
+                <span class="n">condensed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+            <span class="n">prev</span> <span class="o">=</span> <span class="n">token</span>
+
+        <span class="k">return</span> <span class="n">condensed</span>
+</div>
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="n">statement</span> <span class="o">=</span> <span class="n">Statement</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">prev</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clean_escapes</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">condense</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">cmd</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prev</span><span class="p">,</span> <span class="n">OperatorToken</span><span class="p">)</span> <span class="ow">and</span> <span class="n">prev</span><span class="o">.</span><span class="n">operator</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s">&#39;&gt;&gt;&#39;</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">StringToken</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">prev</span><span class="o">.</span><span class="n">operator</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;&gt;&gt;&#39;</span><span class="p">):</span>
+                            <span class="n">cmd</span><span class="o">.</span><span class="n">stdout_path</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">text</span>
+                        <span class="k">elif</span> <span class="n">prev</span><span class="o">.</span><span class="n">operator</span> <span class="o">==</span> <span class="s">&#39;&lt;&#39;</span><span class="p">:</span>
+                            <span class="n">cmd</span><span class="o">.</span><span class="n">stdin_path</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">text</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">StatementSyntaxError</span><span class="p">(</span>
+                            <span class="n">message</span><span class="o">=</span><span class="s">&quot;unexpected token: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">token</span><span class="p">)),</span>
+                            <span class="n">index</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">index</span>
+                        <span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">StringToken</span><span class="p">):</span>
+                    <span class="n">cmd</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">OperatorToken</span><span class="p">):</span>
+                    <span class="n">done</span> <span class="o">=</span> <span class="bp">True</span>
+                    <span class="k">if</span> <span class="n">token</span><span class="o">.</span><span class="n">operator</span> <span class="o">==</span> <span class="s">&#39;||&#39;</span><span class="p">:</span>
+                        <span class="n">statement</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;||&#39;</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">token</span><span class="o">.</span><span class="n">operator</span> <span class="o">==</span> <span class="s">&#39;&amp;&amp;&#39;</span><span class="p">:</span>
+                        <span class="n">statement</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;&amp;&amp;&#39;</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">token</span><span class="o">.</span><span class="n">operator</span> <span class="o">==</span> <span class="s">&#39;;&#39;</span><span class="p">:</span>
+                        <span class="n">statement</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;;&#39;</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">token</span><span class="o">.</span><span class="n">operator</span> <span class="o">==</span> <span class="s">&#39;|&#39;</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">cmd</span><span class="o">.</span><span class="n">stdout_path</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="n">StatementSyntaxError</span><span class="p">(</span>
+                                <span class="n">message</span><span class="o">=</span><span class="s">&quot;unexpected token: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">token</span><span class="p">)),</span>
+                                <span class="n">index</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">index</span>
+                            <span class="p">)</span>
+
+                        <span class="n">statement</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;|&#39;</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">token</span><span class="o">.</span><span class="n">operator</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;&gt;&gt;&#39;</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">cmd</span><span class="o">.</span><span class="n">stdout_path</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="n">StatementSyntaxError</span><span class="p">(</span>
+                                <span class="n">message</span><span class="o">=</span><span class="s">&quot;unexpected token: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">token</span><span class="p">)),</span>
+                                <span class="n">index</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">index</span>
+                            <span class="p">)</span>
+
+                        <span class="n">cmd</span><span class="o">.</span><span class="n">stdout_mode</span> <span class="o">=</span> <span class="s">&#39;w&#39;</span> <span class="k">if</span> <span class="n">token</span><span class="o">.</span><span class="n">operator</span> <span class="o">==</span> <span class="s">&#39;&gt;&#39;</span> <span class="k">else</span> <span class="s">&#39;a&#39;</span>
+                        <span class="n">done</span> <span class="o">=</span> <span class="bp">False</span>
+                    <span class="k">elif</span> <span class="n">token</span><span class="o">.</span><span class="n">operator</span> <span class="o">==</span> <span class="s">&#39;&lt;&#39;</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">cmd</span><span class="o">.</span><span class="n">stdin_path</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="n">StatementSyntaxError</span><span class="p">(</span>
+                                <span class="n">message</span><span class="o">=</span><span class="s">&quot;unexpected token: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">token</span><span class="p">)),</span>
+                                <span class="n">index</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">index</span>
+                            <span class="p">)</span>
+
+                        <span class="k">if</span> <span class="n">statement</span><span class="o">.</span><span class="n">ops</span> <span class="ow">and</span> <span class="n">statement</span><span class="o">.</span><span class="n">ops</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;|&#39;</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="n">StatementSyntaxError</span><span class="p">(</span>
+                                <span class="n">message</span><span class="o">=</span><span class="s">&quot;unexpected token: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">token</span><span class="p">)),</span>
+                                <span class="n">index</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">index</span>
+                            <span class="p">)</span>
+
+                        <span class="n">cmd</span><span class="o">.</span><span class="n">stdin_path</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+                        <span class="n">done</span> <span class="o">=</span> <span class="bp">False</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">StatementSyntaxError</span><span class="p">(</span>
+                            <span class="n">message</span><span class="o">=</span><span class="s">&quot;unknown operator: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">token</span><span class="o">.</span><span class="n">operator</span><span class="p">),</span>
+                            <span class="n">index</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">index</span>
+                        <span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">done</span><span class="p">:</span>
+                        <span class="n">statement</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+                        <span class="n">cmd</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">StringToken</span><span class="p">):</span>
+                    <span class="n">cmd</span> <span class="o">=</span> <span class="n">CommandParams</span><span class="p">(</span><span class="n">token</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">WhitespaceToken</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="n">StatementSyntaxError</span><span class="p">(</span>
+                        <span class="n">message</span><span class="o">=</span><span class="s">&quot;unexpected token: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">token</span><span class="p">)),</span>
+                        <span class="n">index</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">index</span>
+                    <span class="p">)</span>
+            <span class="n">prev</span> <span class="o">=</span> <span class="n">token</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prev</span><span class="p">,</span> <span class="n">StringToken</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">prev</span><span class="p">,</span> <span class="n">OperatorToken</span><span class="p">)</span> <span class="ow">and</span> <span class="n">prev</span><span class="o">.</span><span class="n">operator</span> <span class="o">==</span> <span class="s">&#39;;&#39;</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">StatementSyntaxError</span><span class="p">(</span>
+                <span class="n">message</span><span class="o">=</span><span class="s">&quot;unexpected token: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">prev</span><span class="p">)),</span>
+                <span class="n">index</span><span class="o">=</span><span class="n">prev</span><span class="o">.</span><span class="n">index</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">cmd</span><span class="p">:</span>
+            <span class="n">statement</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">statement</span>
+
+</div>
+<div class="viewcode-block" id="Expression"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.Expression">[docs]</a><span class="k">class</span> <span class="nc">Expression</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="n">Operators</span> <span class="o">=</span> <span class="s">&#39;-+=/*&#39;</span>
+    <span class="n">Whitespace</span> <span class="o">=</span> <span class="s">&#39; </span><span class="se">\t</span><span class="s">&#39;</span>
+
+<div class="viewcode-block" id="Expression.__init__"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.Expression.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operand</span><span class="p">,</span> <span class="n">operator</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">operand</span> <span class="o">=</span> <span class="n">operand</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">operator</span> <span class="o">=</span> <span class="n">operator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+</div>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;{} {} {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">operand</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">operator</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="s">&#39;operand&#39;</span>
+        <span class="n">operand</span> <span class="o">=</span> <span class="n">operator</span> <span class="o">=</span> <span class="n">value</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">done</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">remaining</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">arg</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="s">&#39;operand&#39;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">Expression</span><span class="o">.</span><span class="n">Whitespace</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">operand</span><span class="p">:</span>
+                            <span class="n">state</span> <span class="o">=</span> <span class="s">&#39;operator&#39;</span>
+                    <span class="k">elif</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">Expression</span><span class="o">.</span><span class="n">Operators</span><span class="p">:</span>
+                        <span class="n">state</span> <span class="o">=</span> <span class="s">&#39;operator&#39;</span>
+                        <span class="n">operator</span> <span class="o">=</span> <span class="n">c</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">operand</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                            <span class="n">operand</span> <span class="o">=</span> <span class="n">c</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">operand</span> <span class="o">+=</span> <span class="n">c</span>
+                <span class="k">elif</span> <span class="n">state</span> <span class="o">==</span> <span class="s">&#39;operator&#39;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">Expression</span><span class="o">.</span><span class="n">Operators</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">operator</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                            <span class="n">operator</span> <span class="o">=</span> <span class="n">c</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">operator</span> <span class="o">+=</span> <span class="n">c</span>
+                    <span class="k">elif</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">Expression</span><span class="o">.</span><span class="n">Whitespace</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">operator</span><span class="p">:</span>
+                            <span class="n">state</span> <span class="o">=</span> <span class="s">&#39;value&#39;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">state</span> <span class="o">=</span> <span class="s">&#39;value&#39;</span>
+                        <span class="n">value</span> <span class="o">=</span> <span class="n">c</span>
+                        <span class="n">done</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="k">elif</span> <span class="n">state</span> <span class="o">==</span> <span class="s">&#39;value&#39;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">Expression</span><span class="o">.</span><span class="n">Whitespace</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
+                        <span class="k">pass</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                            <span class="n">done</span> <span class="o">=</span> <span class="bp">True</span>
+                            <span class="n">value</span> <span class="o">=</span> <span class="n">c</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">value</span> <span class="o">+=</span> <span class="n">c</span>
+            <span class="n">remaining</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">done</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="k">return</span> <span class="p">(</span><span class="n">remaining</span><span class="p">,</span> <span class="n">Expression</span><span class="p">(</span><span class="n">operand</span><span class="p">,</span> <span class="n">operator</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">pypsi 0.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Adam Meily.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+    </div>
+  </body>
+</html>

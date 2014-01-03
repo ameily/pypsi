@@ -1,0 +1,430 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>2. pypsi.base - Base classes for pluggable features &mdash; pypsi 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pypsi 0.1 documentation" href="index.html" />
+    <link rel="next" title="3. pypsi.cmdline - User input processing" href="pypsi.cmdline.html" />
+    <link rel="prev" title="1. pypsi Overview" href="pypsi.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pypsi.cmdline.html" title="3. pypsi.cmdline - User input processing"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pypsi.html" title="1. pypsi Overview"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pypsi 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pypsi-base-base-classes-for-pluggable-features">
+<h1>2. pypsi.base - Base classes for pluggable features<a class="headerlink" href="#pypsi-base-base-classes-for-pluggable-features" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<span class="target" id="module-pypsi.base"></span><p>Base classes for developing pluggable commands and plugins.</p>
+<div class="section" id="command-objects">
+<h2>2.1. Command objects<a class="headerlink" href="#command-objects" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pypsi.base.Command">
+<em class="property">class </em><tt class="descclassname">pypsi.base.</tt><tt class="descname">Command</tt><big>(</big><em>name</em>, <em>usage=None</em>, <em>brief=None</em>, <em>topic=None</em>, <em>pipe='str'</em><big>)</big><a class="reference internal" href="_modules/pypsi/base.html#Command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.base.Command" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>A pluggable command that users can execute.</p>
+<dl class="method">
+<dt id="pypsi.base.Command.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>name</em>, <em>usage=None</em>, <em>brief=None</em>, <em>topic=None</em>, <em>pipe='str'</em><big>)</big><a class="reference internal" href="_modules/pypsi/base.html#Command.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.base.Command.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<em>str</em>) &#8211; the name of the command which the user will reference
+in the shell</li>
+<li><strong>usage</strong> (<em>str</em>) &#8211; the usage message to be displayed to the user</li>
+<li><strong>brief</strong> (<em>str</em>) &#8211; a brief description of the command</li>
+<li><strong>topic</strong> (<em>str</em>) &#8211; the topic that this command belongs to</li>
+<li><strong>pipe</strong> (<em>str</em>) &#8211; the type of data that will be read from and written to
+any pipes</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypsi.base.Command.complete">
+<tt class="descname">complete</tt><big>(</big><em>shell</em>, <em>args</em>, <em>prefix</em><big>)</big><a class="reference internal" href="_modules/pypsi/base.html#Command.complete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.base.Command.complete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when the user attempts a tab-completion action for this command.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>shell</strong> (<em>pypsi.shell.Shell</em>) &#8211; the active shell</li>
+<li><strong>args</strong> (<em>list</em>) &#8211; the list of arguments, the last one containing the
+cursor position</li>
+<li><strong>prefix</strong> (<em>str</em>) &#8211; the prefix that all items returned must start with</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns list:</th><td class="field-body"><p class="first last">the list of strings that could complete the current action</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypsi.base.Command.error">
+<tt class="descname">error</tt><big>(</big><em>shell</em>, <em>*args</em><big>)</big><a class="reference internal" href="_modules/pypsi/base.html#Command.error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.base.Command.error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display an error message to the user.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>shell</strong> (<em>pypsi.shell.Shell</em>) &#8211; the active shell</li>
+<li><strong>args</strong> &#8211; the error message to display</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypsi.base.Command.fallback">
+<tt class="descname">fallback</tt><big>(</big><em>shell</em>, <em>name</em>, <em>args</em>, <em>ctx</em><big>)</big><a class="reference internal" href="_modules/pypsi/base.html#Command.fallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.base.Command.fallback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when this command was set as the fallback command. The only
+difference between this and <a class="reference internal" href="#pypsi.base.Command.run" title="pypsi.base.Command.run"><tt class="xref py py-meth docutils literal"><span class="pre">run()</span></tt></a> is that this method accepts the
+command name that was entered by the user.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypsi.base.Command.run">
+<tt class="descname">run</tt><big>(</big><em>shell</em>, <em>args</em>, <em>ctx</em><big>)</big><a class="reference internal" href="_modules/pypsi/base.html#Command.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.base.Command.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute the command. All commands need to implement this method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>shell</strong> (<em>pypsi.shell.Shell</em>) &#8211; the active shell</li>
+<li><strong>args</strong> (<em>list</em>) &#8211; list of string arguments</li>
+<li><strong>pypsi.cmdline.StatementContext</strong> &#8211; the current statement context</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns int:</th><td class="field-body"><p class="first last">0 on success, less than 0 on error, and greater than 0 on
+invalid usage</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypsi.base.Command.setup">
+<tt class="descname">setup</tt><big>(</big><em>shell</em><big>)</big><a class="reference internal" href="_modules/pypsi/base.html#Command.setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.base.Command.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when the plugin has been registered to the active shell.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>shell</strong> (<em>pypsi.shell.Shell</em>) &#8211; the active shell</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns int:</th><td class="field-body">0 on success, -1 on error</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypsi.base.Command.usage_error">
+<tt class="descname">usage_error</tt><big>(</big><em>shell</em>, <em>*args</em><big>)</big><a class="reference internal" href="_modules/pypsi/base.html#Command.usage_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.base.Command.usage_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display an error message that indicates incorrect usage of this command.
+After the error is displayed, the usage is printed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>shell</strong> (<em>pypsi.shell.Shell</em>) &#8211; the active shell</li>
+<li><strong>args</strong> &#8211; list of strings that are the error message</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="plugin-objects">
+<h2>2.2. Plugin objects<a class="headerlink" href="#plugin-objects" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pypsi.base.Plugin">
+<em class="property">class </em><tt class="descclassname">pypsi.base.</tt><tt class="descname">Plugin</tt><big>(</big><em>preprocess=None</em>, <em>postprocess=None</em><big>)</big><a class="reference internal" href="_modules/pypsi/base.html#Plugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.base.Plugin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>A plugin is an object that is able to modify a <tt class="xref py py-class docutils literal"><span class="pre">pypsi.shell.Shell</span></tt>
+object&#8217;s behavior. Whereas a command can be execute from user input, the
+<cite>Plugin</cite> class does not contain a <cite>run()</cite> function.</p>
+<dl class="method">
+<dt id="pypsi.base.Plugin.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>preprocess=None</em>, <em>postprocess=None</em><big>)</big><a class="reference internal" href="_modules/pypsi/base.html#Plugin.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.base.Plugin.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor can take two parameters: preprocess and postprocess. These
+values determine where the plugin resides inside of the preprocess and
+postprocess list. This list, inside of pypsi.shell.Shell, is iterated
+sequentially, from most priority to least. So, the highest priority
+value is 0, which means it will be the first plugin to run, and the
+lowest value is 100, which means it will be the last plugin to run. If
+either value is <cite>None</cite>, the plugin is not added to the processing list.
+For example, if this plugin only provides a preprocessing functionality,
+then postprocess should be set to <cite>None</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>preprocess</strong> (<em>int</em>) &#8211; the preprocess priority</li>
+<li><strong>postprocess</strong> (<em>int</em>) &#8211; the postprocess priority</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypsi.base.Plugin.on_input">
+<tt class="descname">on_input</tt><big>(</big><em>shell</em>, <em>line</em><big>)</big><a class="reference internal" href="_modules/pypsi/base.html#Plugin.on_input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.base.Plugin.on_input" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called after input from the user has been received. The return value is
+the preprocessed line. This means that modifying the line argument will
+not populate back. If this function does no preprocessing, return line
+unmodified.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>shell</strong> (<em>pypsi.shell.Shell</em>) &#8211; the active shell</li>
+<li><strong>line</strong> (<em>str</em>) &#8211; the current input statement string</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns str:</th><td class="field-body"><p class="first last">the preprocessed line</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypsi.base.Plugin.on_input_canceled">
+<tt class="descname">on_input_canceled</tt><big>(</big><em>shell</em><big>)</big><a class="reference internal" href="_modules/pypsi/base.html#Plugin.on_input_canceled"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.base.Plugin.on_input_canceled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when the user can canceled entering a statement via SIGINT
+(Ctrl+C).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>shell</strong> (<em>pypsi.shell.Shell</em>) &#8211; the active shell</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns int:</th><td class="field-body">0 on success, -1 on error</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypsi.base.Plugin.on_statement_finished">
+<tt class="descname">on_statement_finished</tt><big>(</big><em>shell</em><big>)</big><a class="reference internal" href="_modules/pypsi/base.html#Plugin.on_statement_finished"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.base.Plugin.on_statement_finished" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when a statement has been completely executed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>shell</strong> (<em>pypsi.shell.Shell</em>) &#8211; the active shell</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns int:</th><td class="field-body">0 on success, -1 on error</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypsi.base.Plugin.on_tokenize">
+<tt class="descname">on_tokenize</tt><big>(</big><em>shell</em>, <em>tokens</em>, <em>origin</em><big>)</big><a class="reference internal" href="_modules/pypsi/base.html#Plugin.on_tokenize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.base.Plugin.on_tokenize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called after an input string has been tokenized. If this function
+performs no preprocessing, return the tokens unmodified.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>shell</strong> (<em>pypsi.shell.Shell</em>) &#8211; the active shell</li>
+<li><strong>tokens</strong> (<em>list</em>) &#8211; the list of <a class="reference internal" href="pypsi.cmdline.html#pypsi.cmdline.Token" title="pypsi.cmdline.Token"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.cmdline.Token</span></tt></a> objects</li>
+<li><strong>origin</strong> (<em>str</em>) &#8211; the origin of the input, can be either &#8216;input&#8217; if
+received from a call to <cite>input()</cite> or &#8216;prompt&#8217; if the input is the
+prompt to display to the user</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns list:</th><td class="field-body"><p class="first last">the list of preprocessed <a class="reference internal" href="pypsi.cmdline.html#pypsi.cmdline.Token" title="pypsi.cmdline.Token"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.cmdline.Token</span></tt></a>
+objects</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypsi.base.Plugin.setup">
+<tt class="descname">setup</tt><big>(</big><em>shell</em><big>)</big><a class="reference internal" href="_modules/pypsi/base.html#Plugin.setup"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.base.Plugin.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called after the plugin has been registered to the active shell.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>shell</strong> (<em>pypsi.shell.Shell</em>) &#8211; the active shell</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns int:</th><td class="field-body">0 on success, -1 on failure</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="argument-parsing">
+<h2>2.3. Argument parsing<a class="headerlink" href="#argument-parsing" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="pypsi.base.PypsiArgParser">
+<em class="property">class </em><tt class="descclassname">pypsi.base.</tt><tt class="descname">PypsiArgParser</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/base.html#PypsiArgParser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.base.PypsiArgParser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">argparse.ArgumentParser</span></tt></p>
+<p>Customized <cite>argparse.ArgumentParser</cite> for use in pypsi. This class slightly
+modifies the base ArgumentParser so that the following occurs:</p>
+<ul class="simple">
+<li>The whole program does not exit on printing the help message or bad
+arguments</li>
+<li>Any error messages are intercepted and printed on the active shell&#8217;s error
+stream</li>
+</ul>
+<dl class="method">
+<dt id="pypsi.base.PypsiArgParser.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/base.html#PypsiArgParser.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.base.PypsiArgParser.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2. pypsi.base - Base classes for pluggable features</a><ul>
+<li><a class="reference internal" href="#command-objects">2.1. Command objects</a></li>
+<li><a class="reference internal" href="#plugin-objects">2.2. Plugin objects</a></li>
+<li><a class="reference internal" href="#argument-parsing">2.3. Argument parsing</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pypsi.html"
+                        title="previous chapter">1. pypsi Overview</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pypsi.cmdline.html"
+                        title="next chapter">3. pypsi.cmdline - User input processing</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/pypsi.base.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pypsi.cmdline.html" title="3. pypsi.cmdline - User input processing"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pypsi.html" title="1. pypsi Overview"
+             >previous</a> |</li>
+        <li><a href="index.html">pypsi 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Adam Meily.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+    </div>
+  </body>
+</html>
