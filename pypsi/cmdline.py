@@ -1,25 +1,78 @@
+#
+# Copyright (c) 2014, Adam Meily
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without modification,
+# are permitted provided that the following conditions are met:
+#
+# * Redistributions of source code must retain the above copyright notice, this
+#   list of conditions and the following disclaimer.
+#
+# * Redistributions in binary form must reproduce the above copyright notice, this
+#   list of conditions and the following disclaimer in the documentation and/or
+#   other materials provided with the distribution.
+#
+# * Neither the name of the {organization} nor the names of its
+#   contributors may be used to endorse or promote products derived from
+#   this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+# ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+
+'''
+Classes used for parsing user input.
+'''
 
 import sys
 from io import StringIO
 
 
-TokenContinue = 0   # keep going
-TokenEnd = 1        # c ends token, process c again
-TokenTerm = 2       # c terms token
+TokenContinue = 0
+'''The token accepts more characters.'''
+
+TokenEnd = 1
+'''The token does not accept the current character.'''
+
+TokenTerm = 2 
+'''The token is finished and the current character should not be processed again.'''
 
 
 class Token(object):
+    '''
+    Base class for all tokens.
+    '''
 
     def __init__(self, index):
+        '''
+        :param int index: the starting index of this token
+        '''
         self.index = index
 
 
 class WhitespaceToken(Token):
+    '''
+    Whitespace token that can contain any number of whitespace characters.
+    '''
 
     def __init__(self, index):
         super(WhitespaceToken, self).__init__(index)
 
     def add_char(self, c):
+        '''
+        Add a character to this token.
+
+        :param str c: the current character
+        :returns int: TokenEnd or TokenContinue
+        '''
         if c in (' ', '\t'):
             return TokenContinue
         return TokenEnd
@@ -29,8 +82,15 @@ class WhitespaceToken(Token):
 
 
 class StringToken(Token):
+    '''
+    A string token.
+    '''
 
     def __init__(self, index, c, quote=None):
+        '''
+        :param str c: the current string or character
+        :param str quote: the surrounding quotes, `None` if there isn't any
+        '''
         super(StringToken, self).__init__(index)
         self.quote = quote
         self.escape = False
@@ -44,6 +104,12 @@ class StringToken(Token):
             self.text += c
 
     def add_char(self, c):
+        '''
+        Add a character to this token.
+
+        :param str c: the current character
+        :returns int: TokenEnd or TokenContinue
+        '''
         ret = TokenContinue
         if self.escape:
             self.escape = False
@@ -84,13 +150,32 @@ class StringToken(Token):
         )
 
 class OperatorToken(Token):
+    '''
+    An operator token. An operator can consist of one or more repetitions of the
+    same operator character. For example, the string ">>" would be parsed as one
+    `OperatorToken`, whereas the string "<>" would be parsed as two separate
+    `OperatorToken` objects.
+    '''
+
     Operators = '<>|&;'
+    '''
+    Valid operator characters.
+    '''
 
     def __init__(self, index, operator):
+        '''
+        :param str operator: the operator
+        '''
         super(OperatorToken, self).__init__(index)
         self.operator = operator
 
     def add_char(self, c):
+        '''
+        Add a character to this token.
+
+        :param str c: the current character
+        :returns int: TokenEnd or TokenContinue
+        '''
         if c == self.operator:
             self.operator += c
             return TokenContinue
@@ -101,28 +186,74 @@ class OperatorToken(Token):
 
 
 class Statement(object):
+    '''
+    A parsed statement to be executed. A statement may contain the following:
+
+    - Commands and arguments
+    - Command pipes
+    - I/O redirections
+    - Command chaining
+
+    Command chaining describes how multiple commands are executed sequentially.
+    The chain operators can be one of the following:
+
+    - **|** (pipe) - pass previous `stdout` to current `stdin` and stop the
+      statement execution if a command fails
+    - **||** (or) - only run the subsequent command if the current fails
+    - **&&** (and) - only run subsequent commands if the current succeeds
+    - **;** (chain) - execute next command regardless of return codes
+
+    Commands are considered to succeed if they return 0 and fail if they don't.
+    '''
 
     def __init__(self, ctx):
+        '''
+        :param StatementContext ctx: the current statement context
+        '''
+        #:current :class:`StatementContext` for this statement
         self.ctx = ctx
+
+        #:`list` of :class:`CommandParams` describing the commands
         self.cmds = []
+
+        #:`list` of chaining operators, `str`
         self.ops = []
         self.index = -1
 
     def __len__(self):
+        '''
+        :returns int: the number of commands in this statement
+        '''
         return len(self.cmds)
 
     def __iter__(self):
+        '''
+        :returns iter: an iterator for :attr:`cmds`
+        '''
         return iter(self.cmds)
 
     @property
     def cmd(self):
+        '''
+        the current :class:`CommandParams`
+        '''
         return self.cmds[self.index] if self.index < len(self.cmds) else None
 
     @property
     def op(self):
+        '''
+        the current chaining operator, `str`
+        '''
         return self.ops[self.index] if self.index < len(self.ops) else None
 
     def next(self):
+        '''
+        Begin processing of the next command.
+
+        :returns tuple: a `tuple` of :class:`CommandParams` and operator (`str`)
+            defining the next command, and `(None, None)` if there are no more
+            commands to execute
+        '''
         self.index += 1
         return (
             self.cmds[self.index] if self.index < len(self.cmds) else None,
@@ -131,6 +262,17 @@ class Statement(object):
 
 
 class StatementContext(object):
+    '''
+    Holds information about after the current context of a statement while it is
+    executing. As a statement's commands are processed and executed, the context
+    is updated accordingly and wraps the system file streams `stdin`,
+    `stdout`, and `stderr`.
+
+    Although this class holds the current streams, the applicable `sys.std*` stream
+    is updated to these values. That means commands do not need to specifically
+    call `StatementContext.stdout.write()`, instead they may use the `print()`
+    function and `sys.std*` as usual.
+    '''
 
     def __init__(self):
         self.prev = None
@@ -139,8 +281,13 @@ class StatementContext(object):
         self.backup_stderr = sys.stderr
         self.backup_stdin = sys.stdin
 
+        #:(file) the current `stdout` file object
         self.stdout = sys.stdout
+
+        #:(file) the current `stderr` file object
         self.stderr = sys.stderr
+
+        #:(file) the current `stdin` file objects
         self.stdin = sys.stdin
 
     def fork(self):
@@ -193,20 +340,36 @@ class StatementContext(object):
 
 
 class CommandParams(object):
+    '''
+    Wrapper around a called command's parameters and information.
+    '''
 
     def __init__(self, name, args=None, stdout_path=None, stdout_mode='w',
                  stderr_path=None, stdin_path=None):
+        #:(`str`) name of the command
         self.name = name
+        #:(`list`) list of `str` arguments passed in by the user
         self.args = args or []
+        #:(`str`) path to `stdout` if redirecting to a file
         self.stdout_path = stdout_path
+        #:(`str`) mode to pass to `open()` when opening the `stdout` redirection file
         self.stdout_mode = stdout_mode
+        #:(`str`) path to `stderr` if redirecting to a file
         self.stderr_path = stderr_path
+        #:(`str`) path to `stdin` if redirecting from a file
         self.stdin_path = stdin_path
 
 
 class StatementSyntaxError(Exception):
+    '''
+    Invalid statement syntax was entered.
+    '''
 
     def __init__(self, message, index):
+        '''
+        :param str message: error message
+        :param int index: index in the statement that caused the error
+        '''
         self.message = message
         self.index = index
 
@@ -215,15 +378,27 @@ class StatementSyntaxError(Exception):
 
 
 class StatementParser(object):
+    '''
+    Parses raw user input into a :class:`Statement`.
+    '''
 
     def __init__(self):
         pass
 
     def reset(self):
+        '''
+        Reset parsing state.
+        '''
         self.tokens = []
         self.token = None
 
     def process(self, index, c):
+        '''
+        Process a single character of input.
+
+        :param int index: current character index
+        :param str c: current character
+        '''
         if self.token:
             action = self.token.add_char(c)
             if action == TokenEnd:
@@ -244,6 +419,12 @@ class StatementParser(object):
                 self.token = StringToken(index, c)
 
     def tokenize(self, line):
+        '''
+        Transform a `str` into a `list` of :class:`Token` objects.
+
+        :param str line: the line of text to tokenize
+        :returns: `list` of :class:`Token` objects
+        '''
         self.reset()
         index = 0
         for c in line:
@@ -259,6 +440,11 @@ class StatementParser(object):
         return self.tokens
 
     def clean_escapes(self, tokens):
+        '''
+        Remove all escape sequences.
+
+        :param list tokens: :class:`Token` objects to remove escape sequences
+        '''
         for token in tokens:
             if not isinstance(token, StringToken) or ('\\' not in token.text or token.quote):
                 continue
@@ -277,6 +463,16 @@ class StatementParser(object):
             token.text = text
 
     def condense(self, tokens):
+        '''
+        Condenses sequential like :class:`Token` objects into a single
+        :class:`Token` of the same type. For example, two sequential
+        :class:`StringToken` objects will be concatenated into a single
+        :class:`StringToken`.
+
+        :param list tokens: :class:`Token` objects to condense
+        :returns: condensed `list` of :class:`Token` objects
+        '''
+
         prev = None
         condensed = []
         for token in tokens:

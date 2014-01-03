@@ -243,15 +243,18 @@ texinfo_documents = [
 # How to display URL addresses: 'footnote', 'no', or 'inline'.
 #texinfo_show_urls = 'footnote'
 
-autoclass_content = 'both'
-#autodoc_member_order = 'bysource'
-autodoc_default_flags = ['members', 'show-inheritance']
+#autoclass_content = 'both'
+autodoc_member_order = 'groupwise'
+autodoc_default_flags = ['show-inheritance']
 
 
 def skip(app, what, name, obj, skip, options):
-    if name in ('__len__', '__iter__'):
-        return False
-    return skip
+  if name in ('__len__', '__iter__', '__init__'):
+    return False
+
+  #if type(obj) in (object, property):
+  #  return True
+  return skip
 
 def setup(app):
     app.connect("autodoc-skip-member", skip)

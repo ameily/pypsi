@@ -34,33 +34,20 @@ where tokens begin, end, and what they contain.
 .. autodata:: TokenTerm
 
 
-Token
-^^^^^
+Classes
+^^^^^^^
 
 .. autoclass:: Token
     :members:
 
-
-WhitespaceToken
-^^^^^^^^^^^^^^^
-
 .. autoclass:: WhitespaceToken
     :members:
-
-
-StringToken
-^^^^^^^^^^^
 
 .. autoclass:: StringToken
     :members:
 
-
-OperatorToken
-^^^^^^^^^^^^^
-
 .. autoclass:: OperatorToken
     :members:
-
 
 
 Statements
@@ -73,8 +60,10 @@ Statements
     :members:
 
 .. autoclass:: Statement
-    :members: next
+    :members:
 
+Exceptions
+^^^^^^^^^^
 
-
-
+.. autoclass:: StatementSyntaxError
+    :members:

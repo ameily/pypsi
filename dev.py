@@ -51,7 +51,7 @@ class DevShell(Shell):
         self.error.prefix = "\x1b[1;31m"
         self.warn.postfix = self.error.postfix = "\x1b[0m"
         self.warn.prefix = "\x1b[1;33m"
-        self.fallback_cmd = self.system_cmd
+        #self.fallback_cmd = self.system_cmd
 
 if __name__ == '__main__':
     shell = DevShell()

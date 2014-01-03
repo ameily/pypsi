@@ -65,7 +65,7 @@ There are so many benefits surrounding Python 3 that I will not list them here.
 ## Capabilities
 
 Before you jump into the API, here is a list of examples that show the power of
-the pypsi module, using only the commands and plugins that ship with it.
+the pypsi module, using only the commands and plugins that ship with pypsi.
 
 ### Variables
 
@@ -91,8 +91,10 @@ Paul Atredis
 pypsi)> echo Hello
 Hello
 pypsi)> echo Hello > output.txt
-pypsi)> xargs "echo line: {}" < output.txt
+pypsi)> echo Goodbye
+pypsi)> xargs -I{} "echo line: {}" < output.txt
 line: Hello
+line: Goodbye
 ```
 
 ### System commands
