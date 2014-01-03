@@ -3,6 +3,9 @@
 Python Pluggable Shell Interface, or pypsi, is a framework for developing
 command line based shell interfaces, akin to bash or csh.
 
+Check out the API documentation (currently a work in progress):
+http://ameily.github.io/pypsi
+
 ## Why not just use the `cmd` module?
 
 I was developing a project whose primary requirement was that it had to have a
