@@ -8,7 +8,7 @@
     
     <title>pypsi.base &mdash; pypsi 0.1 documentation</title>
     
-    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pypsi.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -92,24 +92,24 @@
 <span class="sd">    `Plugin` class does not contain a `run()` function.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-<div class="viewcode-block" id="Plugin.__init__"><a class="viewcode-back" href="../../pypsi.base.html#pypsi.base.Plugin.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preprocess</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">postprocess</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preprocess</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">postprocess</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Constructor can take two parameters: preprocess and postprocess. These</span>
+<span class="sd">        Constructor can take two parameters: `preprocess` and `postprocess`. These</span>
 <span class="sd">        values determine where the plugin resides inside of the preprocess and</span>
-<span class="sd">        postprocess list. This list, inside of pypsi.shell.Shell, is iterated</span>
+<span class="sd">        postprocess list. This list, inside of :class:`pypsi.shell.Shell`, is iterated</span>
 <span class="sd">        sequentially, from most priority to least. So, the highest priority</span>
 <span class="sd">        value is 0, which means it will be the first plugin to run, and the</span>
 <span class="sd">        lowest value is 100, which means it will be the last plugin to run. If</span>
 <span class="sd">        either value is `None`, the plugin is not added to the processing list.</span>
 <span class="sd">        For example, if this plugin only provides a preprocessing functionality,</span>
-<span class="sd">        then postprocess should be set to `None`.</span>
+<span class="sd">        then postprocess should be set to :const:`None`.</span>
 
 <span class="sd">        :param int preprocess: the preprocess priority</span>
 <span class="sd">        :param int postprocess: the postprocess priority</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span> <span class="o">=</span> <span class="n">preprocess</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">postprocess</span> <span class="o">=</span> <span class="n">postprocess</span>
-</div>
+
 <div class="viewcode-block" id="Plugin.setup"><a class="viewcode-back" href="../../pypsi.base.html#pypsi.base.Plugin.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Called after the plugin has been registered to the active shell.</span>
@@ -169,13 +169,33 @@
 </div></div>
 <div class="viewcode-block" id="Command"><a class="viewcode-back" href="../../pypsi.base.html#pypsi.base.Command">[docs]</a><span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    A pluggable command that users can execute.</span>
+<span class="sd">    A pluggable command that users can execute. All commands need to derive from</span>
+<span class="sd">    this class. When a command is executed by a user, the command&#39;s :meth:`run`</span>
+<span class="sd">    method will be called. The return value of the :meth:`run` method is used</span>
+<span class="sd">    when processing forthcoming commands in the active statement. The return</span>
+<span class="sd">    value must be an :class:`int` and follows the Unix standard: 0 on success,</span>
+<span class="sd">    less than 0 on error, and greater than 0 given invalid input or incorrect</span>
+<span class="sd">    usage.</span>
+
+<span class="sd">    A command can be used as a fallback handler by implementing the</span>
+<span class="sd">    :meth:`fallback` method. This is similar to the :meth:`run` method, except</span>
+<span class="sd">    that is accepts one more argument: the command name to execute that wasn&#39;t</span>
+<span class="sd">    found by the shell. The return value of :meth:`fallback` holds the same</span>
+<span class="sd">    purpose as the return value of :meth:`run`.</span>
+
+<span class="sd">    By the time :meth:`run` is called, the system streams have been updated to</span>
+<span class="sd">    point to the current file streams. This means that the statement context&#39;s</span>
+<span class="sd">    system streams are the same as the global streams in the :mod:`sys` module.</span>
+<span class="sd">    For example, to write to `stdout`, a command may perform any of the</span>
+<span class="sd">    following in the :meth:`run` method, all of which are equivalent:</span>
+
+<span class="sd">    - ``ctx.stdout.write(&quot;Hello\\n&quot;)``</span>
+<span class="sd">    - ``sys.stdout.write(&quot;Hello\\n&quot;)``</span>
+<span class="sd">    - ``print(&quot;Hello&quot;)``</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-<div class="viewcode-block" id="Command.__init__"><a class="viewcode-back" href="../../pypsi.base.html#pypsi.base.Command.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">brief</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">pipe</span><span class="o">=</span><span class="s">&#39;str&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">brief</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">pipe</span><span class="o">=</span><span class="s">&#39;str&#39;</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Constructor.</span>
-
 <span class="sd">        :param str name: the name of the command which the user will reference</span>
 <span class="sd">            in the shell</span>
 <span class="sd">        :param str usage: the usage message to be displayed to the user</span>
@@ -189,7 +209,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">brief</span> <span class="o">=</span> <span class="n">brief</span> <span class="ow">or</span> <span class="s">&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">topic</span> <span class="o">=</span> <span class="n">topic</span> <span class="ow">or</span> <span class="s">&#39;misc&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pipe</span> <span class="o">=</span> <span class="n">pipe</span> <span class="ow">or</span> <span class="s">&#39;str&#39;</span>
-</div>
+
 <div class="viewcode-block" id="Command.complete"><a class="viewcode-back" href="../../pypsi.base.html#pypsi.base.Command.complete">[docs]</a>    <span class="k">def</span> <span class="nf">complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Called when the user attempts a tab-completion action for this command.</span>
@@ -249,6 +269,13 @@
 <span class="sd">        Called when this command was set as the fallback command. The only</span>
 <span class="sd">        difference between this and :meth:`run` is that this method accepts the</span>
 <span class="sd">        command name that was entered by the user.</span>
+
+<span class="sd">        :param pypsi.shell.Shell shell: the active shell</span>
+<span class="sd">        :param str name: the name of the command to run</span>
+<span class="sd">        :param list args: arguments</span>
+<span class="sd">        :param pypsi.cmdline.StatementContext ctx: the active context</span>
+<span class="sd">        :returns int: 0 on success, less than 0 on error, and greater than 0 on</span>
+<span class="sd">            invalid usage</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">None</span>
 
@@ -268,7 +295,7 @@
 
 <div class="viewcode-block" id="PypsiArgParser"><a class="viewcode-back" href="../../pypsi.base.html#pypsi.base.PypsiArgParser">[docs]</a><span class="k">class</span> <span class="nc">PypsiArgParser</span><span class="p">(</span><span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Customized `argparse.ArgumentParser` for use in pypsi. This class slightly</span>
+<span class="sd">    Customized :class:`argparse.ArgumentParser` for use in pypsi. This class slightly</span>
 <span class="sd">    modifies the base ArgumentParser so that the following occurs:</span>
 
 <span class="sd">    - The whole program does not exit on printing the help message or bad</span>
@@ -277,9 +304,9 @@
 <span class="sd">      stream</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-<div class="viewcode-block" id="PypsiArgParser.__init__"><a class="viewcode-back" href="../../pypsi.base.html#pypsi.base.PypsiArgParser.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">PypsiArgParser</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</div>
+
     <span class="k">def</span> <span class="nf">parse_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rc</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">help_msg</span> <span class="o">=</span> <span class="bp">None</span>

@@ -8,7 +8,7 @@
     
     <title>pypsi.cmdline &mdash; pypsi 0.1 documentation</title>
     
-    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pypsi.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
@@ -100,21 +100,21 @@
 <span class="sd">    Base class for all tokens.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-<div class="viewcode-block" id="Token.__init__"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.Token.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        :param int index: the starting index of this token</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">index</span>
 
-</div></div>
+</div>
 <div class="viewcode-block" id="WhitespaceToken"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.WhitespaceToken">[docs]</a><span class="k">class</span> <span class="nc">WhitespaceToken</span><span class="p">(</span><span class="n">Token</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Whitespace token that can contain any number of whitespace characters.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-<div class="viewcode-block" id="WhitespaceToken.__init__"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.WhitespaceToken.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">WhitespaceToken</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
-</div>
+
 <div class="viewcode-block" id="WhitespaceToken.add_char"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.WhitespaceToken.add_char">[docs]</a>    <span class="k">def</span> <span class="nf">add_char</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Add a character to this token.</span>
@@ -132,10 +132,11 @@
 </div>
 <div class="viewcode-block" id="StringToken"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StringToken">[docs]</a><span class="k">class</span> <span class="nc">StringToken</span><span class="p">(</span><span class="n">Token</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    A string token.</span>
+<span class="sd">    A string token. This token may be bound by matching quotes and/or contain</span>
+<span class="sd">    escaped whitespace characters.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-<div class="viewcode-block" id="StringToken.__init__"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StringToken.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">quote</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">quote</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        :param str c: the current string or character</span>
 <span class="sd">        :param str quote: the surrounding quotes, `None` if there isn&#39;t any</span>
@@ -151,7 +152,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">escape</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="n">c</span>
-</div>
+
 <div class="viewcode-block" id="StringToken.add_char"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StringToken.add_char">[docs]</a>    <span class="k">def</span> <span class="nf">add_char</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Add a character to this token.</span>
@@ -211,13 +212,13 @@
 <span class="sd">    Valid operator characters.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-<div class="viewcode-block" id="OperatorToken.__init__"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.OperatorToken.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">operator</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">operator</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        :param str operator: the operator</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">OperatorToken</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">operator</span> <span class="o">=</span> <span class="n">operator</span>
-</div>
+
 <div class="viewcode-block" id="OperatorToken.add_char"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.OperatorToken.add_char">[docs]</a>    <span class="k">def</span> <span class="nf">add_char</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Add a character to this token.</span>
@@ -239,7 +240,6 @@
 <span class="sd">    A parsed statement to be executed. A statement may contain the following:</span>
 
 <span class="sd">    - Commands and arguments</span>
-<span class="sd">    - Command pipes</span>
 <span class="sd">    - I/O redirections</span>
 <span class="sd">    - Command chaining</span>
 
@@ -248,14 +248,18 @@
 
 <span class="sd">    - **|** (pipe) - pass previous `stdout` to current `stdin` and stop the</span>
 <span class="sd">      statement execution if a command fails</span>
-<span class="sd">    - **||** (or) - only run the subsequent command if the current fails</span>
-<span class="sd">    - **&amp;&amp;** (and) - only run subsequent commands if the current succeeds</span>
-<span class="sd">    - **;** (chain) - execute next command regardless of return codes</span>
+<span class="sd">    - **||** (or) - only run the subsequent commands if the current command</span>
+<span class="sd">      fails</span>
+<span class="sd">    - **&amp;&amp;** (and) - only run subsequent commands if the current command</span>
+<span class="sd">      succeeds</span>
+<span class="sd">    - **;** (chain) - execute subsequent commands regardless of result</span>
 
 <span class="sd">    Commands are considered to succeed if they return 0 and fail if they don&#39;t.</span>
+<span class="sd">    See :meth:`pypsi.base.Command.run` for a more detailed description of</span>
+<span class="sd">    command return codes.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-<div class="viewcode-block" id="Statement.__init__"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.Statement.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        :param StatementContext ctx: the current statement context</span>
 <span class="sd">        &#39;&#39;&#39;</span>
@@ -268,7 +272,7 @@
         <span class="c">#:`list` of chaining operators, `str`</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ops</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-</div>
+
 <div class="viewcode-block" id="Statement.__len__"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.Statement.__len__">[docs]</a>    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        :returns int: the number of commands in this statement</span>
@@ -284,14 +288,14 @@
     <span class="nd">@property</span>
 <div class="viewcode-block" id="Statement.cmd"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.Statement.cmd">[docs]</a>    <span class="k">def</span> <span class="nf">cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        the current :class:`CommandParams`</span>
+<span class="sd">        (:class:`CommandParams`) the current command</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmds</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmds</span><span class="p">)</span> <span class="k">else</span> <span class="bp">None</span>
 </div>
     <span class="nd">@property</span>
 <div class="viewcode-block" id="Statement.op"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.Statement.op">[docs]</a>    <span class="k">def</span> <span class="nf">op</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        the current chaining operator, `str`</span>
+<span class="sd">        (:class:`str`) the current chaining operator</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ops</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ops</span><span class="p">)</span> <span class="k">else</span> <span class="bp">None</span>
 </div>
@@ -311,19 +315,41 @@
 
 </div></div>
 <div class="viewcode-block" id="StatementContext"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StatementContext">[docs]</a><span class="k">class</span> <span class="nc">StatementContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Holds information about the current context of a statement. This class wraps</span>
+<span class="sd">    the handling of I/O redirection and piping by setting the system streams</span>
+<span class="sd">    to their appropriate values for a given command, and resetting them once the</span>
+<span class="sd">    statement has finished executing.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
 
-<div class="viewcode-block" id="StatementContext.__init__"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StatementContext.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pipe</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="c">#: the :data:`sys.stdout` when the statement context was created</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">backup_stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
+
+        <span class="c">#: the :data:`sys.stderr` when the statement context was created</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">backup_stderr</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span>
+
+        <span class="c">#: the :data:`sys.stdin` when the statement context was created</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">backup_stdin</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span>
 
+        <span class="c">#:(:class:`file`) the current `stdout` file object</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
+
+        <span class="c">#:(:class:`file`) the current `stderr` file object</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span>
+
+        <span class="c">#:(:class:`file`) the current `stdin` file objects</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span>
-</div>
-    <span class="k">def</span> <span class="nf">fork</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="StatementContext.fork"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StatementContext.fork">[docs]</a>    <span class="k">def</span> <span class="nf">fork</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Fork the context. This allows the new :class:`StatementContext` to run</span>
+<span class="sd">        child commands under this context.</span>
+
+<span class="sd">        :returns: (:class:`StatementContext`) the forked context</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">ctx</span> <span class="o">=</span> <span class="n">StatementContext</span><span class="p">()</span>
         <span class="n">ctx</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">backup_stdin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdin</span>
         <span class="n">ctx</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">backup_stdout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span>
@@ -331,8 +357,17 @@
         <span class="n">ctx</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="n">ctx</span><span class="o">.</span><span class="n">pipe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pipe</span>
         <span class="k">return</span> <span class="n">ctx</span>
+</div>
+<div class="viewcode-block" id="StatementContext.setup_io"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StatementContext.setup_io">[docs]</a>    <span class="k">def</span> <span class="nf">setup_io</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Setup the system streams to the correct file streams for the provided</span>
+<span class="sd">        command parameters.</span>
 
-    <span class="k">def</span> <span class="nf">setup_io</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+<span class="sd">        :param pypsi.base.Command cmd: the current command</span>
+<span class="sd">        :param CommandParams params: the command parameters</span>
+<span class="sd">        :param str op: the current chaining operator</span>
+<span class="sd">        :returns: 0 on success, -1 on error</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="n">params</span><span class="o">.</span><span class="n">stdin_path</span><span class="p">:</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">stdin_path</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">prev</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">prev</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;|&#39;</span><span class="p">:</span>
@@ -357,8 +392,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="mi">0</span>
-
-    <span class="k">def</span> <span class="nf">reset_io</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</div>
+<div class="viewcode-block" id="StatementContext.reset_io"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StatementContext.reset_io">[docs]</a>    <span class="k">def</span> <span class="nf">reset_io</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Resets the system streams to their original values. This should be</span>
+<span class="sd">        called after a statement has finished executing.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backup_stdout</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backup_stdout</span>
@@ -371,48 +410,67 @@
             <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backup_stdin</span>
         <span class="k">return</span> <span class="mi">0</span>
 
-</div>
+</div></div>
 <div class="viewcode-block" id="CommandParams"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.CommandParams">[docs]</a><span class="k">class</span> <span class="nc">CommandParams</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Wrapper around a called command&#39;s parameters and information.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-<div class="viewcode-block" id="CommandParams.__init__"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.CommandParams.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stdout_path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stdout_mode</span><span class="o">=</span><span class="s">&#39;w&#39;</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stdout_path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stdout_mode</span><span class="o">=</span><span class="s">&#39;w&#39;</span><span class="p">,</span>
                  <span class="n">stderr_path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">stdin_path</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-        <span class="c">#:(`str`) name of the command</span>
+        <span class="c">#:(:class:`str`) name of the command</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
-        <span class="c">#:(`list`) list of `str` arguments passed in by the user</span>
+        <span class="c">#:(:class:`list`) list of `str` arguments passed in by the user</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="n">args</span> <span class="ow">or</span> <span class="p">[]</span>
-        <span class="c">#:(`str`) path to `stdout` if redirecting to a file</span>
+        <span class="c">#:(:class:`str`) path to `stdout` if redirecting to a file</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stdout_path</span> <span class="o">=</span> <span class="n">stdout_path</span>
-        <span class="c">#:(`str`) mode to pass to `open()` when opening the `stdout` redirection file</span>
+        <span class="c">#:(:class:`str`) mode to pass to `open()` when opening the `stdout` redirection file</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stdout_mode</span> <span class="o">=</span> <span class="n">stdout_mode</span>
-        <span class="c">#:(`str`) path to `stderr` if redirecting to a file</span>
+        <span class="c">#:(:class:`str`) path to `stderr` if redirecting to a file</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stderr_path</span> <span class="o">=</span> <span class="n">stderr_path</span>
-        <span class="c">#:(`str`) path to `stdin` if redirecting from a file</span>
+        <span class="c">#:(:class:`str`) path to `stdin` if redirecting from a file</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stdin_path</span> <span class="o">=</span> <span class="n">stdin_path</span>
 
-</div></div>
+</div>
 <div class="viewcode-block" id="StatementSyntaxError"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StatementSyntaxError">[docs]</a><span class="k">class</span> <span class="nc">StatementSyntaxError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Invalid statement syntax was entered.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
 
-<div class="viewcode-block" id="StatementSyntaxError.__init__"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StatementSyntaxError.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :param str message: error message</span>
+<span class="sd">        :param int index: index in the statement that caused the error</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">index</span>
-</div>
+
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s">&quot;syntax error at {}: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
 
 </div>
 <div class="viewcode-block" id="StatementParser"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StatementParser">[docs]</a><span class="k">class</span> <span class="nc">StatementParser</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Parses raw user input into a :class:`Statement`.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
 
-<div class="viewcode-block" id="StatementParser.__init__"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StatementParser.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span>
-</div>
+
 <div class="viewcode-block" id="StatementParser.reset"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StatementParser.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Reset parsing state.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tokens</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="bp">None</span>
 </div>
 <div class="viewcode-block" id="StatementParser.process"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StatementParser.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Process a single character of input.</span>
+
+<span class="sd">        :param int index: current character index</span>
+<span class="sd">        :param str c: current character</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">:</span>
             <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="o">.</span><span class="n">add_char</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="n">TokenEnd</span><span class="p">:</span>
@@ -433,6 +491,12 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">StringToken</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="StatementParser.tokenize"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StatementParser.tokenize">[docs]</a>    <span class="k">def</span> <span class="nf">tokenize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Transform a `str` into a `list` of :class:`Token` objects.</span>
+
+<span class="sd">        :param str line: the line of text to tokenize</span>
+<span class="sd">        :returns: `list` of :class:`Token` objects</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
         <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
@@ -448,6 +512,11 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokens</span>
 </div>
 <div class="viewcode-block" id="StatementParser.clean_escapes"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StatementParser.clean_escapes">[docs]</a>    <span class="k">def</span> <span class="nf">clean_escapes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Remove all escape sequences.</span>
+
+<span class="sd">        :param list tokens: :class:`Token` objects to remove escape sequences</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">StringToken</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s">&#39;</span><span class="se">\\</span><span class="s">&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">token</span><span class="o">.</span><span class="n">text</span> <span class="ow">or</span> <span class="n">token</span><span class="o">.</span><span class="n">quote</span><span class="p">):</span>
                 <span class="k">continue</span>
@@ -466,6 +535,16 @@
             <span class="n">token</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
 </div>
 <div class="viewcode-block" id="StatementParser.condense"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StatementParser.condense">[docs]</a>    <span class="k">def</span> <span class="nf">condense</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Condenses sequential like :class:`Token` objects into a single</span>
+<span class="sd">        :class:`Token` of the same type. For example, two sequential</span>
+<span class="sd">        :class:`StringToken` objects will be concatenated into a single</span>
+<span class="sd">        :class:`StringToken`.</span>
+
+<span class="sd">        :param list tokens: :class:`Token` objects to condense</span>
+<span class="sd">        :returns: condensed `list` of :class:`Token` objects</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
         <span class="n">prev</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="n">condensed</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
@@ -481,7 +560,19 @@
 
         <span class="k">return</span> <span class="n">condensed</span>
 </div>
-    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+<div class="viewcode-block" id="StatementParser.build"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StatementParser.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tokens</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Create a :class:`Statement` object from tokenized input and statement</span>
+<span class="sd">        context. This method will first remove all remaining escape sequences</span>
+<span class="sd">        and then :meth:`condense` all the tokens before building the statement.</span>
+
+<span class="sd">        :param list tokens: list of :class:`Token` objects to process as a</span>
+<span class="sd">            statement</span>
+<span class="sd">        :param pypsi.cmdline.StatementContext ctx: the current statement context to use</span>
+<span class="sd">        :raises: :class:`StatementSyntaxError` on error</span>
+<span class="sd">        :returns: (:class:`Statement`) the parsed statement</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
         <span class="n">statement</span> <span class="o">=</span> <span class="n">Statement</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
         <span class="n">cmd</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="n">prev</span> <span class="o">=</span> <span class="bp">None</span>
@@ -575,22 +666,44 @@
 
         <span class="k">return</span> <span class="n">statement</span>
 
-</div>
+</div></div>
 <div class="viewcode-block" id="Expression"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.Expression">[docs]</a><span class="k">class</span> <span class="nc">Expression</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Holds a string-based expression in the form of ``operand operator value``.</span>
+<span class="sd">    This class makes parsing expressions that may be in a single string or a</span>
+<span class="sd">    list of strings. For example, the :class:`pypsi.plugins.VarCommand` command</span>
+<span class="sd">    accepts input in the form of: ``name = value``. This class allows for the</span>
+<span class="sd">    user to input any of the following lines and the same Expression object</span>
+<span class="sd">    would be created, regardless of how the input lines are tokenized:</span>
+
+<span class="sd">    - ``some_var = 2``</span>
+<span class="sd">    - ``some_var= 2``</span>
+<span class="sd">    - ``some_var =2``</span>
+<span class="sd">    - ``some_var=2``</span>
+<span class="sd">    &#39;&#39;&#39;</span>
 
     <span class="n">Operators</span> <span class="o">=</span> <span class="s">&#39;-+=/*&#39;</span>
     <span class="n">Whitespace</span> <span class="o">=</span> <span class="s">&#39; </span><span class="se">\t</span><span class="s">&#39;</span>
 
-<div class="viewcode-block" id="Expression.__init__"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.Expression.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operand</span><span class="p">,</span> <span class="n">operator</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operand</span><span class="p">,</span> <span class="n">operator</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">operand</span> <span class="o">=</span> <span class="n">operand</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">operator</span> <span class="o">=</span> <span class="n">operator</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
-</div>
+
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s">&quot;{} {} {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">operand</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">operator</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+<div class="viewcode-block" id="Expression.parse"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.Expression.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Create an Expression from a list of strings.</span>
+
+<span class="sd">        :param list args: arguments</span>
+<span class="sd">        :returns: a tuple of ``(remaining, expression)``, where ``remaining`` is</span>
+<span class="sd">            the list of remaining string arguments of ``args`` after parsing has</span>
+<span class="sd">            completed, and ``expression`` in the parsed :class:`Expression`, or</span>
+<span class="sd">            :const:`None` if the expression is invalid.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">state</span> <span class="o">=</span> <span class="s">&#39;operand&#39;</span>
         <span class="n">operand</span> <span class="o">=</span> <span class="n">operator</span> <span class="o">=</span> <span class="n">value</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="n">done</span> <span class="o">=</span> <span class="bp">False</span>
@@ -635,8 +748,11 @@
             <span class="k">if</span> <span class="n">done</span><span class="p">:</span>
                 <span class="k">break</span>
 
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
         <span class="k">return</span> <span class="p">(</span><span class="n">remaining</span><span class="p">,</span> <span class="n">Expression</span><span class="p">(</span><span class="n">operand</span><span class="p">,</span> <span class="n">operator</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
-</pre></div></div>
+</pre></div></div></div>
 
           </div>
         </div>
