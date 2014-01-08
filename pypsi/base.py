@@ -45,15 +45,15 @@ class Plugin(object):
 
     def __init__(self, preprocess=None, postprocess=None):
         '''
-        Constructor can take two parameters: preprocess and postprocess. These
+        Constructor can take two parameters: `preprocess` and `postprocess`. These
         values determine where the plugin resides inside of the preprocess and
-        postprocess list. This list, inside of pypsi.shell.Shell, is iterated
+        postprocess list. This list, inside of :class:`pypsi.shell.Shell`, is iterated
         sequentially, from most priority to least. So, the highest priority
         value is 0, which means it will be the first plugin to run, and the
         lowest value is 100, which means it will be the last plugin to run. If
         either value is `None`, the plugin is not added to the processing list.
         For example, if this plugin only provides a preprocessing functionality,
-        then postprocess should be set to `None`.
+        then postprocess should be set to :const:`None`.
 
         :param int preprocess: the preprocess priority
         :param int postprocess: the postprocess priority
@@ -120,13 +120,33 @@ class Plugin(object):
 
 class Command(object):
     '''
-    A pluggable command that users can execute.
+    A pluggable command that users can execute. All commands need to derive from
+    this class. When a command is executed by a user, the command's :meth:`run`
+    method will be called. The return value of the :meth:`run` method is used
+    when processing forthcoming commands in the active statement. The return
+    value must be an :class:`int` and follows the Unix standard: 0 on success,
+    less than 0 on error, and greater than 0 given invalid input or incorrect
+    usage.
+
+    A command can be used as a fallback handler by implementing the
+    :meth:`fallback` method. This is similar to the :meth:`run` method, except
+    that is accepts one more argument: the command name to execute that wasn't
+    found by the shell. The return value of :meth:`fallback` holds the same
+    purpose as the return value of :meth:`run`.
+
+    By the time :meth:`run` is called, the system streams have been updated to
+    point to the current file streams. This means that the statement context's
+    system streams are the same as the global streams in the :mod:`sys` module.
+    For example, to write to `stdout`, a command may perform any of the
+    following in the :meth:`run` method, all of which are equivalent:
+
+    - ``ctx.stdout.write("Hello\\n")``
+    - ``sys.stdout.write("Hello\\n")``
+    - ``print("Hello")``
     '''
 
     def __init__(self, name, usage=None, brief=None, topic=None, pipe='str'):
         '''
-        Constructor.
-
         :param str name: the name of the command which the user will reference
             in the shell
         :param str usage: the usage message to be displayed to the user
@@ -200,6 +220,13 @@ class Command(object):
         Called when this command was set as the fallback command. The only
         difference between this and :meth:`run` is that this method accepts the
         command name that was entered by the user.
+
+        :param pypsi.shell.Shell shell: the active shell
+        :param str name: the name of the command to run
+        :param list args: arguments
+        :param pypsi.cmdline.StatementContext ctx: the active context
+        :returns int: 0 on success, less than 0 on error, and greater than 0 on
+            invalid usage
         '''
         return None
 
@@ -219,7 +246,7 @@ class ArgumentError(Exception):
 
 class PypsiArgParser(argparse.ArgumentParser):
     '''
-    Customized `argparse.ArgumentParser` for use in pypsi. This class slightly
+    Customized :class:`argparse.ArgumentParser` for use in pypsi. This class slightly
     modifies the base ArgumentParser so that the following occurs:
 
     - The whole program does not exit on printing the help message or bad

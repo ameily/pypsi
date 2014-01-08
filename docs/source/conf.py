@@ -27,7 +27,7 @@ sys.path.append("../")
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.coverage', 'sphinx.ext.viewcode']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.coverage', 'sphinx.ext.viewcode', 'sphinx.ext.intersphinx']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -93,7 +93,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+html_theme = 'nature'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -123,7 +123,7 @@ html_theme = 'default'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
-
+html_style = 'pypsi.css'
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
 #html_last_updated_fmt = '%b %d, %Y'
@@ -243,13 +243,30 @@ texinfo_documents = [
 # How to display URL addresses: 'footnote', 'no', or 'inline'.
 #texinfo_show_urls = 'footnote'
 
-#autoclass_content = 'both'
+autoclass_content = 'both'
 autodoc_member_order = 'groupwise'
 autodoc_default_flags = ['show-inheritance']
+intersphinx_mapping = {'python': ('http://docs.python.org/3.3', 'python3.inv')}
+
+def docstring(app, what, name, obj, options, lines):
+  if what == 'attribute':
+    print("attribute:", name)
+    print("object:", obj)
+    print("lines:", lines)
+
+
+def signature(app, what, name, obj, options, signature, return_annotation):
+  if what == 'attribute' and name.endswith('preprocess'):
+    print "attribute:", name
+    print "sig:", type(signature)
+    print "ann:", type(return_annotation)
+    print "opts:", options
+    print "obj:", obj
+    return (" ", " ")
 
 
 def skip(app, what, name, obj, skip, options):
-  if name in ('__len__', '__iter__', '__init__'):
+  if name in ('__len__', '__iter__'):
     return False
 
   #if type(obj) in (object, property):
@@ -258,4 +275,6 @@ def skip(app, what, name, obj, skip, options):
 
 def setup(app):
     app.connect("autodoc-skip-member", skip)
+    #app.connect("autodoc-process-docstring", docstring)
+    #app.connect("autodoc-process-signature", signature)
 

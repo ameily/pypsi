@@ -83,7 +83,8 @@ class WhitespaceToken(Token):
 
 class StringToken(Token):
     '''
-    A string token.
+    A string token. This token may be bound by matching quotes and/or contain
+    escaped whitespace characters.
     '''
 
     def __init__(self, index, c, quote=None):
@@ -190,7 +191,6 @@ class Statement(object):
     A parsed statement to be executed. A statement may contain the following:
 
     - Commands and arguments
-    - Command pipes
     - I/O redirections
     - Command chaining
 
@@ -199,11 +199,15 @@ class Statement(object):
 
     - **|** (pipe) - pass previous `stdout` to current `stdin` and stop the
       statement execution if a command fails
-    - **||** (or) - only run the subsequent command if the current fails
-    - **&&** (and) - only run subsequent commands if the current succeeds
-    - **;** (chain) - execute next command regardless of return codes
+    - **||** (or) - only run the subsequent commands if the current command
+      fails
+    - **&&** (and) - only run subsequent commands if the current command
+      succeeds
+    - **;** (chain) - execute subsequent commands regardless of result
 
     Commands are considered to succeed if they return 0 and fail if they don't.
+    See :meth:`pypsi.base.Command.run` for a more detailed description of
+    command return codes.
     '''
 
     def __init__(self, ctx):
@@ -235,14 +239,14 @@ class Statement(object):
     @property
     def cmd(self):
         '''
-        the current :class:`CommandParams`
+        (:class:`CommandParams`) the current command
         '''
         return self.cmds[self.index] if self.index < len(self.cmds) else None
 
     @property
     def op(self):
         '''
-        the current chaining operator, `str`
+        (:class:`str`) the current chaining operator
         '''
         return self.ops[self.index] if self.index < len(self.ops) else None
 
@@ -263,34 +267,40 @@ class Statement(object):
 
 class StatementContext(object):
     '''
-    Holds information about after the current context of a statement while it is
-    executing. As a statement's commands are processed and executed, the context
-    is updated accordingly and wraps the system file streams `stdin`,
-    `stdout`, and `stderr`.
-
-    Although this class holds the current streams, the applicable `sys.std*` stream
-    is updated to these values. That means commands do not need to specifically
-    call `StatementContext.stdout.write()`, instead they may use the `print()`
-    function and `sys.std*` as usual.
+    Holds information about the current context of a statement. This class wraps
+    the handling of I/O redirection and piping by setting the system streams
+    to their appropriate values for a given command, and resetting them once the
+    statement has finished executing.
     '''
 
     def __init__(self):
         self.prev = None
         self.pipe = None
+        #: the :data:`sys.stdout` when the statement context was created
         self.backup_stdout = sys.stdout
+
+        #: the :data:`sys.stderr` when the statement context was created
         self.backup_stderr = sys.stderr
+
+        #: the :data:`sys.stdin` when the statement context was created
         self.backup_stdin = sys.stdin
 
-        #:(file) the current `stdout` file object
+        #:(:class:`file`) the current `stdout` file object
         self.stdout = sys.stdout
 
-        #:(file) the current `stderr` file object
+        #:(:class:`file`) the current `stderr` file object
         self.stderr = sys.stderr
 
-        #:(file) the current `stdin` file objects
+        #:(:class:`file`) the current `stdin` file objects
         self.stdin = sys.stdin
 
     def fork(self):
+        '''
+        Fork the context. This allows the new :class:`StatementContext` to run
+        child commands under this context.
+
+        :returns: (:class:`StatementContext`) the forked context
+        '''
         ctx = StatementContext()
         ctx.stdin = ctx.backup_stdin = self.stdin
         ctx.stdout = ctx.backup_stdout = self.stdout
@@ -300,6 +310,15 @@ class StatementContext(object):
         return ctx
 
     def setup_io(self, cmd, params, op):
+        '''
+        Setup the system streams to the correct file streams for the provided
+        command parameters.
+
+        :param pypsi.base.Command cmd: the current command
+        :param CommandParams params: the command parameters
+        :param str op: the current chaining operator
+        :returns: 0 on success, -1 on error
+        '''
         if params.stdin_path:
             sys.stdin = self.stdin = open(params.stdin_path, 'r')
         elif self.prev and self.prev[1] == '|':
@@ -326,6 +345,10 @@ class StatementContext(object):
         return 0
 
     def reset_io(self):
+        '''
+        Resets the system streams to their original values. This should be
+        called after a statement has finished executing.
+        '''
         if self.stdout != self.backup_stdout:
             self.stdout.close()
             sys.stdout = self.stdout = self.backup_stdout
@@ -346,17 +369,17 @@ class CommandParams(object):
 
     def __init__(self, name, args=None, stdout_path=None, stdout_mode='w',
                  stderr_path=None, stdin_path=None):
-        #:(`str`) name of the command
+        #:(:class:`str`) name of the command
         self.name = name
-        #:(`list`) list of `str` arguments passed in by the user
+        #:(:class:`list`) list of `str` arguments passed in by the user
         self.args = args or []
-        #:(`str`) path to `stdout` if redirecting to a file
+        #:(:class:`str`) path to `stdout` if redirecting to a file
         self.stdout_path = stdout_path
-        #:(`str`) mode to pass to `open()` when opening the `stdout` redirection file
+        #:(:class:`str`) mode to pass to `open()` when opening the `stdout` redirection file
         self.stdout_mode = stdout_mode
-        #:(`str`) path to `stderr` if redirecting to a file
+        #:(:class:`str`) path to `stderr` if redirecting to a file
         self.stderr_path = stderr_path
-        #:(`str`) path to `stdin` if redirecting from a file
+        #:(:class:`str`) path to `stdin` if redirecting from a file
         self.stdin_path = stdin_path
 
 
@@ -489,6 +512,18 @@ class StatementParser(object):
         return condensed
 
     def build(self, tokens, ctx):
+        '''
+        Create a :class:`Statement` object from tokenized input and statement
+        context. This method will first remove all remaining escape sequences
+        and then :meth:`condense` all the tokens before building the statement.
+
+        :param list tokens: list of :class:`Token` objects to process as a
+            statement
+        :param pypsi.cmdline.StatementContext ctx: the current statement context to use
+        :raises: :class:`StatementSyntaxError` on error
+        :returns: (:class:`Statement`) the parsed statement
+        '''
+
         statement = Statement(ctx)
         cmd = None
         prev = None
@@ -584,6 +619,19 @@ class StatementParser(object):
 
 
 class Expression(object):
+    '''
+    Holds a string-based expression in the form of ``operand operator value``.
+    This class makes parsing expressions that may be in a single string or a
+    list of strings. For example, the :class:`pypsi.plugins.VarCommand` command
+    accepts input in the form of: ``name = value``. This class allows for the
+    user to input any of the following lines and the same Expression object
+    would be created, regardless of how the input lines are tokenized:
+
+    - ``some_var = 2``
+    - ``some_var= 2``
+    - ``some_var =2``
+    - ``some_var=2``
+    '''
 
     Operators = '-+=/*'
     Whitespace = ' \t'
@@ -598,6 +646,15 @@ class Expression(object):
 
     @classmethod
     def parse(cls, args):
+        '''
+        Create an Expression from a list of strings.
+
+        :param list args: arguments
+        :returns: a tuple of ``(remaining, expression)``, where ``remaining`` is
+            the list of remaining string arguments of ``args`` after parsing has
+            completed, and ``expression`` in the parsed :class:`Expression`, or
+            :const:`None` if the expression is invalid.
+        '''
         state = 'operand'
         operand = operator = value = None
         done = False
@@ -641,6 +698,9 @@ class Expression(object):
             remaining.pop(0)
             if done:
                 break
+
+        if not done:
+            return None
 
         return (remaining, Expression(operand, operator, value))
 
