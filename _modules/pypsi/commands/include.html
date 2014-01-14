@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pypsi.commands.include &mdash; pypsi 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/pypsi.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="pypsi 0.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">pypsi 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for pypsi.commands.include</h1><div class="highlight"><pre>
+<span class="c">#</span>
+<span class="c"># Copyright (c) 2014, Adam Meily</span>
+<span class="c"># All rights reserved.</span>
+<span class="c">#</span>
+<span class="c"># Redistribution and use in source and binary forms, with or without modification,</span>
+<span class="c"># are permitted provided that the following conditions are met:</span>
+<span class="c">#</span>
+<span class="c"># * Redistributions of source code must retain the above copyright notice, this</span>
+<span class="c">#   list of conditions and the following disclaimer.</span>
+<span class="c">#</span>
+<span class="c"># * Redistributions in binary form must reproduce the above copyright notice, this</span>
+<span class="c">#   list of conditions and the following disclaimer in the documentation and/or</span>
+<span class="c">#   other materials provided with the distribution.</span>
+<span class="c">#</span>
+<span class="c"># * Neither the name of the {organization} nor the names of its</span>
+<span class="c">#   contributors may be used to endorse or promote products derived from</span>
+<span class="c">#   this software without specific prior written permission.</span>
+<span class="c">#</span>
+<span class="c"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
+<span class="c"># ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
+<span class="c"># WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="c"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="c"># ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
+<span class="c"># (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<span class="c"># LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON</span>
+<span class="c"># ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<span class="c"># (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
+<span class="c"># SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="c">#</span>
+
+<span class="kn">from</span> <span class="nn">pypsi.base</span> <span class="kn">import</span> <span class="n">Command</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+
+<span class="k">class</span> <span class="nc">IncludeFile</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">abspath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line</span> <span class="o">=</span> <span class="n">line</span>
+
+
+<div class="viewcode-block" id="IncludeCommand"><a class="viewcode-back" href="../../../pypsi.commands.html#pypsi.commands.include.IncludeCommand">[docs]</a><span class="k">class</span> <span class="nc">IncludeCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Execute a script file. This entails reading each line of the given file and</span>
+<span class="sd">    processing it as if it were typed into the shell.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;include&#39;</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="s">&#39;shell&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">IncludeCommand</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">,</span> <span class="n">brief</span><span class="o">=</span><span class="s">&#39;execute a script file&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stack</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">1</span>
+
+        <span class="n">fp</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">ifile</span> <span class="o">=</span> <span class="n">IncludeFile</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">top</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="n">templ</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="p">:</span>
+            <span class="n">templ</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">prefix</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">abspath</span> <span class="o">==</span> <span class="n">ifile</span><span class="o">.</span><span class="n">abspath</span><span class="p">:</span>
+                    <span class="n">shell</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;recursive include for file &quot;</span><span class="p">,</span> <span class="n">ifile</span><span class="o">.</span><span class="n">abspath</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">templ</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">prefix</span> <span class="o">+</span> <span class="s">&quot;error in file {file} on line {line}: &quot;</span>
+            <span class="n">top</span> <span class="o">=</span> <span class="bp">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ifile</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">fp</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">shell</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;error opening file &quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&quot;: &quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="n">orig_prefix</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">prefix</span>
+        <span class="nb">next</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">fork</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">shell</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="n">templ</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">file</span><span class="o">=</span><span class="n">ifile</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="n">ifile</span><span class="o">.</span><span class="n">line</span><span class="p">)</span>
+            <span class="n">shell</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="nb">next</span><span class="p">)</span>
+            <span class="n">ifile</span><span class="o">.</span><span class="n">line</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">top</span><span class="p">:</span>
+            <span class="n">shell</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="n">orig_prefix</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="mi">0</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">pypsi 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Adam Meily.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+    </div>
+  </body>
+</html>

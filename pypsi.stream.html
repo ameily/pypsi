@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>7. pypsi.stream - File streams &mdash; pypsi 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/pypsi.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pypsi 0.1 documentation" href="index.html" />
+    <link rel="next" title="8. pypsi.utils - Utility functions" href="pypsi.utils.html" />
+    <link rel="prev" title="6. pypsi.namespace - Arbitrary attribute storage classes" href="pypsi.namespace.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pypsi.utils.html" title="8. pypsi.utils - Utility functions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pypsi.namespace.html" title="6. pypsi.namespace - Arbitrary attribute storage classes"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pypsi 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pypsi-stream-file-streams">
+<h1>7. pypsi.stream - File streams<a class="headerlink" href="#pypsi-stream-file-streams" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<span class="target" id="module-pypsi.stream"></span><p>Stream classes for writing to files.</p>
+<dl class="class">
+<dt id="pypsi.stream.PypsiStream">
+<em class="property">class </em><tt class="descclassname">pypsi.stream.</tt><tt class="descname">PypsiStream</tt><big>(</big><em>fobj</em>, <em>prefix=None</em>, <em>postfix=None</em><big>)</big><a class="reference internal" href="_modules/pypsi/stream.html#PypsiStream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.PypsiStream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Unbuffered file output stream. This class should be used primarily
+for writing to <a class="reference external" href="http://docs.python.org/3.3/library/sys.html#sys.stdout" title="(in Python v3.3)"><tt class="xref py py-data docutils literal"><span class="pre">sys.stdout</span></tt></a> or <a class="reference external" href="http://docs.python.org/3.3/library/sys.html#sys.stderr" title="(in Python v3.3)"><tt class="xref py py-data docutils literal"><span class="pre">sys.stderr</span></tt></a>. The stream allows
+for prefix and postfix strings to be written to the file before or after
+each call to <a class="reference internal" href="#pypsi.stream.PypsiStream.write" title="pypsi.stream.PypsiStream.write"><tt class="xref py py-func docutils literal"><span class="pre">write()</span></tt></a>. This can be useful when printing colors to the
+screen or the log levels of messages.</p>
+<p>The wrapped file object can be a callable object that returns a file
+object. This object will then be called once during each
+invocation of <a class="reference internal" href="#pypsi.stream.PypsiStream.write" title="pypsi.stream.PypsiStream.write"><tt class="xref py py-func docutils literal"><span class="pre">write()</span></tt></a> to retrieve the current output file object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fobj</strong> (<em>file</em>) &#8211; the file object to wrap or a function to retrieve the
+file object when writing to it</li>
+<li><strong>prefix</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; a string to write to the stream whenever <a class="reference internal" href="#pypsi.stream.PypsiStream.write" title="pypsi.stream.PypsiStream.write"><tt class="xref py py-func docutils literal"><span class="pre">write()</span></tt></a>
+is called</li>
+<li><strong>postfix</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; a string to write to the stream after <a class="reference internal" href="#pypsi.stream.PypsiStream.write" title="pypsi.stream.PypsiStream.write"><tt class="xref py py-func docutils literal"><span class="pre">write()</span></tt></a>
+is called</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pypsi.stream.PypsiStream.__call__">
+<tt class="descname">__call__</tt><big>(</big><em>*args</em><big>)</big><a class="reference internal" href="_modules/pypsi/stream.html#PypsiStream.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.PypsiStream.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for <a class="reference internal" href="#pypsi.stream.PypsiStream.write" title="pypsi.stream.PypsiStream.write"><tt class="xref py py-func docutils literal"><span class="pre">write()</span></tt></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypsi.stream.PypsiStream.write">
+<tt class="descname">write</tt><big>(</big><em>*args</em><big>)</big><a class="reference internal" href="_modules/pypsi/stream.html#PypsiStream.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.PypsiStream.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write any number of arguments to the stream.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pypsi.namespace.html"
+                        title="previous chapter">6. pypsi.namespace - Arbitrary attribute storage classes</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pypsi.utils.html"
+                        title="next chapter">8. pypsi.utils - Utility functions</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/pypsi.stream.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pypsi.utils.html" title="8. pypsi.utils - Utility functions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pypsi.namespace.html" title="6. pypsi.namespace - Arbitrary attribute storage classes"
+             >previous</a> |</li>
+        <li><a href="index.html">pypsi 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Adam Meily.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+    </div>
+  </body>
+</html>

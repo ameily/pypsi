@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="pypsi 0.1 documentation" href="index.html" />
-    <link rel="next" title="2. pypsi.base - Base classes for pluggable features" href="pypsi.base.html" />
+    <link rel="next" title="2. Pypsi Builtin Commands" href="pypsi.commands.html" />
     <link rel="prev" title="pypsi" href="index.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="pypsi.base.html" title="2. pypsi.base - Base classes for pluggable features"
+          <a href="pypsi.commands.html" title="2. Pypsi Builtin Commands"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="index.html" title="pypsi"
@@ -153,7 +153,7 @@ line: Goodbye</pre>
 <h3>1.5.3. System commands<a class="headerlink" href="#system-commands" title="Permalink to this headline">¶</a></h3>
 <p>Allows execution of external applications. Command mimics Python&#8217;s
 <tt class="docutils literal"><span class="pre">os.system()</span></tt> function.</p>
-<p><tt class="xref py py-mod docutils literal"><span class="pre">pypsi.commands.system</span></tt></p>
+<p><a class="reference internal" href="pypsi.commands.html#pypsi.commands.system.SystemCommand" title="pypsi.commands.system.SystemCommand"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.commands.system.SystemCommand</span></tt></a></p>
 <div class="highlight-python"><pre>pypsi)&gt; ls
 pypsi: ls: command not found
 pypsi)&gt; system ls
@@ -169,8 +169,8 @@ README.md</pre>
 <p>Allows the developer to set which command gets called if one does not exist in
 the current shell. This is very useful, for example, if you want to fallback on
 any OS installed executables. In this example, the fallback command is
-<tt class="docutils literal"><span class="pre">system</span></tt>. Currently, setting of the fallback command can only be done in the
-API and not through the shell.</p>
+<tt class="docutils literal"><span class="pre">system</span></tt> (<a class="reference internal" href="pypsi.commands.html#pypsi.commands.system.SystemCommand" title="pypsi.commands.system.SystemCommand"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.commands.system.SystemCommand</span></tt></a>). Currently, setting of
+the fallback command can only be done in the API and not through the shell.</p>
 <div class="highlight-python"><pre>pypsi)&gt; ls
 include/
 src/
@@ -209,8 +209,10 @@ This is pypsi and it rocks</pre>
 <p>Macros are analogous to functions in bash. They provide the ability to create
 new commands in the shell. The macro command requires the
 <tt class="xref py py-class docutils literal"><span class="pre">pypsi.plugins.block.BlockPlugin</span></tt>, which allows for block commands.</p>
-<p><tt class="xref py py-mod docutils literal"><span class="pre">pypsi.commands.macro</span></tt>
-<tt class="xref py py-mod docutils literal"><span class="pre">pypsi.plugins.block</span></tt></p>
+<ul class="simple">
+<li><a class="reference internal" href="pypsi.commands.html#pypsi.commands.macro.MacroCommand" title="pypsi.commands.macro.MacroCommand"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.commands.macro.MacroCommand</span></tt></a></li>
+<li><tt class="xref py py-class docutils literal"><span class="pre">pypsi.plugins.block.BlockPlugin</span></tt></li>
+</ul>
 <div class="highlight-python"><pre>pypsi)&gt; macro hello
 &gt; echo Hello, $1
 &gt; echo Goodbye from macro $0
@@ -262,8 +264,8 @@ Goodbye from macro hello</pre>
   <p class="topless"><a href="index.html"
                         title="previous chapter">pypsi</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="pypsi.base.html"
-                        title="next chapter">2. pypsi.base - Base classes for pluggable features</a></p>
+  <p class="topless"><a href="pypsi.commands.html"
+                        title="next chapter">2. Pypsi Builtin Commands</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/pypsi.txt"
@@ -296,7 +298,7 @@ Goodbye from macro hello</pre>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="pypsi.base.html" title="2. pypsi.base - Base classes for pluggable features"
+          <a href="pypsi.commands.html" title="2. Pypsi Builtin Commands"
              >next</a> |</li>
         <li class="right" >
           <a href="index.html" title="pypsi"

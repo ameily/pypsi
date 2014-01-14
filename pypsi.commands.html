@@ -1,0 +1,172 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>2. Pypsi Builtin Commands &mdash; pypsi 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/pypsi.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pypsi 0.1 documentation" href="index.html" />
+    <link rel="next" title="3. Pypsi Builtin Plugins" href="pypsi.plugins.html" />
+    <link rel="prev" title="1. pypsi Overview" href="pypsi.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pypsi.plugins.html" title="3. Pypsi Builtin Plugins"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pypsi.html" title="1. pypsi Overview"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pypsi 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pypsi-builtin-commands">
+<h1>2. Pypsi Builtin Commands<a class="headerlink" href="#pypsi-builtin-commands" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<dl class="class">
+<dt id="pypsi.commands.echo.EchoCommand">
+<em class="property">class </em><tt class="descclassname">pypsi.commands.echo.</tt><tt class="descname">EchoCommand</tt><big>(</big><em>name='echo'</em>, <em>topic='shell'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/commands/echo.html#EchoCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.commands.echo.EchoCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pypsi.base.html#pypsi.base.Command" title="pypsi.base.Command"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.base.Command</span></tt></a></p>
+<p>Prints text to the screen.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pypsi.commands.exit.ExitCommand">
+<em class="property">class </em><tt class="descclassname">pypsi.commands.exit.</tt><tt class="descname">ExitCommand</tt><big>(</big><em>name='exit'</em>, <em>topic='shell'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/commands/exit.html#ExitCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.commands.exit.ExitCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pypsi.base.html#pypsi.base.Command" title="pypsi.base.Command"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.base.Command</span></tt></a></p>
+<p>Exit the active shell.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pypsi.commands.include.IncludeCommand">
+<em class="property">class </em><tt class="descclassname">pypsi.commands.include.</tt><tt class="descname">IncludeCommand</tt><big>(</big><em>name='include'</em>, <em>topic='shell'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/commands/include.html#IncludeCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.commands.include.IncludeCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pypsi.base.html#pypsi.base.Command" title="pypsi.base.Command"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.base.Command</span></tt></a></p>
+<p>Execute a script file. This entails reading each line of the given file and
+processing it as if it were typed into the shell.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pypsi.commands.macro.MacroCommand">
+<em class="property">class </em><tt class="descclassname">pypsi.commands.macro.</tt><tt class="descname">MacroCommand</tt><big>(</big><em>name='macro'</em>, <em>topic='shell'</em>, <em>macros={}</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/commands/macro.html#MacroCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.commands.macro.MacroCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">pypsi.plugins.block.BlockCommand</span></tt></p>
+<p>Record and execute command macros. Macros can consist of one or more
+command statements.</p>
+<p>This command requires the <tt class="xref py py-class docutils literal"><span class="pre">pypsi.plugins.block.BlockPlugin</span></tt> plugin.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="pypsi.commands.system.SystemCommand">
+<em class="property">class </em><tt class="descclassname">pypsi.commands.system.</tt><tt class="descname">SystemCommand</tt><big>(</big><em>name='system'</em>, <em>topic='shell'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/commands/system.html#SystemCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.commands.system.SystemCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pypsi.base.html#pypsi.base.Command" title="pypsi.base.Command"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.base.Command</span></tt></a></p>
+<p>Execute a command on the parent shell. This command can be used as the
+shell&#8217;s fallback command.</p>
+<dl class="method">
+<dt id="pypsi.commands.system.SystemCommand.fallback">
+<tt class="descname">fallback</tt><big>(</big><em>shell</em>, <em>name</em>, <em>args</em>, <em>ctx</em><big>)</big><a class="reference internal" href="_modules/pypsi/commands/system.html#SystemCommand.fallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.commands.system.SystemCommand.fallback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pass the command to the parent shell.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pypsi.commands.xargs.XArgsCommand">
+<em class="property">class </em><tt class="descclassname">pypsi.commands.xargs.</tt><tt class="descname">XArgsCommand</tt><big>(</big><em>name='xargs'</em>, <em>topic='shell'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/commands/xargs.html#XArgsCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.commands.xargs.XArgsCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pypsi.base.html#pypsi.base.Command" title="pypsi.base.Command"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.base.Command</span></tt></a></p>
+<p>Execute a command for each line of input from <a class="reference external" href="http://docs.python.org/3.3/library/sys.html#sys.stdin" title="(in Python v3.3)"><tt class="xref py py-data docutils literal"><span class="pre">sys.stdin</span></tt></a>.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pypsi.html"
+                        title="previous chapter">1. pypsi Overview</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pypsi.plugins.html"
+                        title="next chapter">3. Pypsi Builtin Plugins</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/pypsi.commands.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pypsi.plugins.html" title="3. Pypsi Builtin Plugins"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pypsi.html" title="1. pypsi Overview"
+             >previous</a> |</li>
+        <li><a href="index.html">pypsi 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Adam Meily.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+    </div>
+  </body>
+</html>

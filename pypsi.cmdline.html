@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>3. pypsi.cmdline - User input processing &mdash; pypsi 0.1 documentation</title>
+    <title>5. pypsi.cmdline - User input processing &mdash; pypsi 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/pypsi.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,7 +24,8 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="pypsi 0.1 documentation" href="index.html" />
-    <link rel="prev" title="2. pypsi.base - Base classes for pluggable features" href="pypsi.base.html" /> 
+    <link rel="next" title="6. pypsi.namespace - Arbitrary attribute storage classes" href="pypsi.namespace.html" />
+    <link rel="prev" title="4. pypsi.base - Base classes for pluggable features" href="pypsi.base.html" /> 
   </head>
   <body>
     <div class="related">
@@ -37,7 +38,10 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="pypsi.base.html" title="2. pypsi.base - Base classes for pluggable features"
+          <a href="pypsi.namespace.html" title="6. pypsi.namespace - Arbitrary attribute storage classes"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pypsi.base.html" title="4. pypsi.base - Base classes for pluggable features"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">pypsi 0.1 documentation</a> &raquo;</li> 
       </ul>
@@ -49,14 +53,14 @@
           <div class="body">
             
   <div class="section" id="pypsi-cmdline-user-input-processing">
-<h1>3. pypsi.cmdline - User input processing<a class="headerlink" href="#pypsi-cmdline-user-input-processing" title="Permalink to this headline">¶</a></h1>
+<h1>5. pypsi.cmdline - User input processing<a class="headerlink" href="#pypsi-cmdline-user-input-processing" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul class="simple">
 </ul>
 </div>
 <span class="target" id="module-pypsi.cmdline"></span><p>Classes used for parsing user input.</p>
 <div class="section" id="commands-and-expressions">
-<h2>3.1. Commands and expressions<a class="headerlink" href="#commands-and-expressions" title="Permalink to this headline">¶</a></h2>
+<h2>5.1. Commands and expressions<a class="headerlink" href="#commands-and-expressions" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pypsi.cmdline.Expression">
 <em class="property">class </em><tt class="descclassname">pypsi.cmdline.</tt><tt class="descname">Expression</tt><big>(</big><em>operand</em>, <em>operator</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/pypsi/cmdline.html#Expression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.cmdline.Expression" title="Permalink to this definition">¶</a></dt>
@@ -68,10 +72,10 @@ accepts input in the form of: <tt class="docutils literal"><span class="pre">nam
 user to input any of the following lines and the same Expression object
 would be created, regardless of how the input lines are tokenized:</p>
 <ul class="simple">
-<li><tt class="docutils literal"><span class="pre">some_var</span> <span class="pre">=</span> <span class="pre">2</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">some_var=</span> <span class="pre">2</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">some_var</span> <span class="pre">=2</span></tt></li>
-<li><tt class="docutils literal"><span class="pre">some_var=2</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">some_var</span> <span class="pre">=</span> <span class="pre">2</span></tt> =&gt; <tt class="docutils literal"><span class="pre">['some_var',</span> <span class="pre">'=',</span> <span class="pre">'2']</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">some_var=</span> <span class="pre">2</span></tt> =&gt; <tt class="docutils literal"><span class="pre">['some_var=',</span> <span class="pre">'2']</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">some_var</span> <span class="pre">=2</span></tt> =&gt; <tt class="docutils literal"><span class="pre">['some_var',</span> <span class="pre">'=2']</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">some_var=2</span></tt> =&gt; <tt class="docutils literal"><span class="pre">['some_var=2']</span></tt></li>
 </ul>
 <dl class="classmethod">
 <dt id="pypsi.cmdline.Expression.parse">
@@ -139,9 +143,9 @@ completed, and <tt class="docutils literal"><span class="pre">expression</span><
 
 </div>
 <div class="section" id="tokens">
-<h2>3.2. Tokens<a class="headerlink" href="#tokens" title="Permalink to this headline">¶</a></h2>
+<h2>5.2. Tokens<a class="headerlink" href="#tokens" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="constants">
-<h3>3.2.1. Constants<a class="headerlink" href="#constants" title="Permalink to this headline">¶</a></h3>
+<h3>5.2.1. Constants<a class="headerlink" href="#constants" title="Permalink to this headline">¶</a></h3>
 <p>These constants are returned by each token&#8217;s <cite>add_char()</cite> function to determine
 where tokens begin, end, and what they contain.</p>
 <dl class="data">
@@ -164,7 +168,7 @@ where tokens begin, end, and what they contain.</p>
 
 </div>
 <div class="section" id="classes">
-<h3>3.2.2. Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h3>
+<h3>5.2.2. Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="pypsi.cmdline.Token">
 <em class="property">class </em><tt class="descclassname">pypsi.cmdline.</tt><tt class="descname">Token</tt><big>(</big><em>index</em><big>)</big><a class="reference internal" href="_modules/pypsi/cmdline.html#Token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.cmdline.Token" title="Permalink to this definition">¶</a></dt>
@@ -282,7 +286,7 @@ same operator character. For example, the string &#8220;&gt;&gt;&#8221; would be
 </div>
 </div>
 <div class="section" id="statements">
-<h2>3.3. Statements<a class="headerlink" href="#statements" title="Permalink to this headline">¶</a></h2>
+<h2>5.3. Statements<a class="headerlink" href="#statements" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pypsi.cmdline.StatementContext">
 <em class="property">class </em><tt class="descclassname">pypsi.cmdline.</tt><tt class="descname">StatementContext</tt><a class="reference internal" href="_modules/pypsi/cmdline.html#StatementContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.cmdline.StatementContext" title="Permalink to this definition">¶</a></dt>
@@ -588,7 +592,7 @@ commands to execute</td>
 </dd></dl>
 
 <div class="section" id="exceptions">
-<h3>3.3.1. Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h3>
+<h3>5.3.1. Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="pypsi.cmdline.StatementSyntaxError">
 <em class="property">class </em><tt class="descclassname">pypsi.cmdline.</tt><tt class="descname">StatementSyntaxError</tt><big>(</big><em>message</em>, <em>index</em><big>)</big><a class="reference internal" href="_modules/pypsi/cmdline.html#StatementSyntaxError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.cmdline.StatementSyntaxError" title="Permalink to this definition">¶</a></dt>
@@ -620,15 +624,15 @@ commands to execute</td>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">3. pypsi.cmdline - User input processing</a><ul>
-<li><a class="reference internal" href="#commands-and-expressions">3.1. Commands and expressions</a></li>
-<li><a class="reference internal" href="#tokens">3.2. Tokens</a><ul>
-<li><a class="reference internal" href="#constants">3.2.1. Constants</a></li>
-<li><a class="reference internal" href="#classes">3.2.2. Classes</a></li>
+<li><a class="reference internal" href="#">5. pypsi.cmdline - User input processing</a><ul>
+<li><a class="reference internal" href="#commands-and-expressions">5.1. Commands and expressions</a></li>
+<li><a class="reference internal" href="#tokens">5.2. Tokens</a><ul>
+<li><a class="reference internal" href="#constants">5.2.1. Constants</a></li>
+<li><a class="reference internal" href="#classes">5.2.2. Classes</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#statements">3.3. Statements</a><ul>
-<li><a class="reference internal" href="#exceptions">3.3.1. Exceptions</a></li>
+<li><a class="reference internal" href="#statements">5.3. Statements</a><ul>
+<li><a class="reference internal" href="#exceptions">5.3.1. Exceptions</a></li>
 </ul>
 </li>
 </ul>
@@ -637,7 +641,10 @@ commands to execute</td>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="pypsi.base.html"
-                        title="previous chapter">2. pypsi.base - Base classes for pluggable features</a></p>
+                        title="previous chapter">4. pypsi.base - Base classes for pluggable features</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pypsi.namespace.html"
+                        title="next chapter">6. pypsi.namespace - Arbitrary attribute storage classes</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/pypsi.cmdline.txt"
@@ -670,7 +677,10 @@ commands to execute</td>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="pypsi.base.html" title="2. pypsi.base - Base classes for pluggable features"
+          <a href="pypsi.namespace.html" title="6. pypsi.namespace - Arbitrary attribute storage classes"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pypsi.base.html" title="4. pypsi.base - Base classes for pluggable features"
              >previous</a> |</li>
         <li><a href="index.html">pypsi 0.1 documentation</a> &raquo;</li> 
       </ul>

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>2. pypsi.base - Base classes for pluggable features &mdash; pypsi 0.1 documentation</title>
+    <title>4. pypsi.base - Base classes for pluggable features &mdash; pypsi 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/pypsi.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -24,8 +24,8 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="pypsi 0.1 documentation" href="index.html" />
-    <link rel="next" title="3. pypsi.cmdline - User input processing" href="pypsi.cmdline.html" />
-    <link rel="prev" title="1. pypsi Overview" href="pypsi.html" /> 
+    <link rel="next" title="5. pypsi.cmdline - User input processing" href="pypsi.cmdline.html" />
+    <link rel="prev" title="3. Pypsi Builtin Plugins" href="pypsi.plugins.html" /> 
   </head>
   <body>
     <div class="related">
@@ -38,10 +38,10 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="pypsi.cmdline.html" title="3. pypsi.cmdline - User input processing"
+          <a href="pypsi.cmdline.html" title="5. pypsi.cmdline - User input processing"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="pypsi.html" title="1. pypsi Overview"
+          <a href="pypsi.plugins.html" title="3. Pypsi Builtin Plugins"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">pypsi 0.1 documentation</a> &raquo;</li> 
       </ul>
@@ -53,14 +53,14 @@
           <div class="body">
             
   <div class="section" id="pypsi-base-base-classes-for-pluggable-features">
-<h1>2. pypsi.base - Base classes for pluggable features<a class="headerlink" href="#pypsi-base-base-classes-for-pluggable-features" title="Permalink to this headline">¶</a></h1>
+<h1>4. pypsi.base - Base classes for pluggable features<a class="headerlink" href="#pypsi-base-base-classes-for-pluggable-features" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul class="simple">
 </ul>
 </div>
 <span class="target" id="module-pypsi.base"></span><p>Base classes for developing pluggable commands and plugins.</p>
 <div class="section" id="command-objects">
-<h2>2.1. Command objects<a class="headerlink" href="#command-objects" title="Permalink to this headline">¶</a></h2>
+<h2>4.1. Command objects<a class="headerlink" href="#command-objects" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pypsi.base.Command">
 <em class="property">class </em><tt class="descclassname">pypsi.base.</tt><tt class="descname">Command</tt><big>(</big><em>name</em>, <em>usage=None</em>, <em>brief=None</em>, <em>topic=None</em>, <em>pipe='str'</em><big>)</big><a class="reference internal" href="_modules/pypsi/base.html#Command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.base.Command" title="Permalink to this definition">¶</a></dt>
@@ -72,6 +72,9 @@ when processing forthcoming commands in the active statement. The return
 value must be an <tt class="xref py py-class docutils literal"><span class="pre">int</span></tt> and follows the Unix standard: 0 on success,
 less than 0 on error, and greater than 0 given invalid input or incorrect
 usage.</p>
+<p>Each command has a topic associated with it. This topic can be referenced by
+commands such as <tt class="xref py py-class docutils literal"><span class="pre">pypsi.commands.help.HelpCommand</span></tt> to categorize
+commands in help messages.</p>
 <p>A command can be used as a fallback handler by implementing the
 <a class="reference internal" href="#pypsi.base.Command.fallback" title="pypsi.base.Command.fallback"><tt class="xref py py-meth docutils literal"><span class="pre">fallback()</span></tt></a> method. This is similar to the <a class="reference internal" href="#pypsi.base.Command.run" title="pypsi.base.Command.run"><tt class="xref py py-meth docutils literal"><span class="pre">run()</span></tt></a> method, except
 that is accepts one more argument: the command name to execute that wasn&#8217;t
@@ -233,7 +236,7 @@ After the error is displayed, the usage is printed.</p>
 
 </div>
 <div class="section" id="plugin-objects">
-<h2>2.2. Plugin objects<a class="headerlink" href="#plugin-objects" title="Permalink to this headline">¶</a></h2>
+<h2>4.2. Plugin objects<a class="headerlink" href="#plugin-objects" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pypsi.base.Plugin">
 <em class="property">class </em><tt class="descclassname">pypsi.base.</tt><tt class="descname">Plugin</tt><big>(</big><em>preprocess=None</em>, <em>postprocess=None</em><big>)</big><a class="reference internal" href="_modules/pypsi/base.html#Plugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.base.Plugin" title="Permalink to this definition">¶</a></dt>
@@ -365,7 +368,7 @@ objects</p>
 
 </div>
 <div class="section" id="argument-parsing">
-<h2>2.3. Argument parsing<a class="headerlink" href="#argument-parsing" title="Permalink to this headline">¶</a></h2>
+<h2>4.3. Argument parsing<a class="headerlink" href="#argument-parsing" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pypsi.base.PypsiArgParser">
 <em class="property">class </em><tt class="descclassname">pypsi.base.</tt><tt class="descname">PypsiArgParser</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/base.html#PypsiArgParser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.base.PypsiArgParser" title="Permalink to this definition">¶</a></dt>
@@ -391,20 +394,20 @@ stream</li>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">2. pypsi.base - Base classes for pluggable features</a><ul>
-<li><a class="reference internal" href="#command-objects">2.1. Command objects</a></li>
-<li><a class="reference internal" href="#plugin-objects">2.2. Plugin objects</a></li>
-<li><a class="reference internal" href="#argument-parsing">2.3. Argument parsing</a></li>
+<li><a class="reference internal" href="#">4. pypsi.base - Base classes for pluggable features</a><ul>
+<li><a class="reference internal" href="#command-objects">4.1. Command objects</a></li>
+<li><a class="reference internal" href="#plugin-objects">4.2. Plugin objects</a></li>
+<li><a class="reference internal" href="#argument-parsing">4.3. Argument parsing</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="pypsi.html"
-                        title="previous chapter">1. pypsi Overview</a></p>
+  <p class="topless"><a href="pypsi.plugins.html"
+                        title="previous chapter">3. Pypsi Builtin Plugins</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="pypsi.cmdline.html"
-                        title="next chapter">3. pypsi.cmdline - User input processing</a></p>
+                        title="next chapter">5. pypsi.cmdline - User input processing</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/pypsi.base.txt"
@@ -437,10 +440,10 @@ stream</li>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="pypsi.cmdline.html" title="3. pypsi.cmdline - User input processing"
+          <a href="pypsi.cmdline.html" title="5. pypsi.cmdline - User input processing"
              >next</a> |</li>
         <li class="right" >
-          <a href="pypsi.html" title="1. pypsi Overview"
+          <a href="pypsi.plugins.html" title="3. Pypsi Builtin Plugins"
              >previous</a> |</li>
         <li><a href="index.html">pypsi 0.1 documentation</a> &raquo;</li> 
       </ul>

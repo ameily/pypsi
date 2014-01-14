@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>6. pypsi.namespace - Arbitrary attribute storage classes &mdash; pypsi 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/pypsi.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pypsi 0.1 documentation" href="index.html" />
+    <link rel="next" title="7. pypsi.stream - File streams" href="pypsi.stream.html" />
+    <link rel="prev" title="5. pypsi.cmdline - User input processing" href="pypsi.cmdline.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pypsi.stream.html" title="7. pypsi.stream - File streams"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pypsi.cmdline.html" title="5. pypsi.cmdline - User input processing"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pypsi 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pypsi-namespace-arbitrary-attribute-storage-classes">
+<h1>6. pypsi.namespace - Arbitrary attribute storage classes<a class="headerlink" href="#pypsi-namespace-arbitrary-attribute-storage-classes" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<span class="target" id="module-pypsi.namespace"></span><p>Generic objects to store arbitrary attributes and values.</p>
+<dl class="class">
+<dt id="pypsi.namespace.Namespace">
+<em class="property">class </em><tt class="descclassname">pypsi.namespace.</tt><tt class="descname">Namespace</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/namespace.html#Namespace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.namespace.Namespace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Provides dynamic attribute storage and retrieval. Attributes can be
+retrieved and set by either attribute accesses or <a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#dict" title="(in Python v3.3)"><tt class="xref py py-class docutils literal"><span class="pre">dict</span></tt></a> key access.
+The following two lines of code retrieve and set the same attribute:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">namespace.my_attr</span> <span class="pre">=</span> <span class="pre">1</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">namespace['my_attr']</span> <span class="pre">=</span> <span class="pre">1</span></tt></li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>kwargs</strong> &#8211; default attributes and their values are created</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pypsi.namespace.Namespace.__iter__">
+<tt class="descname">__iter__</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pypsi/namespace.html#Namespace.__iter__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.namespace.Namespace.__iter__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pypsi.namespace.ScopedNamespace">
+<em class="property">class </em><tt class="descclassname">pypsi.namespace.</tt><tt class="descname">ScopedNamespace</tt><big>(</big><em>name</em>, <em>case_sensitive=True</em>, <em>locals=None</em>, <em>parent=None</em><big>)</big><a class="reference internal" href="_modules/pypsi/namespace.html#ScopedNamespace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.namespace.ScopedNamespace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Provides a configurable namespace for arbitrary attribute access.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; the root name</li>
+<li><strong>case_sensitive</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#bool" title="(in Python v3.3)"><em>bool</em></a>) &#8211; determines whether attribute names are case
+sensitive</li>
+<li><strong>locals</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#dict" title="(in Python v3.3)"><em>dict</em></a>) &#8211; default attributes</li>
+<li><strong>parent</strong> (<em>ScopedNamespace</em>) &#8211; the parent namespace</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pypsi.namespace.ScopedNamespace.__iter__">
+<tt class="descname">__iter__</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pypsi/namespace.html#ScopedNamespace.__iter__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.namespace.ScopedNamespace.__iter__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pypsi.cmdline.html"
+                        title="previous chapter">5. pypsi.cmdline - User input processing</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pypsi.stream.html"
+                        title="next chapter">7. pypsi.stream - File streams</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/pypsi.namespace.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pypsi.stream.html" title="7. pypsi.stream - File streams"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pypsi.cmdline.html" title="5. pypsi.cmdline - User input processing"
+             >previous</a> |</li>
+        <li><a href="index.html">pypsi 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Adam Meily.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+    </div>
+  </body>
+</html>

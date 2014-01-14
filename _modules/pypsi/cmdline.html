@@ -676,10 +676,10 @@
 <span class="sd">    user to input any of the following lines and the same Expression object</span>
 <span class="sd">    would be created, regardless of how the input lines are tokenized:</span>
 
-<span class="sd">    - ``some_var = 2``</span>
-<span class="sd">    - ``some_var= 2``</span>
-<span class="sd">    - ``some_var =2``</span>
-<span class="sd">    - ``some_var=2``</span>
+<span class="sd">    - ``some_var = 2`` =&gt; ``[&#39;some_var&#39;, &#39;=&#39;, &#39;2&#39;]``</span>
+<span class="sd">    - ``some_var= 2`` =&gt; ``[&#39;some_var=&#39;, &#39;2&#39;]``</span>
+<span class="sd">    - ``some_var =2`` =&gt; ``[&#39;some_var&#39;, &#39;=2&#39;]``</span>
+<span class="sd">    - ``some_var=2`` =&gt; ``[&#39;some_var=2&#39;]``</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
     <span class="n">Operators</span> <span class="o">=</span> <span class="s">&#39;-+=/*&#39;</span>
