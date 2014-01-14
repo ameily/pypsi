@@ -266,7 +266,7 @@ def signature(app, what, name, obj, options, signature, return_annotation):
 
 
 def skip(app, what, name, obj, skip, options):
-  if name in ('__len__', '__iter__'):
+  if name in ('__len__', '__iter__', '__call__'):
     return False
 
   #if type(obj) in (object, property):

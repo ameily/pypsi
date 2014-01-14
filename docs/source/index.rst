@@ -4,14 +4,19 @@
    contain the root `toctree` directive.
 
 pypsi
-=================================
+=====
 
 .. toctree::
     :numbered:
 
     pypsi.rst
+    pypsi.commands.rst
+    pypsi.plugins.rst
     pypsi.base.rst
     pypsi.cmdline.rst
+    pypsi.namespace.rst
+    pypsi.stream.rst
+    pypsi.utils.rst
 
 
 

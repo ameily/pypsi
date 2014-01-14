@@ -627,10 +627,10 @@ class Expression(object):
     user to input any of the following lines and the same Expression object
     would be created, regardless of how the input lines are tokenized:
 
-    - ``some_var = 2``
-    - ``some_var= 2``
-    - ``some_var =2``
-    - ``some_var=2``
+    - ``some_var = 2`` => ``['some_var', '=', '2']``
+    - ``some_var= 2`` => ``['some_var=', '2']``
+    - ``some_var =2`` => ``['some_var', '=2']``
+    - ``some_var=2`` => ``['some_var=2']``
     '''
 
     Operators = '-+=/*'

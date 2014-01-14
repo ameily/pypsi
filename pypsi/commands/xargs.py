@@ -7,6 +7,9 @@ XArgsUsage = """{name} [-h] [-I repstr] command"""
 
 
 class XArgsCommand(Command):
+    '''
+    Execute a command for each line of input from :data:`sys.stdin`.
+    '''
 
     def __init__(self, name='xargs', topic='shell', **kwargs):
         self.parser = PypsiArgParser(

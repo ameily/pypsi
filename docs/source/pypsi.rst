@@ -117,7 +117,7 @@ System commands
 Allows execution of external applications. Command mimics Python's
 ``os.system()`` function.
 
-:mod:`pypsi.commands.system`
+:class:`pypsi.commands.system.SystemCommand`
 
 ::
 
@@ -136,8 +136,8 @@ Fallback command
 Allows the developer to set which command gets called if one does not exist in
 the current shell. This is very useful, for example, if you want to fallback on
 any OS installed executables. In this example, the fallback command is
-``system``. Currently, setting of the fallback command can only be done in the
-API and not through the shell.
+``system`` (:class:`pypsi.commands.system.SystemCommand`). Currently, setting of
+the fallback command can only be done in the API and not through the shell.
 
 ::
 
@@ -185,8 +185,8 @@ Macros are analogous to functions in bash. They provide the ability to create
 new commands in the shell. The macro command requires the
 :class:`pypsi.plugins.block.BlockPlugin`, which allows for block commands.
 
-:mod:`pypsi.commands.macro`
-:mod:`pypsi.plugins.block`
+- :class:`pypsi.commands.macro.MacroCommand`
+- :class:`pypsi.plugins.block.BlockPlugin`
 
 ::
 

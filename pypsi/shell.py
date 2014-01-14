@@ -10,6 +10,9 @@ import sys
 
 
 class Shell(object):
+    '''
+    The command line interface that the user interacts with.
+    '''
 
     def __init__(self, shell_name='pypsi', exit_rc=-1024, ctx=None):
         self.real_stdout = sys.stdout

@@ -128,6 +128,10 @@ class Command(object):
     less than 0 on error, and greater than 0 given invalid input or incorrect
     usage.
 
+    Each command has a topic associated with it. This topic can be referenced by
+    commands such as :class:`pypsi.commands.help.HelpCommand` to categorize
+    commands in help messages.
+
     A command can be used as a fallback handler by implementing the
     :meth:`fallback` method. This is similar to the :meth:`run` method, except
     that is accepts one more argument: the command name to execute that wasn't
