@@ -37,6 +37,23 @@ from pypsi.base import Command
 # something | cmd1 ; cmd2 | something
 
 class Macro(Command):
+    '''
+    Recorded macro that executes statements sequentially. If the
+    :class:`pypsi.plugins.variable.VariablePlugin` is registered, arguments
+    passed in when the macro is called are translated into variables, ala Bash.
+    Each statement may then reference the arguments via the variables ``$1-9``.
+    The variable ``$0`` is the name of the macro. For example, the following
+    statement would produce the corresponding variables:
+
+    ``hello arg1 "arg 2" arg3``
+    - ``$0`` = "hello"
+    - ``$1`` = "arg1"
+    - ``$2`` = "arg 2"
+    - ``$3`` = "arg3"
+
+    Once the macro has finished executing, the variables are argument variables
+    are removed.
+    '''
 
     def __init__(self, lines, **kwargs):
         super(Macro, self).__init__(**kwargs)
@@ -79,7 +96,9 @@ Manage registered macros"""
 class MacroCommand(BlockCommand):
     '''
     Record and execute command macros. Macros can consist of one or more
-    command statements.
+    command statements. Macros are comparable to Bash functions. Once a macro
+    has been recorded, a new command is registered in the shell as an instance
+    of a :class:`Macro`.
     
     This command requires the :class:`pypsi.plugins.block.BlockPlugin` plugin.
     '''

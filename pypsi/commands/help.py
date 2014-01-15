@@ -33,6 +33,9 @@ from pypsi.utils import Title
 
 
 class HelpCommand(Command):
+    '''
+    Provides access to manpage-esque topics and command usage information.
+    '''
 
     def __init__(self, name='help', topic='shell', topics=None, **kwargs):
         super(HelpCommand, self).__init__(
