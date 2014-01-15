@@ -86,6 +86,23 @@
 <span class="c"># something | cmd1 ; cmd2 | something</span>
 
 <span class="k">class</span> <span class="nc">Macro</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Recorded macro that executes statements sequentially. If the</span>
+<span class="sd">    :class:`pypsi.plugins.variable.VariablePlugin` is registered, arguments</span>
+<span class="sd">    passed in when the macro is called are translated into variables, ala Bash.</span>
+<span class="sd">    Each statement may then reference the arguments via the variables ``$1-9``.</span>
+<span class="sd">    The variable ``$0`` is the name of the macro. For example, the following</span>
+<span class="sd">    statement would produce the corresponding variables:</span>
+
+<span class="sd">    ``hello arg1 &quot;arg 2&quot; arg3``</span>
+<span class="sd">    - ``$0`` = &quot;hello&quot;</span>
+<span class="sd">    - ``$1`` = &quot;arg1&quot;</span>
+<span class="sd">    - ``$2`` = &quot;arg 2&quot;</span>
+<span class="sd">    - ``$3`` = &quot;arg3&quot;</span>
+
+<span class="sd">    Once the macro has finished executing, the variables are argument variables</span>
+<span class="sd">    are removed.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Macro</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -128,7 +145,9 @@
 <div class="viewcode-block" id="MacroCommand"><a class="viewcode-back" href="../../../pypsi.commands.html#pypsi.commands.macro.MacroCommand">[docs]</a><span class="k">class</span> <span class="nc">MacroCommand</span><span class="p">(</span><span class="n">BlockCommand</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Record and execute command macros. Macros can consist of one or more</span>
-<span class="sd">    command statements.</span>
+<span class="sd">    command statements. Macros are comparable to Bash functions. Once a macro</span>
+<span class="sd">    has been recorded, a new command is registered in the shell as an instance</span>
+<span class="sd">    of a :class:`Macro`.</span>
 <span class="sd">    </span>
 <span class="sd">    This command requires the :class:`pypsi.plugins.block.BlockPlugin` plugin.</span>
 <span class="sd">    &#39;&#39;&#39;</span>

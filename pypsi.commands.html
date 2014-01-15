@@ -54,6 +54,7 @@
             
   <div class="section" id="pypsi-builtin-commands">
 <h1>2. Pypsi Builtin Commands<a class="headerlink" href="#pypsi-builtin-commands" title="Permalink to this headline">¶</a></h1>
+<p>Pypsi ships with several commands that would be useful for any shell.</p>
 <div class="toctree-wrapper compound">
 <ul class="simple">
 </ul>
@@ -73,6 +74,13 @@
 </dd></dl>
 
 <dl class="class">
+<dt id="pypsi.commands.help.HelpCommand">
+<em class="property">class </em><tt class="descclassname">pypsi.commands.help.</tt><tt class="descname">HelpCommand</tt><big>(</big><em>name='help'</em>, <em>topic='shell'</em>, <em>topics=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/commands/help.html#HelpCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.commands.help.HelpCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pypsi.base.html#pypsi.base.Command" title="pypsi.base.Command"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.base.Command</span></tt></a></p>
+<p>Provides access to manpage-esque topics and command usage information.</p>
+</dd></dl>
+
+<dl class="class">
 <dt id="pypsi.commands.include.IncludeCommand">
 <em class="property">class </em><tt class="descclassname">pypsi.commands.include.</tt><tt class="descname">IncludeCommand</tt><big>(</big><em>name='include'</em>, <em>topic='shell'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/commands/include.html#IncludeCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.commands.include.IncludeCommand" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="pypsi.base.html#pypsi.base.Command" title="pypsi.base.Command"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.base.Command</span></tt></a></p>
@@ -83,10 +91,12 @@ processing it as if it were typed into the shell.</p>
 <dl class="class">
 <dt id="pypsi.commands.macro.MacroCommand">
 <em class="property">class </em><tt class="descclassname">pypsi.commands.macro.</tt><tt class="descname">MacroCommand</tt><big>(</big><em>name='macro'</em>, <em>topic='shell'</em>, <em>macros={}</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/commands/macro.html#MacroCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.commands.macro.MacroCommand" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">pypsi.plugins.block.BlockCommand</span></tt></p>
+<dd><p>Bases: <a class="reference internal" href="pypsi.plugins.html#pypsi.plugins.block.BlockCommand" title="pypsi.plugins.block.BlockCommand"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.plugins.block.BlockCommand</span></tt></a></p>
 <p>Record and execute command macros. Macros can consist of one or more
-command statements.</p>
-<p>This command requires the <tt class="xref py py-class docutils literal"><span class="pre">pypsi.plugins.block.BlockPlugin</span></tt> plugin.</p>
+command statements. Macros are comparable to Bash functions. Once a macro
+has been recorded, a new command is registered in the shell as an instance
+of a <tt class="xref py py-class docutils literal"><span class="pre">Macro</span></tt>.</p>
+<p>This command requires the <a class="reference internal" href="pypsi.plugins.html#pypsi.plugins.block.BlockPlugin" title="pypsi.plugins.block.BlockPlugin"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.plugins.block.BlockPlugin</span></tt></a> plugin.</p>
 </dd></dl>
 
 <dl class="class">
