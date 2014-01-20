@@ -29,6 +29,10 @@ Escape Sequence Processors
 .. autoclass:: pypsi.plugins.hexcode.HexCodePlugin
     :members:
 
+.. autoclass:: pypsi.plugins.multiline.MultilinePlugin
+    :members:
+
+
 Shell History
 -------------
 
@@ -43,3 +47,35 @@ Shell History
 
 .. autoclass:: pypsi.plugins.history.History
     :members:
+
+
+Variables
+---------
+
+.. automodule:: pypsi.plugins.variable
+
+.. autoclass:: pypsi.plugins.variable.VariablePlugin
+    :members:
+
+.. autoclass:: pypsi.plugins.variable.VariableCommand
+    :members:
+
+.. autoclass:: pypsi.plugins.variable.ManagedVariable
+    :members:
+
+
+
+Cmd
+---
+
+.. automodule:: pypsi.plugins.cmd
+
+.. autoclass:: pypsi.plugins.cmd.CmdPlugin
+    :members:
+
+.. autoclass:: pypsi.plugins.cmd.CommandFunction
+    :members:
+
+.. autodata:: pypsi.plugins.cmd.CmdArgsList
+
+.. autodata:: pypsi.plugins.cmd.CmdArgsString

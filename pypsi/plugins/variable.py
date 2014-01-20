@@ -38,8 +38,23 @@ from io import StringIO
 
 
 class ManagedVariable(object):
+    '''
+    Represents a variable that is managed by the shell. Managed variables have 
+    get and set hooks that allow for input validation or read-only enforcement.
+    Each variable needs a ``getter``, which is called to retrieve the value, and
+    possibly a ``setter``, which is called to set the value. If the setter is
+    :const:`None`, the variable is read-only. The setter must accept two
+    arguments when it is called: the active :class:`~pypsi.shell.Shell`
+    instance, and the :class:`str` value.
+    '''
 
     def __init__(self, getter, setter=None):
+        '''
+        :param callable getter: the callable to call when retrieving the
+            variable's value (must return a value)
+        :param callable setter: the callable to call when setting the variable's
+            value
+        '''
         self.getter = getter
         self.setter = setter
 
@@ -54,6 +69,9 @@ class ManagedVariable(object):
 
 
 class VariableCommand(Command):
+    '''
+    Manage variables.
+    '''
 
     Usage = """usage: var name = value
    or: var -l
@@ -206,9 +224,18 @@ def get_subtokens(token, prefix):
 
 
 class VariablePlugin(Plugin):
+    '''
+    Provides variable management and substitution in user input.
+    '''
 
     def __init__(self, var_cmd='var', prefix='$', locals=None,
                  case_sensitive=True, preprocess=10, postprocess=90, **kwargs):
+        '''
+        :param str var_cmd: the name of the variable command
+        :param str prefix: the prefix that all variables need to start with
+        :param dict locals: the base variables to register initially
+        :param bool case_sensitive: whether variable names are case sensitive
+        '''
         super(VariablePlugin, self).__init__(preprocess=preprocess, postprocess=postprocess, **kwargs)
         self.var_cmd = VariableCommand(name=var_cmd)
         self.prefix = prefix
@@ -218,13 +245,19 @@ class VariablePlugin(Plugin):
                 self.namespace[k] = v
 
     def setup(self, shell):
+        '''
+        Register the :class:`VariableCommand` and add the ``vars`` attribute
+        (:class:`pypsi.namespace.ScopedNamespace`) to the shell's context.
+        '''
         shell.register(self.var_cmd)
-        shell.ctx.vars = self.namespace
-        shell.ctx.vars.date = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.datefmt or "%x"))
-        shell.ctx.vars.time = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.timefmt or "%X"))
-        shell.ctx.vars.datetime = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.datetimefmt or "%c"))
-        shell.ctx.vars.prompt = ManagedVariable(lambda shell: shell.prompt)
-        shell.ctx.vars.errno = ManagedVariable(lambda shell: str(shell.errno))
+        if 'vars' not in shell.ctx:
+            shell.ctx.vars = self.namespace
+            shell.ctx.vars.date = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.datefmt or "%x"))
+            shell.ctx.vars.time = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.timefmt or "%X"))
+            shell.ctx.vars.datetime = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.datetimefmt or "%c"))
+            shell.ctx.vars.prompt = ManagedVariable(lambda shell: shell.prompt)
+            shell.ctx.vars.errno = ManagedVariable(lambda shell: str(shell.errno))
+        return 0
 
     def expand(self, shell, vart):
         name = vart.var

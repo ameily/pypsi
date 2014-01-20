@@ -11,10 +11,17 @@ import sys
 
 class Shell(object):
     '''
-    The command line interface that the user interacts with.
+    The command line interface that the user interacts with. All shell's need to
+    inherit this base class.
     '''
 
     def __init__(self, shell_name='pypsi', exit_rc=-1024, ctx=None):
+        '''
+        :param str shell_name: the name of the shell; used in error messages
+        :param int exit_rc: the exit return code that is returned from a command
+            when the shell needs to end execution
+        :param pypsi.namespace.Namespace ctx: the base context
+        '''
         self.real_stdout = sys.stdout
         self.real_stdin = sys.stdin
         self.real_stderr = sys.stderr
@@ -42,10 +49,18 @@ class Shell(object):
         self.fallback_cmd = None
 
     def add_stream(self, name, stream):
+        '''
+        Add a new file category stream.
+        '''
+
         self.streams[name] = stream
         setattr(self, name, stream)
 
     def register_base_plugins(self):
+        '''
+        Register all base plugins that are defined.
+        '''
+
         cls = self.__class__
         for name in dir(cls):
             attr = getattr(cls, name)
@@ -53,6 +68,10 @@ class Shell(object):
                 self.register(attr)
 
     def register(self, obj):
+        '''
+        Register a :class:`~pypsi.base.Command` or a :class:`~pypsi.base.Plugin`.
+        '''
+
         if isinstance(obj, Command):
             self.commands[obj.name] = obj
 

@@ -1,5 +1,6 @@
 
 .. toctree::
+    :numbered:
 
 
 pypsi Overview
@@ -24,7 +25,9 @@ limits of the ``cmd`` module. The ``cmd`` module is great at one thing:
 developing a small number of commands that follow a simple format in very little
 time. Once we started inplemented I/O redirection, piping, and so on, I found
 that heavy modifications to the core ``cmd`` module for this functionality to be
-even possible.
+even possible. While developing unit tests, I found that it was difficult to
+isolate a single command's functionality. Unit tests became not only a nightmare
+to develop but also maintain.
 
 So, I found the ``cmd2`` module and began experimenting with it. Although, on
 the surface, it had what I was looking for, I found that it, too, would require
@@ -80,7 +83,8 @@ the pypsi module, using only the commands and plugins that ship with pypsi.
 Variables
 ~~~~~~~~~
 
-:mod:`pypsi.plugins.variable`
+- :class:`~pypsi.plugins.variable.VariablePlugin`
+- :class:`~pypsi.plugins.variable.VariableCommand`
 
 ::
 
@@ -117,7 +121,7 @@ System commands
 Allows execution of external applications. Command mimics Python's
 ``os.system()`` function.
 
-:class:`pypsi.commands.system.SystemCommand`
+- :class:`~pypsi.commands.system.SystemCommand`
 
 ::
 
@@ -136,8 +140,8 @@ Fallback command
 Allows the developer to set which command gets called if one does not exist in
 the current shell. This is very useful, for example, if you want to fallback on
 any OS installed executables. In this example, the fallback command is
-``system`` (:class:`pypsi.commands.system.SystemCommand`). Currently, setting of
-the fallback command can only be done in the API and not through the shell.
+``system`` (:class:`~pypsi.commands.system.SystemCommand`). Currently, settin
+of the fallback command can only be done in the API and not through the shell.
 
 ::
 
@@ -165,7 +169,7 @@ Command chaining
 Multiline commands
 ~~~~~~~~~~~~~~~~~~
 
-:mod:`pypsi.plugins.multiline`
+- :class:`~pypsi.plugins.multiline.MultilinePlugin`
 
 ::
 
@@ -183,10 +187,10 @@ Macros
 
 Macros are analogous to functions in bash. They provide the ability to create
 new commands in the shell. The macro command requires the
-:class:`pypsi.plugins.block.BlockPlugin`, which allows for block commands.
+:class:`~pypsi.plugins.block.BlockPlugin`, which allows for block commands.
 
-- :class:`pypsi.commands.macro.MacroCommand`
-- :class:`pypsi.plugins.block.BlockPlugin`
+- :class:`~pypsi.commands.macro.MacroCommand`
+- :class:`~pypsi.plugins.block.BlockPlugin`
 
 ::
 
@@ -200,6 +204,9 @@ new commands in the shell. The macro command requires the
 
 History
 ~~~~~~~
+
+- :class:`~pypsi.plugins.history.HistoryPlugin`
+- :class:`~pypsi.plugins.history.HistoryCommand`
 
 ::
 

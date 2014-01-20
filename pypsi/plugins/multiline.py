@@ -35,23 +35,23 @@ from pypsi.cmdline import StringToken
 class MultilinePlugin(Plugin):
     '''
     Provides the ability to input and execute multiline statements. Input lines
-    that end in the escape character ``\\`` can be continued on the subsequent
+    that end in the escape character ``\`` can be continued on the subsequent
     input line. This allows for the user to type the following and produces the
     the statement:
 
-    ``echo this is a multiline \\
-    statement``
+    | ``echo this is a multiline \``
+    | ``statement``
 
-    =>
+    `=>`
 
     ``echo this is a multiline statement``
     '''
 
     def __init__(self, prompt='> ', preprocess=30, **kwargs):
         '''
-        :param str prompt: the prompt to display when recording a multiline
-            statement
+        :param str prompt: the prompt when recording a multiline statement
         '''
+
         super(MultilinePlugin, self).__init__(preprocess=preprocess, **kwargs)
         self.prompt = prompt
         self.orig_prompt = None

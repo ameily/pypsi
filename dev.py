@@ -31,6 +31,7 @@
 from pypsi.shell import Shell
 from pypsi.base import Command
 #from pypsi.plugins.alias import AliasPlugin
+from pypsi.plugins.cmd import CmdPlugin
 from pypsi.plugins.block import BlockPlugin
 from pypsi.plugins.hexcode import HexCodePlugin
 from pypsi.commands.macro import MacroCommand
@@ -69,6 +70,7 @@ class DevShell(Shell):
     exit_cmd = ExitCommand()
     history_plugin = HistoryPlugin()
     include_cmd = IncludeCommand()
+    cmd_plugin = CmdPlugin(cmd_args=1)
     help_cmd = HelpCommand(
         topics=(('shell', "Shell"), ('misc', 'Miscellaneous'))
     )
@@ -81,6 +83,21 @@ class DevShell(Shell):
         self.warn.postfix = self.error.postfix = "\x1b[0m"
         self.warn.prefix = "\x1b[1;33m"
         #self.fallback_cmd = self.system_cmd
+
+    def do_cmddoc(self, args):
+        '''
+        This is some long description for the cmdargs command.
+        '''
+        print("do_cmdargs(", args, ")")
+        return 0
+
+    def help_cmdout(self):
+        print("this is the help message for the cmdout command")
+
+    def do_cmdout(self, args):
+        print("do_cmdout(", args, ")")
+        return 0
+
 
 if __name__ == '__main__':
     shell = DevShell()
