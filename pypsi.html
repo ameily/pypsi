@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="pypsi 0.1 documentation" href="index.html" />
-    <link rel="next" title="2. Pypsi Builtin Commands" href="pypsi.commands.html" />
+    <link rel="next" title="2. Pypsi Shell" href="pypsi.shell.html" />
     <link rel="prev" title="pypsi" href="index.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="pypsi.commands.html" title="2. Pypsi Builtin Commands"
+          <a href="pypsi.shell.html" title="2. Pypsi Shell"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="index.html" title="pypsi"
@@ -74,7 +74,9 @@ limits of the <tt class="docutils literal"><span class="pre">cmd</span></tt> mod
 developing a small number of commands that follow a simple format in very little
 time. Once we started inplemented I/O redirection, piping, and so on, I found
 that heavy modifications to the core <tt class="docutils literal"><span class="pre">cmd</span></tt> module for this functionality to be
-even possible.</p>
+even possible. While developing unit tests, I found that it was difficult to
+isolate a single command&#8217;s functionality. Unit tests became not only a nightmare
+to develop but also maintain.</p>
 <p>So, I found the <tt class="docutils literal"><span class="pre">cmd2</span></tt> module and began experimenting with it. Although, on
 the surface, it had what I was looking for, I found that it, too, would require
 heavy modifications (and for me to understand the <tt class="docutils literal"><span class="pre">pyparsing</span></tt> API, which still
@@ -122,7 +124,10 @@ There are so many benefits surrounding Python 3 that I will not list them here.<
 the pypsi module, using only the commands and plugins that ship with pypsi.</p>
 <div class="section" id="variables">
 <h3>1.5.1. Variables<a class="headerlink" href="#variables" title="Permalink to this headline">¶</a></h3>
-<p><tt class="xref py py-mod docutils literal"><span class="pre">pypsi.plugins.variable</span></tt></p>
+<ul class="simple">
+<li><a class="reference internal" href="pypsi.plugins.html#pypsi.plugins.variable.VariablePlugin" title="pypsi.plugins.variable.VariablePlugin"><tt class="xref py py-class docutils literal"><span class="pre">VariablePlugin</span></tt></a></li>
+<li><a class="reference internal" href="pypsi.plugins.html#pypsi.plugins.variable.VariableCommand" title="pypsi.plugins.variable.VariableCommand"><tt class="xref py py-class docutils literal"><span class="pre">VariableCommand</span></tt></a></li>
+</ul>
 <div class="highlight-python"><pre>pypsi)&gt; var name = "Paul"
 pypsi)&gt; var house = "Atredis"
 pypsi)&gt; echo My name is $name, and I belong to House $house
@@ -153,7 +158,9 @@ line: Goodbye</pre>
 <h3>1.5.3. System commands<a class="headerlink" href="#system-commands" title="Permalink to this headline">¶</a></h3>
 <p>Allows execution of external applications. Command mimics Python&#8217;s
 <tt class="docutils literal"><span class="pre">os.system()</span></tt> function.</p>
-<p><a class="reference internal" href="pypsi.commands.html#pypsi.commands.system.SystemCommand" title="pypsi.commands.system.SystemCommand"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.commands.system.SystemCommand</span></tt></a></p>
+<ul class="simple">
+<li><a class="reference internal" href="pypsi.commands.html#pypsi.commands.system.SystemCommand" title="pypsi.commands.system.SystemCommand"><tt class="xref py py-class docutils literal"><span class="pre">SystemCommand</span></tt></a></li>
+</ul>
 <div class="highlight-python"><pre>pypsi)&gt; ls
 pypsi: ls: command not found
 pypsi)&gt; system ls
@@ -169,8 +176,8 @@ README.md</pre>
 <p>Allows the developer to set which command gets called if one does not exist in
 the current shell. This is very useful, for example, if you want to fallback on
 any OS installed executables. In this example, the fallback command is
-<tt class="docutils literal"><span class="pre">system</span></tt> (<a class="reference internal" href="pypsi.commands.html#pypsi.commands.system.SystemCommand" title="pypsi.commands.system.SystemCommand"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.commands.system.SystemCommand</span></tt></a>). Currently, setting of
-the fallback command can only be done in the API and not through the shell.</p>
+<tt class="docutils literal"><span class="pre">system</span></tt> (<a class="reference internal" href="pypsi.commands.html#pypsi.commands.system.SystemCommand" title="pypsi.commands.system.SystemCommand"><tt class="xref py py-class docutils literal"><span class="pre">SystemCommand</span></tt></a>). Currently, settin
+of the fallback command can only be done in the API and not through the shell.</p>
 <div class="highlight-python"><pre>pypsi)&gt; ls
 include/
 src/
@@ -193,7 +200,9 @@ first failed</pre>
 </div>
 <div class="section" id="multiline-commands">
 <h3>1.5.6. Multiline commands<a class="headerlink" href="#multiline-commands" title="Permalink to this headline">¶</a></h3>
-<p><tt class="xref py py-mod docutils literal"><span class="pre">pypsi.plugins.multiline</span></tt></p>
+<ul class="simple">
+<li><a class="reference internal" href="pypsi.plugins.html#pypsi.plugins.multiline.MultilinePlugin" title="pypsi.plugins.multiline.MultilinePlugin"><tt class="xref py py-class docutils literal"><span class="pre">MultilinePlugin</span></tt></a></li>
+</ul>
 <div class="highlight-python"><pre>pypsi)&gt; echo Hello, \
 &gt; Dave
 Hello, Dave
@@ -208,10 +217,10 @@ This is pypsi and it rocks</pre>
 <h3>1.5.7. Macros<a class="headerlink" href="#macros" title="Permalink to this headline">¶</a></h3>
 <p>Macros are analogous to functions in bash. They provide the ability to create
 new commands in the shell. The macro command requires the
-<a class="reference internal" href="pypsi.plugins.html#pypsi.plugins.block.BlockPlugin" title="pypsi.plugins.block.BlockPlugin"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.plugins.block.BlockPlugin</span></tt></a>, which allows for block commands.</p>
+<a class="reference internal" href="pypsi.plugins.html#pypsi.plugins.block.BlockPlugin" title="pypsi.plugins.block.BlockPlugin"><tt class="xref py py-class docutils literal"><span class="pre">BlockPlugin</span></tt></a>, which allows for block commands.</p>
 <ul class="simple">
-<li><a class="reference internal" href="pypsi.commands.html#pypsi.commands.macro.MacroCommand" title="pypsi.commands.macro.MacroCommand"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.commands.macro.MacroCommand</span></tt></a></li>
-<li><a class="reference internal" href="pypsi.plugins.html#pypsi.plugins.block.BlockPlugin" title="pypsi.plugins.block.BlockPlugin"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.plugins.block.BlockPlugin</span></tt></a></li>
+<li><a class="reference internal" href="pypsi.commands.html#pypsi.commands.macro.MacroCommand" title="pypsi.commands.macro.MacroCommand"><tt class="xref py py-class docutils literal"><span class="pre">MacroCommand</span></tt></a></li>
+<li><a class="reference internal" href="pypsi.plugins.html#pypsi.plugins.block.BlockPlugin" title="pypsi.plugins.block.BlockPlugin"><tt class="xref py py-class docutils literal"><span class="pre">BlockPlugin</span></tt></a></li>
 </ul>
 <div class="highlight-python"><pre>pypsi)&gt; macro hello
 &gt; echo Hello, $1
@@ -224,6 +233,10 @@ Goodbye from macro hello</pre>
 </div>
 <div class="section" id="history">
 <h3>1.5.8. History<a class="headerlink" href="#history" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><a class="reference internal" href="pypsi.plugins.html#pypsi.plugins.history.HistoryPlugin" title="pypsi.plugins.history.HistoryPlugin"><tt class="xref py py-class docutils literal"><span class="pre">HistoryPlugin</span></tt></a></li>
+<li><a class="reference internal" href="pypsi.plugins.html#pypsi.plugins.history.HistoryCommand" title="pypsi.plugins.history.HistoryCommand"><tt class="xref py py-class docutils literal"><span class="pre">HistoryCommand</span></tt></a></li>
+</ul>
 <div class="highlight-python"><pre>pypsi)&gt; history list
   1 echo hello
   2 command2</pre>
@@ -264,8 +277,8 @@ Goodbye from macro hello</pre>
   <p class="topless"><a href="index.html"
                         title="previous chapter">pypsi</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="pypsi.commands.html"
-                        title="next chapter">2. Pypsi Builtin Commands</a></p>
+  <p class="topless"><a href="pypsi.shell.html"
+                        title="next chapter">2. Pypsi Shell</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/pypsi.txt"
@@ -298,7 +311,7 @@ Goodbye from macro hello</pre>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="pypsi.commands.html" title="2. Pypsi Builtin Commands"
+          <a href="pypsi.shell.html" title="2. Pypsi Shell"
              >next</a> |</li>
         <li class="right" >
           <a href="index.html" title="pypsi"

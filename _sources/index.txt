@@ -10,6 +10,7 @@ pypsi
     :numbered:
 
     pypsi.rst
+    pypsi.shell.rst
     pypsi.commands.rst
     pypsi.plugins.rst
     pypsi.base.rst

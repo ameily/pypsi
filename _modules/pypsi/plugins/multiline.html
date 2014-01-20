@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pypsi.plugins.multiline &mdash; pypsi 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/pypsi.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="pypsi 0.1 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">pypsi 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for pypsi.plugins.multiline</h1><div class="highlight"><pre>
+<span class="c">#</span>
+<span class="c"># Copyright (c) 2014, Adam Meily</span>
+<span class="c"># All rights reserved.</span>
+<span class="c">#</span>
+<span class="c"># Redistribution and use in source and binary forms, with or without modification,</span>
+<span class="c"># are permitted provided that the following conditions are met:</span>
+<span class="c">#</span>
+<span class="c"># * Redistributions of source code must retain the above copyright notice, this</span>
+<span class="c">#   list of conditions and the following disclaimer.</span>
+<span class="c">#</span>
+<span class="c"># * Redistributions in binary form must reproduce the above copyright notice, this</span>
+<span class="c">#   list of conditions and the following disclaimer in the documentation and/or</span>
+<span class="c">#   other materials provided with the distribution.</span>
+<span class="c">#</span>
+<span class="c"># * Neither the name of the {organization} nor the names of its</span>
+<span class="c">#   contributors may be used to endorse or promote products derived from</span>
+<span class="c">#   this software without specific prior written permission.</span>
+<span class="c">#</span>
+<span class="c"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
+<span class="c"># ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
+<span class="c"># WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="c"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="c"># ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
+<span class="c"># (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<span class="c"># LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON</span>
+<span class="c"># ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<span class="c"># (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
+<span class="c"># SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="c">#</span>
+
+<span class="kn">from</span> <span class="nn">pypsi.base</span> <span class="kn">import</span> <span class="n">Plugin</span>
+<span class="kn">from</span> <span class="nn">pypsi.cmdline</span> <span class="kn">import</span> <span class="n">StringToken</span>
+
+
+<div class="viewcode-block" id="MultilinePlugin"><a class="viewcode-back" href="../../../pypsi.plugins.html#pypsi.plugins.multiline.MultilinePlugin">[docs]</a><span class="k">class</span> <span class="nc">MultilinePlugin</span><span class="p">(</span><span class="n">Plugin</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Provides the ability to input and execute multiline statements. Input lines</span>
+<span class="sd">    that end in the escape character ``\`` can be continued on the subsequent</span>
+<span class="sd">    input line. This allows for the user to type the following and produces the</span>
+<span class="sd">    the statement:</span>
+
+<span class="sd">    | ``echo this is a multiline \``</span>
+<span class="sd">    | ``statement``</span>
+
+<span class="sd">    `=&gt;`</span>
+
+<span class="sd">    ``echo this is a multiline statement``</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="s">&#39;&gt; &#39;</span><span class="p">,</span> <span class="n">preprocess</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :param str prompt: the prompt when recording a multiline statement</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">MultilinePlugin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">preprocess</span><span class="o">=</span><span class="n">preprocess</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prompt</span> <span class="o">=</span> <span class="n">prompt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orig_prompt</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">set_ml_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orig_prompt</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="n">prompt</span>
+        <span class="n">shell</span><span class="o">.</span><span class="n">prompt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt</span>
+
+    <span class="k">def</span> <span class="nf">reset_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">orig_prompt</span><span class="p">:</span>
+            <span class="n">shell</span><span class="o">.</span><span class="n">prompt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orig_prompt</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">orig_prompt</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">on_tokenize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">tokens</span><span class="p">,</span> <span class="n">origin</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">origin</span> <span class="o">!=</span> <span class="s">&#39;input&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">tokens</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">tokens</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">reset_prompt</span><span class="p">(</span><span class="n">shell</span><span class="p">)</span>
+                <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="bp">None</span>
+                <span class="k">return</span> <span class="n">ret</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">tokens</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tokens</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">StringToken</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">+</span> <span class="n">tokens</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="k">else</span> <span class="n">tokens</span>
+
+        <span class="n">last</span> <span class="o">=</span> <span class="n">tokens</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">escape</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">last</span><span class="o">.</span><span class="n">text</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="n">last</span><span class="o">.</span><span class="n">text</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="o">!=</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">&#39;</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">escape</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">escape</span>
+
+        <span class="k">if</span> <span class="n">escape</span><span class="p">:</span>
+            <span class="n">last</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">last</span><span class="o">.</span><span class="n">text</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c"># remove last \\</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_ml_prompt</span><span class="p">(</span><span class="n">shell</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="n">tokens</span>
+
+            <span class="n">tokens</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">:</span>
+            <span class="n">tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">+</span> <span class="n">tokens</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reset_prompt</span><span class="p">(</span><span class="n">shell</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">tokens</span>
+
+    <span class="k">def</span> <span class="nf">on_input_canceled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_prompt</span><span class="p">(</span><span class="n">shell</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="bp">None</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">pypsi 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Adam Meily.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+    </div>
+  </body>
+</html>

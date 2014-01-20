@@ -1,0 +1,7 @@
+
+Pypsi Shell
+===========
+
+.. automodule:: pypsi.shell
+    :members:
+

@@ -65,6 +65,7 @@
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
  | <a href="#U"><strong>U</strong></a>
+ | <a href="#V"><strong>V</strong></a>
  | <a href="#W"><strong>W</strong></a>
  | <a href="#X"><strong>X</strong></a>
  
@@ -169,11 +170,15 @@
 
       </dl></dd>
       
-  <dt><a href="pypsi.plugins.html#pypsi.plugins.history.History.append">append() (pypsi.plugins.history.History method)</a>
+  <dt><a href="pypsi.shell.html#pypsi.shell.Shell.add_stream">add_stream() (pypsi.shell.Shell method)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="pypsi.plugins.html#pypsi.plugins.history.History.append">append() (pypsi.plugins.history.History method)</a>
+  </dt>
+
       
   <dt><a href="pypsi.cmdline.html#pypsi.cmdline.CommandParams.args">args (pypsi.cmdline.CommandParams attribute)</a>
   </dt>
@@ -239,15 +244,31 @@
   </dt>
 
       
-  <dt><a href="pypsi.cmdline.html#pypsi.cmdline.Statement.cmds">cmds (pypsi.cmdline.Statement attribute)</a>
+  <dt><a href="pypsi.plugins.html#pypsi.plugins.cmd.CmdArgsList">CmdArgsList (in module pypsi.plugins.cmd)</a>
   </dt>
 
       
-  <dt><a href="pypsi.base.html#pypsi.base.Command">Command (class in pypsi.base)</a>
+  <dt><a href="pypsi.plugins.html#pypsi.plugins.cmd.CmdArgsString">CmdArgsString (in module pypsi.plugins.cmd)</a>
+  </dt>
+
+      
+  <dt><a href="pypsi.plugins.html#pypsi.plugins.cmd.CmdPlugin">CmdPlugin (class in pypsi.plugins.cmd)</a>
+  </dt>
+
+      
+  <dt><a href="pypsi.cmdline.html#pypsi.cmdline.Statement.cmds">cmds (pypsi.cmdline.Statement attribute)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="pypsi.base.html#pypsi.base.Command">Command (class in pypsi.base)</a>
+  </dt>
+
+      
+  <dt><a href="pypsi.plugins.html#pypsi.plugins.cmd.CommandFunction">CommandFunction (class in pypsi.plugins.cmd)</a>
+  </dt>
+
       
   <dt><a href="pypsi.cmdline.html#pypsi.cmdline.CommandParams">CommandParams (class in pypsi.cmdline)</a>
   </dt>
@@ -368,6 +389,16 @@
   <dt><a href="pypsi.commands.html#pypsi.commands.macro.MacroCommand">MacroCommand (class in pypsi.commands.macro)</a>
   </dt>
 
+      
+  <dt><a href="pypsi.plugins.html#pypsi.plugins.variable.ManagedVariable">ManagedVariable (class in pypsi.plugins.variable)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="pypsi.plugins.html#pypsi.plugins.multiline.MultilinePlugin">MultilinePlugin (class in pypsi.plugins.multiline)</a>
+  </dt>
+
   </dl></td>
 </tr></table>
 
@@ -462,14 +493,26 @@
   <dt><a href="pypsi.plugins.html#module-pypsi.plugins">pypsi.plugins (module)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="pypsi.plugins.html#module-pypsi.plugins.block">pypsi.plugins.block (module)</a>
   </dt>
 
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="pypsi.plugins.html#module-pypsi.plugins.cmd">pypsi.plugins.cmd (module)</a>
+  </dt>
+
       
   <dt><a href="pypsi.plugins.html#module-pypsi.plugins.history">pypsi.plugins.history (module)</a>
+  </dt>
+
+      
+  <dt><a href="pypsi.plugins.html#module-pypsi.plugins.variable">pypsi.plugins.variable (module)</a>
+  </dt>
+
+      
+  <dt><a href="pypsi.shell.html#module-pypsi.shell">pypsi.shell (module)</a>
   </dt>
 
       
@@ -495,15 +538,23 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="pypsi.cmdline.html#pypsi.cmdline.StatementParser.reset">reset() (pypsi.cmdline.StatementParser method)</a>
+  <dt><a href="pypsi.shell.html#pypsi.shell.Shell.register">register() (pypsi.shell.Shell method)</a>
   </dt>
 
       
-  <dt><a href="pypsi.cmdline.html#pypsi.cmdline.StatementContext.reset_io">reset_io() (pypsi.cmdline.StatementContext method)</a>
+  <dt><a href="pypsi.shell.html#pypsi.shell.Shell.register_base_plugins">register_base_plugins() (pypsi.shell.Shell method)</a>
+  </dt>
+
+      
+  <dt><a href="pypsi.cmdline.html#pypsi.cmdline.StatementParser.reset">reset() (pypsi.cmdline.StatementParser method)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="pypsi.cmdline.html#pypsi.cmdline.StatementContext.reset_io">reset_io() (pypsi.cmdline.StatementContext method)</a>
+  </dt>
+
       
   <dt><a href="pypsi.base.html#pypsi.base.Command.run">run() (pypsi.base.Command method)</a>
   </dt>
@@ -540,12 +591,24 @@
   </dt>
 
         
+  <dt><a href="pypsi.plugins.html#pypsi.plugins.cmd.CmdPlugin.setup">(pypsi.plugins.cmd.CmdPlugin method)</a>
+  </dt>
+
+        
   <dt><a href="pypsi.plugins.html#pypsi.plugins.history.HistoryPlugin.setup">(pypsi.plugins.history.HistoryPlugin method)</a>
+  </dt>
+
+        
+  <dt><a href="pypsi.plugins.html#pypsi.plugins.variable.VariablePlugin.setup">(pypsi.plugins.variable.VariablePlugin method)</a>
   </dt>
 
       </dl></dd>
       
   <dt><a href="pypsi.cmdline.html#pypsi.cmdline.StatementContext.setup_io">setup_io() (pypsi.cmdline.StatementContext method)</a>
+  </dt>
+
+      
+  <dt><a href="pypsi.shell.html#pypsi.shell.Shell">Shell (class in pypsi.shell)</a>
   </dt>
 
       
@@ -638,6 +701,22 @@
   <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="pypsi.base.html#pypsi.base.Command.usage_error">usage_error() (pypsi.base.Command method)</a>
+  </dt>
+
+  </dl></td>
+</tr></table>
+
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="pypsi.plugins.html#pypsi.plugins.variable.VariableCommand">VariableCommand (class in pypsi.plugins.variable)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="pypsi.plugins.html#pypsi.plugins.variable.VariablePlugin">VariablePlugin (class in pypsi.plugins.variable)</a>
   </dt>
 
   </dl></td>
