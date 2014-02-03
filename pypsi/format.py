@@ -1,4 +1,24 @@
 
+def highlight(target, term, color='1;32'):
+    if not color:
+        return target
+
+    s = target.lower()
+    t = term.lower()
+    print("term:", term)
+    start = 0
+
+    end = s.find(t)
+    ret = ''
+    while end >= 0:
+        ret += target[start:end]
+        ret += '\x1b[{color}m{term}\x1b[1;0m'.format(color=color, term=target[end:end+len(term)])
+        start = end + len(term)
+        end = s.find(t, start)
+
+    ret += target[start:]
+    return ret
+
 
 def file_size_str(value):
     value = float(value)
