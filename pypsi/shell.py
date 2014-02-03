@@ -15,7 +15,7 @@ class Shell(object):
     inherit this base class.
     '''
 
-    def __init__(self, shell_name='pypsi', exit_rc=-1024, ctx=None):
+    def __init__(self, shell_name='pypsi', width=80, exit_rc=-1024, ctx=None):
         '''
         :param str shell_name: the name of the shell; used in error messages
         :param int exit_rc: the exit return code that is returned from a command
@@ -25,7 +25,7 @@ class Shell(object):
         self.real_stdout = sys.stdout
         self.real_stdin = sys.stdin
         self.real_stderr = sys.stderr
-
+        self.wdith = width
         self.shell_name = shell_name
         self.exit_rc = exit_rc
         self.errno = 0

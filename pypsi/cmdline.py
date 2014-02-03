@@ -276,6 +276,7 @@ class StatementContext(object):
     def __init__(self):
         self.prev = None
         self.pipe = None
+        self.width = None
         #: the :data:`sys.stdout` when the statement context was created
         self.backup_stdout = sys.stdout
 
