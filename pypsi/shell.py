@@ -2,7 +2,7 @@
 from pypsi.base import Plugin, Command
 from pypsi.cmdline import StatementParser, StatementSyntaxError, StatementContext
 from pypsi.namespace import Namespace
-from pypsi.stream import PypsiStream
+from pypsi.stream import PypsiStream, StdoutProxy, StderrProxy, StdinProxy
 from pypsi.cmdline import StringToken, OperatorToken, WhitespaceToken
 from pypsi.completers import path_completer
 import readline
@@ -15,6 +15,17 @@ class Shell(object):
     inherit this base class.
     '''
 
+    @classmethod
+    def Setup(cls):
+        if not isinstance(sys.stdout, StdoutProxy):
+            sys.stdout = StdoutProxy()
+
+        if not isinstance(sys.stderr, StderrProxy):
+            sys.stderr = StderrProxy()
+
+        if not isinstance(sys.stdin, StdinProxy):
+            sys.stdin = StdinProxy()
+
     def __init__(self, shell_name='pypsi', width=80, exit_rc=-1024, ctx=None):
         '''
         :param str shell_name: the name of the shell; used in error messages
@@ -25,7 +36,7 @@ class Shell(object):
         self.real_stdout = sys.stdout
         self.real_stdin = sys.stdin
         self.real_stderr = sys.stderr
-        self.wdith = width
+        self.width = width
         self.shell_name = shell_name
         self.exit_rc = exit_rc
         self.errno = 0
@@ -47,6 +58,8 @@ class Shell(object):
         readline.parse_and_bind("tab: complete")
         readline.set_completer(self.complete)
         self.fallback_cmd = None
+
+        self.on_shell_ready()
 
     def add_stream(self, name, stream):
         '''
@@ -87,6 +100,9 @@ class Shell(object):
         obj.setup(self)
         return 0
 
+    def on_shell_ready(self):
+        return 0
+
     def cmdloop(self):
         rc = 0
         while rc != self.exit_rc:
@@ -97,7 +113,7 @@ class Shell(object):
                 rc = self.exit_rc
                 print("exiting....")
             except KeyboardInterrupt:
-                print()
+                print("Ctrl+C")
                 for pp in self.preprocessors:
                     pp.on_input_canceled(self)
         return rc
