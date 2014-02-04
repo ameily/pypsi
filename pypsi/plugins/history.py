@@ -47,9 +47,12 @@ class HistoryCommand(Command):
     Interact with and manage the shell's history.
     '''
 
-    def __init__(self, name='history', **kwargs):
-        self.setup_parser()
-        super(HistoryCommand, self).__init__(name=name, usage=self.parser.format_help(), **kwargs)
+    def __init__(self, name='history', brief='manage shell history', topic='shell', **kwargs):
+        self.setup_parser(brief)
+        super(HistoryCommand, self).__init__(
+            name=name, usage=self.parser.format_help(), topic=topic,
+            brief=brief, **kwargs
+        )
 
     def complete(self, shell, args, prefix):
         if len(args) == 1:
@@ -60,10 +63,10 @@ class HistoryCommand(Command):
                 return path_completer(shell, args, prefix)
         return []
 
-    def setup_parser(self):
+    def setup_parser(self, brief):
         self.parser = PypsiArgParser(
             prog='history',
-            description="Manage shell history",
+            description=brief,
             usage=CmdUsage
         )
 
