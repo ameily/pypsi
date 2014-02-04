@@ -43,7 +43,7 @@ def obj_str(obj, max_children=3):
     elif isinstance(obj, float):
         return "float( {:g} )".format(obj)
     elif isinstance(obj, (list, tuple)):
-        if max_children > 0:
+        if max_children > 0 and len(obj) > max_children:
             obj = [o for o in obj[:max_children]]
             obj.append('...')
 
@@ -90,7 +90,6 @@ class Table(object):
         for (col, value) in zip(self.columns, args):
             col.width = max(col.width, len(str(value)))
         return self
-
 
     def extend(self, *args):
         for row in args:
