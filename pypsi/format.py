@@ -62,11 +62,11 @@ def title_str(title, width=80, align='left', hr='='):
     if align == 'left':
         lines.append(title)
     elif align == 'center':
-        left = ' ' * ((width - len(title)) // 2)
-        lines.append(left+title)
+        #left = ' ' * ((width - len(title)) // 2)
+        lines.append(title.center(width))
     elif align == 'right':
-        left = ' ' * (width - len(title))
-        lines.append(left+title)
+        #left = ' ' * (width - len(title))
+        lines.append(title.rjust(width))
     lines.append(hr * width)
     return '\n'.join(lines)
 
@@ -109,7 +109,8 @@ class Table(object):
             for col in self.columns:
                 if i > 0:
                     fp.write(' ' * self.spacing)
-                fp.write("{{: <{}}}".format(col.width).format(col.text))
+                fp.write(col.text.ljust(col.width))
+                #fp.write("{{: <{}}}".format(col.width).format(col.text))
                 i += 1
 
             fp.write('\n')
@@ -126,7 +127,8 @@ class Table(object):
                 else:
                     value = str(value)
 
-                fp.write("{{: <{}}}".format(col.width).format(value))
+                #fp.write("{{: <{}}}".format(col.width).format(value))
+                fp.write(value.ljust(col.width))
                 i += 1
             fp.write('\n')
         return 0
@@ -149,9 +151,9 @@ class FixedColumnTable(object):
 
     def write_row(self, fp, *args):
         for (width, value) in zip(self.widths, args):
-            fp.write(value)
-            diff = width - len(value)
-            if diff > 0:
-                fp.write(' ' * diff)
+            fp.write(value.ljust(width))
+            #diff = width - len(value)
+            #if diff > 0:
+            #    fp.write(' ' * diff)
         fp.write('\n')
 
