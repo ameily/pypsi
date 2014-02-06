@@ -2,7 +2,7 @@
 from pypsi.base import Plugin, Command
 from pypsi.cmdline import StatementParser, StatementSyntaxError, StatementContext
 from pypsi.namespace import Namespace
-from pypsi.stream import PypsiStream, StdoutProxy, StderrProxy, StdinProxy
+from pypsi.stream import PypsiStream#, StdoutProxy, StderrProxy, StdinProxy
 from pypsi.cmdline import StringToken, OperatorToken, WhitespaceToken
 from pypsi.completers import path_completer
 import readline
@@ -14,17 +14,6 @@ class Shell(object):
     The command line interface that the user interacts with. All shell's need to
     inherit this base class.
     '''
-
-    @classmethod
-    def Setup(cls):
-        if not isinstance(sys.stdout, StdoutProxy):
-            sys.stdout = StdoutProxy()
-
-        if not isinstance(sys.stderr, StderrProxy):
-            sys.stderr = StderrProxy()
-
-        if not isinstance(sys.stdin, StdinProxy):
-            sys.stdin = StdinProxy()
 
     def __init__(self, shell_name='pypsi', width=80, exit_rc=-1024, ctx=None):
         '''
@@ -103,7 +92,14 @@ class Shell(object):
     def on_shell_ready(self):
         return 0
 
+    def on_cmdloop_begin(self):
+        return 0
+
+    def on_cmdloop_end(self):
+        return 0
+
     def cmdloop(self):
+        self.on_cmdloop_begin()
         rc = 0
         while rc != self.exit_rc:
             try:
@@ -116,6 +112,7 @@ class Shell(object):
                 print("Ctrl+C")
                 for pp in self.preprocessors:
                     pp.on_input_canceled(self)
+        self.on_cmdloop_end()
         return rc
 
     def execute(self, raw, ctx=None):
