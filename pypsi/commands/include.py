@@ -29,7 +29,10 @@
 #
 
 from pypsi.base import Command
+from pypsi.utils import safe_open
 import os
+
+
 
 
 class IncludeFile(object):
@@ -54,8 +57,11 @@ class IncludeCommand(Command):
         if len(args) != 1:
             return 1
 
+        return self.include_file(shell, args[0], ctx)
+
+    def include_file(self, shell, path, ctx):
         fp = None
-        ifile = IncludeFile(args[0])
+        ifile = IncludeFile(path)
 
         top = False
         templ = ''
@@ -72,9 +78,9 @@ class IncludeCommand(Command):
         self.stack.append(ifile)
 
         try:
-            fp = open(args[0], 'r')
+            fp = safe_open(path, 'r')
         except (OSError, IOError) as e:
-            shell.error("error opening file ", args[0], ": ", str(e), '\n')
+            shell.error("error opening file ", path, ": ", str(e), '\n')
             return -1
 
         orig_prefix = shell.error.prefix
