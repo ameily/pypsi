@@ -34,6 +34,8 @@ Base classes for developing pluggable commands and plugins.
 
 
 import argparse
+import sys
+from pypsi.stream import AnsiStdout, AnsiStderr
 
 
 class Plugin(object):
@@ -185,9 +187,12 @@ class Command(object):
         :param pypsi.shell.Shell shell: the active shell
         :param args: list of strings that are the error message
         '''
-        shell.error(self.name, ": ", *args)
-        shell.error('\n')
-        shell.warn(self.usage, '\n')
+        #shell.error(self.name, ": ", *args)
+        #shell.error('\n')
+        #shell.warn(self.usage, '\n')
+        print(AnsiStderr.red, self.name, ": ", *args, file=sys.stderr, sep='', end=AnsiStderr.reset+'\n')
+        print(AnsiStderr.yellow, self.usage, AnsiStderr.reset)
+
 
     def error(self, shell, *args):
         '''
@@ -196,7 +201,8 @@ class Command(object):
         :param pypsi.shell.Shell shell: the active shell
         :param args: the error message to display
         '''
-        shell.error(self.name, ": ", *args)
+        #shell.error(self.name, ": ", *args)
+        print(AnsiStderr.red, self.name, ": ", *args, file=sys.stderr, sep='', end=AnsiStderr.reset+'\n')
 
     def run(self, shell, args, ctx):
         '''
@@ -268,12 +274,15 @@ class PypsiArgParser(argparse.ArgumentParser):
         try:
             return super(PypsiArgParser, self).parse_args(*args, **kwargs)
         except PrintHelpMessage as e:
-            shell.warn(e.message)
+            #shell.warn(e.message)
+            print(AnsiStderr.yellow, e.message, AnsiStderr.reset, file=sys.stderr, sep='')
             self.rc = 0
         except ArgumentError as e:
             self.rc = 1
-            shell.error(e.message, '\n')
-            shell.warn(self.format_help())
+            print(AnsiStderr.red, e.message, AnsiStderr.reset, file=sys.stderr, sep='')
+            print(AnsiStderr.yellow, self.format_help(), AnsiStderr.reset, file=sys.stderr, sep='')
+            #shell.error(e.message, '\n')
+            #shell.warn(self.format_help())
         return None
 
     def error(self, message):
