@@ -278,13 +278,13 @@ class StatementContext(object):
         self.pipe = None
         self.width = None
         #: the :data:`sys.stdout` when the statement context was created
-        self.backup_stdout = sys.stdout._fp
+        self.backup_stdout = sys.stdout
 
         #: the :data:`sys.stderr` when the statement context was created
-        self.backup_stderr = sys.stderr._fp
+        self.backup_stderr = sys.stderr
 
         #: the :data:`sys.stdin` when the statement context was created
-        self.backup_stdin = sys.stdin._fp
+        self.backup_stdin = sys.stdin
 
         #:(:class:`file`) the current `stdout` file object
         self.stdout = sys.stdout
@@ -325,28 +325,21 @@ class StatementContext(object):
         elif self.prev and self.prev[1] == '|':
             self.stdout.flush()
             self.stdout.seek(0)
-            #self.stdin = sys.stdin = self.stdout
-            sys.stdin.redirect(sys.stdout)
+            self.stdin = sys.stdin = self.stdout
         else:
-            #self.stdin = sys.stdin = self.backup_stdin
-            sys.stdin.close(target=self.backup_stdin)
+            self.stdin = sys.stdin = self.backup_stdin
 
         if params.stdout_path:
-            #sys.stdout = self.stdout = open(params.stdout_path, params.stdout_mode)
-            sys.stdout.redirect(open(params.stdout_path, params.stdout_mode))
+            sys.stdout = self.stdout = open(params.stdout_path, params.stdout_mode)
         elif op == '|':
-            #sys.stdout = self.stdout = StringIO()
-            sys.stdout.redirect(StringIO())
+            sys.stdout = self.stdout = StringIO()
         else:
-            #self.stdout = sys.stdout = self.backup_stdout
-            sys.stdout.close(target=self.backup_stdout)
+            self.stdout = sys.stdout = self.backup_stdout
 
         if params.stderr_path:
-            #sys.stderr = self.stderr = open(params.stderr_path, 'w')
-            sys.stderr.redirect(params.stderr_path, 'w')
+            sys.stderr = self.stderr = open(params.stderr_path, 'w')
         else:
-            #self.stderr = sys.stderr = self.backup_stderr
-            sys.stderr.close(target=self.backup_stderr)
+            self.stderr = sys.stderr = self.backup_stderr
 
         self.prev = (cmd, op)
 
@@ -358,18 +351,15 @@ class StatementContext(object):
         called after a statement has finished executing.
         '''
         if self.stdout != self.backup_stdout:
-            #self.stdout.close()
-            #sys.stdout = self.stdout = self.backup_stdout
-            sys.stdout.reset(self.backup_stdout)
+            self.stdout.close()
+            sys.stdout = self.stdout = self.backup_stdout
 
         if self.stderr != self.backup_stderr:
-            #sys.stderr = self.stderr = self.backup_stderr
-            sys.stderr.reset(self.backup_stderr)
+            sys.stderr = self.stderr = self.backup_stderr
 
         if self.stdin != self.backup_stdin:
-            #self.stdin.close()
-            #sys.stdin = self.stdin = self.backup_stdin
-            sys.stdin.reset(self.backup_stdin)
+            self.stdin.close()
+            sys.stdin = self.stdin = self.backup_stdin
         return 0
 
 
