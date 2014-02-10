@@ -1,4 +1,38 @@
 
+
+def wrap(text, width, prefix=None):
+    if len(text) < width:
+        return text
+
+    plen = len(prefix) if prefix else 0
+
+    lines = []
+    start = 0
+    count = len(text)
+    while start < count:
+        end = (start + width) - plen
+        line = None
+        if end >= count or text[end].isspace():
+            line = text[start:end]
+            start = end
+        else:
+            line_end = None
+            for i in range(end, start-1, -1):
+                if text[i].isspace():
+                    line_end = i
+                    break
+            line = text[start:line_end]
+            start = line_end+1
+
+        if lines and prefix:
+            line = line.strip()
+            lines.append(prefix+line)
+        else:
+            lines.append(line)
+
+    return '\n'.join(lines)
+
+
 def highlight(target, term, color='1;32'):
     if not color:
         return target
@@ -57,17 +91,31 @@ def obj_str(obj, max_children=3):
     return str(obj)
 
 
-def title_str(title, width=80, align='left', hr='='):
+def title_str(title, width=80, align='left', hr='=', box=False):
     lines = []
-    if align == 'left':
-        lines.append(title)
-    elif align == 'center':
-        #left = ' ' * ((width - len(title)) // 2)
-        lines.append(title.center(width))
-    elif align == 'right':
-        #left = ' ' * (width - len(title))
-        lines.append(title.rjust(width))
-    lines.append(hr * width)
+    if box:
+        border = '+' + ('-'*(width-2)) + '+'
+        t = None
+        if align == 'left':
+            t = title.ljust(width-4)
+        elif align == 'center':
+            t = title.center(width-4)
+        else:
+            t = title.rjust(width-4)
+
+        lines.append(border)
+        lines.append('| ' + t + ' |')
+        lines.append(border)
+    else:
+        if align == 'left':
+            lines.append(title)
+        elif align == 'center':
+            #left = ' ' * ((width - len(title)) // 2)
+            lines.append(title.center(width))
+        elif align == 'right':
+            #left = ' ' * (width - len(title))
+            lines.append(title.rjust(width))
+        lines.append(hr * width)
     return '\n'.join(lines)
 
 
