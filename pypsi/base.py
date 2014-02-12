@@ -164,7 +164,7 @@ class Command(object):
         self.name = name
         self.usage = usage or ''
         self.brief = brief or ''
-        self.topic = topic or 'misc'
+        self.topic = topic or ''
         self.pipe = pipe or 'str'
 
     def complete(self, shell, args, prefix):
@@ -192,7 +192,6 @@ class Command(object):
         #shell.warn(self.usage, '\n')
         print(AnsiStderr.red, self.name, ": ", *args, file=sys.stderr, sep='', end=AnsiStderr.reset+'\n')
         print(AnsiStderr.yellow, self.usage, AnsiStderr.reset)
-
 
     def error(self, shell, *args):
         '''
