@@ -28,8 +28,19 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from pypsi.base import Command
-from pypsi.utils import Title
+from pypsi.base import Command, PypsiArgParser
+from pypsi.format import Table, Column, FixedColumnTable, title_str, word_wrap
+from pypsi.stream import AnsiStderr
+import sys
+
+
+class Topic(object):
+
+    def __init__(self, id, name='', content='', commands=None):
+        self.id = id
+        self.name = name
+        self.content = content
+        self.commands = commands or []
 
 
 class HelpCommand(Command):
@@ -37,76 +48,110 @@ class HelpCommand(Command):
     Provides access to manpage-esque topics and command usage information.
     '''
 
-    def __init__(self, name='help', topic='shell', topics=None, **kwargs):
+    def __init__(self, name='help', topic='shell', brief='print information on a topic or command', topics=None, **kwargs):
+        self.parser = PypsiArgParser(
+            prog=name,
+            description=brief
+        )
+
+        self.parser.add_argument("topic", metavar="TOPIC", help="command or topic to print", nargs='?')
+
         super(HelpCommand, self).__init__(
-            name=name, brief='print help on a topic or command', usage='',
+            name=name, brief=brief, usage=self.parser.format_help(),
             topic=topic, **kwargs
         )
-        self.order =[i[0] for i in topics] if topics else []
-        self.topics = {i[0]: i[1] for i in topics} if topics else {}
 
-    def add_topic(self, name, text):
-        pass
+        self.topics = list(topics or [])
+        self.uncat = Topic('uncat', 'Uncategorized Commands & Features')
+        self.lookup = {t.id: t for t in self.topics}
+        self.dirty = True
 
-    def print_cmd(self, shell, cmd, name_width):
-        shell.warn(cmd.name, ' ' * (name_width - len(cmd.name)), '    ', cmd.brief, '\n')
+    def reload(self, shell):
+        self.uncat.commands = []
+        for id in self.lookup:
+            self.lookup[id].commands = []
 
-    def print_commands(self, shell, print_topic=None):
-        if self.topics:
-            col1 = 0
-            sections = {i: [] for i in self.order}
-            for (name, cmd) in shell.commands.items():
-                topic = cmd.topic if cmd.topic in self.topics else 'misc'
-                if print_topic and print_topic != cmd.topic:
-                    continue
-
-                col1 = max(col1, len(name))
-                sections[topic].append(cmd)
-
-            first = True
-            for topic in self.order:
-                if print_topic and print_topic != topic:
-                    continue
-
-                if first:
-                    first = False
+        for (name, cmd) in shell.commands.items():
+            if cmd.topic:
+                if cmd.topic in self.lookup:
+                    self.lookup[cmd.topic].commands.append(cmd)
                 else:
-                    shell.warn('\n')
+                    self.add_topic(Topic(cmd.topic, commands=[cmd]))
+            else:
+                self.uncat.commands.append(cmd)
+        self.dirty = False
 
-                shell.warn(Title("{} Commands".format(self.topics[topic])))
 
-                cmds = sorted(sections[topic], key=lambda i: i.name)
-                for cmd in cmds:
-                    self.print_cmd(shell, cmd, col1)
-        else:
-            col1 = 0
-            cmds = []
-            for (name, cmd) in shell.commands.items():
-                col1 = max(col1, len(name))
-                cmds.append(cmd)
-            cmds = sorted(cmds, key=lambda x: x.name)
-            for cmd in cmds:
-                self.print_cmd(shell, cmd, col1)
+    def add_topic(self, topic):
+        self.dirty = True
+        self.lookup[topic.id] = topic
+        self.topics.append(topic)
+
+    def print_topic_commands(self, shell, topic, title=None):
+        print(title_str(title or topic.name or topic.id, shell.width))
+        Table(
+            columns=(Column(''), Column('', Column.Grow)),
+            spacing=4,
+            header=False,
+            width=shell.width
+        ).extend(
+            *[(c.name, c.brief or '') for c in topic.commands]
+        ).write(sys.stdout)
+
+    def print_topics(self, shell):
+        addl = []
+        for topic in self.topics:
+            if topic.content or not topic.commands:
+                addl.append(topic)
+
+            if topic.commands:
+                self.print_topic_commands(shell, topic)
+                print()
+
+        if self.uncat.commands:
+            self.print_topic_commands(shell, self.uncat)
+            print()
+
+        if addl:
+            print(title_str("Additional Topics", shell.width))
+            tbl = FixedColumnTable([shell.width // 3] * 3)
+            for topic in addl:
+                tbl.add_cell(sys.stdout, topic.id)
+            tbl.flush(sys.stdout)
+            print()
+
+    def print_topic(self, shell, id):
+        if id not in self.lookup:
+            if id in shell.commands:
+                cmd = shell.commands[id]
+                print(AnsiStderr.yellow, cmd.usage, AnsiStderr.reset, sep='')
+                return 0
+
+            self.error(shell, "unknown topic: ", id)
+            return -1
+
+        topic = self.lookup[id]
+        if topic.content:
+            print(title_str(topic.name or topic.id, shell.width))
+            print(word_wrap(topic.content, shell.width))
+            print()
+
+        if topic.commands:
+            self.print_topic_commands(shell, topic, "Commands")
+        return 0
 
     def run(self, shell, args, ctx):
-        if not args:
-            self.print_commands(shell)
-        elif len(args) > 1:
-            return 1
-        elif args[0] in self.topics:
-            self.print_commands(shell, args[0])
-        else:
-            if args[0] in shell.commands:
-                usage = shell.commands[args[0]].usage
-                if usage and callable(usage):
-                    msg = usage()
-                    if isinstance(msg, str) and msg:
-                        shell.warn(msg)
-                        if msg[-1] != '\n':
-                            shell.warn('\n')
-                else:
-                    shell.warn(usage or 'No help information', '\n')
-            else:
-                shell.error("No help for topic ", args[0], '\n')
+        if self.dirty:
+            self.reload(shell)
 
-        return 0
+        ns = self.parser.parse_args(shell, args)
+        if self.parser.rc is not None:
+            return self.parser.rc
+
+        rc = 0
+        if not ns.topic:
+            self.print_topics(shell)
+        else:
+            rc = self.print_topic(shell, ns.topic)
+
+        return rc
