@@ -1,6 +1,10 @@
 
 
-def wrap(text, width, prefix=None):
+def word_wrap(text, width, prefix=None, multiline=True):
+    if multiline and '\n' in text:
+        parts = text.split('\n')
+        return '\n'.join([word_wrap(t, width, prefix, False) for t in parts])
+
     if len(text) < width:
         return text
 
@@ -126,6 +130,7 @@ class Table(object):
     def __init__(self, columns, width=80, spacing=1, header=True):
         if isinstance(columns, int):
             self.columns = [Column("")] * columns
+            header = False
         else:
             self.columns = columns
         self.width = width
@@ -196,6 +201,7 @@ class FixedColumnTable(object):
 
     def __init__(self, widths):
         self.widths = [int(width) for width in widths]
+        self.buffer = []
 
     def write_row(self, fp, *args):
         for (width, value) in zip(self.widths, args):
@@ -205,3 +211,13 @@ class FixedColumnTable(object):
             #    fp.write(' ' * diff)
         fp.write('\n')
 
+    def add_cell(self, fp, col):
+        self.buffer.append(col)
+        if len(self.buffer) == len(self.widths):
+            self.write_row(fp, *self.buffer)
+            self.buffer = []
+
+    def flush(self, fp):
+        if self.buffer:
+            self.write_row(fp, *self.buffer)
+            self.buffer = []

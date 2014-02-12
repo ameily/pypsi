@@ -4,7 +4,7 @@ import readline
 import netaddr
 from pypsi.cmdline import StatementParser, StringToken
 from pypsi.stream import AnsiStdout
-from pypsi.format import wrap, title_str
+from pypsi.format import word_wrap, title_str
 from pypsi.namespace import Namespace
 
 
@@ -141,7 +141,7 @@ class PromptWizard(object):
             title_str("Entering " + self.name + " Wizard", width=shell.width, box=True, align='center'),
             '\n',
             self.description, '\n\n',
-            wrap(
+            word_wrap(
                 "To exit, enter either Ctrl+C, Ctrl+D, or 'quit'. For help "
                 "about the current step, enter 'help' or '?'.", shell.width
             ),
@@ -172,7 +172,7 @@ class PromptWizard(object):
                     print(AnsiStdout.red, "Exiting wizard", AnsiStdout.reset, sep='')
                     return None
                 elif raw.lower() in ('?', 'help'):
-                    print(wrap(step.help, shell.width))
+                    print(word_wrap(step.help, shell.width))
                 else:
                     if not raw and step.default is not None:
                         raw = step.default
