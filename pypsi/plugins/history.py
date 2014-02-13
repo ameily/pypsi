@@ -114,7 +114,7 @@ class HistoryCommand(Command):
 
             i = start + 1
             for event in shell.ctx.history[start:]:
-                shell.info(i, '    ', event, '\n')
+                print(i, '    ', event, sep='')
                 i += 1
         elif ns.subcmd == 'exec':
             event = None
@@ -131,11 +131,11 @@ class HistoryCommand(Command):
             else:
                 event = shell.ctx.history.search_prefix(ns.prefix)
                 if event is None:
-                    shell.error("event not found\n")
+                    self.error(shell, "event not found")
                     rc = -1
 
             if event:
-                shell.info("found event: ", event, '\n')
+                print("found event: ", event, sep='')
         elif ns.subcmd == 'clear':
             shell.ctx.history.clear()
         elif ns.subcmd == 'delete':
