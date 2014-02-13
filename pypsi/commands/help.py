@@ -54,7 +54,10 @@ class HelpCommand(Command):
             description=brief
         )
 
-        self.parser.add_argument("topic", metavar="TOPIC", help="command or topic to print", nargs='?')
+        self.parser.add_argument(
+            "topic", metavar="TOPIC", help="command or topic to print",
+            nargs='?'
+        )
 
         super(HelpCommand, self).__init__(
             name=name, brief=brief, usage=self.parser.format_help(),
