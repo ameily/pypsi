@@ -29,9 +29,11 @@
 #
 
 from pypsi.base import Command, PypsiArgParser
+from pypsi.stream import AnsiStdout
+import sys
 import argparse
 
-EchoCmdUsage = "%(prog)s [-hewi] [-n] [-h] message"
+EchoCmdUsage = "%(prog)s [-n] [-h] message"
 
 
 class EchoCommand(Command):
@@ -47,18 +49,10 @@ class EchoCommand(Command):
         )
 
         subcmd = self.parser.add_argument_group(title='Stream')
-        subcmd.add_argument(
-            '-e', '--error', help='print to error stream', action='store_true'
-        )
-        subcmd.add_argument(
-            '-i', '--info', help='print to info stream', action='store_true'
-        )
-        subcmd.add_argument(
-            '-w', '--warn', help='print to warn stream', action='store_true'
-        )
 
         self.parser.add_argument(
-            'message', help='message to print', nargs=argparse.REMAINDER
+            'message', help='message to print', nargs=argparse.REMAINDER,
+            metavar="MESSAGE"
         )
 
         self.parser.add_argument(
@@ -72,14 +66,8 @@ class EchoCommand(Command):
         if self.parser.rc is not None:
             return self.parser.rc
 
-        fn = shell.info
-        if ns.error:
-            fn = shell.error
-        elif ns.warn:
-            fn = shell.warn
-
         tail = '' if ns.nolf else '\n'
 
-        fn.write(' '.join(ns.message), tail)
+        print(' '.join(ns.message), sep='', end=tail)
 
         return 0
