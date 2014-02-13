@@ -66,13 +66,13 @@ class IncludeCommand(Command):
         top = False
         templ = ''
         if self.stack:
-            templ = shell.error.prefix
+            #templ = shell.error.prefix
             for i in self.stack:
                 if i.abspath == ifile.abspath:
-                    shell.error("recursive include for file ", ifile.abspath, '\n')
+                    self.error(shell, "recursive include for file ", ifile.abspath, '\n')
                     return -1
         else:
-            templ = shell.error.prefix + "error in file {file} on line {line}: "
+            #templ = shell.error.prefix + "error in file {file} on line {line}: "
             top = True
 
         self.stack.append(ifile)
@@ -80,18 +80,18 @@ class IncludeCommand(Command):
         try:
             fp = safe_open(path, 'r')
         except (OSError, IOError) as e:
-            shell.error("error opening file ", path, ": ", str(e), '\n')
+            self.error(shell, "error opening file ", path, ": ", str(e), '\n')
             return -1
 
-        orig_prefix = shell.error.prefix
+        #orig_prefix = shell.error.prefix
         next = ctx.fork()
         for line in fp:
-            shell.error.prefix = templ.format(file=ifile.name, line=ifile.line)
+            #shell.error.prefix = templ.format(file=ifile.name, line=ifile.line)
             shell.execute(line.strip(), next)
             ifile.line += 1
 
-        if top:
-            shell.error.prefix = orig_prefix
+        #if top:
+        #    shell.error.prefix = orig_prefix
 
         self.stack.pop()
         fp.close()

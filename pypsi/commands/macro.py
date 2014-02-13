@@ -29,7 +29,9 @@
 #
 
 from pypsi.plugins.block import BlockCommand
-from pypsi.base import Command
+from pypsi.base import Command, PypsiArgParser
+from pypsi.format import FixedColumnTable, title_str
+import sys
 
 
 # something | macro | something
@@ -87,10 +89,9 @@ class Macro(Command):
                     del shell.ctx.vars[s]
 
 
-MacroCmdUsage = """usage: {name} -l
-   or: {name} NAME
-   or: {name} -[dr] NAME
-Manage registered macros"""
+MacroCmdUsage = """usage: %(prog)s -l
+   or: %(prog)s NAME
+   or: %(prog)s -[dp] NAME"""
 
 
 class MacroCommand(BlockCommand):
@@ -103,8 +104,29 @@ class MacroCommand(BlockCommand):
     This command requires the :class:`pypsi.plugins.block.BlockPlugin` plugin.
     '''
 
-    def __init__(self, name='macro', topic='shell', macros={}, **kwargs):
-        super(MacroCommand, self).__init__(name=name, usage=MacroCmdUsage, brief='manage registered macros', topic=topic, **kwargs)
+    def __init__(self, name='macro', topic='shell', brief="manage registered macros", macros={}, **kwargs):
+        self.parser = PypsiArgParser(
+            prog=name,
+            description=brief
+        )
+
+        self.parser.add_argument(
+            '-l', '--list', help='list all macros', action='store_true'
+        )
+        self.parser.add_argument(
+            '-d', '--delete', help='delete macro', action='store_true'
+        )
+        self.parser.add_argument(
+            '-s', '--show', help='print macro body', action='store_true'
+        )
+        self.parser.add_argument(
+            'name', help='macro name', nargs='?', metavar='NAME'
+        )
+
+        super(MacroCommand, self).__init__(
+            name=name, usage=self.parser.format_help(), brief=brief,
+            topic=topic, **kwargs
+        )
         self.macros = macros or {}
 
     def setup(self, shell):
@@ -113,24 +135,51 @@ class MacroCommand(BlockCommand):
         return 0
 
     def run(self, shell, args, ctx):
-        argc = len(args)
+        ns = self.parser.parse_args(shell, args)
+        if self.parser.rc is not None:
+            return self.parser.rc
+
         rc = 0
-        if argc == 0:
-            rc = 1
-        elif argc == 1:
-            rc = 0
-            if args[0] == '-l':
-                for name in self.macros:
-                    shell.info(name, '\n')
+        if ns.name:
+            if ns.delete:
+                if ns.name in self.macros:
+                    del self.macros[ns.name]
+                else:
+                    self.error(shell, "unknown macro ", ns.name)
+                    rc = -1
+            elif ns.show:
+                if ns.name in self.macros:
+                    print("macro ", ns.name, sep='')
+                    for line in self.macros[ns.name]:
+                        print("    ", line, sep='')
+                    print("end")
+                else:
+                    self.error(shell, "unknown macro ", ns.name)
+                    rc = -1
+            elif ns.list:
+                self.usage_error(shell, "list option does not take an argument")
             else:
-                self.macro_name = args[0]
+                self.macro_name = ns.name
                 self.begin_block(shell)
+        elif ns.list:
+            tbl = FixedColumnTable(widths=[shell.width//3]*3)
+            print(title_str("Registered Macros", shell.width))
+            for name in self.macros:
+                tbl.add_cell(sys.stdout, name)
+            tbl.flush(sys.stdout)
+        else:
+            self.usage_error(shell, "missing required argument: NAME")
+            rc = 1
+
         return rc
 
     def end_block(self, shell, lines):
         self.add_macro(shell, self.macro_name, lines)
         self.macro_name = None
         return 0
+
+    def cancel_block(self, shell):
+        self.macro_name = None
 
     def add_macro(self, shell, name, lines):
         shell.register(

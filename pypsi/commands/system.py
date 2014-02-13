@@ -56,7 +56,7 @@ class SystemCommand(Command):
                 proc.stdin.close()
         except OSError as e:
             if e.errno == 2:
-                shell.error(self.name, ": executable not found\n")
+                self.error(shell, "executable not found")
                 return -1
 
         for line in proc.stdout:
