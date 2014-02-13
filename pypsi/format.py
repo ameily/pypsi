@@ -129,7 +129,7 @@ class Table(object):
 
     def __init__(self, columns, width=80, spacing=1, header=True):
         if isinstance(columns, int):
-            self.columns = [Column("")] * columns
+            self.columns = [Column()] * columns
             header = False
         else:
             self.columns = columns
@@ -191,7 +191,7 @@ class Column(object):
     Shrink = 0
     Grow = 1
 
-    def __init__(self, text, mode=0):
+    def __init__(self, text='', mode=0):
         self.text = text
         self.mode = mode
         self.width = len(text)
