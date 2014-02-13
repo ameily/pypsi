@@ -125,3 +125,10 @@ class BlockPlugin(Plugin):
         self.block['cmd'].end_block(shell, self.block['lines'])
         self.block = None
         return 0
+
+    def on_input_canceled(self, shell):
+        if self.block is not None:
+            self.block['cmd'].cancel_block(shell)
+            shell.prompt = self.block['cmd'].old_prompt
+            self.block = None
+
