@@ -91,8 +91,8 @@ class DevShell(Shell):
 
     def __init__(self):
         super(DevShell, self).__init__()
-        self.tip_cmd.load_tips("./tips.txt")
-        self.tip_cmd.load_motd("./motd.txt")
+        self.tip_cmd.load_tips("./demo-tips.txt")
+        self.tip_cmd.load_motd("./demo-motd.txt")
         self.prompt = "{gray}[$time]{r} {cyan}pypsi{r} {green})>{r} ".format(
             gray=AnsiStdout.gray, r=AnsiStdout.reset, cyan=AnsiStdout.cyan,
             green=AnsiStdout.green
@@ -102,6 +102,12 @@ class DevShell(Shell):
     def on_cmdloop_begin(self):
         print(AnsiStdout.clear_screen)
         self.tip_cmd.print_motd(self)
+        print()
+        print(AnsiStdout.green, "Tip of the Day".center(shell.width), sep='')
+        print('>' * shell.width, AnsiStdout.reset, sep='')
+        self.tip_cmd.print_random_tip(self, False)
+        print(AnsiStdout.green, '<' * shell.width, AnsiStdout.reset, sep='')
+        print()
 
     def do_cmddoc(self, args):
         '''
