@@ -64,7 +64,7 @@ class TipCommand(Command):
         if header:
             title = "Tip #{}".format(i+1)
             title += '\n' + ('-'*len(title))
-            print(AnsiStdout.green, title, AnsiStdout.reset)
+            print(AnsiStdout.green, title, AnsiStdout.reset, sep='')
 
         print(word_wrap(self.tips[i], shell.width))
 
