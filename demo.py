@@ -66,7 +66,7 @@ class TestCommand(Command):
         return 0
 
 
-class DevShell(Shell):
+class DemoShell(Shell):
 
     test_cmd = TestCommand()
     echo_cmd = EchoCommand()
@@ -90,7 +90,7 @@ class DevShell(Shell):
     var_plugin = VariablePlugin(case_sensitive=False, env=False)
 
     def __init__(self):
-        super(DevShell, self).__init__()
+        super(DemoShell, self).__init__()
         self.tip_cmd.load_tips("./demo-tips.txt")
         self.tip_cmd.load_motd("./demo-motd.txt")
         self.prompt = "{gray}[$time]{r} {cyan}pypsi{r} {green})>{r} ".format(
@@ -125,5 +125,5 @@ class DevShell(Shell):
 
 
 if __name__ == '__main__':
-    shell = DevShell()
+    shell = DemoShell()
     shell.cmdloop()
