@@ -1,6 +1,7 @@
 
 from pypsi.base import Command, PypsiArgParser
 from pypsi.stream import AnsiStdout
+from pypsi.format import word_wrap
 from pypsi.utils import safe_open
 import random
 
@@ -34,10 +35,10 @@ class TipCommand(Command):
             if line:
                 tip.append(line)
             elif tip:
-                self.tips.append('\n'.join(tip))
+                self.tips.append(''.join(tip))
                 tip = []
         if tip:
-            self.tips.append('\n'.join(tip))
+            self.tips.append(''.join(tip))
         fp.close()
 
     def load_motd(self, path):
@@ -57,14 +58,15 @@ class TipCommand(Command):
 
         return 0
 
-    def print_random_tip(self, shell):
+    def print_random_tip(self, shell, header=True):
         i = int(self.rand.random() * 10) % len(self.tips)
-        title = "Tip #{}".format(i+1)
-        title += '\n' + ('-'*len(title))
-        print(
-            AnsiStdout.green, title, AnsiStdout.reset, '\n',
-            self.tips[i], '\n', sep=''
-        )
+        
+        if header:
+            title = "Tip #{}".format(i+1)
+            title += '\n' + ('-'*len(title))
+            print(AnsiStdout.green, title, AnsiStdout.reset)
+
+        print(word_wrap(self.tips[i], shell.width))
 
     def print_motd(self, shell):
         print(
@@ -72,7 +74,7 @@ class TipCommand(Command):
             "Message of the Day".center(shell.width), '\n',
             '>' * shell.width, "\n",
             AnsiStdout.reset,
-            self.motd, '\n',
+            word_wrap(self.motd, shell.width), '\n',
             AnsiStdout.green,
             "<" * shell.width, "\n",
             AnsiStdout.reset,
