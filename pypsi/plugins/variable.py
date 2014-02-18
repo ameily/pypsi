@@ -30,7 +30,7 @@
 
 import argparse
 from pypsi.base import Plugin, Command, PypsiArgParser
-from pypsi.namespace import Namespace, CaseInsensitiveNamespace, ScopedNamespace
+from pypsi.namespace import Namespace, ScopedNamespace
 from pypsi.cmdline import Token, StringToken, WhitespaceToken, TokenContinue, TokenEnd, Expression
 from pypsi.format import Table, Column, obj_str
 import os
