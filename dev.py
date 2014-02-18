@@ -43,8 +43,17 @@ from pypsi.plugins.variable import VariablePlugin
 from pypsi.plugins.history import HistoryPlugin
 from pypsi.commands.echo import EchoCommand
 from pypsi.commands.include import IncludeCommand
-from pypsi.commands.help import HelpCommand
+from pypsi.commands.help import HelpCommand, Topic
+from pypsi.commands.tip import TipCommand
+from pypsi.stream import AnsiStdout
+from pypsi import topics
 import sys
+
+ShellTopic = """These commands are built into the Pypsi shell (all glory and honor to the pypsi shell).
+This is a single newline
+
+and This is a double"""
+
 
 
 class TestCommand(Command):
@@ -71,18 +80,28 @@ class DevShell(Shell):
     history_plugin = HistoryPlugin()
     include_cmd = IncludeCommand()
     cmd_plugin = CmdPlugin(cmd_args=1)
+    tip_cmd = TipCommand()
     help_cmd = HelpCommand(
-        topics=(('shell', "Shell"), ('misc', 'Miscellaneous'))
+        topics=(
+            Topic('builtin', 'Builtin Commands & Features', ShellTopic),
+            topics.IoRedirection
+        )
     )
-    var_plugin = VariablePlugin(case_sensitive=False)
+    var_plugin = VariablePlugin(case_sensitive=False, env=False)
 
     def __init__(self):
         super(DevShell, self).__init__()
-        self.prompt = "\\x1b[1;32mpypsi @ $date-$time )>\\x1b[0m "
-        self.error.prefix = "\x1b[1;31m"
-        self.warn.postfix = self.error.postfix = "\x1b[0m"
-        self.warn.prefix = "\x1b[1;33m"
-        #self.fallback_cmd = self.system_cmd
+        self.tip_cmd.load_tips("./tips.txt")
+        self.tip_cmd.load_motd("./motd.txt")
+        self.prompt = "{gray}[$time]{r} {cyan}pypsi{r} {green})>{r} ".format(
+            gray=AnsiStdout.gray, r=AnsiStdout.reset, cyan=AnsiStdout.cyan,
+            green=AnsiStdout.green
+        )
+        self.fallback_cmd = self.system_cmd
+
+    def on_cmdloop_begin(self):
+        print(AnsiStdout.clear_screen)
+        self.tip_cmd.print_motd(self)
 
     def do_cmddoc(self, args):
         '''
