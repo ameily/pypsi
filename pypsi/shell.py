@@ -2,7 +2,6 @@
 from pypsi.base import Plugin, Command
 from pypsi.cmdline import StatementParser, StatementSyntaxError, StatementContext
 from pypsi.namespace import Namespace
-from pypsi.stream import PypsiStream#, StdoutProxy, StderrProxy, StdinProxy
 from pypsi.cmdline import StringToken, OperatorToken, WhitespaceToken
 from pypsi.completers import path_completer
 import readline
@@ -36,11 +35,6 @@ class Shell(object):
         self.prompt = "{name} )> ".format(name=shell_name)
         self.ctx = ctx or Namespace()
 
-        self.streams = { }
-        self.add_stream('error', PypsiStream(lambda: sys.stderr))
-        self.add_stream('warn', PypsiStream(lambda: sys.stderr))
-        self.add_stream('info', PypsiStream(lambda: sys.stdout))
-
         self.parser = StatementParser()
         self.default_cmd = None
         self.register_base_plugins()
@@ -49,14 +43,6 @@ class Shell(object):
         self.fallback_cmd = None
 
         self.on_shell_ready()
-
-    def add_stream(self, name, stream):
-        '''
-        Add a new file category stream.
-        '''
-
-        self.streams[name] = stream
-        setattr(self, name, stream)
 
     def register_base_plugins(self):
         '''
@@ -98,18 +84,21 @@ class Shell(object):
     def on_cmdloop_end(self):
         return 0
 
+    def get_current_prompt(self):
+        return self.preprocess_single(self.prompt, 'prompt')
+
     def cmdloop(self):
         self.on_cmdloop_begin()
         rc = 0
         while rc != self.exit_rc:
             try:
-                raw = input(self.preprocess_single(self.prompt, 'prompt'))
+                raw = input(self.get_current_prompt())
                 rc = self.execute(raw)
             except EOFError:
                 rc = self.exit_rc
                 print("exiting....")
             except KeyboardInterrupt:
-                print("Ctrl+C")
+                print()
                 for pp in self.preprocessors:
                     pp.on_input_canceled(self)
         self.on_cmdloop_end()
