@@ -701,7 +701,7 @@ class Expression(object):
                 break
 
         if not done:
-            return None
+            return (None, None)
 
         return (remaining, Expression(operand, operator, value))
 
