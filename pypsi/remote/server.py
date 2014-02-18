@@ -99,7 +99,7 @@ class ServerWorker(threading.Thread, RemotePypsiSession):
 
     def __init__(self, socket, shell_ctor):
         threading.Thread.__init__(self)
-        RemotePypsiSession.__init__(self, socket, server_print)
+        RemotePypsiSession.__init__(self, socket)
         self.running = False
         self.shell_ctor = shell_ctor
 
