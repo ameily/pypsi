@@ -103,10 +103,10 @@ class DemoShell(Shell):
         print(AnsiStdout.clear_screen)
         self.tip_cmd.print_motd(self)
         print()
-        print(AnsiStdout.green, "Tip of the Day".center(shell.width), sep='')
-        print('>' * shell.width, AnsiStdout.reset, sep='')
+        print(AnsiStdout.green, "Tip of the Day".center(self.width), sep='')
+        print('>' * self.width, AnsiStdout.reset, sep='')
         self.tip_cmd.print_random_tip(self, False)
-        print(AnsiStdout.green, '<' * shell.width, AnsiStdout.reset, sep='')
+        print(AnsiStdout.green, '<' * self.width, AnsiStdout.reset, sep='')
         print()
 
     def do_cmddoc(self, args):
