@@ -61,7 +61,10 @@ def safe_open(path, mode='r'):
                 break
     u.close()
 
-    fp = codecs.open(path, 'r', encoding=u.result['encoding'])
+    if not first:
+        return open(path, mode)
+
+    fp = codecs.open(path, mode, encoding=u.result['encoding'])
     for bom in (codecs.BOM_UTF8, codecs.BOM_UTF16_BE, codecs.BOM_UTF16_LE, 
                 codecs.BOM_UTF32_BE, codecs.BOM_UTF32_LE):
         if first.startswith(bom):
