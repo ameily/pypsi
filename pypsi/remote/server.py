@@ -129,22 +129,41 @@ class ServerWorker(threading.Thread, RemotePypsiSession):
 
     def input(self, msg=''):
         #server_print("input()")
-        self.stdout.flush()
-        self.send_json({
-            'prompt': True,
-            'stdout': msg
-        })
-
-        obj = self.recv_json()
-        if not obj:
+        try:
+            self.stdout.flush()
+            self.send_json({
+                'prompt': True,
+                'stdout': msg
+            })
+        except RemoteEOFError:
             raise EOFError
 
-        if 'sig' in obj:
-            if obj['sig'] == 'int':
-                raise KeyboardInterrupt
-            elif obj['sig'] == 'eof':
+        done = False
+        while True:
+            obj = None
+            try:
+                obj = self.recv_json()
+            except RemoteEOFError:
                 raise EOFError
-        return obj['input']
+
+            if not obj:
+                raise EOFError
+
+            if 'complete' in obj and obj['complete']:
+                c = self.shell.get_completions(obj['line'] or '', obj['prefix'] or '')
+                try:
+                    self.send_json({
+                        'completions': c
+                    })
+                except RemoteEOFError:
+                    raise EOFError
+            else:
+                if 'sig' in obj:
+                    if obj['sig'] == 'int':
+                        raise KeyboardInterrupt
+                    elif obj['sig'] == 'eof':
+                        raise EOFError
+                return obj['input']
 
     def stop(self):
         #server_print("stopping...")

@@ -11,8 +11,39 @@ class ShellClient(RemotePypsiSession):
         self.host = host
         self.port = port
         self.running = False
+        self.completions = None
+
+    def complete(self, text, state):
+        if state == 0:
+            self.completions = []
+            begidx = readline.get_begidx()
+            endidx = readline.get_endidx()
+            line = readline.get_line_buffer()
+            prefix = line[begidx:endidx] if line else ''
+            line = line[:endidx]
+
+            try:
+                self.send_json({
+                    'complete': True,
+                    'line': line,
+                    'prefix': prefix
+                })
+            except RemoteEOFError:
+                raise EOFError
+
+            try:
+                obj = self.recv_json()
+            except RemoteEOFError:
+                raise EOFError
+            else:
+                if 'completions' in obj:
+                    self.completions = obj['completions']
+        return self.completions[state] if state < len(self.completions) else None
+
 
     def run(self):
+        readline.parse_and_bind("tab: complete")
+        readline.set_completer(self.complete)
         self.running = True
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
         self.socket.connect((self.host, self.port))
