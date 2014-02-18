@@ -18,7 +18,7 @@ def word_wrap(text, width, prefix=None, multiline=True):
         line = None
         if end >= count or text[end].isspace():
             line = text[start:end]
-            start = end
+            start = end+1
         else:
             line_end = None
             for i in range(end, start-1, -1):
