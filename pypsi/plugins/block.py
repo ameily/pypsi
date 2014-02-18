@@ -100,7 +100,7 @@ class BlockPlugin(Plugin):
                 self.end_block(shell)
             else:
                 self.block['lines'].append(line)
-            return ''
+            return None
         return line
 
     def begin_block(self, shell, cmd):

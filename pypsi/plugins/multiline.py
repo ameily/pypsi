@@ -102,7 +102,7 @@ class MultilinePlugin(Plugin):
                 self.set_ml_prompt(shell)
                 self.buffer = tokens
 
-            tokens = []
+            tokens = None
         elif self.buffer:
             tokens = self.buffer + tokens
             self.buffer = None
