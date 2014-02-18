@@ -28,10 +28,13 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from pypsi.base import Plugin, Command
-from pypsi.namespace import ScopedNamespace
+import argparse
+from pypsi.base import Plugin, Command, PypsiArgParser
+from pypsi.namespace import Namespace, CaseInsensitiveNamespace, ScopedNamespace
 from pypsi.cmdline import Token, StringToken, WhitespaceToken, TokenContinue, TokenEnd, Expression
+from pypsi.format import Table, Column, obj_str
 import os
+import sys
 from datetime import datetime
 
 from io import StringIO
@@ -78,84 +81,70 @@ class VariableCommand(Command):
    or: var -d name
 Manage local variables."""
 
-    def __init__(self, name='var', usage=Usage, **kwargs):
-        super(VariableCommand, self).__init__(name=name, usage=usage, **kwargs)
+    def __init__(self, name='var', brief='manage variables', topic='shell', **kwargs):
+        self.parser = PypsiArgParser(
+            prog=name,
+            description=brief
+        )
+
+        self.parser.add_argument(
+            '-l', '--list', help='list variables', action='store_true'
+        )
+        self.parser.add_argument(
+            '-d', '--delete', help='delete variable', metavar='VARIABLE'
+        )
+        self.parser.add_argument(
+            'exp', metavar='EXPRESSION', help='expression defining variable',
+            nargs=argparse.REMAINDER
+        )
+        super(VariableCommand, self).__init__(
+            name=name, usage=self.parser.format_help(), topic=topic,
+            brief=brief, **kwargs
+        )
 
     def run(self, shell, args, ctx):
-        if not args:
-            self.usage_error(shell, "missing required argument")
-            return 1
+        ns = self.parser.parse_args(shell, args)
+        if self.parser.rc is not None:
+            return self.parser.rc
 
-        count = len(args)
-
-        if args[0] == '-h':
-            shell.warn(self.usage, '\n')
-            return 0
-        elif args[0] == '-l':
-            if count != 1:
-                self.error(shell, "invalid arguments\n")
-                shell.warn(self.usage)
-                return 1
-
-            vars = []
-            col1 = 0
+        rc = 0
+        if ns.list:
+            tbl = Table(
+                columns=(Column("Variable"), Column("Value", Column.Grow)),
+                spacing=4,
+            )
             for name in shell.ctx.vars:
+                if name == '_':
+                    continue
                 s = shell.ctx.vars[name]
-                col1 = max(col1, len(name))
                 if callable(s):
                     s = s()
                 elif isinstance(s, ManagedVariable):
                     s = s.getter(shell)
-                vars.append((name, s))
-            vars = sorted(vars, key=lambda x: x[0])
-            for v in vars:
-                shell.info(
-                    v[0], ' ' * (col1 - len(v[0])), '    ', v[1], '\n'
-                )
-        elif args[0] == '-d':
-            if count != 2:
-                self.error(shell, "invalid arguments\n")
-                shell.warn(self.usage)
-                return 1
-
-            name = args[1]
-            if name in shell.ctx.vars:
-                del shell.ctx.vars[name]
-            return 0
-        else:
-            (remaining, exp) = Expression.parse(args)
-            if remaining:
-                self.usage_error(shell, "cannot set multiple variables")
-                return 1
-
-            if exp.operand is None:
-                self.usage_error(shell, "missing variable name")
-                return 1
-
-            if exp.operator is None:
-                self.usage_error(shell, "missing operator")
-                return 1
-
-            if exp.operator != '=':
-                self.usage_error(shell, "invalid operator ", exp.operator)
-                return 1
-
-            if exp.value is None:
-                #self.usage_error(shell, "missing value")
-                #return 1
-                exp.value = ''
-
-            try:
-                name = exp.operand
-                value = exp.value
-                if name in shell.ctx.vars and isinstance(shell.ctx.vars[name], ManagedVariable):
-                    shell.ctx.vars[name].set(shell, value)
+                tbl.append(name, obj_str(s))
+            tbl.write(sys.stdout)
+        elif ns.delete:
+            if ns.delete in shell.ctx.vars:
+                s = shell.ctx.vars[ns.delete]
+                if isinstance(s, ManagedVariable):
+                    self.error(shell, "variable is managed and cannot be deleted")
+                    rc = -1
                 else:
-                    shell.ctx.vars[name] = value
-            except ValueError as e:
-                self.error(shell, "error setting variable ", name, ": ", e.message, '\n')
+                    del shell.ctx.vars[ns.delete]
+            else:
+                self.error(shell, "unknown variable: ", ns.delete)
+        elif ns.exp:
+            (remainder, exp) = Expression.parse(args)
+            if remainder or not exp:
+                self.error(shell, "invalid expression")
+                return 1
 
-        return 0
+            shell.ctx.vars[exp.operand] = exp.value
+        else:
+            self.usage_error(shell, "missing required EXPRESSION")
+            rc =1
+
+        return rc
 
 
 
@@ -228,7 +217,7 @@ class VariablePlugin(Plugin):
     Provides variable management and substitution in user input.
     '''
 
-    def __init__(self, var_cmd='var', prefix='$', locals=None,
+    def __init__(self, var_cmd='var', prefix='$', locals=None, env=True,
                  case_sensitive=True, preprocess=10, postprocess=90, **kwargs):
         '''
         :param str var_cmd: the name of the variable command
@@ -239,7 +228,11 @@ class VariablePlugin(Plugin):
         super(VariablePlugin, self).__init__(preprocess=preprocess, postprocess=postprocess, **kwargs)
         self.var_cmd = VariableCommand(name=var_cmd)
         self.prefix = prefix
-        self.namespace = ScopedNamespace('globals', case_sensitive, os.environ)
+
+        base = os.environ if env else {}
+        self.namespace = ScopedNamespace('globals', case_sensitive, base)
+        #cls = Namespace if case_sensitive and False else CaseInsensitiveNamespace
+        #self.namespace = cls(**os.environ)
         if locals:
             for (k, v) in locals:
                 self.namespace[k] = v
