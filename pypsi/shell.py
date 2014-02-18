@@ -162,13 +162,13 @@ class Shell(object):
     def preprocess(self, raw, origin):
         for pp in self.preprocessors:
             raw = pp.on_input(self, raw)
-            if not raw:
+            if raw is None:
                 return None
 
         tokens = self.parser.tokenize(raw)
         for pp in self.preprocessors:
             tokens = pp.on_tokenize(self, tokens, origin)
-            if not tokens:
+            if tokens is None:
                 break
 
         return tokens
@@ -188,6 +188,56 @@ class Shell(object):
             return ret
         return ''
 
+    def get_completions(self, line, prefix):
+        tokens = self.parser.tokenize(line)
+        cmd_name = None
+        loc = None
+        args = []
+        next_arg = True
+        prev = None
+        ret = []
+        for token in tokens:
+            if isinstance(token, StringToken):
+                if not cmd_name:
+                    cmd_name = token.text
+                    loc = 'name'
+                elif loc == 'name':
+                    cmd_name += token.text
+                else:
+                    if next_arg:
+                        args.append(token.text)
+                        next_arg = False
+                    else:
+                        args[-1] += token.text
+            elif isinstance(token, OperatorToken):
+                if token.operator in ('|', ';', '&&', '||'):
+                    cmd_name = None
+                    args = []
+                    next_arg = True
+                elif token.operator in ('>', '<', '>>'):
+                    loc = 'path'
+                    args = []
+            elif isinstance(token, WhitespaceToken):
+                if loc == 'name':
+                    loc = None
+                next_arg = True
+            prev = token
+
+        if loc == 'path':
+            ret = path_completer(self, args, prefix)
+        elif not cmd_name or loc == 'name':
+            ret = [cmd for cmd in self.commands if cmd.startswith(prefix)]
+        else:
+            if cmd_name not in self.commands:
+                ret = []
+            else:
+                if next_arg:
+                    args.append('')
+
+                cmd = self.commands[cmd_name]
+                ret = cmd.complete(self, args, prefix)
+        return ret
+
     def complete(self, text, state):
         if state == 0:
             self.completion_matches = []
@@ -195,54 +245,8 @@ class Shell(object):
             endidx = readline.get_endidx()
             line = readline.get_line_buffer()
             prefix = line[begidx:endidx] if line else ''
-
             line = line[:endidx]
-            tokens = self.parser.tokenize(line)
-            cmd_name = None
-            loc = None
-            args = []
-            next_arg = True
-            prev = None
-            for token in tokens:
-                if isinstance(token, StringToken):
-                    if not cmd_name:
-                        cmd_name = token.text
-                        loc = 'name'
-                    elif loc == 'name':
-                        cmd_name += token.text
-                    else:
-                        if next_arg:
-                            args.append(token.text)
-                            next_arg = False
-                        else:
-                            args[-1] += token.text
-                elif isinstance(token, OperatorToken):
-                    if token.operator in ('|', ';', '&&', '||'):
-                        cmd_name = None
-                        args = []
-                        next_arg = True
-                    elif token.operator in ('>', '<', '>>'):
-                        loc = 'path'
-                        args = []
-                elif isinstance(token, WhitespaceToken):
-                    if loc == 'name':
-                        loc = None
-                    next_arg = True
-                prev = token
-
-            if loc == 'path':
-                self.completion_matches = path_completer(self, args, prefix)
-            elif not cmd_name or loc == 'name':
-                self.completion_matches = [cmd for cmd in self.commands if cmd.startswith(prefix)]
-            else:
-                if cmd_name not in self.commands:
-                    self.completion_matches = []
-                else:
-                    if next_arg:
-                        args.append('')
-
-                    cmd = self.commands[cmd_name]
-                    self.completion_matches = cmd.complete(self, args, prefix)
+            self.completion_matches = self.get_completions(line, prefix)
 
         if state < len(self.completion_matches):
             return self.completion_matches[state]
