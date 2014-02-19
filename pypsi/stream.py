@@ -88,8 +88,12 @@ class PypsiStream(object):
 
 
 class AnsiStream(object):
+    TTY = 0
+    ForceOn = 1
+    ForceOff = 2
 
-    def __init__(self):
+    def __init__(self, mode=TTY):
+        self.mode = mode
         self.codes = {
             'reset': '\x1b[0m',
             'gray': '\x1b[1;30m',
@@ -105,12 +109,18 @@ class AnsiStream(object):
         }
 
     def __getattr__(self, key):
-        return self[key]
+        return self.__getitem__(key)
 
     def __getitem__(self, key):
-        if self.isatty():
-            return self.codes[key]
-        return ''
+        check = False
+        if self.mode == self.TTY:
+            check = self.isatty()
+        elif self.mode == self.ForceOn:
+            check = True
+        elif self.mode == self.ForceOff:
+            check = False
+
+        return self.codes[key] if check else ''
 
 
 class AnsiStdoutSingleton(AnsiStream):
