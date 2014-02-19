@@ -5,7 +5,8 @@ import json
 from io import StringIO
 import select
 import socket
-from pypsi.remote.session import RemotePypsiSession, RemoteEOFError
+from pypsi.remote.session import RemotePypsiSession, ConnectionClosed
+from pypsi.remote import protocol as proto
 import builtins
 
 def server_print(*msg):
@@ -85,10 +86,10 @@ class SessionFileObjProxy(object):
         #server_print("flush:", self._buffer.tell())
         if self._buffer.tell() != 0:
             t = self._buffer.getvalue()
-            self._session.send_json({
-                'stdout': t
-            })
-            #server_print("flush:", t)
+            try:
+                self._session.sendmsg(proto.ShellOutputResponse(t))
+            except ConnectionClosed:
+                raise EOFError
             self._buffer = StringIO()
 
     def isatty(self):
@@ -102,6 +103,7 @@ class ServerWorker(threading.Thread, RemotePypsiSession):
         RemotePypsiSession.__init__(self, socket)
         self.running = False
         self.shell_ctor = shell_ctor
+        self.fp = open('out.txt', 'w')
 
     def run(self):
         try:
@@ -116,7 +118,7 @@ class ServerWorker(threading.Thread, RemotePypsiSession):
             #sys.stdin._register_proxy(self.stdin)
             self.shell = self.shell_ctor()
             self.shell.cmdloop()
-        except RemoteEOFError:
+        except ConnectionClosed:
             pass
         except:
             import traceback
@@ -127,43 +129,62 @@ class ServerWorker(threading.Thread, RemotePypsiSession):
 
         return 0
 
-    def input(self, msg=''):
-        #server_print("input()")
+    def flush_stdout(self):
         try:
             self.stdout.flush()
-            self.send_json({
-                'prompt': True,
-                'stdout': msg
-            })
-        except RemoteEOFError:
+        except ConnectionClosed:
             raise EOFError
 
-        done = False
+    def handle(self, msg):
+        if isinstance(msg, proto.InputResponse):
+            pass
+        elif isinstance(msg, proto.CompletionRequest):
+            pass
+        else:
+            pass
+
+    def send_json(self, obj):
+        self.fp.write(str(obj))
+        self.fp.write('\n')
+        self.fp.flush()
+        return super().send_json(obj)
+
+    def input(self, msg=''):
+        self.flush_stdout()
+
+        try:
+            self.sendmsg(proto.InputRequest(msg))
+        except ConnectionClosed:
+            raise EOFError
+
+
         while True:
-            obj = None
+            msg = None
             try:
-                obj = self.recv_json()
-            except RemoteEOFError:
+                msg = self.recvmsg()
+            except proto.InvalidMessageError:
+                return ''
+            except ConnectionClosed:
                 raise EOFError
 
-            if not obj:
-                raise EOFError
-
-            if 'complete' in obj and obj['complete']:
-                c = self.shell.get_completions(obj['line'] or '', obj['prefix'] or '')
+            if isinstance(msg, proto.InputResponse):
+                if msg.sig:
+                    if msg.sig == 'int':
+                        raise KeyboardInterrupt
+                    elif msg.sig == 'eof':
+                        raise EOFError
+                return msg.input
+            elif isinstance(msg, proto.CompletionRequest):
                 try:
-                    self.send_json({
-                        'completions': c
-                    })
-                except RemoteEOFError:
+                    self.sendmsg(
+                        proto.CompletionResponse(
+                            self.shell.get_completions(msg.input, msg.prefix)
+                        )
+                    )
+                except ConnectionClosed:
                     raise EOFError
             else:
-                if 'sig' in obj:
-                    if obj['sig'] == 'int':
-                        raise KeyboardInterrupt
-                    elif obj['sig'] == 'eof':
-                        raise EOFError
-                return obj['input']
+                return ''
 
     def stop(self):
         #server_print("stopping...")
@@ -174,6 +195,7 @@ class ServerWorker(threading.Thread, RemotePypsiSession):
         sys.stderr._deregister_proxy()
         builtins.input._deregister_proxy()
         self.socket.close()
+        self.fp.close()
         #server_print("ServerWorker.cleanup()")
 
 

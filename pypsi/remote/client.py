@@ -1,5 +1,6 @@
 
-from pypsi.remote.session import RemotePypsiSession, RemoteEOFError
+from pypsi.remote.session import RemotePypsiSession, ConnectionClosed
+from pypsi.remote import protocol as proto
 import socket
 import readline
 
@@ -8,6 +9,7 @@ class ShellClient(RemotePypsiSession):
 
     def __init__(self, host, port):
         super(ShellClient, self).__init__()
+        self.fp = open('log.txt', 'w')
         self.host = host
         self.port = port
         self.running = False
@@ -23,22 +25,27 @@ class ShellClient(RemotePypsiSession):
             line = line[:endidx]
 
             try:
-                self.send_json({
-                    'complete': True,
-                    'line': line,
-                    'prefix': prefix
-                })
-            except RemoteEOFError:
+                self.sendmsg(proto.CompletionRequest(line, prefix))
+            except ConnectionClosed:
                 raise EOFError
 
             try:
-                obj = self.recv_json()
-            except RemoteEOFError:
-                raise EOFError
+                msg = self.recvmsg()
+            except proto.InvalidMessageError:
+                raise EOFError #TODO
             else:
-                if 'completions' in obj:
-                    self.completions = obj['completions']
+                self.completions = msg.completions
         return self.completions[state] if state < len(self.completions) else None
+
+    def recv_json(self):
+        obj = super().recv_json()
+        self.fp.write(str(obj))
+        self.fp.write('\n')
+        self.fp.flush()
+        #print("obj:", obj, file=self.fp)
+        #print("obj:", obj)
+        #print()
+        return obj
 
 
     def run(self):
@@ -49,40 +56,37 @@ class ShellClient(RemotePypsiSession):
         self.socket.connect((self.host, self.port))
 
         while self.running:
-            obj = None
+            msg = None
             try:
-                obj = self.recv_json()
-            except KeyboardInterrupt:
-                self.send_json({ 'sig': 'int' })
-                continue
-            except RemoteEOFError:
-                print()
+                msg = self.recvmsg()
+            except ConnectionClosed:
                 self.socket.close()
                 print("session closed")
                 return 0
-            except EOFError:
-                self.send_json({ 'sig': 'eof' })
-                continue
 
-            stdout = obj['stdout'] if 'stdout' in obj else ''
-            if 'prompt' in obj and obj['prompt']:
-                response = {}
+            if isinstance(msg, proto.InputRequest):
+                response = proto.InputResponse('')
                 try:
-                    line = input(stdout)
+                    line = input(msg.prompt)
                 except KeyboardInterrupt:
-                    response['sig'] = 'int'
+                    response.sig = 'int'
                 except EOFError:
-                    response['sig'] = 'eof'
+                    response.sig = 'eof'
                 else:
-                    response['input'] = line
+                    response.input = line
 
                 try:
-                    self.send_json(response)
-                except RemoteEOFError:
+                    self.sendmsg(response)
+                except ConnectionClosed:
                     print("session closed")
+                    self.socket.close()
+                    self.fp.flush()
+                    self.fp.close()
                     return 0
-            else:
-                print(stdout, end='')
+            elif isinstance(msg, proto.ShellOutputResponse):
+                print(msg.output, end='')
+        self.fp.close()
+        print("leaving")
         return 0
 
     def stop(self):

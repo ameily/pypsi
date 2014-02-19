@@ -1,6 +1,7 @@
 
 from io import StringIO
 import json
+from pypsi.remote import protocol as proto
 import select
 import errno
 
@@ -9,7 +10,7 @@ class RemoteKeyboardInterrupt(KeyboardInterrupt):
     pass
 
 
-class RemoteEOFError(EOFError):
+class ConnectionClosed(EOFError):
     pass
 
 
@@ -19,20 +20,28 @@ class RemotePypsiSession(object):
         self.socket = socket
         self.queue = []
         self.buffer = StringIO()
+        self.registry = {
+            proto.InputRequest.status: proto.InputRequest,
+            proto.InputResponse.status: proto.InputResponse,
+            proto.CompletionRequest.status: proto.CompletionRequest,
+            proto.CompletionResponse.status: proto.CompletionResponse,
+            proto.InputRequest.status: proto.InputRequest,
+            proto.ShellOutputResponse.status: proto.ShellOutputResponse
+        }
 
     def send_json(self, obj):
         #self.p("send:", obj)
         try:
             c = self.socket.sendall(json.dumps(obj).encode())
             if c:
-                raise RemoteEOFError
+                raise ConnectionClosed
 
             c = self.socket.sendall(b'\x00')
             if c:
-                raise RemoteEOFError
+                raise ConnectionClosed
         except OSError as e:
             if e.errno == errno.EPIPE:
-                raise RemoteEOFError
+                raise ConnectionClosed
             else:
                 raise e
 
@@ -51,42 +60,83 @@ class RemotePypsiSession(object):
 
         while self.running:
             if self.poll():
-                s = self.socket.recv(0x1000)
-                #self.p(">>", s)
-                if not s:
-                    raise RemoteEOFError
+                s = None
+                try:
+                    s = self.socket.recv(0x1000)
+                except OSError as e:
+                    if e.errno == errno.EPIPE:
+                        raise ConnectionClosed
+                    raise e
+                else:
+                    if not s:
+                        raise ConnectionClosed
 
                 s = str(s, 'utf-8')
                 msg = None
                 delims = s.count('\x00')
-                #self.p("delims:", delims)
                 if delims > 0:
-                    #if delims == 1:
-                    #    self.p("@", s.find('\x00'))
                     msgs = s.split('\x00')
-                    #self.p("msgs:", msgs)
                     if self.buffer.tell() != 0:
                         self.buffer.write(msgs.pop(0))
                         msg = self.buffer.getvalue()
                         self.buffer = StringIO()
                     else:
                         msg = msgs.pop(0)
-                        #self.p("tell() == 0;", msg)
 
+                    # msg 0 msg ; delims = 1, c = 1
+                    # 0 msg ; delims = 1, c = 1
+                    # msg 0 msg 0 ; delims = 2, c = 1
                     msgs = [m for m in msgs if m]
                     if msgs:
-                        if len(msgs) > delims:
+                        if len(msgs) >= delims:
                             self.buffer.write(msgs.pop())
-                            #self.p("msgs1:", msgs)
                             self.queue = msgs
                         else:
-                            #self.p("msgs2:", msgs)
                             self.queue = msgs
 
-                    #self.p("msg:", msg)
                     if msg:
                         return json.loads(msg)
                 else:
                     self.buffer.write(s)
 
         return None
+
+    def sendmsg(self, msg):
+        '''
+        try:
+            rc = self.send_json(msg.json())
+        except ConnectionClosed:
+            raise EOFError
+        else:
+            return rc
+        '''
+        return self.send_json(msg.json())
+
+    def recvmsg(self):
+        '''
+        try:
+            obj = self.recv_json()
+            if not obj:
+                raise ConnectionClosed
+            msg = self.parse_msg(obj)
+        except ConnectionClosed:
+            raise EOFError
+        except proto.InvalidMessage:
+            raise KeyboardInterrupt #TODO
+        else:
+            return msg
+        '''
+        obj = self.recv_json()
+        if not obj:
+            raise ConnectionClosed
+        return self.parse_msg(obj)
+
+    def parse_msg(self, obj):
+        if 'status' not in obj:
+            raise proto.InvalidMessage("missing required field status")
+
+        s = obj['status']
+        if s in self.registry:
+            return self.registry[s].from_json(obj)
+        raise proto.InvalidMessage("unknown status "+s)
+
