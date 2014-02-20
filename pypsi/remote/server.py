@@ -95,6 +95,9 @@ class SessionFileObjProxy(object):
     def isatty(self):
         return self._isatty
 
+    def close():
+        self.flush()
+
 
 class ServerWorker(threading.Thread, RemotePypsiSession):
 
