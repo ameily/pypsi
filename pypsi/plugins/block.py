@@ -83,7 +83,6 @@ class BlockPlugin(Plugin):
         '''
         super(BlockPlugin, self).__init__(preprocess=preprocess, **kwargs)
         self.end_cmd = end_cmd
-        self.block = None
 
     def setup(self, shell):
         '''
@@ -92,14 +91,16 @@ class BlockPlugin(Plugin):
         '''
         if 'block' not in shell.ctx:
             shell.ctx.block = self
+        if 'recording_block' not in shell.ctx:
+            shell.ctx.recording_block = None
         return 0
 
     def on_input(self, shell, line):
-        if self.block is not None:
+        if shell.ctx.recording_block is not None:
             if line.strip() == self.end_cmd:
                 self.end_block(shell)
             else:
-                self.block['lines'].append(line)
+                shell.ctx.recording_block['lines'].append(line)
             return None
         return line
 
@@ -110,7 +111,7 @@ class BlockPlugin(Plugin):
         :param pypsi.shell.Shell shell: the active shell
         :param BlockCommand cmd: the active block command
         '''
-        self.block = {
+        shell.ctx.recording_block = {
             'cmd': cmd,
             'lines': []
         }
@@ -121,14 +122,14 @@ class BlockPlugin(Plugin):
         End the block. Calls the active block command's
         :meth:`BlockCommand.end_block` method.
         '''
-        shell.prompt = self.block['cmd'].old_prompt
-        self.block['cmd'].end_block(shell, self.block['lines'])
-        self.block = None
+        shell.prompt = shell.ctx.recording_block['cmd'].old_prompt
+        shell.ctx.recording_block['cmd'].end_block(shell, shell.ctx.recording_block['lines'])
+        shell.ctx.recording_block = None
         return 0
 
     def on_input_canceled(self, shell):
-        if self.block is not None:
-            self.block['cmd'].cancel_block(shell)
-            shell.prompt = self.block['cmd'].old_prompt
-            self.block = None
+        if shell.ctx.recording_block is not None:
+            shell.ctx.recording_block['cmd'].cancel_block(shell)
+            shell.prompt = shell.ctx.recording_block['cmd'].old_prompt
+            shell.ctx.recording_block = None
 
