@@ -104,7 +104,7 @@ class MacroCommand(BlockCommand):
     This command requires the :class:`pypsi.plugins.block.BlockPlugin` plugin.
     '''
 
-    def __init__(self, name='macro', topic='shell', brief="manage registered macros", macros={}, **kwargs):
+    def __init__(self, name='macro', topic='shell', brief="manage registered macros", macros=None, **kwargs):
         self.parser = PypsiArgParser(
             prog=name,
             description=brief
@@ -127,11 +127,14 @@ class MacroCommand(BlockCommand):
             name=name, usage=self.parser.format_help(), brief=brief,
             topic=topic, **kwargs
         )
-        self.macros = macros or {}
+        self.base_macros = macros or {}
 
     def setup(self, shell):
-        for name in self.macros:
-            self.add_macro(shell, name, self.macros[name])
+        if 'macros' not in shell.ctx:
+            shell.ctx.macros = {}
+
+        for name in self.base_macros:
+            self.add_macro(shell, name, shell.ctx.macros[name])
         return 0
 
     def run(self, shell, args, ctx):
@@ -142,15 +145,15 @@ class MacroCommand(BlockCommand):
         rc = 0
         if ns.name:
             if ns.delete:
-                if ns.name in self.macros:
-                    del self.macros[ns.name]
+                if ns.name in shell.ctx.macros:
+                    del shell.ctx.macros[ns.name]
                 else:
                     self.error(shell, "unknown macro ", ns.name)
                     rc = -1
             elif ns.show:
-                if ns.name in self.macros:
+                if ns.name in shell.ctx.macros:
                     print("macro ", ns.name, sep='')
-                    for line in self.macros[ns.name]:
+                    for line in shell.ctx.macros[ns.name]:
                         print("    ", line, sep='')
                     print("end")
                 else:
@@ -164,7 +167,7 @@ class MacroCommand(BlockCommand):
         elif ns.list:
             tbl = FixedColumnTable(widths=[shell.width//3]*3)
             print(title_str("Registered Macros", shell.width))
-            for name in self.macros:
+            for name in shell.ctx.macros:
                 tbl.add_cell(sys.stdout, name)
             tbl.flush(sys.stdout)
         else:
@@ -185,5 +188,5 @@ class MacroCommand(BlockCommand):
         shell.register(
             Macro(lines=lines, name=name)
         )
-        self.macros[name] = lines
+        shell.ctx.macros[name] = lines
         return 0
