@@ -101,10 +101,11 @@ class ScopedNamespace(object):
             parent=parent
         )
 
-        for (k, v) in locals.items():
-            if not case_sensitive:
-                k = k.lower()
-            ctx.locals[k] = v
+        if locals:
+            for (k, v) in locals.items():
+                if not case_sensitive:
+                    k = k.lower()
+                ctx.locals[k] = v
         self._ctx = ctx
 
     def __getattribute__(self, name):

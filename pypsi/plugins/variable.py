@@ -229,13 +229,12 @@ class VariablePlugin(Plugin):
         self.var_cmd = VariableCommand(name=var_cmd)
         self.prefix = prefix
 
-        base = os.environ if env else {}
-        self.namespace = ScopedNamespace('globals', case_sensitive, base)
+        self.base = os.environ if env else {}
+        self.case_sensitive = case_sensitive
+        if locals:
+            self.base.update(locals)
         #cls = Namespace if case_sensitive and False else CaseInsensitiveNamespace
         #self.namespace = cls(**os.environ)
-        if locals:
-            for (k, v) in locals:
-                self.namespace[k] = v
 
     def setup(self, shell):
         '''
@@ -244,7 +243,10 @@ class VariablePlugin(Plugin):
         '''
         shell.register(self.var_cmd)
         if 'vars' not in shell.ctx:
-            shell.ctx.vars = self.namespace
+            shell.ctx.vars = ScopedNamespace('globals', self.case_sensitive)
+            for k in self.base:
+                shell.ctx.vars[k] = self.base[k]
+
             shell.ctx.vars.date = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.datefmt or "%x"))
             shell.ctx.vars.time = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.timefmt or "%X"))
             shell.ctx.vars.datetime = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.datetimefmt or "%c"))
@@ -254,8 +256,8 @@ class VariablePlugin(Plugin):
 
     def expand(self, shell, vart):
         name = vart.var
-        if name in self.namespace:
-            s = self.namespace[name]
+        if name in shell.ctx.vars:
+            s = shell.ctx.vars[name]
             if callable(s):
                 return s()
             elif isinstance(s, ManagedVariable):
