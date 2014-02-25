@@ -180,6 +180,8 @@ class PromptWizard(object):
         self.parser = StatementParser()
 
     def run(self, shell):
+        self.old_completer = readline.get_completer()
+        readline.set_completer(self.complete)
         print(
             title_str("Entering " + self.name + " Wizard", width=shell.width, box=True, align='center'),
             '\n',
@@ -209,10 +211,12 @@ class PromptWizard(object):
                 except (KeyboardInterrupt, EOFError):
                     print()
                     print(AnsiStdout.red, "Wizard canceled", AnsiStdout.reset, sep='')
+                    readline.set_completer(self.old_completer)
                     return None
 
                 if raw.lower() == 'quit':
                     print(AnsiStdout.red, "Exiting wizard", AnsiStdout.reset, sep='')
+                    readline.set_completer(self.old_completer)
                     return None
                 elif raw.lower() in ('?', 'help'):
                     print(word_wrap(step.help, shell.width))
@@ -229,6 +233,7 @@ class PromptWizard(object):
                         self.values[step.id] = value
                         valid = True
 
+        readline.set_completer(self.old_completer)
         return self.values
 
     def complete(self, text, state):
