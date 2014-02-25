@@ -122,7 +122,7 @@ def package_name_validator(type_str):
         if not value:
             return value
 
-        if not re.match(r'^[a-zA-Z][a-zA-Z0-9_]+$'):
+        if not re.match(r'^[a-zA-Z][a-zA-Z0-9_]+$', value):
             raise ValueError("Invalid "+type_str)
 
         return value
