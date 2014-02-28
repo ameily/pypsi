@@ -28,6 +28,7 @@ class RemotePypsiSession(object):
             proto.InputRequest.status: proto.InputRequest,
             proto.ShellOutputResponse.status: proto.ShellOutputResponse
         }
+        self.running = True
 
     def send_json(self, obj):
         #self.p("send:", obj)
@@ -40,21 +41,20 @@ class RemotePypsiSession(object):
             if c:
                 raise ConnectionClosed
         except OSError as e:
-            if e.errno == errno.EPIPE:
+            if e.errno in (errno.EPIPE, 10053):
                 raise ConnectionClosed
-            else:
-                raise e
+            raise e
 
         return 0
 
     def poll(self):
         fd = self.socket.fileno()
-        (read, write, err) = select.select([fd], [], [fd], 0.5)
+        (read, write, err) = select.select([fd], [], [fd], 0)
         if read or err:
             return True
         return False
 
-    def recv_json(self):
+    def recv_json(self, block=True):
         if self.queue:
             return json.loads(self.queue.pop(0))
 
@@ -99,6 +99,9 @@ class RemotePypsiSession(object):
                 else:
                     self.buffer.write(s)
 
+            if not block:
+                return None
+
         return None
 
     def sendmsg(self, msg):
@@ -112,24 +115,11 @@ class RemotePypsiSession(object):
         '''
         return self.send_json(msg.json())
 
-    def recvmsg(self):
-        '''
-        try:
-            obj = self.recv_json()
-            if not obj:
-                raise ConnectionClosed
-            msg = self.parse_msg(obj)
-        except ConnectionClosed:
-            raise EOFError
-        except proto.InvalidMessage:
-            raise KeyboardInterrupt #TODO
-        else:
-            return msg
-        '''
-        obj = self.recv_json()
-        if not obj:
-            raise ConnectionClosed
-        return self.parse_msg(obj)
+    def recvmsg(self, block=True):
+        obj = self.recv_json(block)
+        if obj: 
+            return self.parse_msg(obj)
+        return None
 
     def parse_msg(self, obj):
         if 'status' not in obj:
