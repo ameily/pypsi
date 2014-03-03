@@ -95,7 +95,7 @@ class SessionFileObjProxy(object):
     def isatty(self):
         return self._isatty
 
-    def close():
+    def close(self):
         self.flush()
 
 
