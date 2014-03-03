@@ -37,3 +37,12 @@ def path_completer(shell, args, prefix):
         return dirs + files
     else:
         return []
+
+def choice_completer(choices):
+    def complete(shell, args, prefix):
+        r = []
+        for choice in choices:
+            if choice.startswith(prefix.lower()):
+                r.append(choice)
+        return r
+    return complete

@@ -43,7 +43,7 @@ def highlight(target, term, color='1;32'):
 
     s = target.lower()
     t = term.lower()
-    print("term:", term)
+    #print("term:", term)
     start = 0
 
     end = s.find(t)

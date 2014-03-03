@@ -31,6 +31,7 @@
 import os
 import readline
 import netaddr
+import re
 from pypsi.cmdline import StatementParser, StringToken
 from pypsi.stream import AnsiStdout
 from pypsi.format import word_wrap, title_str
@@ -73,7 +74,7 @@ def file_validator(ns, value):
 
 def directory_validator(ns, value):
     if value and (not os.path.exists(value) or not os.path.isdir(value)):
-        raise Value("Directory does not exist")
+        raise ValueError("Directory does not exist")
     return value
 
 
@@ -112,7 +113,7 @@ def module_name_validator(type_str):
     return validator
 
 
-def paackage_name_validator(type_str):
+def package_name_validator(type_str):
     def validator(ns, value):
         if not isinstance(value, str):
             return value
@@ -121,13 +122,26 @@ def paackage_name_validator(type_str):
         if not value:
             return value
 
-        if not re.match(r'^[a-zA-Z][a-zA-Z0-9_]+$'):
+        if not re.match(r'^[a-zA-Z][a-zA-Z0-9_]+$', value):
             raise ValueError("Invalid "+type_str)
 
         return value
     return validator
 
+def choice_validator(choices):
+    def validator(ns, value):
+        if not isinstance(value, str):
+            return value
 
+        value = value.strip()
+        if not value:
+            return value
+
+        if value not in choices:
+            raise ValueError('Invalid choice')
+
+        return value
+    return validator
 
 class WizardStep(object):
 
