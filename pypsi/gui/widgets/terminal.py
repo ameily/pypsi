@@ -81,11 +81,13 @@ class TerminalWidget(QtGui.QWidget):
 
     def fire_post(self, sig=None):
         txt = self.ui.stdin.text()
-        #self.append(self.ui.prompt.text() + " " + txt + "\n")
+        if sig == 'int':
+            txt += '^C'
+        elif sig == 'eof':
+            txt += '^D'
+        self.ui.stdin.submit(sig)
         self.ui.stdout.appendHtml(self.ui.prompt.text())
-        #self.ui.stdout.appendText(txt)
         self.ui.stdout.appendAnsi(txt+"\n")
-        self.ui.stdin.clear()
         self.post.emit(txt, sig)
 
     #TODO keypress -> set focus on stdin
