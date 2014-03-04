@@ -8,6 +8,7 @@ import socket
 from pypsi.remote.session import RemotePypsiSession, ConnectionClosed
 from pypsi.remote import protocol as proto
 import builtins
+import readline
 
 def server_print(*msg):
     #pass
@@ -108,17 +109,45 @@ class ServerWorker(threading.Thread, RemotePypsiSession):
         self.shell_ctor = shell_ctor
         self.fp = open('out.txt', 'w')
 
+    def setup(self):
+        self.buffer = StringIO()
+        self.stdout = SessionFileObjProxy(self)
+        self.queue = []
+        self.running = True
+        builtins.input._register_proxy(self.input)
+        sys.stdout._register_proxy(self.stdout)
+        sys.stderr._register_proxy(self.stdout)
+        #sys.stdin._register_proxy(self.stdin)
+
+        self.completer = None
+        readline.set_completer._register_proxy(self.set_completer)
+        readline.get_completer._register_proxy(lambda: self.completer)
+        readline.get_begidx._register_proxy(lambda: self.begidx)
+        readline.get_endidx._register_proxy(lambda: self.endidx)
+        readline.get_line_buffer._register_proxy(lambda: self.line_buffer)
+
+    def set_completer(self, c):
+        self.completer = c
+
+    def get_completions(self, line, prefix):
+        completions = []
+        if self.completer:
+            self.line_buffer = line
+            self.begidx = len(line) - len(prefix)
+            self.endidx = len(line)
+            i = 0
+            while True:
+                c = self.completer(line, i)
+                i += 1
+                if c is not None:
+                    completions.append(c)
+                else:
+                    break
+        return completions
+
     def run(self):
+        self.setup()
         try:
-            self.buffer = StringIO()
-            self.stdout = SessionFileObjProxy(self)
-            #server_print("stdout:", self.stdout)
-            self.queue = []
-            self.running = True
-            builtins.input._register_proxy(self.input)
-            sys.stdout._register_proxy(self.stdout)
-            sys.stderr._register_proxy(self.stdout)
-            #sys.stdin._register_proxy(self.stdin)
             self.shell = self.shell_ctor()
             self.shell.cmdloop()
         except ConnectionClosed:
@@ -126,9 +155,9 @@ class ServerWorker(threading.Thread, RemotePypsiSession):
         except:
             import traceback
             server_print(traceback.format_exc())
-
-        self.cleanup()
-        self.running = False
+        finally:
+            self.cleanup()
+            self.running = False
 
         return 0
 
@@ -160,7 +189,6 @@ class ServerWorker(threading.Thread, RemotePypsiSession):
         except ConnectionClosed:
             raise EOFError
 
-
         while True:
             msg = None
             try:
@@ -181,7 +209,7 @@ class ServerWorker(threading.Thread, RemotePypsiSession):
                 try:
                     self.sendmsg(
                         proto.CompletionResponse(
-                            self.shell.get_completions(msg.input, msg.prefix)
+                            self.get_completions(msg.input, msg.prefix)
                         )
                     )
                 except ConnectionClosed:
@@ -215,6 +243,11 @@ class ShellServer(object):
         self.running = True
         sys.stdout = ThreadProxy(sys.stdout)
         sys.stderr = sys.stdout
+        readline.set_completer = ThreadProxy(readline.set_completer)
+        readline.get_completer = ThreadProxy(readline.get_completer)
+        readline.get_begidx = ThreadProxy(readline.get_begidx)
+        readline.get_endidx = ThreadProxy(readline.get_endidx)
+        readline.get_line_buffer = ThreadProxy(readline.get_line_buffer)
         builtins.input = ThreadProxy(builtins.input)
 
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
