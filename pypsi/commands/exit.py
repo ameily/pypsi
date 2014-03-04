@@ -43,4 +43,5 @@ Exit the {shell} shell"""
         super(ExitCommand, self).__init__(name=name, usage=self.Usage, topic=topic, brief="exit the shell", **kwargs)
 
     def run(self, shell, args, ctx):
-        return shell.exit_rc
+        shell.running = False
+        return 0
