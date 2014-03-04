@@ -67,8 +67,6 @@ class Shell(object):
         self.parser = StatementParser()
         self.default_cmd = None
         self.register_base_plugins()
-        readline.parse_and_bind("tab: complete")
-        readline.set_completer(self.complete)
         self.fallback_cmd = None
 
         self.on_shell_ready()
@@ -117,20 +115,28 @@ class Shell(object):
         return self.preprocess_single(self.prompt, 'prompt')
 
     def cmdloop(self):
+        self.running = True
         self.on_cmdloop_begin()
+        readline.parse_and_bind("tab: complete")
+        old_completer = readline.get_completer()
+        readline.set_completer(self.complete)
         rc = 0
-        while rc != self.exit_rc:
-            try:
-                raw = input(self.get_current_prompt())
-                rc = self.execute(raw)
-            except EOFError:
-                rc = self.exit_rc
-                print("exiting....")
-            except KeyboardInterrupt:
-                print()
-                for pp in self.preprocessors:
-                    pp.on_input_canceled(self)
-        self.on_cmdloop_end()
+        try:
+            while self.running:
+                try:
+                    raw = input(self.get_current_prompt())
+                except EOFError:
+                    self.running = False
+                    print("exiting....")
+                except KeyboardInterrupt:
+                    print()
+                    for pp in self.preprocessors:
+                        pp.on_input_canceled(self)
+                else:
+                    rc = self.execute(raw)
+        finally:
+            self.on_cmdloop_end()
+            readline.set_completer(old_completer)
         return rc
 
     def execute(self, raw, ctx=None):
