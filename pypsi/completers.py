@@ -38,11 +38,11 @@ def path_completer(shell, args, prefix):
     else:
         return []
 
-def choice_completer(choices):
+def choice_completer(choices, case_sensitive=False):
     def complete(shell, args, prefix):
         r = []
         for choice in choices:
-            if choice.startswith(prefix.lower()):
+            if choice.startswith(prefix if case_sensitive else prefix.lower()):
                 r.append(choice)
         return r
     return complete
