@@ -37,8 +37,8 @@ class ShellClient(RemotePypsiSession):
                 self.completions = msg.completions
         return self.completions[state] if state < len(self.completions) else None
 
-    def recv_json(self):
-        obj = super().recv_json()
+    def recv_json(self, block=True):
+        obj = super().recv_json(block)
         self.fp.write(str(obj))
         self.fp.write('\n')
         self.fp.flush()
