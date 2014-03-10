@@ -136,8 +136,17 @@ Manage local variables."""
         elif ns.exp:
             (remainder, exp) = Expression.parse(args)
             if remainder or not exp:
-                self.error(shell, "invalid expression")
-                return 1
+                if len(args) == 1 and args[0] in shell.ctx.vars:
+                    s = shell.ctx.vars[args[0]]
+                    if callable(s):
+                        s = s()
+                    elif isinstance(s, ManagedVariable):
+                        s = s.getter(shell)
+                    print(obj_str(s))
+                    return 0
+                else:
+                    self.error(shell, "invalid expression")
+                    return 1
 
             shell.ctx.vars[exp.operand] = exp.value
         else:
