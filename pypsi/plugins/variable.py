@@ -133,13 +133,27 @@ Manage local variables."""
                     del shell.ctx.vars[ns.delete]
             else:
                 self.error(shell, "unknown variable: ", ns.delete)
-        elif ns.exp:
+        elif ns.exp and '=' in ''.join(args):
             (remainder, exp) = Expression.parse(args)
             if remainder or not exp:
                 self.error(shell, "invalid expression")
                 return 1
-
             shell.ctx.vars[exp.operand] = exp.value
+        elif ns.exp:
+            if len(args) == 1:
+                if args[0] in shell.ctx.vars:
+                    s = shell.ctx.vars[args[0]]
+                    if callable(s):
+                        s = s()
+                    elif isinstance(s, ManagedVariable):
+                        s = s.getter(shell)
+                    print(obj_str(s))
+                else:
+                    self.error(shell, "unknown variable: ", args[0])
+                    return 1
+            else:
+                self.error(shell, "invalid expression")
+                return 1
         else:
             self.usage_error(shell, "missing required EXPRESSION")
             rc =1
@@ -217,7 +231,7 @@ class VariablePlugin(Plugin):
     Provides variable management and substitution in user input.
     '''
 
-    def __init__(self, var_cmd='var', prefix='$', locals=None, env=True,
+    def __init__(self, var_cmd='var', prefix='$', locals=None, env=True, topic='shell',
                  case_sensitive=True, preprocess=10, postprocess=90, **kwargs):
         '''
         :param str var_cmd: the name of the variable command
@@ -226,7 +240,7 @@ class VariablePlugin(Plugin):
         :param bool case_sensitive: whether variable names are case sensitive
         '''
         super(VariablePlugin, self).__init__(preprocess=preprocess, postprocess=postprocess, **kwargs)
-        self.var_cmd = VariableCommand(name=var_cmd)
+        self.var_cmd = VariableCommand(name=var_cmd, topic=topic)
         self.prefix = prefix
 
         self.base = os.environ if env else {}

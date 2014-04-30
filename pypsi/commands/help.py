@@ -91,15 +91,27 @@ class HelpCommand(Command):
         self.topics.append(topic)
 
     def print_topic_commands(self, shell, topic, title=None):
-        print(title_str(title or topic.name or topic.id, shell.width))
+        print(
+            AnsiStderr.yellow,
+            title_str(title or topic.name or topic.id, shell.width),
+            AnsiStderr.reset,
+            sep=''
+        )
+        print(AnsiStderr.yellow, end='')
         Table(
             columns=(Column(''), Column('', Column.Grow)),
             spacing=4,
             header=False,
             width=shell.width
         ).extend(
-            *[(c.name, c.brief or '') for c in topic.commands]
+            *[
+                (' Name', 'Description'),
+                (' ----', '-----------')
+            ]
+        ).extend(
+            *[(' '+c.name, c.brief or '') for c in topic.commands]
         ).write(sys.stdout)
+        print(AnsiStderr.reset, end='')
 
     def print_topics(self, shell):
         addl = []
@@ -116,7 +128,12 @@ class HelpCommand(Command):
             print()
 
         if addl:
-            print(title_str("Additional Topics", shell.width))
+            print(
+                AnsiStderr.yellow,
+                title_str("Additional Topics", shell.width),
+                AnsiStderr.reset,
+                sep=''
+            )
             tbl = FixedColumnTable([shell.width // 3] * 3)
             for topic in addl:
                 tbl.add_cell(sys.stdout, topic.id)
