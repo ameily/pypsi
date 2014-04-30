@@ -143,6 +143,17 @@ def choice_validator(choices):
         return value
     return validator
 
+def boolean_validator(ns, value):
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        t = value.lower()
+        if t in ('true', 't', '1', 'y', 'yes'):
+            return True
+        elif t in ('false', 'f', '0', 'n', 'no'):
+            return False
+    raise ValueError("Value is not true or false")
+
 class WizardStep(object):
 
     def __init__(self, id, name, help, default=None, completer=None, validators=None):
