@@ -7,11 +7,14 @@ import readline
 
 class ShellClient(RemotePypsiSession):
 
-    def __init__(self, host, port):
-        super(ShellClient, self).__init__()
-        self.fp = open('log.txt', 'w')
+    def __init__(self, host, port, on_connect=None, on_disconnect=None,
+            on_send=None, on_recv=None):
+        super(ShellClient, self).__init__(on_send=on_send, on_recv=on_recv)
+        # self.fp = open('log.txt', 'w')
         self.host = host
         self.port = port
+        self.on_connect = on_connect if on_connect else lambda x : None
+        self.on_disconnect = on_disconnect if on_disconnect else lambda x : None
         self.running = False
         self.completions = None
 
@@ -39,14 +42,13 @@ class ShellClient(RemotePypsiSession):
 
     def recv_json(self, block=True):
         obj = super().recv_json(block)
-        self.fp.write(str(obj))
-        self.fp.write('\n')
-        self.fp.flush()
+        # self.fp.write(str(obj))
+        # self.fp.write('\n')
+        # self.fp.flush()
         #print("obj:", obj, file=self.fp)
         #print("obj:", obj)
         #print()
         return obj
-
 
     def run(self):
         readline.parse_and_bind("tab: complete")
@@ -54,7 +56,7 @@ class ShellClient(RemotePypsiSession):
         self.running = True
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
         self.socket.connect((self.host, self.port))
-
+        self.on_connect(self)
         while self.running:
             msg = None
             try:
@@ -62,7 +64,7 @@ class ShellClient(RemotePypsiSession):
             except ConnectionClosed:
                 self.socket.close()
                 print("session closed")
-                return 0
+                break
 
             if isinstance(msg, proto.InputRequest):
                 response = proto.InputResponse('')
@@ -80,13 +82,13 @@ class ShellClient(RemotePypsiSession):
                 except ConnectionClosed:
                     print("session closed")
                     self.socket.close()
-                    self.fp.flush()
-                    self.fp.close()
-                    return 0
+                    # self.fp.flush()
+                    # self.fp.close()
+                    break
             elif isinstance(msg, proto.ShellOutputResponse):
                 print(msg.output, end='')
-        self.fp.close()
-        print("leaving")
+            # self.fp.close()
+        self.on_disconnect(self)
         return 0
 
     def stop(self):
