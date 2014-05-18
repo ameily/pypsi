@@ -45,9 +45,9 @@ class SystemCommand(Command):
         proc = None
         try:
             if shell.real_stdin == ctx.stdin:
-                proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=ctx.stderr)
+                proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=ctx.stderr, shell=True)
             else:
-                proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=ctx.stderr)
+                proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=ctx.stderr, shell=True)
                 buff = ctx.stdin.read()
                 if isinstance(buff, str):
                     buff = buff.encode('utf-8')
