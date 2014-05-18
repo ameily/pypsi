@@ -58,6 +58,9 @@ class SystemCommand(Command):
             if e.errno == 2:
                 self.error(shell, "executable not found")
                 return -1
+            else:
+                self.error(shell, str(e))
+                return -1
 
         for line in proc.stdout:
             ctx.stdout.write(line.decode('utf-8'))
