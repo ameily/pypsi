@@ -45,7 +45,7 @@ class SystemCommand(Command):
         proc = None
         try:
             if shell.real_stdin == ctx.stdin:
-                proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=ctx.stderr, shell=True)
+                proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
             else:
                 proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=ctx.stderr, shell=True)
                 buff = ctx.stdin.read()
@@ -57,10 +57,9 @@ class SystemCommand(Command):
         except OSError as e:
             if e.errno == 2:
                 self.error(shell, "executable not found")
-                return -1
             else:
                 self.error(shell, str(e))
-                return -1
+            return -1
 
         for line in proc.stdout:
             ctx.stdout.write(line.decode('utf-8'))
