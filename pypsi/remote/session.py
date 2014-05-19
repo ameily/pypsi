@@ -51,7 +51,7 @@ class RemotePypsiSession(object):
 
     def poll(self):
         fd = self.socket.fileno()
-        (read, write, err) = select.select([fd], [], [fd], 0)
+        (read, write, err) = select.select([fd], [], [fd], 0.5)
         if read or err:
             return True
         return False
