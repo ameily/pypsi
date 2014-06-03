@@ -53,7 +53,7 @@ class Shell(object):
         self.real_stdout = sys.stdout
         self.real_stdin = sys.stdin
         self.real_stderr = sys.stderr
-        self.width = width
+        self.width = width-1 # width is zero-based
         self.shell_name = shell_name
         self.exit_rc = exit_rc
         self.errno = 0
