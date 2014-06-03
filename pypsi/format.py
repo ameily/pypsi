@@ -150,7 +150,36 @@ class Table(object):
         return self
 
     def write(self, fp):
+        def write_overflow(row):
+            overflow = [''] * len(self.columns)
+            column_idx = 0
+            for (col, value) in zip(self.columns, row):
+                if column_idx > 0:
+                    fp.write(' ' * self.spacing)
+                if isinstance(value, str):
+                    pass
+                else:
+                    value = str(value)
+                if(len(value) <= col.width):
+                    fp.write(value.ljust(col.width))
+                else:
+                    overflow[column_idx] = value[col.width:]
+                    fp.write(value[:col.width])
+                # Move to next column
+                column_idx += 1
+            fp.write('\n')
+
+            # deal with overflowed data
+            if ''.join(overflow):
+                write_overflow(overflow)
+
         total = sum([ col.width for col in self.columns ])
+
+        # Resize columns if last too wide
+        # TODO: Smarter column resizing, maybe pick widest column
+        if total + self.spacing*(len(self.columns)-1) > self.width:
+            self.columns[-1].mode = Column.Grow
+
         for i in range(len(self.columns)):
             col = self.columns[i]
             if col.mode == Column.Grow:
@@ -171,20 +200,11 @@ class Table(object):
             fp.write('\n')
 
         for row in self.rows:
-            i = 0
-            for (col, value) in zip(self.columns, row):
-                if i > 0:
-                    fp.write(' ' * self.spacing)
-                if isinstance(value, str):
-                    pass
-                else:
-                    value = str(value)
+            write_overflow(row)
 
-                #fp.write("{{: <{}}}".format(col.width).format(value))
-                fp.write(value.ljust(col.width))
-                i += 1
-            fp.write('\n')
         return 0
+
+
 
 
 class Column(object):

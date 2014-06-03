@@ -111,6 +111,7 @@ Manage local variables."""
         if ns.list:
             tbl = Table(
                 columns=(Column("Variable"), Column("Value", Column.Grow)),
+                width=shell.width,
                 spacing=4,
             )
             for name in shell.ctx.vars:
