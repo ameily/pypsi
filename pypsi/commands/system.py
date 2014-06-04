@@ -33,7 +33,10 @@ import subprocess
 
 SystemUsage = """usage: {name} command
 
-execute a system shell command"""
+execute a system shell command
+
+positional arguments:
+  COMMAND            command to execute"""
 
 
 class SystemCommand(Command):
