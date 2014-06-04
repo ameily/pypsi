@@ -28,8 +28,13 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from pypsi.base import Command
+from pypsi.base import Command, PypsiArgParser
 import subprocess
+
+SystemUsage = """usage: {name} command
+
+execute a system shell command"""
+
 
 class SystemCommand(Command):
     '''
@@ -38,7 +43,13 @@ class SystemCommand(Command):
     '''
 
     def __init__(self, name='system', topic='shell', **kwargs):
-        super(SystemCommand, self).__init__(name=name, topic=topic, brief='execute a system shell command', **kwargs)
+        super(SystemCommand, self).__init__(
+            name=name,
+            topic=topic,
+            brief='execute a system shell command',
+            usage=SystemUsage.format(name=name),
+            **kwargs
+        )
 
     def run(self, shell, args, ctx):
         rc = None
