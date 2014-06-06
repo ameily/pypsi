@@ -31,7 +31,7 @@
 from pypsi.base import Command, PypsiArgParser
 import subprocess
 
-SystemUsage = """usage: {name} command
+SystemUsage = """usage: {name} COMMAND
 
 execute a system shell command
 
