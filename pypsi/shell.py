@@ -152,7 +152,7 @@ class Shell(object):
         try:
             statement = self.parser.build(tokens, ctx)
         except StatementSyntaxError as e:
-            self.error(self.shell_name, ": ", str(e), '\n')
+            print(self.shell_name, ": ", str(e), file=sys.stderr)
             return 1
 
         rc = None
@@ -167,10 +167,15 @@ class Shell(object):
 
                 if not cmd:
                     statement.ctx.reset_io()
-                    self.error(self.shell_name, ": ", params.name, ": command not found\n")
+                    print(self.shell_name, ": ", params.name, ": command not found", file=sys.stderr)
                     return 1
 
-                statement.ctx.setup_io(cmd, params, op)
+                # Verify that setup_io did not return an error.
+                if statement.ctx.setup_io(cmd, params, op) == -1:
+                    statement.ctx.reset_io()
+                    print(self.shell_name, ": IO error", file=sys.stderr)
+                    return 1
+
                 rc = self.run_cmd(cmd, params, statement.ctx)
                 if op == '||':
                     if rc == 0:
