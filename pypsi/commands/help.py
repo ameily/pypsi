@@ -106,7 +106,7 @@ class HelpCommand(Command):
         self.lookup[topic.id] = topic
         self.topics.append(topic)
 
-    def print_topic_commands(self, shell, topic, title=None):
+    def print_topic_commands(self, shell, topic, title=None, name_col_width = 20):
         print(
             AnsiStderr.yellow,
             title_str(title or topic.name or topic.id, shell.width),
@@ -125,22 +125,32 @@ class HelpCommand(Command):
                 (' ----', '-----------')
             ]
         ).extend(
-            *[(' '+c.name, c.brief or '') for c in topic.commands]
+            *[(' '+c.name.ljust(name_col_width - 1), c.brief or '') for c in topic.commands]
         ).write(sys.stdout)
         print(AnsiStderr.reset, end='')
 
     def print_topics(self, shell):
+        max_name_width = 0
+        for topic in self.topics:
+            for c in topic.commands:
+                if len(c.name) > max_name_width:
+                    max_name_width = len(c.name)
+
+        for c in self.uncat.commands:
+            if len(c.name) > max_name_width:
+                max_name_width = len(c.name)
+
         addl = []
         for topic in self.topics:
             if topic.content or not topic.commands:
                 addl.append(topic)
 
             if topic.commands:
-                self.print_topic_commands(shell, topic)
+                self.print_topic_commands(shell, topic, name_col_width = max_name_width)
                 print()
 
         if self.uncat.commands:
-            self.print_topic_commands(shell, self.uncat)
+            self.print_topic_commands(shell, self.uncat, name_col_width = max_name_width)
             print()
 
         if addl:
