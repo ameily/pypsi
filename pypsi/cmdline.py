@@ -42,7 +42,7 @@ TokenContinue = 0
 TokenEnd = 1
 '''The token does not accept the current character.'''
 
-TokenTerm = 2 
+TokenTerm = 2
 '''The token is finished and the current character should not be processed again.'''
 
 
@@ -321,7 +321,10 @@ class StatementContext(object):
         :returns: 0 on success, -1 on error
         '''
         if params.stdin_path:
-            sys.stdin = self.stdin = open(params.stdin_path, 'r')
+            try:
+                sys.stdin = self.stdin = open(params.stdin_path, 'r')
+            except OSError as e:
+                return -1
         elif self.prev and self.prev[1] == '|':
             self.stdout.flush()
             self.stdout.seek(0)
@@ -330,14 +333,20 @@ class StatementContext(object):
             self.stdin = sys.stdin = self.backup_stdin
 
         if params.stdout_path:
-            sys.stdout = self.stdout = open(params.stdout_path, params.stdout_mode)
+            try:
+                sys.stdout = self.stdout = open(params.stdout_path, params.stdout_mode)
+            except OSError as e:
+                return -1
         elif op == '|':
             sys.stdout = self.stdout = StringIO()
         else:
             self.stdout = sys.stdout = self.backup_stdout
 
         if params.stderr_path:
-            sys.stderr = self.stderr = open(params.stderr_path, 'w')
+            try:
+                sys.stderr = self.stderr = open(params.stderr_path, 'w')
+            except OSError as e:
+                return -1
         else:
             self.stderr = sys.stderr = self.backup_stderr
 
