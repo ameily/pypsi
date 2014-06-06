@@ -18,15 +18,21 @@ def word_wrap(text, width, prefix=None, multiline=True):
         line = None
         if end >= count or text[end].isspace():
             line = text[start:end]
-            start = end+1
+            start = end
         else:
-            line_end = None
+            line_end = end
             for i in range(end, start-1, -1):
                 if text[i].isspace():
                     line_end = i
                     break
             line = text[start:line_end]
-            start = line_end+1
+            start = line_end
+
+        while start < count:
+            if text[start].isspace():
+                start+=1
+            else:
+                break
 
         if lines and prefix:
             line = line.strip()
@@ -163,8 +169,10 @@ class Table(object):
                 if(len(value) <= col.width):
                     fp.write(value.ljust(col.width))
                 else:
-                    overflow[column_idx] = value[col.width:]
-                    fp.write(value[:col.width])
+                    wrapped_line = word_wrap(value, col.width).split('\n')
+                    if len(wrapped_line) > 1:
+                        overflow[column_idx] = ' '.join(wrapped_line[1:])
+                    fp.write(wrapped_line[0])
                 # Move to next column
                 column_idx += 1
             fp.write('\n')
