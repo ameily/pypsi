@@ -43,7 +43,7 @@ class Shell(object):
     inherit this base class.
     '''
 
-    def __init__(self, shell_name='pypsi', width=80, exit_rc=-1024, ctx=None):
+    def __init__(self, shell_name='pypsi', width=79, exit_rc=-1024, ctx=None):
         '''
         :param str shell_name: the name of the shell; used in error messages
         :param int exit_rc: the exit return code that is returned from a command

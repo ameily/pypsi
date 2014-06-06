@@ -28,8 +28,16 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from pypsi.base import Command
+from pypsi.base import Command, PypsiArgParser
 import subprocess
+
+SystemUsage = """usage: {name} command
+
+execute a system shell command
+
+positional arguments:
+  COMMAND            command to execute"""
+
 
 class SystemCommand(Command):
     '''
@@ -38,16 +46,22 @@ class SystemCommand(Command):
     '''
 
     def __init__(self, name='system', topic='shell', **kwargs):
-        super(SystemCommand, self).__init__(name=name, topic=topic, brief='execute a system shell command', **kwargs)
+        super(SystemCommand, self).__init__(
+            name=name,
+            topic=topic,
+            brief='execute a system shell command',
+            usage=SystemUsage.format(name=name),
+            **kwargs
+        )
 
     def run(self, shell, args, ctx):
         rc = None
         proc = None
         try:
             if shell.real_stdin == ctx.stdin:
-                proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=ctx.stderr)
+                proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
             else:
-                proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=ctx.stderr)
+                proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=ctx.stderr, shell=True)
                 buff = ctx.stdin.read()
                 if isinstance(buff, str):
                     buff = buff.encode('utf-8')
@@ -57,7 +71,9 @@ class SystemCommand(Command):
         except OSError as e:
             if e.errno == 2:
                 self.error(shell, "executable not found")
-                return -1
+            else:
+                self.error(shell, str(e))
+            return -1
 
         for line in proc.stdout:
             ctx.stdout.write(line.decode('utf-8'))

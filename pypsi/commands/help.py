@@ -69,6 +69,22 @@ class HelpCommand(Command):
         self.lookup = {t.id: t for t in self.topics}
         self.dirty = True
 
+    def complete(self, shell, args, prefix):
+        args = [arg for arg in args if not arg.startswith('-')]
+        if self.dirty:
+            self.reload(shell)
+
+        completions = []
+        base = []
+        for topic in self.topics:
+            base.append(topic.name or topic.id)
+            base.extend([command.name for command in topic.commands])
+
+        if len(args) <= 1:
+            completions.extend([x for x in base if x.startswith(prefix) or not prefix])
+
+        return sorted( completions )
+
     def reload(self, shell):
         self.uncat.commands = []
         for id in self.lookup:

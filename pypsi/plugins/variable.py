@@ -76,15 +76,16 @@ class VariableCommand(Command):
     Manage variables.
     '''
 
-    Usage = """usage: var name = value
+    Usage = """var name
+   or: var name = value
    or: var -l
-   or: var -d name
-Manage local variables."""
+   or: var -d name"""
 
-    def __init__(self, name='var', brief='manage variables', topic='shell', **kwargs):
+    def __init__(self, name='var', brief='manage local variables', topic='shell', **kwargs):
         self.parser = PypsiArgParser(
             prog=name,
-            description=brief
+            description=brief,
+            usage=VariableCommand.Usage
         )
 
         self.parser.add_argument(
@@ -111,6 +112,7 @@ Manage local variables."""
         if ns.list:
             tbl = Table(
                 columns=(Column("Variable"), Column("Value", Column.Grow)),
+                width=shell.width,
                 spacing=4,
             )
             for name in shell.ctx.vars:
