@@ -140,7 +140,10 @@ class VariableCommand(Command):
             if remainder or not exp:
                 self.error(shell, "invalid expression")
                 return 1
-            shell.ctx.vars[exp.operand] = exp.value
+            if isinstance(shell.ctx.vars[exp.operand], ManagedVariable):
+                shell.ctx.vars[exp.operand].setter(shell,exp.value)
+            else:
+                shell.ctx.vars[exp.operand] = exp.value
         elif ns.exp:
             if len(args) == 1:
                 if args[0] in shell.ctx.vars:
@@ -266,9 +269,12 @@ class VariablePlugin(Plugin):
             shell.ctx.vars.date = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.datefmt or "%x"))
             shell.ctx.vars.time = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.timefmt or "%X"))
             shell.ctx.vars.datetime = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.datetimefmt or "%c"))
-            shell.ctx.vars.prompt = ManagedVariable(lambda shell: shell.prompt)
+            shell.ctx.vars.prompt = ManagedVariable(lambda shell: shell.prompt, self.set_prompt)
             shell.ctx.vars.errno = ManagedVariable(lambda shell: str(shell.errno))
         return 0
+
+    def set_prompt(self,shell,value):
+        shell.prompt = value
 
     def expand(self, shell, vart):
         name = vart.var
