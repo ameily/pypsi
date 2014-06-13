@@ -29,6 +29,7 @@
 #
 
 from pypsi.base import Command, PypsiArgParser
+import time
 import os
 
 TailCmdUsage = "%(prog)s [-n] [-f] [-h] file"
@@ -72,45 +73,62 @@ class TailCommand(Command):
             self.error(shell, "invalid file path: ", ns.input_file, "\n")
             return -1
 
-        # get number of lines, determine how many to display/skip
-        with open(ns.input_file) as fp:
-            num_lines = sum(1 for line in fp)
-            
-        lines_to_print = min(num_lines, ns.lines)
-        lines_to_skip = 0
-        if lines_to_print < num_lines:
-            lines_to_skip = num_lines - lines_to_print
+        # print the last N lines
+        last_lines = self.tail(ns.input_file, ns.lines)
+        for line in last_lines:
+            print(line)
+        print()
 
-        # print the appropriate lines from the file
-        if not ns.follow:
-            idx = 1
-            with open(ns.input_file) as fp:
-                for line in fp:
-                    if idx > lines_to_skip:
-                        print(line, end='', flush=True)
-                    else:
-                        idx += 1
-                print()
-        # watch the file and print as necessary
-        else:
-            self.watch_file(ns.input_file, lines_to_skip)
+        # continue to follow the file and display new content
+        if ns.follow:
+            self.follow_file(ns.input_file)
 
         return 0
 
-    def watch_file(self, fname, skip):
-        idx = 1
+
+    def tail(self, fname, lines=10, block_size=1024):
+        data = []
+        blocks = -1
+        num_lines = 0
+        where = 0
+
         with open(fname) as fp:
+            # seek to the end and get the number of bytes in the file
+            fp.seek(0,2)
+            num_bytes = fp.tell()
+            bytes_left = num_bytes
+
+            while num_lines < lines and bytes_left > 0:
+                if bytes_left - block_size > 0:
+                    # Seek back a block_size
+                    fp.seek(num_bytes - (blocks * block_size))
+                    # read data from file
+                    data.insert(0, fp.read(block_size))
+                else:
+                    # jump back to the beginning
+                    fp.seek(0,0)
+                    # read data
+                    data.insert(0, fp.read(num_bytes))
+                num_lines = data[0].count('\n')
+                bytes_left -= block_size
+                blocks -= 1
+                
+            return ''.join(data).splitlines()[-lines:]
+
+
+    def follow_file(self, fname):
+        with open(fname) as fp:
+            # jump to the end of the file
+            fp.seek(0,2)
             try:
                 while 1:
                     where = fp.tell()
                     line = fp.readline()
                     if not line:
+                        time.sleep(1)
                         fp.seek(where)
                     else:
-                        if idx > skip:
-                            print(line, end='', flush=True)
-                        else:
-                            idx += 1
+                        print(line, end='', flush=True)
             except (KeyboardInterrupt):
                 print()
                 return 0
