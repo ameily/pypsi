@@ -45,6 +45,7 @@ from pypsi.commands.echo import EchoCommand
 from pypsi.commands.include import IncludeCommand
 from pypsi.commands.help import HelpCommand, Topic
 from pypsi.commands.tip import TipCommand
+from pypsi.commands.tail import TailCommand
 from pypsi.stream import AnsiStdout
 from pypsi import topics
 import sys
@@ -81,6 +82,7 @@ class DemoShell(Shell):
     include_cmd = IncludeCommand()
     cmd_plugin = CmdPlugin(cmd_args=1)
     tip_cmd = TipCommand()
+    tail_cmd = TailCommand()
     help_cmd = HelpCommand(
         topics=(
             Topic('builtin', 'Builtin Commands & Features', ShellTopic),
