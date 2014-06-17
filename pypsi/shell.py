@@ -228,7 +228,7 @@ class Shell(object):
             return ret
         return ''
 
-    def get_completions(self, line, prefix):
+    def get_completions(self, line, prefix):        
         tokens = self.parser.tokenize(line)
         cmd_name = None
         loc = None
@@ -278,7 +278,7 @@ class Shell(object):
                 ret = cmd.complete(self, args, prefix)
         return ret
 
-    def complete(self, text, state):
+    def complete(self, text, state):        
         if state == 0:
             self.completion_matches = []
             begidx = readline.get_begidx()
