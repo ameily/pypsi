@@ -73,7 +73,7 @@ class WhitespaceToken(Token):
         :param str c: the current character
         :returns int: TokenEnd or TokenContinue
         '''
-        if c in (' ', '\t'):
+        if c in (' ', '\t','\xa0'):
             return TokenContinue
         return TokenEnd
 
@@ -135,7 +135,7 @@ class StringToken(Token):
         else:
             if c == '\\':
                 self.escape = True
-            elif c in (' ', '\t', ';', '|', '&', '>', '<'):
+            elif c in (' ', '\t', ';', '|', '&', '>', '<','\xa0'):
                 ret = TokenEnd
             elif c in ('"', "'"):
                 ret = TokenEnd
@@ -444,7 +444,7 @@ class StatementParser(object):
             else:
                 pass
         else:
-            if c in (' ', '\t'):
+            if c in (' ', '\t','\xa0'):
                 self.token = WhitespaceToken(index)
             elif c in ('>', '<', '|', '&', ';'):
                 self.token = OperatorToken(index, c)
