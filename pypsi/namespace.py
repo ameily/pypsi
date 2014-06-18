@@ -109,6 +109,9 @@ class ScopedNamespace(object):
         self._ctx = ctx
 
     def __getattribute__(self, name):
+        if not name:
+            return ''
+
         if name[0] == '_':
             return super(ScopedNamespace, self).__getattribute__(name)
 
@@ -119,6 +122,9 @@ class ScopedNamespace(object):
         return ctx.locals[name] if name in ctx.locals else ''
 
     def __setattr__(self, name, value):
+        if not name:
+            return -1
+        
         if name[0] == '_':
             super(ScopedNamespace, self).__setattr__(name, value)
         else:
