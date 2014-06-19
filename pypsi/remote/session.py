@@ -16,7 +16,7 @@ class ConnectionClosed(EOFError):
 
 class RemotePypsiSession(object):
 
-    def __init__(self, socket=None, on_send=None, on_recv=None):
+    def __init__(self, socket=None):
         self.socket = socket
         self.queue = []
         self.buffer = StringIO()
@@ -29,8 +29,12 @@ class RemotePypsiSession(object):
             proto.ShellOutputResponse.status: proto.ShellOutputResponse
         }
         self.running = True
-        self.on_send = on_send if on_send else lambda x, y : y
-        self.on_recv = on_recv if on_recv else lambda x, y : y
+
+    def on_send(self, obj):
+        return obj
+
+    def on_recv(self, obj):
+        return obj
 
     def send_json(self, obj):
         #self.p("send:", obj)
@@ -115,12 +119,12 @@ class RemotePypsiSession(object):
         else:
             return rc
         '''
-        m = self.on_send(self, msg.json())
+        m = self.on_send(msg.json())
         return self.send_json(m)
 
     def recvmsg(self, block=True):
         obj = self.recv_json(block)
-        obj = self.on_recv(self, obj)
+        obj = self.on_recv(obj)
         if obj: 
             return self.parse_msg(obj)
         return None

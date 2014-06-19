@@ -102,14 +102,11 @@ class SessionFileObjProxy(object):
 
 class ServerWorker(threading.Thread, RemotePypsiSession):
 
-    def __init__(self, socket, shell_ctor, on_connect=None,
-            on_disconnect=None, on_send=None, on_recv=None):
+    def __init__(self, socket, shell_ctor):
         threading.Thread.__init__(self)
-        RemotePypsiSession.__init__(self, socket, on_send, on_recv)
+        RemotePypsiSession.__init__(self, socket)
         self.running = False
         self.shell_ctor = shell_ctor
-        self.on_connect = on_connect if on_connect else lambda x : None
-        self.on_disconnect = on_disconnect if on_disconnect else lambda x : None
         # self.fp = open('out.txt', 'w')
 
     def setup(self):
@@ -150,7 +147,7 @@ class ServerWorker(threading.Thread, RemotePypsiSession):
 
     def run(self):
         self.setup()
-        self.on_connect(self)
+        self.on_connect()
         try:
             self.shell = self.shell_ctor()
             self.shell.cmdloop()
@@ -160,7 +157,7 @@ class ServerWorker(threading.Thread, RemotePypsiSession):
             import traceback
             server_print(traceback.format_exc())
         finally:
-            self.on_disconnect(self)
+            self.on_disconnect()
             self.cleanup()
             self.running = False
 
@@ -234,17 +231,18 @@ class ServerWorker(threading.Thread, RemotePypsiSession):
         # self.fp.close()
         #server_print("ServerWorker.cleanup()")
 
+    def on_connect(self):
+        pass
+
+    def on_disconnect(self):
+        pass
+
 
 class ShellServer(object):
 
-    def __init__(self, port, shell_ctor, on_connect=None, on_disconnect=None,
-            on_send=None, on_recv=None):
+    def __init__(self, port, shell_ctor):
         self.port = port
         self.shell_ctor = shell_ctor
-        self.on_connect = on_connect
-        self.on_disconnect = on_disconnect
-        self.on_send = on_send
-        self.on_recv = on_recv
         self.threads = []
         self.running = False
         self.clients = {}
@@ -293,11 +291,7 @@ class ShellServer(object):
     def spawn(self, sock, addr):
         t = ServerWorker(
             sock,
-            self.shell_ctor,
-            on_connect=self.on_connect,
-            on_disconnect=self.on_disconnect,
-            on_send=self.on_send,
-            on_recv=self.on_recv
+            self.shell_ctor
         )
         self.threads.append(t)
         t.start()

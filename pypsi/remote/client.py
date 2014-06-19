@@ -7,14 +7,11 @@ import readline
 
 class ShellClient(RemotePypsiSession):
 
-    def __init__(self, host, port, on_connect=None, on_disconnect=None,
-            on_send=None, on_recv=None):
-        super(ShellClient, self).__init__(on_send=on_send, on_recv=on_recv)
+    def __init__(self, host, port):
+        super(ShellClient, self).__init__()
         # self.fp = open('log.txt', 'w')
         self.host = host
         self.port = port
-        self.on_connect = on_connect if on_connect else lambda x : None
-        self.on_disconnect = on_disconnect if on_disconnect else lambda x : None
         self.running = False
         self.completions = None
 
@@ -56,7 +53,7 @@ class ShellClient(RemotePypsiSession):
         self.running = True
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
         self.socket.connect((self.host, self.port))
-        self.on_connect(self)
+        self.on_connect()
         while self.running:
             msg = None
             try:
@@ -88,8 +85,14 @@ class ShellClient(RemotePypsiSession):
             elif isinstance(msg, proto.ShellOutputResponse):
                 print(msg.output, end='')
             # self.fp.close()
-        self.on_disconnect(self)
+        self.on_disconnect()
         return 0
 
     def stop(self):
         self.running = False
+
+    def on_connect(self):
+        pass
+
+    def on_disconnect(self):
+        pass
