@@ -37,12 +37,12 @@ class ExitCommand(Command):
     '''
 
     Usage = """usage: {name}
-Exit the {shell} shell"""
+Exit the shell"""
 
-    def __init__(self, name='exit', topic='shell', shell_name='pypsi', **kwargs):
+    def __init__(self, name='exit', topic='shell', **kwargs):
         super(ExitCommand, self).__init__(
             name=name,
-            usage=self.Usage.format(name=name, shell=shell_name),
+            usage=self.Usage.format(name=name),
             topic=topic,
             brief="exit the shell",
             **kwargs
