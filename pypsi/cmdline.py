@@ -265,6 +265,13 @@ class Statement(object):
         )
 
 
+class IoRedirectionError(Exception):
+
+    def __init__(self, path, message):
+        self.path = path
+        self.message = message
+
+
 class StatementContext(object):
     '''
     Holds information about the current context of a statement. This class wraps
@@ -324,7 +331,7 @@ class StatementContext(object):
             try:
                 sys.stdin = self.stdin = open(params.stdin_path, 'r')
             except OSError as e:
-                return -1
+                raise IoRedirectionError(params.stdin_path, str(e))
         elif self.prev and self.prev[1] == '|':
             self.stdout.flush()
             self.stdout.seek(0)
@@ -336,7 +343,7 @@ class StatementContext(object):
             try:
                 sys.stdout = self.stdout = open(params.stdout_path, params.stdout_mode)
             except OSError as e:
-                return -1
+                raise IoRedirectionError(params.stdout_path, str(e))
         elif op == '|':
             sys.stdout = self.stdout = StringIO()
         else:
@@ -346,7 +353,7 @@ class StatementContext(object):
             try:
                 sys.stderr = self.stderr = open(params.stderr_path, 'w')
             except OSError as e:
-                return -1
+                raise IoRedirectionError(params.stderr_path, str(e))
         else:
             self.stderr = sys.stderr = self.backup_stderr
 

@@ -29,7 +29,7 @@
 #
 
 from pypsi.base import Plugin, Command
-from pypsi.cmdline import StatementParser, StatementSyntaxError, StatementContext
+from pypsi.cmdline import StatementParser, StatementSyntaxError, StatementContext, IoRedirectionError
 from pypsi.namespace import Namespace
 from pypsi.cmdline import StringToken, OperatorToken, WhitespaceToken
 from pypsi.completers import path_completer
@@ -152,7 +152,7 @@ class Shell(object):
         try:
             statement = self.parser.build(tokens, ctx)
         except StatementSyntaxError as e:
-            print(self.shell_name, ": ", str(e), file=sys.stderr)
+            print(self.shell_name, ": ", str(e), sep='', file=sys.stderr)
             return 1
 
         rc = None
@@ -171,10 +171,15 @@ class Shell(object):
                     return 1
 
                 # Verify that setup_io did not return an error.
-                if statement.ctx.setup_io(cmd, params, op) == -1:
+                try:
+                    if statement.ctx.setup_io(cmd, params, op) == -1:
+                        statement.ctx.reset_io()
+                        print(self.shell_name, ": IO error", file=sys.stderr)
+                        return 1
+                except IoRedirectionError as e:
                     statement.ctx.reset_io()
-                    print(self.shell_name, ": IO error", file=sys.stderr)
-                    return 1
+                    print(self.shell_name, ': ', e.path, ': ', e.message, sep='', file=sys.stderr)
+                    return -1
 
                 rc = self.run_cmd(cmd, params, statement.ctx)
                 if op == '||':
