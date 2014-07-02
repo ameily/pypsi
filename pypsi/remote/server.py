@@ -107,7 +107,7 @@ class ServerWorker(threading.Thread, RemotePypsiSession):
         RemotePypsiSession.__init__(self, socket)
         self.running = False
         self.shell_ctor = shell_ctor
-        self.fp = open('out.txt', 'w')
+        # self.fp = open('out.txt', 'w')
 
     def setup(self):
         self.buffer = StringIO()
@@ -147,6 +147,7 @@ class ServerWorker(threading.Thread, RemotePypsiSession):
 
     def run(self):
         self.setup()
+        self.on_connect()
         try:
             self.shell = self.shell_ctor()
             self.shell.cmdloop()
@@ -156,6 +157,7 @@ class ServerWorker(threading.Thread, RemotePypsiSession):
             import traceback
             server_print(traceback.format_exc())
         finally:
+            self.on_disconnect()
             self.cleanup()
             self.running = False
 
@@ -176,9 +178,9 @@ class ServerWorker(threading.Thread, RemotePypsiSession):
             pass
 
     def send_json(self, obj):
-        self.fp.write(str(obj))
-        self.fp.write('\n')
-        self.fp.flush()
+        # self.fp.write(str(obj))
+        # self.fp.write('\n')
+        # self.fp.flush()
         return super().send_json(obj)
 
     def input(self, msg=''):
@@ -226,8 +228,14 @@ class ServerWorker(threading.Thread, RemotePypsiSession):
         sys.stderr._deregister_proxy()
         builtins.input._deregister_proxy()
         self.socket.close()
-        self.fp.close()
+        # self.fp.close()
         #server_print("ServerWorker.cleanup()")
+
+    def on_connect(self):
+        pass
+
+    def on_disconnect(self):
+        pass
 
 
 class ShellServer(object):
@@ -281,7 +289,10 @@ class ShellServer(object):
         return False
 
     def spawn(self, sock, addr):
-        t = ServerWorker(sock, self.shell_ctor)
+        t = ServerWorker(
+            sock,
+            self.shell_ctor
+        )
         self.threads.append(t)
         t.start()
         self.clients[t.ident] = addr

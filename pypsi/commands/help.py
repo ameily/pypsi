@@ -48,7 +48,8 @@ class HelpCommand(Command):
     Provides access to manpage-esque topics and command usage information.
     '''
 
-    def __init__(self, name='help', topic='shell', brief='print information on a topic or command', topics=None, **kwargs):
+    def __init__(self, name='help', topic='shell', brief='print information on a topic or command', topics=None,
+                 **kwargs):
         self.parser = PypsiArgParser(
             prog=name,
             description=brief
@@ -69,6 +70,22 @@ class HelpCommand(Command):
         self.lookup = {t.id: t for t in self.topics}
         self.dirty = True
 
+    def complete(self, shell, args, prefix):
+        args = [arg for arg in args if not arg.startswith('-')]
+        if self.dirty:
+            self.reload(shell)
+
+        completions = []
+        base = []
+        for topic in self.topics:
+            base.append(topic.name or topic.id)
+            base.extend([command.name for command in topic.commands])
+
+        if len(args) <= 1:
+            completions.extend([x for x in base if x.startswith(prefix) or not prefix])
+
+        return sorted(completions)
+
     def reload(self, shell):
         self.uncat.commands = []
         for id in self.lookup:
@@ -84,13 +101,12 @@ class HelpCommand(Command):
                 self.uncat.commands.append(cmd)
         self.dirty = False
 
-
     def add_topic(self, topic):
         self.dirty = True
         self.lookup[topic.id] = topic
         self.topics.append(topic)
 
-    def print_topic_commands(self, shell, topic, title=None):
+    def print_topic_commands(self, shell, topic, title=None, name_col_width=20):
         print(
             AnsiStderr.yellow,
             title_str(title or topic.name or topic.id, shell.width),
@@ -109,22 +125,30 @@ class HelpCommand(Command):
                 (' ----', '-----------')
             ]
         ).extend(
-            *[(' '+c.name, c.brief or '') for c in topic.commands]
+            *[(' '+c.name.ljust(name_col_width - 1), c.brief or '') for c in topic.commands]
         ).write(sys.stdout)
         print(AnsiStderr.reset, end='')
 
     def print_topics(self, shell):
+        max_name_width = 0
+        for topic in self.topics:
+            for c in topic.commands:
+                max_name_width = max(len(c.name), max_name_width)
+
+        for c in self.uncat.commands:
+            max_name_width = max(len(c.name), max_name_width)
+
         addl = []
         for topic in self.topics:
             if topic.content or not topic.commands:
                 addl.append(topic)
 
             if topic.commands:
-                self.print_topic_commands(shell, topic)
+                self.print_topic_commands(shell, topic, name_col_width=max_name_width)
                 print()
 
         if self.uncat.commands:
-            self.print_topic_commands(shell, self.uncat)
+            self.print_topic_commands(shell, self.uncat, name_col_width=max_name_width)
             print()
 
         if addl:

@@ -191,7 +191,7 @@ class Command(object):
         #shell.error('\n')
         #shell.warn(self.usage, '\n')
         print(AnsiStderr.red, self.name, ": ", *args, file=sys.stderr, sep='', end=AnsiStderr.reset+'\n')
-        print(AnsiStderr.yellow, self.usage, AnsiStderr.reset)
+        print(AnsiStderr.yellow, self.usage, AnsiStderr.reset, sep='')
 
     def error(self, shell, *args):
         '''

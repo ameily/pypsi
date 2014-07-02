@@ -34,7 +34,7 @@ class XArgsCommand(Command):
         )
 
     def run(self, shell, args, ctx):
-        ns = self.parser.parse_args(args)
+        ns = self.parser.parse_args(shell, args)
         if self.parser.rc is not None:
             return self.parser.rc
 
