@@ -76,15 +76,16 @@ class VariableCommand(Command):
     Manage variables.
     '''
 
-    Usage = """usage: var name = value
+    Usage = """var name
+   or: var name = value
    or: var -l
-   or: var -d name
-Manage local variables."""
+   or: var -d name"""
 
-    def __init__(self, name='var', brief='manage variables', topic='shell', **kwargs):
+    def __init__(self, name='var', brief='manage local variables', topic='shell', **kwargs):
         self.parser = PypsiArgParser(
             prog=name,
-            description=brief
+            description=brief,
+            usage=VariableCommand.Usage
         )
 
         self.parser.add_argument(
@@ -111,6 +112,7 @@ Manage local variables."""
         if ns.list:
             tbl = Table(
                 columns=(Column("Variable"), Column("Value", Column.Grow)),
+                width=shell.width,
                 spacing=4,
             )
             for name in shell.ctx.vars:
@@ -138,7 +140,10 @@ Manage local variables."""
             if remainder or not exp:
                 self.error(shell, "invalid expression")
                 return 1
-            shell.ctx.vars[exp.operand] = exp.value
+            if isinstance(shell.ctx.vars[exp.operand], ManagedVariable):
+                shell.ctx.vars[exp.operand].setter(shell,exp.value)
+            else:
+                shell.ctx.vars[exp.operand] = exp.value
         elif ns.exp:
             if len(args) == 1:
                 if args[0] in shell.ctx.vars:
@@ -264,9 +269,12 @@ class VariablePlugin(Plugin):
             shell.ctx.vars.date = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.datefmt or "%x"))
             shell.ctx.vars.time = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.timefmt or "%X"))
             shell.ctx.vars.datetime = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.datetimefmt or "%c"))
-            shell.ctx.vars.prompt = ManagedVariable(lambda shell: shell.prompt)
+            shell.ctx.vars.prompt = ManagedVariable(lambda shell: shell.prompt, self.set_prompt)
             shell.ctx.vars.errno = ManagedVariable(lambda shell: str(shell.errno))
         return 0
+
+    def set_prompt(self,shell,value):
+        shell.prompt = value
 
     def expand(self, shell, vart):
         name = vart.var

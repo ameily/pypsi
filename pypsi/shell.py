@@ -29,7 +29,7 @@
 #
 
 from pypsi.base import Plugin, Command
-from pypsi.cmdline import StatementParser, StatementSyntaxError, StatementContext
+from pypsi.cmdline import StatementParser, StatementSyntaxError, StatementContext, IoRedirectionError
 from pypsi.namespace import Namespace
 from pypsi.cmdline import StringToken, OperatorToken, WhitespaceToken
 from pypsi.completers import path_completer
@@ -43,7 +43,7 @@ class Shell(object):
     inherit this base class.
     '''
 
-    def __init__(self, shell_name='pypsi', width=80, exit_rc=-1024, ctx=None):
+    def __init__(self, shell_name='pypsi', width=79, exit_rc=-1024, ctx=None):
         '''
         :param str shell_name: the name of the shell; used in error messages
         :param int exit_rc: the exit return code that is returned from a command
@@ -152,7 +152,7 @@ class Shell(object):
         try:
             statement = self.parser.build(tokens, ctx)
         except StatementSyntaxError as e:
-            self.error(self.shell_name, ": ", str(e), '\n')
+            print(self.shell_name, ": ", str(e), sep='', file=sys.stderr)
             return 1
 
         rc = None
@@ -167,10 +167,20 @@ class Shell(object):
 
                 if not cmd:
                     statement.ctx.reset_io()
-                    self.error(self.shell_name, ": ", params.name, ": command not found\n")
+                    print(self.shell_name, ": ", params.name, ": command not found", file=sys.stderr)
                     return 1
 
-                statement.ctx.setup_io(cmd, params, op)
+                # Verify that setup_io did not return an error.
+                try:
+                    if statement.ctx.setup_io(cmd, params, op) == -1:
+                        statement.ctx.reset_io()
+                        print(self.shell_name, ": IO error", file=sys.stderr)
+                        return 1
+                except IoRedirectionError as e:
+                    statement.ctx.reset_io()
+                    print(self.shell_name, ': ', e.path, ': ', e.message, sep='', file=sys.stderr)
+                    return -1
+
                 rc = self.run_cmd(cmd, params, statement.ctx)
                 if op == '||':
                     if rc == 0:
@@ -223,7 +233,7 @@ class Shell(object):
             return ret
         return ''
 
-    def get_completions(self, line, prefix):
+    def get_completions(self, line, prefix):        
         tokens = self.parser.tokenize(line)
         cmd_name = None
         loc = None
@@ -273,7 +283,7 @@ class Shell(object):
                 ret = cmd.complete(self, args, prefix)
         return ret
 
-    def complete(self, text, state):
+    def complete(self, text, state):        
         if state == 0:
             self.completion_matches = []
             begidx = readline.get_begidx()

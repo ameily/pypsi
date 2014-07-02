@@ -18,15 +18,21 @@ def word_wrap(text, width, prefix=None, multiline=True):
         line = None
         if end >= count or text[end].isspace():
             line = text[start:end]
-            start = end+1
+            start = end
         else:
-            line_end = None
+            line_end = end
             for i in range(end, start-1, -1):
                 if text[i].isspace():
                     line_end = i
                     break
             line = text[start:line_end]
-            start = line_end+1
+            start = line_end
+
+        while start < count:
+            if text[start].isspace():
+                start+=1
+            else:
+                break
 
         if lines and prefix:
             line = line.strip()
@@ -150,7 +156,38 @@ class Table(object):
         return self
 
     def write(self, fp):
+        def write_overflow(row):
+            overflow = [''] * len(self.columns)
+            column_idx = 0
+            for (col, value) in zip(self.columns, row):
+                if column_idx > 0:
+                    fp.write(' ' * self.spacing)
+                if isinstance(value, str):
+                    pass
+                else:
+                    value = str(value)
+                if(len(value) <= col.width):
+                    fp.write(value.ljust(col.width))
+                else:
+                    wrapped_line = word_wrap(value, col.width).split('\n')
+                    if len(wrapped_line) > 1:
+                        overflow[column_idx] = ' '.join(wrapped_line[1:])
+                    fp.write(wrapped_line[0])
+                # Move to next column
+                column_idx += 1
+            fp.write('\n')
+
+            # deal with overflowed data
+            if ''.join(overflow):
+                write_overflow(overflow)
+
         total = sum([ col.width for col in self.columns ])
+
+        # Resize columns if last too wide
+        # TODO: Smarter column resizing, maybe pick widest column
+        if total + self.spacing*(len(self.columns)-1) > self.width:
+            self.columns[-1].mode = Column.Grow
+
         for i in range(len(self.columns)):
             col = self.columns[i]
             if col.mode == Column.Grow:
@@ -171,20 +208,11 @@ class Table(object):
             fp.write('\n')
 
         for row in self.rows:
-            i = 0
-            for (col, value) in zip(self.columns, row):
-                if i > 0:
-                    fp.write(' ' * self.spacing)
-                if isinstance(value, str):
-                    pass
-                else:
-                    value = str(value)
+            write_overflow(row)
 
-                #fp.write("{{: <{}}}".format(col.width).format(value))
-                fp.write(value.ljust(col.width))
-                i += 1
-            fp.write('\n')
         return 0
+
+
 
 
 class Column(object):
