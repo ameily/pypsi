@@ -45,7 +45,7 @@ class SystemCommand(Command):
     shell's fallback command.
     '''
 
-    def __init__(self, name='system', topic='shell', **kwargs):
+    def __init__(self, name='system', topic='shell', use_shell=False, **kwargs):
         super(SystemCommand, self).__init__(
             name=name,
             topic=topic,
@@ -53,15 +53,16 @@ class SystemCommand(Command):
             usage=SystemUsage.format(name=name),
             **kwargs
         )
+        self.use_shell = use_shell
 
     def run(self, shell, args, ctx):
         rc = None
         proc = None
         try:
             if shell.real_stdin == ctx.stdin:
-                proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+                proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=self.use_shell)
             else:
-                proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=ctx.stderr, shell=True)
+                proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=ctx.stderr, shell=self.use_shell)
                 buff = ctx.stdin.read()
                 if isinstance(buff, str):
                     buff = buff.encode('utf-8')
@@ -75,8 +76,12 @@ class SystemCommand(Command):
                 self.error(shell, str(e))
             return -e.errno
 
-        for line in proc.stdout:
-            ctx.stdout.write(line.decode('utf-8'))
+        try:
+            for line in proc.stdout:
+                ctx.stdout.write(line.decode('utf-8'))
+        except KeyboardInterrupt:
+            proc.kill()
+            proc.communicate()
         rc = proc.wait()
         return rc if rc <= 0 else -1
 
