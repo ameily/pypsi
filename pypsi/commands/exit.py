@@ -29,25 +29,35 @@
 #
 
 
-from pypsi.base import Command
+from pypsi.base import Command, PypsiArgParser, CommandShortCircuit
+
+ExitCmdUsage = "%(prog)s [CODE]"
 
 class ExitCommand(Command):
     '''
     Exit the active shell.
     '''
 
-    Usage = """usage: {name}
-Exit the shell"""
+    def __init__(self, name='exit', topic='shell', brief='exit the shell', **kwargs):
+        self.parser = PypsiArgParser(
+            prog=name,
+            description=brief
+        )
+        
+        self.parser.add_argument(
+            'code', metavar='CODE', action='store', default=0, type=int,
+            nargs='?', help='exit code to return to parent process'
+        )
 
-    def __init__(self, name='exit', topic='shell', **kwargs):
         super(ExitCommand, self).__init__(
-            name=name,
-            usage=self.Usage.format(name=name),
-            topic=topic,
-            brief="exit the shell",
-            **kwargs
+            name=name, usage=self.parser.format_help(), topic=topic,
+            brief=brief, **kwargs
         )
 
     def run(self, shell, args, ctx):
-        shell.running = False
-        return 0
+        try:
+            ns = self.parser.parse_args(args)
+        except CommandShortCircuit as e:
+            return e.code
+
+        raise SystemExit(ns.code)

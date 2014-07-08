@@ -28,11 +28,11 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from pypsi.base import Command, PypsiArgParser
+from pypsi.base import Command, PypsiArgParser, CommandShortCircuit
 import time
 import os
 
-TailCmdUsage = "%(prog)s [-n] [-f] [-h] file"
+TailCmdUsage = "%(prog)s [-n N] [-f] [-h] FILE"
 
 
 class TailCommand(Command):
@@ -40,10 +40,10 @@ class TailCommand(Command):
     Displays the last N lines of a file to the screen.
     '''
 
-    def __init__(self, name='tail', topic='shell', **kwargs):
+    def __init__(self, name='tail', topic='shell', brief='display the last lines of a file', **kwargs):
         self.parser = PypsiArgParser(
             prog=name,
-            description='display last N lines of a file',
+            description=brief,
             usage=TailCmdUsage
         )
 
@@ -59,14 +59,16 @@ class TailCommand(Command):
             '-f', '--follow', help="continue to output as file grows", action='store_true'
         )
 
-        super(TailCommand, self).__init__(name=name, usage=self.parser.format_help(),
-                                          topic=topic, brief='display last N lines of a file',
-                                          **kwargs)
+        super(TailCommand, self).__init__(
+            name=name, usage=self.parser.format_help(), topic=topic,
+            brief=brief, **kwargs
+        )
 
     def run(self, shell, args, ctx):
-        ns = self.parser.parse_args(shell, args)
-        if self.parser.rc is not None:
-            return self.parser.rc
+        try:
+            ns = self.parser.parse_args(args)
+        except CommandShortCircuit as e:
+            return e.code
 
         # check for valid input file
         if not os.path.isfile(ns.input_file):

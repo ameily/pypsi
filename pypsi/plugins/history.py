@@ -28,19 +28,20 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from pypsi.base import Command, Plugin, PypsiArgParser
+from pypsi.base import Command, Plugin, PypsiArgParser, CommandShortCircuit
 from pypsi.utils import safe_open
 from pypsi.completers import path_completer
 import argparse
 import readline
 import os
 
-CmdUsage = """%(prog)s list [N]
-   or: %(prog)s clear
+CmdUsage = """%(prog)s clear
    or: %(prog)s delete N
-   or: %(prog)s save PATH
+   or: %(prog)s exec PREFIX
+   or: %(prog)s list [N]
    or: %(prog)s load PATH
-   or: %(prog)s exec PREFIX"""
+   or: %(prog)s save PATH"""
+
 
 class HistoryCommand(Command):
     '''
@@ -70,7 +71,7 @@ class HistoryCommand(Command):
             usage=CmdUsage
         )
 
-        subcmd = self.parser.add_subparsers(prog='history', dest='subcmd')
+        subcmd = self.parser.add_subparsers(prog='history', dest='subcmd', metavar='subcmd')
         subcmd.required = True
 
         ls = subcmd.add_parser('list', help='list history events')
@@ -100,9 +101,10 @@ class HistoryCommand(Command):
         )
 
     def run(self, shell, args, ctx):
-        ns = self.parser.parse_args(shell, args)
-        if self.parser.rc is not None:
-            return self.parser.rc
+        try:
+            ns = self.parser.parse_args(args) #(shell, args)
+        except CommandShortCircuit as e:
+            return e.code
 
         rc = 0
         if ns.subcmd == 'list':

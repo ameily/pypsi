@@ -29,7 +29,7 @@
 #
 
 import argparse
-from pypsi.base import Plugin, Command, PypsiArgParser
+from pypsi.base import Plugin, Command, PypsiArgParser, CommandShortCircuit
 from pypsi.namespace import Namespace, ScopedNamespace
 from pypsi.cmdline import Token, StringToken, WhitespaceToken, TokenContinue, TokenEnd, Expression
 from pypsi.format import Table, Column, obj_str
@@ -104,9 +104,10 @@ class VariableCommand(Command):
         )
 
     def run(self, shell, args, ctx):
-        ns = self.parser.parse_args(shell, args)
-        if self.parser.rc is not None:
-            return self.parser.rc
+        try:
+            ns = self.parser.parse_args(args)
+        except CommandShortCircuit as e:
+            return e.code
 
         rc = 0
         if ns.list:

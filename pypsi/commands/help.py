@@ -28,18 +28,18 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from pypsi.base import Command, PypsiArgParser
+from pypsi.base import Command, PypsiArgParser, CommandShortCircuit
 from pypsi.format import Table, Column, FixedColumnTable, title_str, word_wrap
-from pypsi.stream import AnsiStderr
+from pypsi.stream import AnsiStdout
 import sys
 
 
 class Topic(object):
 
-    def __init__(self, id, name='', content='', commands=None):
+    def __init__(self, id, name=None, content=None, commands=None):
         self.id = id
-        self.name = name
-        self.content = content
+        self.name = name or ''
+        self.content = content or ''
         self.commands = commands or []
 
 
@@ -100,6 +100,10 @@ class HelpCommand(Command):
             else:
                 self.uncat.commands.append(cmd)
         self.dirty = False
+        
+        for topic in self.topics:
+            if topic.commands:
+                topic.commands = sorted(topic.commands, key=lambda x: x.name)
 
     def add_topic(self, topic):
         self.dirty = True
@@ -108,12 +112,12 @@ class HelpCommand(Command):
 
     def print_topic_commands(self, shell, topic, title=None, name_col_width=20):
         print(
-            AnsiStderr.yellow,
+            AnsiStdout.yellow,
             title_str(title or topic.name or topic.id, shell.width),
-            AnsiStderr.reset,
+            AnsiStdout.reset,
             sep=''
         )
-        print(AnsiStderr.yellow, end='')
+        print(AnsiStdout.yellow, end='')
         Table(
             columns=(Column(''), Column('', Column.Grow)),
             spacing=4,
@@ -127,7 +131,7 @@ class HelpCommand(Command):
         ).extend(
             *[(' '+c.name.ljust(name_col_width - 1), c.brief or '') for c in topic.commands]
         ).write(sys.stdout)
-        print(AnsiStderr.reset, end='')
+        print(AnsiStdout.reset, end='')
 
     def print_topics(self, shell):
         max_name_width = 0
@@ -152,23 +156,27 @@ class HelpCommand(Command):
             print()
 
         if addl:
+            addl = sorted(addl, key=lambda x: x.id)
             print(
-                AnsiStderr.yellow,
+                AnsiStdout.yellow,
                 title_str("Additional Topics", shell.width),
-                AnsiStderr.reset,
                 sep=''
             )
-            tbl = FixedColumnTable([shell.width // 3] * 3)
-            for topic in addl:
-                tbl.add_cell(sys.stdout, topic.id)
-            tbl.flush(sys.stdout)
-            print()
+            Table(
+                columns=(Column(''), Column('', Column.Grow)),
+                spacing=4,
+                header=False,
+                width=shell.width
+            ).extend(
+                *[(' '+topic.id.ljust(max_name_width - 1), topic.name or '') for topic in addl]
+            ).write(sys.stdout)
+            print(AnsiStdout.reset)
 
     def print_topic(self, shell, id):
         if id not in self.lookup:
             if id in shell.commands:
                 cmd = shell.commands[id]
-                print(AnsiStderr.yellow, cmd.usage, AnsiStderr.reset, sep='')
+                print(AnsiStdout.yellow, cmd.usage, AnsiStdout.reset, sep='')
                 return 0
 
             self.error(shell, "unknown topic: ", id)
@@ -188,9 +196,10 @@ class HelpCommand(Command):
         if self.dirty:
             self.reload(shell)
 
-        ns = self.parser.parse_args(shell, args)
-        if self.parser.rc is not None:
-            return self.parser.rc
+        try:
+            ns = self.parser.parse_args(args)
+        except CommandShortCircuit as e:
+            return e.code
 
         rc = 0
         if not ns.topic:

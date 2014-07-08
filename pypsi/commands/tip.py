@@ -1,5 +1,5 @@
 
-from pypsi.base import Command, PypsiArgParser
+from pypsi.base import Command, PypsiArgParser, CommandShortCircuit
 from pypsi.stream import AnsiStdout
 from pypsi.format import word_wrap
 from pypsi.utils import safe_open
@@ -19,7 +19,8 @@ class TipCommand(Command):
         )
 
         self.parser.add_argument(
-            '-m', '--motd', action='store_true', help="print the message of the day"
+            '-m', '--motd', action='store_true',
+            help="print the message of the day"
         )
 
         super(TipCommand, self).__init__(
@@ -47,9 +48,10 @@ class TipCommand(Command):
         fp.close()
 
     def run(self, shell, args, ctx):
-        ns = self.parser.parse_args(shell, args)
-        if self.parser.rc is not None:
-            return self.parser.rc
+        try:
+            ns = self.parser.parse_args(args)
+        except CommandShortCircuit as e:
+            return e.code
 
         if ns.motd:
             self.print_motd(shell)

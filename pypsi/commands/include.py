@@ -28,7 +28,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from pypsi.base import Command
+from pypsi.base import Command, PypsiArgParser, CommandShortCircuit
 from pypsi.utils import safe_open
 import os
 
@@ -42,6 +42,8 @@ class IncludeFile(object):
         self.abspath = os.path.abspath(path)
         self.line = line
 
+IncludeCmdUsage = "%(prog)s PATH"
+
 
 class IncludeCommand(Command):
     '''
@@ -49,15 +51,30 @@ class IncludeCommand(Command):
     processing it as if it were typed into the shell.
     '''
 
-    def __init__(self, name='include', topic='shell', **kwargs):
-        super(IncludeCommand, self).__init__(name=name, topic=topic, brief='execute a script file', **kwargs)
+    def __init__(self, name='include', topic='shell', brief='execute a script file', **kwargs):
+        self.parser = PypsiArgParser(
+            prog=name,
+            description=brief,
+            usage=IncludeCmdUsage
+        )
+
+        self.parser.add_argument(
+            'path', metavar='PATH', action='store', help='file to execute'
+        )
+
+        super(IncludeCommand, self).__init__(
+            name=name, topic=topic, brief=brief,
+            usage=self.parser.format_help(), **kwargs
+        )
         self.stack = []
 
     def run(self, shell, args, ctx):
-        if len(args) != 1:
-            return 1
+        try:
+            ns = self.parser.parse_args(args)
+        except CommandShortCircuit as e:
+            return e.code
 
-        return self.include_file(shell, args[0], ctx)
+        return self.include_file(shell, ns.path, ctx)
 
     def include_file(self, shell, path, ctx):
         fp = None
