@@ -42,7 +42,7 @@ class IncludeFile(object):
         self.abspath = os.path.abspath(path)
         self.line = line
 
-IncludeCmdUsage = "%(prog)s PATH"
+#IncludeCmdUsage = "%(prog)s PATH"
 
 
 class IncludeCommand(Command):
@@ -55,7 +55,7 @@ class IncludeCommand(Command):
         self.parser = PypsiArgParser(
             prog=name,
             description=brief,
-            usage=IncludeCmdUsage
+            #usage=IncludeCmdUsage
         )
 
         self.parser.add_argument(
