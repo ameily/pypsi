@@ -133,7 +133,12 @@ class Shell(object):
                     for pp in self.preprocessors:
                         pp.on_input_canceled(self)
                 else:
-                    rc = self.execute(raw)
+                    try:
+                        rc = self.execute(raw)
+                    except SystemExit as e:
+                        rc = e.code
+                        print("exiting....")
+                        self.running = False
         finally:
             self.on_cmdloop_end()
             readline.set_completer(old_completer)
