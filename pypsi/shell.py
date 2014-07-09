@@ -134,6 +134,8 @@ class Shell(object):
                         pp.on_input_canceled(self)
                 else:
                     rc = self.execute(raw)
+                    for pp in self.postprocessors:
+                        pp.on_statement_finished(self, rc)
         finally:
             self.on_cmdloop_end()
             readline.set_completer(old_completer)
@@ -184,9 +186,6 @@ class Shell(object):
                 (params, op) = statement.next()
 
         statement.ctx.reset_io()
-
-        for pp in self.postprocessors:
-            pp.on_statement_finished(self)
 
         return rc
 
