@@ -7,12 +7,12 @@ def path_completer(shell, args, prefix):
     if args:
         root = args[-1]
         if root:
-            if not root.startswith('/') and not root.startswith('./'):
-                root = './' + root
+            if not root.startswith(os.path.sep) and not root.startswith('.' + os.path.sep):
+                root = '.' + os.path.sep + root
         else:
-            root = './'
+            root = '.' + os.path.sep
     else:
-        root = './'
+        root = '.' + os.path.sep
 
     if root.endswith(prefix) and prefix:
         root = root[:0 - len(prefix)]
@@ -29,7 +29,7 @@ def path_completer(shell, args, prefix):
             full = os.path.join(root, entry)
             if entry.startswith(prefix):
                 if os.path.isdir(full):
-                    dirs.append(entry + '/')
+                    dirs.append(entry + os.path.sep)
                 else:
                     files.append(entry)
         files = sorted(files)
