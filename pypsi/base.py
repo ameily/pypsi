@@ -191,7 +191,7 @@ class Command(object):
         #shell.error('\n')
         #shell.warn(self.usage, '\n')
         print(AnsiStderr.red, self.name, ": ", *args, file=sys.stderr, sep='', end=AnsiStderr.reset+'\n')
-        print(AnsiStderr.yellow, self.usage, AnsiStderr.reset)
+        print(AnsiStderr.yellow, self.usage, AnsiStderr.reset, sep='')
 
     def error(self, shell, *args):
         '''
@@ -241,16 +241,11 @@ class Command(object):
 
 
 
-class PrintHelpMessage(Exception):
+class CommandShortCircuit(Exception):
 
-    def __init__(self, message):
-        self.message = message
-
-
-class ArgumentError(Exception):
-
-    def __init__(self, message):
-        self.message = message
+    def __init__(self, code):
+        super(CommandShortCircuit, self).__init__(code)
+        self.code = code
 
 
 class PypsiArgParser(argparse.ArgumentParser):
@@ -264,31 +259,20 @@ class PypsiArgParser(argparse.ArgumentParser):
       stream
     '''
 
-    def __init__(self, *args, **kwargs):
-        super(PypsiArgParser, self).__init__(*args, **kwargs)
+    def exit(self, status=0, message=None):
+        if message:
+            print(AnsiStderr.red, message, AnsiStderr.reset, file=sys.stderr, sep='')
+        raise CommandShortCircuit(status)
 
-    def parse_args(self, shell, *args, **kwargs):
-        self.rc = None
-        self.help_msg = None
-        try:
-            return super(PypsiArgParser, self).parse_args(*args, **kwargs)
-        except PrintHelpMessage as e:
-            #shell.warn(e.message)
-            print(AnsiStderr.yellow, e.message, AnsiStderr.reset, file=sys.stderr, sep='')
-            self.rc = 0
-        except ArgumentError as e:
-            self.rc = 1
-            print(AnsiStderr.red, e.message, AnsiStderr.reset, file=sys.stderr, sep='')
-            print(AnsiStderr.yellow, self.format_help(), AnsiStderr.reset, file=sys.stderr, sep='')
-            #shell.error(e.message, '\n')
-            #shell.warn(self.format_help())
-        return None
+    def print_usage(self, file=None):
+        f = file or sys.stderr
+        print(AnsiStderr.yellow, self.format_usage(), AnsiStderr.reset, sep='', file=f)
+
+    def print_help(self, file=None):
+        f = file or sys.stderr
+        print(AnsiStderr.yellow, self.format_help(), AnsiStderr.reset, sep='', file=f)
 
     def error(self, message):
-        raise ArgumentError(message)
-
-    def exit(self, status=0, message=None):
-        raise PrintHelpMessage(self.help_msg)
-
-    def _print_message(self, msg, file=None):
-        self.help_msg = msg
+        print(AnsiStderr.red, self.prog, ": error: ", message, AnsiStderr.reset, sep='', file=sys.stderr)
+        self.print_usage()
+        self.exit(1)

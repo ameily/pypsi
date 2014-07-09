@@ -30,6 +30,12 @@ class RemotePypsiSession(object):
         }
         self.running = True
 
+    def on_send(self, obj):
+        return obj
+
+    def on_recv(self, obj):
+        return obj
+
     def send_json(self, obj):
         #self.p("send:", obj)
         try:
@@ -49,7 +55,7 @@ class RemotePypsiSession(object):
 
     def poll(self):
         fd = self.socket.fileno()
-        (read, write, err) = select.select([fd], [], [fd], 0)
+        (read, write, err) = select.select([fd], [], [fd], 0.5)
         if read or err:
             return True
         return False
@@ -113,10 +119,12 @@ class RemotePypsiSession(object):
         else:
             return rc
         '''
-        return self.send_json(msg.json())
+        m = self.on_send(msg.json())
+        return self.send_json(m)
 
     def recvmsg(self, block=True):
         obj = self.recv_json(block)
+        obj = self.on_recv(obj)
         if obj: 
             return self.parse_msg(obj)
         return None
@@ -129,4 +137,3 @@ class RemotePypsiSession(object):
         if s in self.registry:
             return self.registry[s].from_json(obj)
         raise proto.InvalidMessage("unknown status "+s)
-

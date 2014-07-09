@@ -29,7 +29,7 @@
 #
 
 import argparse
-from pypsi.base import Plugin, Command, PypsiArgParser
+from pypsi.base import Plugin, Command, PypsiArgParser, CommandShortCircuit
 from pypsi.namespace import Namespace, ScopedNamespace
 from pypsi.cmdline import Token, StringToken, WhitespaceToken, TokenContinue, TokenEnd, Expression
 from pypsi.format import Table, Column, obj_str
@@ -76,15 +76,16 @@ class VariableCommand(Command):
     Manage variables.
     '''
 
-    Usage = """usage: var name = value
+    Usage = """var name
+   or: var name = value
    or: var -l
-   or: var -d name
-Manage local variables."""
+   or: var -d name"""
 
-    def __init__(self, name='var', brief='manage variables', topic='shell', **kwargs):
+    def __init__(self, name='var', brief='manage local variables', topic='shell', **kwargs):
         self.parser = PypsiArgParser(
             prog=name,
-            description=brief
+            description=brief,
+            usage=VariableCommand.Usage
         )
 
         self.parser.add_argument(
@@ -103,14 +104,16 @@ Manage local variables."""
         )
 
     def run(self, shell, args, ctx):
-        ns = self.parser.parse_args(shell, args)
-        if self.parser.rc is not None:
-            return self.parser.rc
+        try:
+            ns = self.parser.parse_args(args)
+        except CommandShortCircuit as e:
+            return e.code
 
         rc = 0
         if ns.list:
             tbl = Table(
                 columns=(Column("Variable"), Column("Value", Column.Grow)),
+                width=shell.width,
                 spacing=4,
             )
             for name in shell.ctx.vars:
@@ -138,7 +141,10 @@ Manage local variables."""
             if remainder or not exp:
                 self.error(shell, "invalid expression")
                 return 1
-            shell.ctx.vars[exp.operand] = exp.value
+            if isinstance(shell.ctx.vars[exp.operand], ManagedVariable):
+                shell.ctx.vars[exp.operand].setter(shell,exp.value)
+            else:
+                shell.ctx.vars[exp.operand] = exp.value
         elif ns.exp:
             if len(args) == 1:
                 if args[0] in shell.ctx.vars:
@@ -264,9 +270,12 @@ class VariablePlugin(Plugin):
             shell.ctx.vars.date = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.datefmt or "%x"))
             shell.ctx.vars.time = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.timefmt or "%X"))
             shell.ctx.vars.datetime = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.datetimefmt or "%c"))
-            shell.ctx.vars.prompt = ManagedVariable(lambda shell: shell.prompt)
+            shell.ctx.vars.prompt = ManagedVariable(lambda shell: shell.prompt, self.set_prompt)
             shell.ctx.vars.errno = ManagedVariable(lambda shell: str(shell.errno))
         return 0
+
+    def set_prompt(self,shell,value):
+        shell.prompt = value
 
     def expand(self, shell, vart):
         name = vart.var

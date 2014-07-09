@@ -28,7 +28,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from pypsi.base import Command, PypsiArgParser
+from pypsi.base import Command, PypsiArgParser, CommandShortCircuit
 from pypsi.stream import AnsiStdout
 import sys
 import argparse
@@ -41,10 +41,10 @@ class EchoCommand(Command):
     Prints text to the screen.
     '''
 
-    def __init__(self, name='echo', topic='shell', **kwargs):
+    def __init__(self, name='echo', topic='shell', brief='print a line of text', **kwargs):
         self.parser = PypsiArgParser(
             prog=name,
-            description='display a line of text',
+            description=brief,
             usage=EchoCmdUsage
         )
 
@@ -59,12 +59,16 @@ class EchoCommand(Command):
             '-n', '--nolf', help="don't print newline character", action='store_true'
         )
 
-        super(EchoCommand, self).__init__(name=name, usage=self.parser.format_help(), topic=topic, brief='print a line of text', **kwargs)
+        super(EchoCommand, self).__init__(
+            name=name, usage=self.parser.format_help(), topic=topic,
+            brief=brief, **kwargs
+        )
 
     def run(self, shell, args, ctx):
-        ns = self.parser.parse_args(shell, args)
-        if self.parser.rc is not None:
-            return self.parser.rc
+        try:
+            ns = self.parser.parse_args(args)
+        except CommandShortCircuit as e:
+            return e.code
 
         tail = '' if ns.nolf else '\n'
 

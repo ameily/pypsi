@@ -28,8 +28,16 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from pypsi.base import Command
+from pypsi.base import Command, PypsiArgParser
 import subprocess
+
+SystemUsage = """usage: {name} COMMAND
+
+execute a system shell command
+
+positional arguments:
+  COMMAND            command to execute"""
+
 
 class SystemCommand(Command):
     '''
@@ -37,17 +45,24 @@ class SystemCommand(Command):
     shell's fallback command.
     '''
 
-    def __init__(self, name='system', topic='shell', **kwargs):
-        super(SystemCommand, self).__init__(name=name, topic=topic, brief='execute a system shell command', **kwargs)
+    def __init__(self, name='system', topic='shell', use_shell=False, **kwargs):
+        super(SystemCommand, self).__init__(
+            name=name,
+            topic=topic,
+            brief='execute a system shell command',
+            usage=SystemUsage.format(name=name),
+            **kwargs
+        )
+        self.use_shell = use_shell
 
     def run(self, shell, args, ctx):
         rc = None
         proc = None
         try:
             if shell.real_stdin == ctx.stdin:
-                proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=ctx.stderr)
+                proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=self.use_shell)
             else:
-                proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=ctx.stderr)
+                proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=ctx.stderr, shell=self.use_shell)
                 buff = ctx.stdin.read()
                 if isinstance(buff, str):
                     buff = buff.encode('utf-8')
@@ -57,10 +72,16 @@ class SystemCommand(Command):
         except OSError as e:
             if e.errno == 2:
                 self.error(shell, "executable not found")
-                return -1
+            else:
+                self.error(shell, str(e))
+            return -e.errno
 
-        for line in proc.stdout:
-            ctx.stdout.write(line.decode('utf-8'))
+        try:
+            for line in proc.stdout:
+                ctx.stdout.write(line.decode('utf-8'))
+        except KeyboardInterrupt:
+            proc.kill()
+            proc.communicate()
         rc = proc.wait()
         return rc if rc <= 0 else -1
 
