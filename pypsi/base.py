@@ -111,7 +111,7 @@ class Plugin(object):
         '''
         return 0
 
-    def on_statement_finished(self, shell):
+    def on_statement_finished(self, shell, rc):
         '''
         Called when a statement has been completely executed.
 

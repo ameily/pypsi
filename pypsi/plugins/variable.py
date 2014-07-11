@@ -313,6 +313,3 @@ class VariablePlugin(Plugin):
                         ret.append(StringToken(subt.index, part))
 
         return ret
-
-    def on_statement_finished(self, shell):
-        pass

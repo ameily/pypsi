@@ -135,6 +135,8 @@ class Shell(object):
                 else:
                     try:
                         rc = self.execute(raw)
+                        for pp in self.postprocessors:
+                            pp.on_statement_finished(self, rc)
                     except SystemExit as e:
                         rc = e.code
                         print("exiting....")
@@ -199,9 +201,6 @@ class Shell(object):
                 (params, op) = statement.next()
 
         statement.ctx.reset_io()
-
-        for pp in self.postprocessors:
-            pp.on_statement_finished(self)
 
         return rc
 
