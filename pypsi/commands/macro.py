@@ -168,6 +168,8 @@ class MacroCommand(BlockCommand):
                 self.begin_block(shell)
                 print("Beginning macro, use the '", shell.ctx.block.end_cmd,
                       "' command to save.", sep='')
+                shell.ctx.macro_orig_eof_is_sigint = shell.eof_is_sigint
+                shell.eof_is_sigint = True
         elif ns.list:
             tbl = FixedColumnTable(widths=[shell.width//3]*3)
             print(title_str("Registered Macros", shell.width))
@@ -183,10 +185,12 @@ class MacroCommand(BlockCommand):
     def end_block(self, shell, lines):
         self.add_macro(shell, self.macro_name, lines)
         self.macro_name = None
+        shell.eof_is_sigint = shell.ctx.macro_orig_eof_is_sigint
         return 0
 
     def cancel_block(self, shell):
         self.macro_name = None
+        shell.eof_is_sigint = shell.ctx.macro_orig_eof_is_sigint
 
     def add_macro(self, shell, name, lines):
         shell.register(
