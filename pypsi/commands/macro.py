@@ -91,7 +91,7 @@ class Macro(Command):
 
 MacroCmdUsage = """usage: %(prog)s -l
    or: %(prog)s NAME
-   or: %(prog)s -[dp] NAME"""
+   or: %(prog)s [-d] [-p] NAME"""
 
 
 class MacroCommand(BlockCommand):
@@ -107,7 +107,8 @@ class MacroCommand(BlockCommand):
     def __init__(self, name='macro', topic='shell', brief="manage registered macros", macros=None, **kwargs):
         self.parser = PypsiArgParser(
             prog=name,
-            description=brief
+            description=brief,
+            usage=MacroCmdUsage
         )
 
         self.parser.add_argument(
@@ -165,6 +166,8 @@ class MacroCommand(BlockCommand):
             else:
                 self.macro_name = ns.name
                 self.begin_block(shell)
+                print("Beginning macro, use the '", shell.ctx.block.end_cmd,
+                      "' command to save.", sep='')
         elif ns.list:
             tbl = FixedColumnTable(widths=[shell.width//3]*3)
             print(title_str("Registered Macros", shell.width))
