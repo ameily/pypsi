@@ -123,7 +123,7 @@ class VariableCommand(Command):
                 if callable(s):
                     s = s()
                 elif isinstance(s, ManagedVariable):
-                    s = s.getter(shell)
+                    s = s.get(shell)
                 tbl.append(name, obj_str(s))
             tbl.write(sys.stdout)
         elif ns.delete:
@@ -142,7 +142,10 @@ class VariableCommand(Command):
                 self.error(shell, "invalid expression")
                 return 1
             if isinstance(shell.ctx.vars[exp.operand], ManagedVariable):
-                shell.ctx.vars[exp.operand].setter(shell,exp.value)
+                try:
+                    shell.ctx.vars[exp.operand].set(shell, exp.value)
+                except ValueError as e:
+                    self.error(shell, "could not set variable: ", str(e))
             else:
                 shell.ctx.vars[exp.operand] = exp.value
         elif ns.exp:
