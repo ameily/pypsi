@@ -131,12 +131,15 @@ class MacroCommand(BlockCommand):
         self.base_macros = macros or {}
 
     def setup(self, shell):
+        rc = 0
+        
         if 'macros' not in shell.ctx:
             shell.ctx.macros = {}
 
         for name in self.base_macros:
-            self.add_macro(shell, name, shell.ctx.macros[name])
-        return 0
+            rc = self.add_macro(shell, name, shell.ctx.macros[name])
+                
+        return rc
 
     def run(self, shell, args, ctx):
         try:
@@ -149,6 +152,8 @@ class MacroCommand(BlockCommand):
             if ns.delete:
                 if ns.name in shell.ctx.macros:
                     del shell.ctx.macros[ns.name]
+                    #It gets registered as a command too. See line 202 in this file and register() in shell.py
+                    del shell.commands[ns.name]
                 else:
                     self.error(shell, "unknown macro ", ns.name)
                     rc = -1
@@ -164,6 +169,9 @@ class MacroCommand(BlockCommand):
             elif ns.list:
                 self.usage_error(shell, "list option does not take an argument")
             else:
+                if ns.name in shell.commands.keys():
+                    self.error(shell, "A macro cannot have the same name as an existing command or macro.")
+                    return -1
                 self.macro_name = ns.name
                 self.begin_block(shell)
                 print("Beginning macro, use the '", shell.ctx.block.end_cmd,
