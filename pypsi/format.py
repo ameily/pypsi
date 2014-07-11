@@ -108,37 +108,35 @@ def file_size_str(value):
     return "{:.2f} {}".format(value, unit)
 
 
-def obj_str(obj, max_children=3, color=False):
-    wrap_value = None
-    if color:
+def obj_str(obj, max_children=3, stream=None):
+    wrap_value = null_str = None
+    if stream:
         wrap_value = lambda t, v: "{}{}( {}{} {}){}".format(
-            AnsiStdout.gray, t, AnsiStdout.reset, v, AnsiStdout.gray,
-            AnsiStdout.reset
+            stream.blue, t, stream.reset, v, stream.blue,
+            stream.reset
         )
+        null_str = "{}<null>{}".format(stream.blue, stream.reset)
     else:
         wrap_value = lambda t, v: "{}( {} )".format(t, v)
+        null_str = "<null>"
 
     if isinstance(obj, bool):
         return wrap_value("bool", obj)
-        #return "bool( {} )".format(obj)
     elif isinstance(obj, int):
         return wrap_value("int", "{:d}".format(obj))
-        #return "int( {:d} )".format(obj)
     elif isinstance(obj, float):
         return wrap_value("float", "{:g}".format(obj))
-        #return "float( {:g} )".format(obj)
     elif isinstance(obj, (list, tuple)):
         if max_children > 0 and len(obj) > max_children:
             obj = [o for o in obj[:max_children]]
             obj.append('...')
 
-        return wrap_value("list", ', '.join([obj_str(child, max_children=max_children, color=color) for child in obj]))
-        #return "list( {} )".format(
-        #    ', '.join([obj_str(child, max_children=max_children) for child in obj])
-        #)
+        return wrap_value(
+            "list",
+            ', '.join([obj_str(child, max_children=max_children, stream=stream) for child in obj])
+        )
     elif obj == None:
-        #return '<null>'
-        return "<null>" if not color else "{}<null>{}".format(AnsiStdout.gray, AnsiStdout.reset)
+        return null_str
     elif isinstance(obj, str):
         return obj
     return str(obj)
