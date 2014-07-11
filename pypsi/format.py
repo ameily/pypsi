@@ -28,20 +28,53 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+def ansi_len(value):
+    count = 0
+    esc_code = False
+    for c in value:
+        if c == '\x1b':
+            esc_code = True
+        elif esc_code:
+            if c in 'ABCDEFGHJKSTfmnsulh':
+                esc_code = False
+        else:
+            count += 1
+    return count
+
+def ansi_center(s, width):
+    count = ansi_len(s)
+    if count >= width:
+        return s
+    diff = (width - count) // 2
+    return (' '*diff) + s
+
+def ansi_ljust(s, width):
+    count = ansi_len(s)
+    if count >= width:
+        return s
+    diff = width - count
+    return s + (' ' * diff)
+
+def ansi_rjust(s, width):
+    count = ansi_len(s)
+    if count >= width:
+        return s
+    diff = width - count
+    return (' '*diff) + s
 
 def word_wrap(text, width, prefix=None, multiline=True):
     if multiline and '\n' in text:
         parts = text.split('\n')
         return '\n'.join([word_wrap(t, width, prefix, False) for t in parts])
 
-    if len(text) < width:
+    count = ansi_len(text)
+    if count < width:
         return text
 
-    plen = len(prefix) if prefix else 0
+    plen = ansi_len(prefix) if prefix else 0
 
     lines = []
     start = 0
-    count = len(text)
     while start < count:
         end = (start + width) - plen
         line = None
@@ -148,11 +181,11 @@ def title_str(title, width=80, align='left', hr='=', box=False):
         border = '+' + ('-'*(width-2)) + '+'
         t = None
         if align == 'left':
-            t = title.ljust(width-4)
+            t = ansi_ljust(title, width-4)
         elif align == 'center':
-            t = title.center(width-4)
+            t = ansi_center(title, width-4)
         else:
-            t = title.rjust(width-4)
+            t = ansi_rjust(title, width-4)
 
         lines.append(border)
         lines.append('| ' + t + ' |')
@@ -161,11 +194,9 @@ def title_str(title, width=80, align='left', hr='=', box=False):
         if align == 'left':
             lines.append(title)
         elif align == 'center':
-            #left = ' ' * ((width - len(title)) // 2)
-            lines.append(title.center(width))
+            lines.append(ansi_center(title, width))
         elif align == 'right':
-            #left = ' ' * (width - len(title))
-            lines.append(title.rjust(width))
+            lines.append(ansi_rjust(title, width))
         lines.append(hr * width)
     return '\n'.join(lines)
 
@@ -208,7 +239,7 @@ class Table(object):
                 else:
                     value = str(value)
                 if(len(value) <= col.width):
-                    fp.write(value.ljust(col.width))
+                    fp.write(ansi_ljust(value, col.width))
                 else:
                     wrapped_line = word_wrap(value, col.width).split('\n')
                     if len(wrapped_line) > 1:
@@ -240,8 +271,7 @@ class Table(object):
             for col in self.columns:
                 if i > 0:
                     fp.write(' ' * self.spacing)
-                fp.write(col.text.ljust(col.width))
-                #fp.write("{{: <{}}}".format(col.width).format(col.text))
+                fp.write(ansi_ljust(col.text, col.width))
                 i += 1
 
             fp.write('\n')
@@ -274,7 +304,7 @@ class FixedColumnTable(object):
 
     def write_row(self, fp, *args):
         for (width, value) in zip(self.widths, args):
-            fp.write(value.ljust(width))
+            fp.write(ansi_ljust(value, width))
             #diff = width - len(value)
             #if diff > 0:
             #    fp.write(' ' * diff)
