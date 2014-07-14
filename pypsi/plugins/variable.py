@@ -308,11 +308,7 @@ class VariablePlugin(Plugin):
                     ret.append(StringToken(subt.index, expanded, token.quote))
                 else:
                     ws = False
-                    for part in expanded.split():
-                        if ws:
-                            ret.append(WhitespaceToken(subt.index))
-                        else:
-                            ws = True
-                        ret.append(StringToken(subt.index, part))
+                    for part in shell.parser.tokenize(expanded):
+                        ret.append(part)
 
         return ret
