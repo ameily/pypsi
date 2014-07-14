@@ -203,7 +203,7 @@ class MacroCommand(BlockCommand):
 
     def add_macro(self, shell, name, lines):
         shell.register(
-            Macro(lines=lines, name=name)
+            Macro(lines=lines, name=name, topic='__hidden__')
         )
         shell.ctx.macros[name] = lines
         return 0
