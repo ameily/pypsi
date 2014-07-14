@@ -169,9 +169,10 @@ class MacroCommand(BlockCommand):
             elif ns.list:
                 self.usage_error(shell, "list option does not take an argument")
             else:
-                if ns.name in shell.commands.keys():
-                    self.error(shell, "A macro cannot have the same name as an existing command or macro.")
+                if ns.name in shell.commands.keys() and ns.name not in shell.ctx.macros:
+                    self.error(shell, "A macro cannot have the same name as an existing command.")
                     return -1
+
                 self.macro_name = ns.name
                 self.begin_block(shell)
                 print("Beginning macro, use the '", shell.ctx.block.end_cmd,
