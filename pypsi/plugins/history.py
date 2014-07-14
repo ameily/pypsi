@@ -257,6 +257,9 @@ class History(object):
         index = self.normalize_index(index)
         readline.remove_history_item(index)
 
+    def __nonzero__(self):
+        return len(self) > 0
+
     def __iter__(self):
         return iter(self.__getitem__(slice(None, None, None)))
 
