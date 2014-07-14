@@ -237,7 +237,7 @@ class PromptWizard(object):
                 elif raw.lower() in ('?', 'help'):
                     print(word_wrap(step.help, shell.width))
                 else:
-                    if not raw and step.default is not None:
+                    if not raw.strip() and step.default is not None:
                         raw = step.default
 
                     try:
