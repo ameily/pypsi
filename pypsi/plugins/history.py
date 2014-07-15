@@ -138,6 +138,8 @@ class HistoryCommand(Command):
 
             if event:
                 print("found event: ", event, sep='')
+                shell.execute(event,None)
+                
         elif ns.subcmd == 'clear':
             shell.ctx.history.clear()
         elif ns.subcmd == 'delete':
