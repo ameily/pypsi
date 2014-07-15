@@ -28,11 +28,11 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name='pypsi',
-    version='0.1',
+    version='1.0-rc1',
     license='BSD',
     description='Python Pluggable Shell Interface',
     long_description='Pluggable framework for developing command line interfaces',
@@ -44,8 +44,12 @@ setup(
     install_requires=[
         'chardet==2.0.1'
     ],
+    keywords=[
+        'cli', 'command line', 'command line interface', 'shell', 'terminal',
+        'console', 'term', 'command prompt', 
+    ],
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Environment :: Console',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
