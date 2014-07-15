@@ -91,7 +91,7 @@ class Macro(Command):
 
 MacroCmdUsage = """usage: %(prog)s -l
    or: %(prog)s NAME
-   or: %(prog)s -[dp] NAME"""
+   or: %(prog)s [-d] [-p] NAME"""
 
 
 class MacroCommand(BlockCommand):
@@ -107,7 +107,8 @@ class MacroCommand(BlockCommand):
     def __init__(self, name='macro', topic='shell', brief="manage registered macros", macros=None, **kwargs):
         self.parser = PypsiArgParser(
             prog=name,
-            description=brief
+            description=brief,
+            usage=MacroCmdUsage
         )
 
         self.parser.add_argument(
@@ -130,12 +131,15 @@ class MacroCommand(BlockCommand):
         self.base_macros = macros or {}
 
     def setup(self, shell):
+        rc = 0
+        
         if 'macros' not in shell.ctx:
             shell.ctx.macros = {}
 
         for name in self.base_macros:
-            self.add_macro(shell, name, shell.ctx.macros[name])
-        return 0
+            rc = self.add_macro(shell, name, shell.ctx.macros[name])
+                
+        return rc
 
     def run(self, shell, args, ctx):
         try:
@@ -148,6 +152,8 @@ class MacroCommand(BlockCommand):
             if ns.delete:
                 if ns.name in shell.ctx.macros:
                     del shell.ctx.macros[ns.name]
+                    #It gets registered as a command too. See line 202 in this file and register() in shell.py
+                    del shell.commands[ns.name]
                 else:
                     self.error(shell, "unknown macro ", ns.name)
                     rc = -1
@@ -163,8 +169,16 @@ class MacroCommand(BlockCommand):
             elif ns.list:
                 self.usage_error(shell, "list option does not take an argument")
             else:
+                if ns.name in shell.commands.keys() and ns.name not in shell.ctx.macros:
+                    self.error(shell, "A macro cannot have the same name as an existing command.")
+                    return -1
+
                 self.macro_name = ns.name
                 self.begin_block(shell)
+                print("Beginning macro, use the '", shell.ctx.block.end_cmd,
+                      "' command to save.", sep='')
+                shell.ctx.macro_orig_eof_is_sigint = shell.eof_is_sigint
+                shell.eof_is_sigint = True
         elif ns.list:
             tbl = FixedColumnTable(widths=[shell.width//3]*3)
             print(title_str("Registered Macros", shell.width))
@@ -180,14 +194,16 @@ class MacroCommand(BlockCommand):
     def end_block(self, shell, lines):
         self.add_macro(shell, self.macro_name, lines)
         self.macro_name = None
+        shell.eof_is_sigint = shell.ctx.macro_orig_eof_is_sigint
         return 0
 
     def cancel_block(self, shell):
         self.macro_name = None
+        shell.eof_is_sigint = shell.ctx.macro_orig_eof_is_sigint
 
     def add_macro(self, shell, name, lines):
         shell.register(
-            Macro(lines=lines, name=name)
+            Macro(lines=lines, name=name, topic='__hidden__')
         )
         shell.ctx.macros[name] = lines
         return 0

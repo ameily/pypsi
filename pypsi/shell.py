@@ -33,6 +33,8 @@ from pypsi.cmdline import StatementParser, StatementSyntaxError, StatementContex
 from pypsi.namespace import Namespace
 from pypsi.cmdline import StringToken, OperatorToken, WhitespaceToken
 from pypsi.completers import path_completer
+from pypsi.stream import AnsiStderr
+from pypsi.format import word_wrap
 import readline
 import sys
 
@@ -68,6 +70,8 @@ class Shell(object):
         self.default_cmd = None
         self.register_base_plugins()
         self.fallback_cmd = None
+
+        self.eof_is_sigint = False
 
         self.on_shell_ready()
 
@@ -126,8 +130,13 @@ class Shell(object):
                 try:
                     raw = input(self.get_current_prompt())
                 except EOFError:
-                    self.running = False
-                    print("exiting....")
+                    if self.eof_is_sigint:
+                        print()
+                        for pp in self.preprocessors:
+                            pp.on_input_canceled(self)
+                    else:
+                        self.running = False
+                        print("exiting....")
                 except KeyboardInterrupt:
                     print()
                     for pp in self.preprocessors:
@@ -145,6 +154,15 @@ class Shell(object):
             self.on_cmdloop_end()
             readline.set_completer(old_completer)
         return rc
+
+    def error(self, msg):
+        print(
+            word_wrap(
+                "{}{}: {}{}".format(
+                    AnsiStderr.red, self.shell_name, msg, AnsiStderr.reset
+                ), self.width
+            ), file=sys.stderr
+        )
 
     def execute(self, raw, ctx=None):
         if not ctx:
@@ -205,7 +223,11 @@ class Shell(object):
         return rc
 
     def run_cmd(self, cmd, params, ctx):
-        self.errno = cmd.run(self, params.args, ctx)
+        try:
+            self.errno = cmd.run(self, params.args, ctx)
+        except RuntimeError as e:
+            self.error("command aborted: "+str(e))
+            self.errno = -1
         return self.errno
 
     def preprocess(self, raw, origin):

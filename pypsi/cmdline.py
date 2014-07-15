@@ -623,7 +623,7 @@ class StatementParser(object):
 
         if isinstance(prev, StringToken) or (isinstance(prev, OperatorToken) and prev.operator == ';'):
             pass
-        else:
+        elif prev:
             raise StatementSyntaxError(
                 message="unexpected token: {}".format(str(prev)),
                 index=prev.index

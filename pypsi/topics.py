@@ -31,8 +31,6 @@
 from pypsi.commands.help import Topic
 
 
-
-
 IoRedirection = Topic(
     id='redirection',
     name='I/O Redirection',

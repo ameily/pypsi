@@ -138,6 +138,8 @@ class HistoryCommand(Command):
 
             if event:
                 print("found event: ", event, sep='')
+                shell.execute(event,None)
+                
         elif ns.subcmd == 'clear':
             shell.ctx.history.clear()
         elif ns.subcmd == 'delete':
@@ -256,6 +258,9 @@ class History(object):
         '''
         index = self.normalize_index(index)
         readline.remove_history_item(index)
+
+    def __nonzero__(self):
+        return len(self) > 0
 
     def __iter__(self):
         return iter(self.__getitem__(slice(None, None, None)))

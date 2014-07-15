@@ -30,6 +30,7 @@
 
 from pypsi.base import Command, PypsiArgParser, CommandShortCircuit
 from pypsi.utils import safe_open
+from pypsi.completers import path_completer
 import os
 
 
@@ -67,6 +68,9 @@ class IncludeCommand(Command):
             usage=self.parser.format_help(), **kwargs
         )
         self.stack = []
+
+    def complete(self, shell, args, prefix):
+        return path_completer(shell, args, prefix)
 
     def run(self, shell, args, ctx):
         try:

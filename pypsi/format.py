@@ -1,18 +1,80 @@
+#
+# Copyright (c) 2014, Adam Meily
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without modification,
+# are permitted provided that the following conditions are met:
+#
+# * Redistributions of source code must retain the above copyright notice, this
+#   list of conditions and the following disclaimer.
+#
+# * Redistributions in binary form must reproduce the above copyright notice, this
+#   list of conditions and the following disclaimer in the documentation and/or
+#   other materials provided with the distribution.
+#
+# * Neither the name of the {organization} nor the names of its
+#   contributors may be used to endorse or promote products derived from
+#   this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+# ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
 
+def ansi_len(value):
+    count = 0
+    esc_code = False
+    for c in value:
+        if c == '\x1b':
+            esc_code = True
+        elif esc_code:
+            if c in 'ABCDEFGHJKSTfmnsulh':
+                esc_code = False
+        else:
+            count += 1
+    return count
+
+def ansi_center(s, width):
+    count = ansi_len(s)
+    if count >= width:
+        return s
+    diff = (width - count) // 2
+    return (' '*diff) + s
+
+def ansi_ljust(s, width):
+    count = ansi_len(s)
+    if count >= width:
+        return s
+    diff = width - count
+    return s + (' ' * diff)
+
+def ansi_rjust(s, width):
+    count = ansi_len(s)
+    if count >= width:
+        return s
+    diff = width - count
+    return (' '*diff) + s
 
 def word_wrap(text, width, prefix=None, multiline=True):
     if multiline and '\n' in text:
         parts = text.split('\n')
         return '\n'.join([word_wrap(t, width, prefix, False) for t in parts])
 
-    if len(text) < width:
+    count = ansi_len(text)
+    if count < width:
         return text
 
-    plen = len(prefix) if prefix else 0
+    plen = ansi_len(prefix) if prefix else 0
 
     lines = []
     start = 0
-    count = len(text)
     while start < count:
         end = (start + width) - plen
         line = None
@@ -79,37 +141,35 @@ def file_size_str(value):
     return "{:.2f} {}".format(value, unit)
 
 
-def obj_str(obj, max_children=3, color=False):
-    wrap_value = None
-    if color:
+def obj_str(obj, max_children=3, stream=None):
+    wrap_value = null_str = None
+    if stream:
         wrap_value = lambda t, v: "{}{}( {}{} {}){}".format(
-            AnsiStdout.gray, t, AnsiStdout.reset, v, AnsiStdout.gray,
-            AnsiStdout.reset
+            stream.blue, t, stream.reset, v, stream.blue,
+            stream.reset
         )
+        null_str = "{}<null>{}".format(stream.blue, stream.reset)
     else:
         wrap_value = lambda t, v: "{}( {} )".format(t, v)
+        null_str = "<null>"
 
     if isinstance(obj, bool):
         return wrap_value("bool", obj)
-        #return "bool( {} )".format(obj)
     elif isinstance(obj, int):
         return wrap_value("int", "{:d}".format(obj))
-        #return "int( {:d} )".format(obj)
     elif isinstance(obj, float):
         return wrap_value("float", "{:g}".format(obj))
-        #return "float( {:g} )".format(obj)
     elif isinstance(obj, (list, tuple)):
         if max_children > 0 and len(obj) > max_children:
             obj = [o for o in obj[:max_children]]
             obj.append('...')
 
-        return wrap_value("list", ', '.join([obj_str(child, max_children=max_children, color=color) for child in obj]))
-        #return "list( {} )".format(
-        #    ', '.join([obj_str(child, max_children=max_children) for child in obj])
-        #)
+        return wrap_value(
+            "list",
+            ', '.join([obj_str(child, max_children=max_children, stream=stream) for child in obj])
+        )
     elif obj == None:
-        #return '<null>'
-        return "<null>" if not color else "{}<null>{}".format(AnsiStdout.gray, AnsiStdout.reset)
+        return null_str
     elif isinstance(obj, str):
         return obj
     return str(obj)
@@ -121,11 +181,11 @@ def title_str(title, width=80, align='left', hr='=', box=False):
         border = '+' + ('-'*(width-2)) + '+'
         t = None
         if align == 'left':
-            t = title.ljust(width-4)
+            t = ansi_ljust(title, width-4)
         elif align == 'center':
-            t = title.center(width-4)
+            t = ansi_center(title, width-4)
         else:
-            t = title.rjust(width-4)
+            t = ansi_rjust(title, width-4)
 
         lines.append(border)
         lines.append('| ' + t + ' |')
@@ -134,11 +194,9 @@ def title_str(title, width=80, align='left', hr='=', box=False):
         if align == 'left':
             lines.append(title)
         elif align == 'center':
-            #left = ' ' * ((width - len(title)) // 2)
-            lines.append(title.center(width))
+            lines.append(ansi_center(title, width))
         elif align == 'right':
-            #left = ' ' * (width - len(title))
-            lines.append(title.rjust(width))
+            lines.append(ansi_rjust(title, width))
         lines.append(hr * width)
     return '\n'.join(lines)
 
@@ -181,7 +239,7 @@ class Table(object):
                 else:
                     value = str(value)
                 if(len(value) <= col.width):
-                    fp.write(value.ljust(col.width))
+                    fp.write(ansi_ljust(value, col.width))
                 else:
                     wrapped_line = word_wrap(value, col.width).split('\n')
                     if len(wrapped_line) > 1:
@@ -213,8 +271,7 @@ class Table(object):
             for col in self.columns:
                 if i > 0:
                     fp.write(' ' * self.spacing)
-                fp.write(col.text.ljust(col.width))
-                #fp.write("{{: <{}}}".format(col.width).format(col.text))
+                fp.write(ansi_ljust(col.text, col.width))
                 i += 1
 
             fp.write('\n')
@@ -247,7 +304,7 @@ class FixedColumnTable(object):
 
     def write_row(self, fp, *args):
         for (width, value) in zip(self.widths, args):
-            fp.write(value.ljust(width))
+            fp.write(ansi_ljust(value, width))
             #diff = width - len(value)
             #if diff > 0:
             #    fp.write(' ' * diff)

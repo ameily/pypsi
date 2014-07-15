@@ -92,6 +92,9 @@ class HelpCommand(Command):
             self.lookup[id].commands = []
 
         for (name, cmd) in shell.commands.items():
+            if cmd.topic == '__hidden__':
+                continue
+
             if cmd.topic:
                 if cmd.topic in self.lookup:
                     self.lookup[cmd.topic].commands.append(cmd)
@@ -123,11 +126,11 @@ class HelpCommand(Command):
             spacing=4,
             header=False,
             width=shell.width
-        ).extend(
-            *[
-                (' Name', 'Description'),
-                (' ----', '-----------')
-            ]
+        #).extend(
+        #    *[
+        #        (' Name', 'Description'),
+        #        (' ----', '-----------')
+        #    ]
         ).extend(
             *[(' '+c.name.ljust(name_col_width - 1), c.brief or '') for c in topic.commands]
         ).write(sys.stdout)

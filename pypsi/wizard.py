@@ -154,6 +154,11 @@ def boolean_validator(ns, value):
             return False
     raise ValueError("Value is not true or false")
 
+def lowercase_validator(ns, value):
+    return value.lower() if value else ''
+
+
+
 class WizardStep(object):
 
     def __init__(self, id, name, help, default=None, completer=None, validators=None):
@@ -232,7 +237,7 @@ class PromptWizard(object):
                 elif raw.lower() in ('?', 'help'):
                     print(word_wrap(step.help, shell.width))
                 else:
-                    if not raw and step.default is not None:
+                    if not raw.strip() and step.default is not None:
                         raw = step.default
 
                     try:
