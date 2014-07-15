@@ -198,7 +198,7 @@ class Command(object):
         :param pypsi.shell.Shell shell: the active shell
         :param args: the error message to display
         '''
-        msg = "{}: {}".format(self.name, ''.join(args))
+        msg = "{}: {}".format(self.name, ''.join([ str(a) for a in args]))
         print(AnsiStderr.red, word_wrap(msg, shell.width), AnsiStderr.reset, file=sys.stderr, sep='')
 
     def run(self, shell, args, ctx):
