@@ -82,14 +82,19 @@ class TipCommand(Command):
         except CommandShortCircuit as e:
             return e.code
 
+        rc = None
         if ns.motd:
-            self.print_motd(shell)
+            rc = self.print_motd(shell)
         else:
-            self.print_random_tip(shell)
+            rc = self.print_random_tip(shell)
 
-        return 0
+        return rc
 
     def print_random_tip(self, shell, header=True):
+        if not self.tips:
+            self.error(shell, "no tips available")
+            return -1
+
         i = int(self.rand.random() * 10) % len(self.tips)
         
         if header:
@@ -100,6 +105,10 @@ class TipCommand(Command):
         print(word_wrap(self.tips[i], shell.width))
 
     def print_motd(self, shell):
+        if not self.motd:
+            self.error(shell, "no motd available")
+            return -1
+
         print(
             AnsiStdout.green,
             "Message of the Day".center(shell.width), '\n',
