@@ -53,22 +53,22 @@ def safe_open(path, mode='r'):
     u = UniversalDetector()
     first = None
     with open(path, 'rb') as fp:
-        for line in fp:
-            if not first:
-                first = line
-            u.feed(line)
-            if u.done:
-                break
+        bin = first = fp.read(0x1000)
+
+        while not u.done and bin:
+            u.feed(bin)
+            if not u.done:
+                bin = fp.read(0x1000)
     u.close()
 
     if not first:
         return open(path, mode)
 
     fp = codecs.open(path, mode, encoding=u.result['encoding'])
-    for bom in (codecs.BOM_UTF8, codecs.BOM_UTF16_BE, codecs.BOM_UTF16_LE, 
+    for bom in (codecs.BOM_UTF8, codecs.BOM_UTF16_BE, codecs.BOM_UTF16_LE,
                 codecs.BOM_UTF32_BE, codecs.BOM_UTF32_LE):
         if first.startswith(bom):
-            fp.read(1)
+            fp.seek(len(bom))
             break
 
     return fp
