@@ -30,7 +30,7 @@
 
 from setuptools import setup
 import platform
-
+import pypsi
 
 def read(path):
     return open(path, 'r').read()
@@ -43,7 +43,7 @@ if platform.system() == 'Windows':
 
 setup(
     name='pypsi',
-    version='1.0-rc1',
+    version=pypsi.__release__,
     license='BSD 3-Clause',
     description='Python Pluggable Shell Interface',
     long_description=read("README.rst"),
