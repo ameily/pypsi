@@ -29,7 +29,7 @@ EOF
 echo "==================== Tagging Git ========================="
 git add pypsi/release.py
 git commit -m "updated to v$RELEASE"
-git tag "v$RELEASE"
+git tag --sign "v$RELEASE"
 git push origin --tags
 echo "=========================================================="
 echo
