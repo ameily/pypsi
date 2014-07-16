@@ -83,37 +83,46 @@ class DemoShell(Shell):
     cmd_plugin = CmdPlugin(cmd_args=1)
     tip_cmd = TipCommand()
     tail_cmd = TailCommand()
-    help_cmd = HelpCommand(
-        topics=(
-            Topic('builtin', 'Builtin Commands & Features', ShellTopic),
-            topics.IoRedirection
-        )
-    )
+    help_cmd = HelpCommand()
     var_plugin = VariablePlugin(case_sensitive=False, env=False)
 
     def __init__(self):
         super(DemoShell, self).__init__()
-        self.tip_cmd.load_tips("./demo-tips.txt")
-        self.tip_cmd.load_motd("./demo-motd.txt")
+        try:
+            self.tip_cmd.load_tips("./demo-tips.txt")
+        except:
+            self.error("failed to load tips file: demo-tips.txt")
+
+        try:
+            self.tip_cmd.load_motd("./demo-motd.txt")
+        except:
+            self.error("failed to load message of the day file: demo-motd.txt")
+
         self.prompt = "{gray}[$time]{r} {cyan}pypsi{r} {green})>{r} ".format(
             gray=AnsiStdout.gray, r=AnsiStdout.reset, cyan=AnsiStdout.cyan,
             green=AnsiStdout.green
         )
         self.fallback_cmd = self.system_cmd
-        
+
         self.help_cmd.add_topic(Topic("shell", "Builtin Shell Commands"))
-        #topic = self.help_cmd.lookup['shell']
-        #topic.name = 'Builtin Shell Commands'
+        self.help_cmd.add_topic(topics.IoRedirection)
 
     def on_cmdloop_begin(self):
         print(AnsiStdout.clear_screen)
-        self.tip_cmd.print_motd(self)
-        print()
-        print(AnsiStdout.green, "Tip of the Day".center(self.width), sep='')
-        print('>' * self.width, AnsiStdout.reset, sep='')
-        self.tip_cmd.print_random_tip(self, False)
-        print(AnsiStdout.green, '<' * self.width, AnsiStdout.reset, sep='')
-        print()
+        if self.tip_cmd.motd:
+            self.tip_cmd.print_motd(self)
+            print()
+        else:
+            print("No tips registered. Create the demo-tips.txt file for the tip of the day.")
+
+        if self.tip_cmd.tips:
+            print(AnsiStdout.green, "Tip of the Day".center(self.width), sep='')
+            print('>' * self.width, AnsiStdout.reset, sep='')
+            self.tip_cmd.print_random_tip(self, False)
+            print(AnsiStdout.green, '<' * self.width, AnsiStdout.reset, sep='')
+            print()
+        else:
+            print("To see the message of the day. Create the demo-motd.txt file for the MOTD.")
 
     def do_cmddoc(self, args):
         '''
