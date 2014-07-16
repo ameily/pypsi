@@ -29,24 +29,33 @@
 #
 
 from setuptools import setup
+import platform
+
+
+def read(path):
+    return open(path, 'r').read()
+
+
+install_requires = ['chardet==2.0.1']
+if platform.system() == 'Windows':
+    install_requires.append('pyreadline-ais==2.0.3')
+
 
 setup(
     name='pypsi',
     version='1.0-rc1',
-    license='BSD',
+    license='BSD 3-Clause',
     description='Python Pluggable Shell Interface',
-    long_description='Pluggable framework for developing command line interfaces',
+    long_description=read("README.rst"),
     author='Adam Meily',
     author_email='meily.adam@gmail.com',
     url='https://github.com/ameily/pypsi',
+    download_url='https://pypi.python.org/pypi/pypsi',
     packages=['pypsi', 'pypsi.commands', 'pypsi.plugins'],
-    platforms=[],
-    install_requires=[
-        'chardet==2.0.1'
-    ],
+    install_requires=install_requires,
     keywords=[
         'cli', 'command line', 'command line interface', 'shell', 'terminal',
-        'console', 'term', 'command prompt', 
+        'console', 'term', 'command prompt',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
@@ -56,6 +65,7 @@ setup(
         'Natural Language :: English',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
+        'Programming Language :: Python :: 3',
         'Topic :: Software Development :: User Interfaces',
         'Topic :: Software Development :: Libraries :: Application Frameworks',
         'Topic :: Terminals'
