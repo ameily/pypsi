@@ -31,8 +31,8 @@ The only major caveat when using pypsi is that it only supports Python 3. Python
 Releases
 --------
 
-The pypsi source code is located on `GitHub <https://github.com/ameily/pypsi>`
-and on `PyPI <https://pypi.python.org/pypi/pypsi>`. The latest version can also
+The pypsi source code is located on `GitHub <https://github.com/ameily/pypsi>`_
+and on `PyPI <https://pypi.python.org/pypi/pypsi>`_. The latest version can also
 be install via pip:
 
 ::
