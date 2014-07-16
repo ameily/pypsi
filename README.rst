@@ -28,6 +28,17 @@ Caveats
 The only major caveat when using pypsi is that it only supports Python 3. Python
 3 is the future.
 
+Releases
+--------
+
+The pypsi source code is located on `GitHub <https://github.com/ameily/pypsi>`
+and on `PyPI <https://pypi.python.org/pypi/pypsi>`. The latest version can also
+be install via pip:
+
+::
+
+    pip install pypsi
+
 
 Features
 --------
