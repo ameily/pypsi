@@ -36,10 +36,6 @@ from chardet.universaldetector import UniversalDetector
 import codecs
 
 
-def Title(title):
-    return "{title}\n{underline}\n".format(title=title, underline='='*len(title))
-
-
 def safe_open(path, mode='r'):
     '''
     Retrieves a file's encoding and returns the opened file. If the opened file
