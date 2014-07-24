@@ -36,9 +36,9 @@ def read(path):
     return open(path, 'r').read()
 
 
-install_requires = ['chardet==2.0.1']
+install_requires = ['chardet>=2.0.1']
 if platform.system() == 'Windows':
-    install_requires.append('pyreadline-ais==2.0.3')
+    install_requires.append('pyreadline-ais>=2.0.3')
 
 
 setup(
