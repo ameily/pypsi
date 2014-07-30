@@ -8,8 +8,6 @@ then
     exit 1
 fi
 
-set -e
-
 VERSION="$1"
 if [ $# -eq 2 ];
 then
@@ -17,6 +15,8 @@ then
 else
     RELEASE="$1"
 fi
+
+BEFORE=`md5sum pypsi/release.py`
 
 cat > pypsi/release.py <<EOF
 #
@@ -26,13 +26,22 @@ __version__ = "$VERSION"
 __release__ = "$RELEASE"
 EOF
 
+AFTER=`md5sum pypsi/release.py`
+
 echo "==================== Tagging Git ========================="
-git add pypsi/release.py
-git commit -m "updated to v$RELEASE"
-git tag --sign "v$RELEASE"
+
+if [ "$BEFORE" = "$AFTER" ];
+then
+    git add pypsi/release.py
+    git commit -m "updated to v$RELEASE"
+fi
+
+git tag --sign --message "tagged v$RELEASE" "v$RELEASE"
 git push origin --tags
 echo "=========================================================="
 echo
+
+set -e
 
 echo "==================== Building Release ===================="
 python setup.py sdist bdist_wheel upload --sign
