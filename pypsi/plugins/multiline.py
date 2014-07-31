@@ -86,16 +86,8 @@ class MultilinePlugin(Plugin):
             return self.buffer + tokens if self.buffer else tokens
 
         last = tokens[-1]
-        escape = False
-        for i in range(len(last.text)-1, -1, -1):
-            c = last.text[i]
-            if c != '\\':
-                break
-            else:
-                escape = not escape
-
-        if escape:
-            last.text = last.text[:-1] # remove last \\
+        if last.escape:
+            last.text = last.text[:-1]
             if self.buffer:
                 self.buffer.extend(tokens)
             else:
