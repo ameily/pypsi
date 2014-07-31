@@ -46,6 +46,9 @@ from pypsi.commands.include import IncludeCommand
 from pypsi.commands.help import HelpCommand, Topic
 from pypsi.commands.tip import TipCommand
 from pypsi.commands.tail import TailCommand
+from pypsi.commands.chdir import ChdirCommand
+from pypsi.commands.pwd import PwdCommand
+from pypsi.plugins.comment import CommentPlugin
 from pypsi.stream import AnsiStdout
 from pypsi import topics
 import sys
@@ -85,6 +88,9 @@ class DemoShell(Shell):
     tail_cmd = TailCommand()
     help_cmd = HelpCommand()
     var_plugin = VariablePlugin(case_sensitive=False, env=False)
+    comment_plugin = CommentPlugin()
+    chdir_cmd = ChdirCommand()
+    pwd_cmd = PwdCommand()
 
     def __init__(self):
         super(DemoShell, self).__init__()
