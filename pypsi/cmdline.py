@@ -96,9 +96,11 @@ class StringToken(Token):
         self.quote = quote
         self.escape = False
         self.text = ''
+        self.open_quote = False
 
         if c in ('"', "'"):
             self.quote = c
+            self.open_quote = True
         elif c == '\\':
             self.escape = True
         else:
@@ -117,6 +119,8 @@ class StringToken(Token):
             if self.quote:
                 if c == self.quote:
                     self.text += c
+                elif c == '\\':
+                    self.text += '\\'
                 else:
                     self.text += '\\'
                     self.text += c
@@ -128,6 +132,7 @@ class StringToken(Token):
         elif self.quote:
             if c == self.quote:
                 ret = TokenTerm
+                self.open_quote = False
             elif c == '\\':
                 self.escape = True
             else:
@@ -143,6 +148,12 @@ class StringToken(Token):
                 self.text += c
 
         return ret
+
+    def combine_token(self, token):
+        self.text += token.text
+        self.open_quote = token.open_quote
+        self.escape = token.escape
+        self.quote = token.quote
 
     def __str__(self):
         return "String( {quote}{text}{quote} )".format(
@@ -518,7 +529,8 @@ class StatementParser(object):
         for token in tokens:
             if isinstance(token, StringToken):
                 if isinstance(prev, StringToken):
-                    prev.text += token.text
+                    #prev.text += token.text
+                    prev.combine_token(token)
                     token = prev
                 else:
                     condensed.append(token)
