@@ -196,6 +196,12 @@ class OperatorToken(Token):
     def __str__(self):
         return "OperatorToken( {} )".format(self.operator)
 
+    def is_chain_operator(self):
+        for c in self.operator:
+            if c in ('>', '<'):
+                return False
+        return True
+
 
 class Statement(object):
     '''
