@@ -41,6 +41,7 @@ from pypsi.commands.xargs import XArgsCommand
 from pypsi.commands.exit import ExitCommand
 from pypsi.plugins.variable import VariablePlugin
 from pypsi.plugins.history import HistoryPlugin
+from pypsi.plugins.alias import AliasPlugin
 from pypsi.commands.echo import EchoCommand
 from pypsi.commands.include import IncludeCommand
 from pypsi.commands.help import HelpCommand, Topic
@@ -91,6 +92,7 @@ class DemoShell(Shell):
     comment_plugin = CommentPlugin()
     chdir_cmd = ChdirCommand()
     pwd_cmd = PwdCommand()
+    alias_plugin = AliasPlugin()
 
     def __init__(self):
         super(DemoShell, self).__init__()
