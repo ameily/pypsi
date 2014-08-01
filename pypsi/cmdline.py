@@ -728,7 +728,9 @@ class Expression(object):
             if done:
                 break
 
-        if not done:
+        if operator and not value:
+            value = ''
+        elif not done:
             return (None, None)
 
         return (remaining, Expression(operand, operator, value))
