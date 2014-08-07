@@ -65,10 +65,10 @@ class TipCommand(Command):
             if line:
                 tip.append(line)
             elif tip:
-                self.tips.append(''.join(tip))
+                self.tips.append(' '.join(tip))
                 tip = []
         if tip:
-            self.tips.append(''.join(tip))
+            self.tips.append(' '.join(tip))
         fp.close()
 
     def load_motd(self, path):
