@@ -62,6 +62,38 @@ def ansi_rjust(s, width):
     diff = width - count
     return (' '*diff) + s
 
+def ansi_find_break(s, beg, max_width):
+    count = 0
+    esc_code = False
+    prev = None
+    last_space = 0
+    for i in range(len(s)-beg):
+        c = s[i+beg]
+        if c == '\x1b':
+            esc_code = True
+        elif esc_code:
+            if c in 'ABCDEFGHJKSTfmnsulh':
+                esc_code = False
+        elif c.isspace():
+            count += 1
+            if not prev or not prev.isspace():
+                last_space = i
+        else:
+            count += 1
+
+        if count > max_width:
+            break
+
+    if count < max_width:
+        return None
+
+    if last_space:
+        return beg+last_space
+
+    return beg+max_width
+
+
+
 def word_wrap(text, width, prefix=None, multiline=True):
     if multiline and '\n' in text:
         parts = text.split('\n')
@@ -76,31 +108,23 @@ def word_wrap(text, width, prefix=None, multiline=True):
     lines = []
     start = 0
     while start < count:
-        end = (start + width) - plen
-        line = None
-        if end >= count or text[end].isspace():
-            line = text[start:end]
-            start = end
+        next_space = ansi_find_break(text, start, width)
+        if next_space is None:
+            lines.append(text[start:])
+            start = count
         else:
-            line_end = end
-            for i in range(end, start-1, -1):
-                if text[i].isspace():
-                    line_end = i
-                    break
-            line = text[start:line_end]
-            start = line_end
-
-        while start < count:
-            if text[start].isspace():
-                start+=1
+            lines.append(text[start:next_space])
+            if text[next_space].isspace():
+                prev = start
+                for i in range(next_space, count):
+                    if not text[i].isspace():
+                        start = i
+                        break
+                if start == prev:
+                    start = count
+                #TODO check if we're at the end of the string
             else:
-                break
-
-        if lines and prefix:
-            line = line.strip()
-            lines.append(prefix+line)
-        else:
-            lines.append(line)
+                start = next_space
 
     return '\n'.join(lines)
 
