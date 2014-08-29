@@ -105,7 +105,8 @@ class AnsiStream(object):
             'cyan': '\x1b[1;36m',
             'white': '\x1b[1;37m',
             'black': '\x1b[0;30m',
-            'clear_screen': '\x1b[2J\x1b[;H'
+            'clear_screen': '\x1b[2J\x1b[;H',
+            'underline': '\x1b[4m'
         }
 
     def __getattr__(self, key):
