@@ -36,9 +36,11 @@ import random
 
 class TipCommand(Command):
 
-    def __init__(self, name='tip', brief='print shell tips', topic='shell', tips=None, motd=None, **kwargs):
+    def __init__(self, name='tip', brief='print shell tips', topic='shell',
+                 tips=None, motd=None, vars=None, **kwargs):
         self.tips = tips or []
         self.motd = motd or ''
+        self.vars = vars or {}
         self.rand = random.Random()
         self.rand.seed()
 
@@ -95,26 +97,36 @@ class TipCommand(Command):
             self.error(shell, "no tips available")
             return -1
 
-        i = int(self.rand.random() * 10) % len(self.tips)
+        i = self.rand.randrange(len(self.tips)) #int(self.rand.random() * len(self.tips)
         
         if header:
             title = "Tip #{}".format(i+1)
             title += '\n' + ('-'*len(title))
             print(AnsiStdout.green, title, AnsiStdout.reset, sep='')
 
-        print(word_wrap(self.tips[i], shell.width))
+        try:
+            cnt = self.tips[i].format(**self.vars)
+        except:
+            cnt = self.tips[i]
+
+        print(word_wrap(cnt, shell.width))
 
     def print_motd(self, shell):
         if not self.motd:
             self.error(shell, "no motd available")
             return -1
 
+        try:
+            cnt = self.motd.format(**self.vars)
+        except:
+            cnt = self.motd
+
         print(
             AnsiStdout.green,
             "Message of the Day".center(shell.width), '\n',
             '>' * shell.width, "\n",
             AnsiStdout.reset,
-            word_wrap(self.motd, shell.width), '\n',
+            word_wrap(cnt, shell.width), '\n',
             AnsiStdout.green,
             "<" * shell.width, "\n",
             AnsiStdout.reset,
