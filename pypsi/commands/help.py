@@ -48,8 +48,9 @@ class HelpCommand(Command):
     Provides access to manpage-esque topics and command usage information.
     '''
 
-    def __init__(self, name='help', topic='shell', brief='print information on a topic or command', topics=None,
-                 **kwargs):
+    def __init__(self, name='help', topic='shell',
+                 brief='print information on a topic or command', topics=None,
+                 vars=None, **kwargs):
         self.parser = PypsiArgParser(
             prog=name,
             description=brief
@@ -66,14 +67,14 @@ class HelpCommand(Command):
         )
 
         self.topics = list(topics or [])
-        self.uncat = Topic('uncat', 'Uncategorized Commands & Features')
+        self.uncat = Topic('uncat', 'Uncategorized Commands & Topics')
         self.lookup = {t.id: t for t in self.topics}
         self.dirty = True
+        self.vars = vars or {}
 
     def complete(self, shell, args, prefix):
+        '''
         args = [arg for arg in args if not arg.startswith('-')]
-        if self.dirty:
-            self.reload(shell)
 
         completions = []
         base = []
@@ -85,6 +86,13 @@ class HelpCommand(Command):
             completions.extend([x for x in base if x.startswith(prefix) or not prefix])
 
         return sorted(completions)
+        '''
+        #pre = args[-1] if args else prefix
+        if self.dirty:
+            self.reload(shell)
+
+        completions = sorted([x.id for x in self.topics if x.id.startswith(prefix) or not prefix])
+        return completions
 
     def reload(self, shell):
         self.uncat.commands = []
@@ -188,7 +196,12 @@ class HelpCommand(Command):
         topic = self.lookup[id]
         if topic.content:
             print(title_str(topic.name or topic.id, shell.width))
-            print(word_wrap(topic.content, shell.width))
+            try:
+                cnt = topic.content.format(**self.vars)
+            except:
+                cnt = topic.content
+
+            print(word_wrap(cnt, shell.width))
             print()
 
         if topic.commands:
