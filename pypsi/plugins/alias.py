@@ -61,12 +61,14 @@ class AliasCommand(Command):
                 print(name, "=", shell.ctx.aliases[name])
             rc = 0
         elif ns.delete:
-            if ns.delete in shell.ctx.aliases:
-                del shell.ctx.aliases[ns.delete]
-                rc = 0
-            else:
-                self.error(shell, "alias does not exist: ", ns.delete)
-                rc = 1
+            for name in ns.delete:
+                if name in shell.ctx.aliases:
+                    del shell.ctx.aliases[name]
+                    rc = 0
+                else:
+                    self.error(shell, "alias does not exist: ", name)
+                    rc = 1
+                    break
         else:
             (remainder, exp) = Expression.parse(args)
             if remainder or not exp or exp.operator != '=':
