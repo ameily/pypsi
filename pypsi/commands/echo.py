@@ -29,7 +29,6 @@
 #
 
 from pypsi.base import Command, PypsiArgParser, CommandShortCircuit
-from pypsi.stream import AnsiStdout
 import sys
 import argparse
 

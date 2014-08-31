@@ -61,16 +61,16 @@ class SystemCommand(Command):
         try:
             stdout = None
             pipe_stdout = True
-            if shell.real_stdout == ctx.stdout:
-                stdout = ctx.stdout
+            if shell.real_stdout == ctx.stdout.stream:
+                stdout = ctx.stdout.stream
                 pipe_stdout = False
             else:
                 stdout = subprocess.PIPE
 
             if shell.real_stdin == ctx.stdin:
-                proc = subprocess.Popen(args, stdout=stdout, stderr=ctx.stderr, shell=self.use_shell)
+                proc = subprocess.Popen(args, stdout=stdout, stderr=ctx.stderr.stream, shell=self.use_shell)
             else:
-                proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=stdout, stderr=ctx.stderr, shell=self.use_shell)
+                proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=stdout, stderr=ctx.stderr.stream, shell=self.use_shell)
                 buff = ctx.stdin.read()
                 if isinstance(buff, str):
                     buff = buff.encode('utf-8')

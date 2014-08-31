@@ -30,7 +30,7 @@
 
 from pypsi.base import Command, PypsiArgParser, CommandShortCircuit
 from pypsi.format import Table, Column, FixedColumnTable, title_str, word_wrap
-from pypsi.stream import AnsiStdout
+from pypsi.stream import AnsiCodes
 import sys
 
 
@@ -123,12 +123,12 @@ class HelpCommand(Command):
 
     def print_topic_commands(self, shell, topic, title=None, name_col_width=20):
         print(
-            AnsiStdout.yellow,
+            AnsiCodes.yellow,
             title_str(title or topic.name or topic.id, shell.width),
-            AnsiStdout.reset,
+            AnsiCodes.reset,
             sep=''
         )
-        print(AnsiStdout.yellow, end='')
+        print(AnsiCodes.yellow, end='')
         Table(
             columns=(Column(''), Column('', Column.Grow)),
             spacing=4,
@@ -142,7 +142,7 @@ class HelpCommand(Command):
         ).extend(
             *[(' '+c.name.ljust(name_col_width - 1), c.brief or '') for c in topic.commands]
         ).write(sys.stdout)
-        print(AnsiStdout.reset, end='')
+        print(AnsiCodes.reset, end='')
 
     def print_topics(self, shell):
         max_name_width = 0
@@ -169,7 +169,7 @@ class HelpCommand(Command):
         if addl:
             addl = sorted(addl, key=lambda x: x.id)
             print(
-                AnsiStdout.yellow,
+                AnsiCodes.yellow,
                 title_str("Additional Topics", shell.width),
                 sep=''
             )
@@ -181,13 +181,13 @@ class HelpCommand(Command):
             ).extend(
                 *[(' '+topic.id.ljust(max_name_width - 1), topic.name or '') for topic in addl]
             ).write(sys.stdout)
-            print(AnsiStdout.reset)
+            print(AnsiCodes.reset)
 
     def print_topic(self, shell, id):
         if id not in self.lookup:
             if id in shell.commands:
                 cmd = shell.commands[id]
-                print(AnsiStdout.yellow, cmd.usage, AnsiStdout.reset, sep='')
+                print(AnsiCodes.yellow, cmd.usage, AnsiCodes.reset, sep='')
                 return 0
 
             self.error(shell, "unknown topic: ", id)
