@@ -304,11 +304,14 @@ class VariablePlugin(Plugin):
                     continue
 
                 expanded = self.expand(shell, subt)
+                '''
                 if token.quote:
                     ret.append(StringToken(subt.index, expanded, token.quote))
                 else:
                     ws = False
                     for part in shell.parser.tokenize(expanded):
                         ret.append(part)
+                '''
+                ret.append(StringToken(subt.index, expanded, '"'))
 
         return ret
