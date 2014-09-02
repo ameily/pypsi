@@ -146,8 +146,8 @@ class AnsiStream(object):
     def __getattr__(self, name):
         return getattr(self.stream, name)
 
-    def ansi_format(self, **kwargs):
+    def ansi_format(self, tmpl, **kwargs):
         atty = self.isatty()
         for (name, code) in AnsiCodes.codes.items():
             kwargs[name] = code.code if atty else ''
-        return kwargs
+        return tmpl.format(**kwargs)
