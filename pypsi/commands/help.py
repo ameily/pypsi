@@ -30,7 +30,7 @@
 
 from pypsi.base import Command, PypsiArgParser, CommandShortCircuit
 from pypsi.format import Table, Column, FixedColumnTable, title_str, word_wrap
-from pypsi.stream import AnsiStdout
+from pypsi.stream import AnsiCodes
 import sys
 
 
@@ -48,8 +48,9 @@ class HelpCommand(Command):
     Provides access to manpage-esque topics and command usage information.
     '''
 
-    def __init__(self, name='help', topic='shell', brief='print information on a topic or command', topics=None,
-                 **kwargs):
+    def __init__(self, name='help', topic='shell',
+                 brief='print information on a topic or command', topics=None,
+                 vars=None, **kwargs):
         self.parser = PypsiArgParser(
             prog=name,
             description=brief
@@ -66,14 +67,14 @@ class HelpCommand(Command):
         )
 
         self.topics = list(topics or [])
-        self.uncat = Topic('uncat', 'Uncategorized Commands & Features')
+        self.uncat = Topic('uncat', 'Uncategorized Commands & Topics')
         self.lookup = {t.id: t for t in self.topics}
         self.dirty = True
+        self.vars = vars or {}
 
     def complete(self, shell, args, prefix):
+        '''
         args = [arg for arg in args if not arg.startswith('-')]
-        if self.dirty:
-            self.reload(shell)
 
         completions = []
         base = []
@@ -85,6 +86,13 @@ class HelpCommand(Command):
             completions.extend([x for x in base if x.startswith(prefix) or not prefix])
 
         return sorted(completions)
+        '''
+        #pre = args[-1] if args else prefix
+        if self.dirty:
+            self.reload(shell)
+
+        completions = sorted([x.id for x in self.topics if x.id.startswith(prefix) or not prefix])
+        return completions
 
     def reload(self, shell):
         self.uncat.commands = []
@@ -115,12 +123,12 @@ class HelpCommand(Command):
 
     def print_topic_commands(self, shell, topic, title=None, name_col_width=20):
         print(
-            AnsiStdout.yellow,
+            AnsiCodes.yellow,
             title_str(title or topic.name or topic.id, shell.width),
-            AnsiStdout.reset,
+            AnsiCodes.reset,
             sep=''
         )
-        print(AnsiStdout.yellow, end='')
+        print(AnsiCodes.yellow, end='')
         Table(
             columns=(Column(''), Column('', Column.Grow)),
             spacing=4,
@@ -134,7 +142,7 @@ class HelpCommand(Command):
         ).extend(
             *[(' '+c.name.ljust(name_col_width - 1), c.brief or '') for c in topic.commands]
         ).write(sys.stdout)
-        print(AnsiStdout.reset, end='')
+        print(AnsiCodes.reset, end='')
 
     def print_topics(self, shell):
         max_name_width = 0
@@ -161,7 +169,7 @@ class HelpCommand(Command):
         if addl:
             addl = sorted(addl, key=lambda x: x.id)
             print(
-                AnsiStdout.yellow,
+                AnsiCodes.yellow,
                 title_str("Additional Topics", shell.width),
                 sep=''
             )
@@ -173,13 +181,13 @@ class HelpCommand(Command):
             ).extend(
                 *[(' '+topic.id.ljust(max_name_width - 1), topic.name or '') for topic in addl]
             ).write(sys.stdout)
-            print(AnsiStdout.reset)
+            print(AnsiCodes.reset)
 
     def print_topic(self, shell, id):
         if id not in self.lookup:
             if id in shell.commands:
                 cmd = shell.commands[id]
-                print(AnsiStdout.yellow, cmd.usage, AnsiStdout.reset, sep='')
+                print(AnsiCodes.yellow, cmd.usage, AnsiCodes.reset, sep='')
                 return 0
 
             self.error(shell, "unknown topic: ", id)
@@ -188,7 +196,12 @@ class HelpCommand(Command):
         topic = self.lookup[id]
         if topic.content:
             print(title_str(topic.name or topic.id, shell.width))
-            print(word_wrap(topic.content, shell.width))
+            try:
+                cnt = topic.content.format(**self.vars)
+            except:
+                cnt = topic.content
+
+            print(word_wrap(cnt, shell.width))
             print()
 
         if topic.commands:

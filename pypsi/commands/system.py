@@ -59,10 +59,18 @@ class SystemCommand(Command):
         rc = None
         proc = None
         try:
-            if shell.real_stdin == ctx.stdin:
-                proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=self.use_shell)
+            stdout = None
+            pipe_stdout = True
+            if shell.real_stdout == ctx.stdout.stream:
+                stdout = ctx.stdout.stream
+                pipe_stdout = False
             else:
-                proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=ctx.stderr, shell=self.use_shell)
+                stdout = subprocess.PIPE
+
+            if shell.real_stdin == ctx.stdin:
+                proc = subprocess.Popen(args, stdout=stdout, stderr=ctx.stderr.stream, shell=self.use_shell)
+            else:
+                proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=stdout, stderr=ctx.stderr.stream, shell=self.use_shell)
                 buff = ctx.stdin.read()
                 if isinstance(buff, str):
                     buff = buff.encode('utf-8')
@@ -77,12 +85,15 @@ class SystemCommand(Command):
             return -e.errno
 
         try:
-            for line in proc.stdout:
-                ctx.stdout.write(line.decode('utf-8'))
+            if pipe_stdout:
+                encoding = ctx.stdout.encoding or shell.real_stdout.encoding or 'utf-8'
+                for line in proc.stdout:
+                    ctx.stdout.write(line.decode(encoding))
+            rc = proc.wait()            
         except KeyboardInterrupt:
             proc.kill()
             proc.communicate()
-        rc = proc.wait()
+            rc = proc.wait()
         return rc if rc <= 0 else -1
 
     def fallback(self, shell, name, args, ctx):

@@ -29,39 +29,44 @@
 #
 
 from pypsi.base import Command, PypsiArgParser, CommandShortCircuit
-import sys
-import argparse
-
-EchoCmdUsage = "%(prog)s [-n] [-h] message"
+import os
 
 
-class EchoCommand(Command):
+class ChdirCommand(Command):
     '''
-    Prints text to the screen.
+    Change the current working directory. This accepts one of the following:
+
+    * <path> - a relative or absolute path
+    * ~ - the current user's home directory
+    * ~<user> - <user>'s home directory
+    * - - the previous directory
     '''
 
-    def __init__(self, name='echo', topic='shell', brief='print a line of text', **kwargs):
-        self.parser = PypsiArgParser(
-            prog=name,
-            description=brief,
-            usage=EchoCmdUsage
-        )
+    def __init__(self, name='cd', brief='change current working directory',
+                 topic='shell', **kwargs):
+        super(ChdirCommand, self).__init__(name=name, brief=brief, topic=topic, **kwargs)
 
-        subcmd = self.parser.add_argument_group(title='Stream')
+        self.parser = PypsiArgParser(prog=name, description=brief)
+        self.parser.add_argument('path', help='path', metavar="PATH")
 
-        self.parser.add_argument(
-            'message', help='message to print', nargs=argparse.REMAINDER,
-            metavar="MESSAGE"
-        )
+    def setup(self, shell):
+        shell.ctx.chdir_last_dir = os.getcwd()
 
-        self.parser.add_argument(
-            '-n', '--nolf', help="don't print newline character", action='store_true'
-        )
+    def chdir(self, shell, path, print_cwd=False):
+        prev = os.getcwd()
+        try:
+            os.chdir(path)
+            if print_cwd:
+                print(os.getcwd())
+        except OSError as e:
+            self.error(shell, path, ": ", e.strerror)
+            return -1
+        except Exception as e:
+            self.error(shell, path, ": ", str(e))
+            return -1
 
-        super(EchoCommand, self).__init__(
-            name=name, usage=self.parser.format_help(), topic=topic,
-            brief=brief, **kwargs
-        )
+        shell.ctx.chdir_last_dir = prev
+        return 0
 
     def run(self, shell, args, ctx):
         try:
@@ -69,8 +74,11 @@ class EchoCommand(Command):
         except CommandShortCircuit as e:
             return e.code
 
-        tail = '' if ns.nolf else '\n'
+        if ns.path == '-':
+            return self.chdir(shell, shell.ctx.chdir_last_dir, True)
 
-        print(' '.join(ns.message), sep='', end=tail)
+        if ns.path.startswith('~'):
+            return self.chdir(shell, os.path.expanduser(ns.path))
 
-        return 0
+        return self.chdir(shell, ns.path)
+

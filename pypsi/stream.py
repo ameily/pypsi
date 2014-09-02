@@ -35,56 +35,53 @@ import sys
 Stream classes for writing to files.
 '''
 
-class PypsiStream(object):
-    '''
-    Unbuffered file output stream. This class should be used primarily
-    for writing to :data:`sys.stdout` or :data:`sys.stderr`. The stream allows
-    for prefix and postfix strings to be written to the file before or after
-    each call to :func:`write`. This can be useful when printing colors to the
-    screen or the log levels of messages.
 
-    The wrapped file object can be a callable object that returns a file
-    object. This object will then be called once during each
-    invocation of :func:`write` to retrieve the current output file object.
-    '''
+class AnsiCode(object):
 
-    def __init__(self, fobj, prefix=None, postfix=None):
-        '''
-        :param file fobj: the file object to wrap or a function to retrieve the
-            file object when writing to it
-        :param str prefix: a string to write to the stream whenever :func:`write`
-            is called
-        :param str postfix: a string to write to the stream after :func:`write`
-            is called
-        '''
-        self.fobj = fobj
-        self.prefix = prefix
-        self.postfix = postfix
+    def __init__(self, code, s=None):
+        self.code = code
+        self.s = s
 
-    def __call__(self, *args):
-        '''
-        Alias for :func:`write`.
-        '''
-        return self.write(*args)
+    def __str__(self):
+        return self.code
 
-    def write(self, *args):
-        '''
-        Write any number of arguments to the stream.
-        '''
-        stream = self.fobj if not callable(self.fobj) else self.fobj()
-        if self.prefix:
-            stream.write(self.prefix)
+    def __call__(self, s, postfix='\x1b[0m'):
+        return AnsiCode(self.code, s + (postfix or ''))
 
-        for s in args:
-            if isinstance(s, str):
-                stream.write(s)
-            elif s is not None:
-                stream.write(str(s))
 
-        if self.postfix:
-            stream.write(self.postfix)
+class AnsiCodesSingleton(object):
 
-        stream.flush()
+    def __init__(self):
+        self.reset = AnsiCode('\x1b[0m')
+        self.gray = AnsiCode('\x1b[1;30m')
+        self.red = AnsiCode('\x1b[1;31m')
+        self.green = AnsiCode('\x1b[1;32m')
+        self.yellow = AnsiCode('\x1b[1;33m')
+        self.blue = AnsiCode('\x1b[1;34m')
+        self.purple = AnsiCode('\x1b[1;35)')
+        self.cyan = AnsiCode('\x1b[1;36m')
+        self.white = AnsiCode('\x1b[1;37m')
+        self.black = AnsiCode('\x1b[0;30m')
+        self.clear_screen = AnsiCode('\x1b[2J\x1b[;H')
+        self.underline = AnsiCode('\x1b[4m')
+
+        self.codes = dict(
+            reset=self.reset,
+            gray=self.gray,
+            red=self.red,
+            green=self.green,
+            yellow=self.yellow,
+            blue=self.blue,
+            purple=self.purple,
+            cyan=self.cyan,
+            white=self.white,
+            black=self.black,
+            clear_screen=self.clear_screen,
+            underline=self.underline
+        )
+
+
+AnsiCodes = AnsiCodesSingleton()
 
 
 class AnsiStream(object):
@@ -92,49 +89,59 @@ class AnsiStream(object):
     ForceOn = 1
     ForceOff = 2
 
-    def __init__(self, mode=TTY):
+    def __init__(self, stream, mode=TTY):
+        self.stream = stream
         self.mode = mode
-        self.codes = {
-            'reset': '\x1b[0m',
-            'gray': '\x1b[1;30m',
-            'red': '\x1b[1;31m',
-            'green': '\x1b[1;32m',
-            'yellow': '\x1b[1;33m',
-            'blue': '\x1b[1;34m',
-            'purple': '\x1b[1;35m',
-            'cyan': '\x1b[1;36m',
-            'white': '\x1b[1;37m',
-            'black': '\x1b[0;30m',
-            'clear_screen': '\x1b[2J\x1b[;H'
-        }
+        self.redirects = []
 
-    def __getattr__(self, key):
-        return self.__getitem__(key)
+    def write(self, *args, flush=True):
+        for arg in args:
+            if isinstance(arg, str):
+                self.stream.write(arg)
+            elif isinstance(arg, AnsiCode):
+                if self.isatty():
+                    self.stream.write(str(arg))
+            elif arg is not None:
+                self.stream.write(str(arg))
 
-    def __getitem__(self, key):
-        check = False
-        if self.mode == self.TTY:
-            check = self.isatty()
-        elif self.mode == self.ForceOn:
-            check = True
-        elif self.mode == self.ForceOff:
-            check = False
+        if flush:
+            self.stream.flush()
 
-        return self.codes[key] if check else ''
+    def writeln(self, *args, flush=True):
+        self.write(*args, flush=False)
+        self.stream.write('\n')
+        if flush:
+            self.stream.flush()
 
+    def redirect(self, stream):
+        self.redirects.append(self.stream)
+        self.stream = stream
 
-class AnsiStdoutSingleton(AnsiStream):
+    def reset(self, state=None):
+        if self.redirects:
+            if state is not None:
+                if state == 0:
+                    self.reset()
+                elif state < len(self.redirects):
+                    self.redirects  = self.redirects[:state]
+                    self.stream = self.redirects.pop()
+            else:
+                self.stream = self.redirects[0]
+                self.redirects = []
 
     def isatty(self):
-        return sys.stdout.isatty()
+        if self.mode == AnsiStream.TTY:
+            return self.stream.isatty()
+        return self.mode == AnsiStream.ForceOn
 
+    def close(self, was_pipe=False):
+        if self.redirects:
+            if not was_pipe:
+                self.stream.close()
+            self.stream = self.redirects.pop()
 
-class AnsiStderrSingleton(AnsiStream):
+    def get_state(self):
+        return len(self.redirects)
 
-    def isatty(self):
-        return sys.stderr.isatty()
-
-
-AnsiStdout = AnsiStdoutSingleton()
-AnsiStderr = AnsiStderrSingleton()
-
+    def __getattr__(self, name):
+        return getattr(self.stream, name)

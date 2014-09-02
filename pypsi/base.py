@@ -35,7 +35,7 @@ Base classes for developing pluggable commands and plugins.
 
 import argparse
 import sys
-from pypsi.stream import AnsiStdout, AnsiStderr
+from pypsi.stream import AnsiCodes
 from pypsi.format import word_wrap
 
 
@@ -189,7 +189,7 @@ class Command(object):
         :param args: list of strings that are the error message
         '''
         self.error(shell, *args)
-        print(AnsiStderr.yellow, self.usage, AnsiStderr.reset, sep='')
+        print(AnsiCodes.yellow, self.usage, AnsiCodes.reset, sep='')
 
     def error(self, shell, *args):
         '''
@@ -199,7 +199,7 @@ class Command(object):
         :param args: the error message to display
         '''
         msg = "{}: {}".format(self.name, ''.join([ str(a) for a in args]))
-        print(AnsiStderr.red, word_wrap(msg, shell.width), AnsiStderr.reset, file=sys.stderr, sep='')
+        print(AnsiCodes.red, word_wrap(msg, shell.width), AnsiCodes.reset, file=sys.stderr, sep='')
 
     def run(self, shell, args, ctx):
         '''
@@ -259,18 +259,18 @@ class PypsiArgParser(argparse.ArgumentParser):
 
     def exit(self, status=0, message=None):
         if message:
-            print(AnsiStderr.red, message, AnsiStderr.reset, file=sys.stderr, sep='')
+            print(AnsiCodes.red, message, AnsiCodes.reset, file=sys.stderr, sep='')
         raise CommandShortCircuit(status)
 
     def print_usage(self, file=None):
         f = file or sys.stderr
-        print(AnsiStderr.yellow, self.format_usage(), AnsiStderr.reset, sep='', file=f)
+        print(AnsiCodes.yellow, self.format_usage(), AnsiCodes.reset, sep='', file=f)
 
     def print_help(self, file=None):
         f = file or sys.stderr
-        print(AnsiStderr.yellow, self.format_help(), AnsiStderr.reset, sep='', file=f)
+        print(AnsiCodes.yellow, self.format_help(), AnsiCodes.reset, sep='', file=f)
 
     def error(self, message):
-        print(AnsiStderr.red, self.prog, ": error: ", message, AnsiStderr.reset, sep='', file=sys.stderr)
+        print(AnsiCodes.red, self.prog, ": error: ", message, AnsiCodes.reset, sep='', file=sys.stderr)
         self.print_usage()
         self.exit(1)

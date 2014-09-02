@@ -1,5 +1,1 @@
-Welcome to the Pypsi Demo Shell
-
-This shell is designed to showcase all the commands and plugins that ship with Pypsi. Use the `help` command to view all the available commands to execute as well as available topics to receive more help on.
-
-Note: this message is from the motd file, located at demo-motd.txt in the root directory of Pypsi.
+Hello, World!

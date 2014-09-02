@@ -1,9 +1,1 @@
-The help command can be very useful. It can print the list of commands, a single command's usage, or information about registered topics.
-
-The tip command will print out a random tip.
-
-I/O redirection is performed with the <, >, and >> operators. For more information, refer to the redirection topic.
-
-If a command does not exist, it is passed through to the underlying system. This allows for commands like ls and grep to be executed within the shell.
-
-Missed the Message of the Day? No problem, just use the tip -m command.
+Fuck you

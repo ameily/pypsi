@@ -28,49 +28,20 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from pypsi.base import Command, PypsiArgParser, CommandShortCircuit
-import sys
-import argparse
 
-EchoCmdUsage = "%(prog)s [-n] [-h] message"
+from pypsi.base import Command
+import os
 
 
-class EchoCommand(Command):
+class PwdCommand(Command):
     '''
-    Prints text to the screen.
+    Print the current working directory.
     '''
 
-    def __init__(self, name='echo', topic='shell', brief='print a line of text', **kwargs):
-        self.parser = PypsiArgParser(
-            prog=name,
-            description=brief,
-            usage=EchoCmdUsage
-        )
-
-        subcmd = self.parser.add_argument_group(title='Stream')
-
-        self.parser.add_argument(
-            'message', help='message to print', nargs=argparse.REMAINDER,
-            metavar="MESSAGE"
-        )
-
-        self.parser.add_argument(
-            '-n', '--nolf', help="don't print newline character", action='store_true'
-        )
-
-        super(EchoCommand, self).__init__(
-            name=name, usage=self.parser.format_help(), topic=topic,
-            brief=brief, **kwargs
-        )
+    def __init__(self, name='pwd', topic='shell',
+                 brief='print current working directory', **kwargs):
+        super(PwdCommand, self).__init__(name=name, topic=topic, brief=brief, **kwargs)
 
     def run(self, shell, args, ctx):
-        try:
-            ns = self.parser.parse_args(args)
-        except CommandShortCircuit as e:
-            return e.code
-
-        tail = '' if ns.nolf else '\n'
-
-        print(' '.join(ns.message), sep='', end=tail)
-
+        print("hey:", os.getcwd())
         return 0

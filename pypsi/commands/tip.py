@@ -29,16 +29,18 @@
 #
 
 from pypsi.base import Command, PypsiArgParser, CommandShortCircuit
-from pypsi.stream import AnsiStdout
+from pypsi.stream import AnsiCodes
 from pypsi.format import word_wrap
 from pypsi.utils import safe_open
 import random
 
 class TipCommand(Command):
 
-    def __init__(self, name='tip', brief='print shell tips', topic='shell', tips=None, motd=None, **kwargs):
+    def __init__(self, name='tip', brief='print shell tips', topic='shell',
+                 tips=None, motd=None, vars=None, **kwargs):
         self.tips = tips or []
         self.motd = motd or ''
+        self.vars = vars or {}
         self.rand = random.Random()
         self.rand.seed()
 
@@ -65,10 +67,10 @@ class TipCommand(Command):
             if line:
                 tip.append(line)
             elif tip:
-                self.tips.append(''.join(tip))
+                self.tips.append(' '.join(tip))
                 tip = []
         if tip:
-            self.tips.append(''.join(tip))
+            self.tips.append(' '.join(tip))
         fp.close()
 
     def load_motd(self, path):
@@ -95,28 +97,38 @@ class TipCommand(Command):
             self.error(shell, "no tips available")
             return -1
 
-        i = int(self.rand.random() * 10) % len(self.tips)
+        i = self.rand.randrange(len(self.tips)) #int(self.rand.random() * len(self.tips)
         
         if header:
             title = "Tip #{}".format(i+1)
             title += '\n' + ('-'*len(title))
-            print(AnsiStdout.green, title, AnsiStdout.reset, sep='')
+            print(AnsiCodes.green, title, AnsiCodes.reset, sep='')
 
-        print(word_wrap(self.tips[i], shell.width))
+        try:
+            cnt = self.tips[i].format(**self.vars)
+        except:
+            cnt = self.tips[i]
+
+        print(word_wrap(cnt, shell.width))
 
     def print_motd(self, shell):
         if not self.motd:
             self.error(shell, "no motd available")
             return -1
 
+        try:
+            cnt = self.motd.format(**self.vars)
+        except:
+            cnt = self.motd
+
         print(
-            AnsiStdout.green,
+            AnsiCodes.green,
             "Message of the Day".center(shell.width), '\n',
             '>' * shell.width, "\n",
-            AnsiStdout.reset,
-            word_wrap(self.motd, shell.width), '\n',
-            AnsiStdout.green,
+            AnsiCodes.reset,
+            word_wrap(cnt, shell.width), '\n',
+            AnsiCodes.green,
             "<" * shell.width, "\n",
-            AnsiStdout.reset,
+            AnsiCodes.reset,
             sep=''
         )

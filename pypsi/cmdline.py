@@ -96,9 +96,11 @@ class StringToken(Token):
         self.quote = quote
         self.escape = False
         self.text = ''
+        self.open_quote = False
 
         if c in ('"', "'"):
             self.quote = c
+            self.open_quote = True
         elif c == '\\':
             self.escape = True
         else:
@@ -117,6 +119,8 @@ class StringToken(Token):
             if self.quote:
                 if c == self.quote:
                     self.text += c
+                elif c == '\\':
+                    self.text += '\\'
                 else:
                     self.text += '\\'
                     self.text += c
@@ -128,6 +132,7 @@ class StringToken(Token):
         elif self.quote:
             if c == self.quote:
                 ret = TokenTerm
+                self.open_quote = False
             elif c == '\\':
                 self.escape = True
             else:
@@ -143,6 +148,12 @@ class StringToken(Token):
                 self.text += c
 
         return ret
+
+    def combine_token(self, token):
+        self.text += token.text
+        self.open_quote = token.open_quote
+        self.escape = token.escape
+        self.quote = token.quote
 
     def __str__(self):
         return "String( {quote}{text}{quote} )".format(
@@ -184,6 +195,12 @@ class OperatorToken(Token):
 
     def __str__(self):
         return "OperatorToken( {} )".format(self.operator)
+
+    def is_chain_operator(self):
+        for c in self.operator:
+            if c in ('>', '<'):
+                return False
+        return True
 
 
 class Statement(object):
@@ -284,11 +301,9 @@ class StatementContext(object):
         self.prev = None
         self.pipe = None
         self.width = None
-        #: the :data:`sys.stdout` when the statement context was created
-        self.backup_stdout = sys.stdout
 
-        #: the :data:`sys.stderr` when the statement context was created
-        self.backup_stderr = sys.stderr
+        self.stdout_state = sys.stdout.get_state()
+        self.stderr_state = sys.stderr.get_state()
 
         #: the :data:`sys.stdin` when the statement context was created
         self.backup_stdin = sys.stdin
@@ -311,8 +326,8 @@ class StatementContext(object):
         '''
         ctx = StatementContext()
         ctx.stdin = ctx.backup_stdin = self.stdin
-        ctx.stdout = ctx.backup_stdout = self.stdout
-        ctx.stderr = ctx.backup_stderr = self.stderr
+        #ctx.stdout = ctx.backup_stdout = self.stdout
+        #ctx.stderr = ctx.backup_stderr = self.stderr
         ctx.prev = None
         ctx.pipe = self.pipe
         return ctx
@@ -327,35 +342,45 @@ class StatementContext(object):
         :param str op: the current chaining operator
         :returns: 0 on success, -1 on error
         '''
+        prev_pipe = self.prev and self.prev[1] == '|'
         if params.stdin_path:
+            # Setup stdin if redirecting from a file
             try:
                 sys.stdin = self.stdin = open(params.stdin_path, 'r')
             except OSError as e:
                 raise IoRedirectionError(params.stdin_path, str(e))
-        elif self.prev and self.prev[1] == '|':
-            self.stdout.flush()
-            self.stdout.seek(0)
-            self.stdin = sys.stdin = self.stdout
+        elif prev_pipe:
+            # Previous command's stdout needs to be piped to current command's
+            # stdin
+            sys.stdout.flush()
+            sys.stdout.seek(0)
+            self.stdin = sys.stdin = self.stdout.stream
         else:
+            # Reset stdin
             self.stdin = sys.stdin = self.backup_stdin
 
         if params.stdout_path:
+            # Setup stdout if redirecting to a file
             try:
-                sys.stdout = self.stdout = open(params.stdout_path, params.stdout_mode)
+                sys.stdout.redirect(open(params.stdout_path, params.stdout_mode))
             except OSError as e:
                 raise IoRedirectionError(params.stdout_path, str(e))
         elif op == '|':
-            sys.stdout = self.stdout = StringIO()
+            # Next command is a pipe, redirect stdout to a buffer
+            sys.stdout.redirect(StringIO())
         else:
-            self.stdout = sys.stdout = self.backup_stdout
+            # Reset stdout
+            sys.stdout.close(was_pipe=prev_pipe)
 
         if params.stderr_path:
+            # Setup stderr if redirecting to a file
             try:
-                sys.stderr = self.stderr = open(params.stderr_path, 'w')
+                sys.stderr.redirect(open(params.stderr_path, 'w'))
             except OSError as e:
                 raise IoRedirectionError(params.stderr_path, str(e))
         else:
-            self.stderr = sys.stderr = self.backup_stderr
+            # Reset stderr
+            sys.stderr.close()
 
         self.prev = (cmd, op)
 
@@ -366,16 +391,13 @@ class StatementContext(object):
         Resets the system streams to their original values. This should be
         called after a statement has finished executing.
         '''
-        if self.stdout != self.backup_stdout:
-            self.stdout.close()
-            sys.stdout = self.stdout = self.backup_stdout
-
-        if self.stderr != self.backup_stderr:
-            sys.stderr = self.stderr = self.backup_stderr
+        sys.stdout.reset(self.stdout_state)
+        sys.stderr.reset(self.stderr_state)
 
         if self.stdin != self.backup_stdin:
             self.stdin.close()
             sys.stdin = self.stdin = self.backup_stdin
+
         return 0
 
 
@@ -518,7 +540,8 @@ class StatementParser(object):
         for token in tokens:
             if isinstance(token, StringToken):
                 if isinstance(prev, StringToken):
-                    prev.text += token.text
+                    #prev.text += token.text
+                    prev.combine_token(token)
                     token = prev
                 else:
                     condensed.append(token)
@@ -718,7 +741,9 @@ class Expression(object):
             if done:
                 break
 
-        if not done:
+        if operator and not value:
+            value = ''
+        elif not done:
             return (None, None)
 
         return (remaining, Expression(operand, operator, value))
