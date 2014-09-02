@@ -166,34 +166,30 @@ def file_size_str(value):
 
 
 def obj_str(obj, max_children=3, stream=None):
-    wrap_value = null_str = None
+    tmpl = "{blue}{type}({reset} {value} {blue}){reset}"
+    format_value = None
     if stream:
-        wrap_value = lambda t, v: "{}{}( {}{} {}){}".format(
-            stream.blue, t, stream.reset, v, stream.blue,
-            stream.reset
-        )
-        null_str = "{}<null>{}".format(stream.blue, stream.reset)
+        format_value = lambda t, v: stream.ansi_format(tmpl, type=t, value=v)
     else:
-        wrap_value = lambda t, v: "{}( {} )".format(t, v)
-        null_str = "<null>"
+        format_value = lambda t, v: tmpl.format(type=t, value=v)
 
     if isinstance(obj, bool):
-        return wrap_value("bool", obj)
+        return format_value("bool", obj)
     elif isinstance(obj, int):
-        return wrap_value("int", "{:d}".format(obj))
+        return format_value("int", "{:d}".format(obj))
     elif isinstance(obj, float):
-        return wrap_value("float", "{:g}".format(obj))
+        return format_value("float", "{:g}".format(obj))
     elif isinstance(obj, (list, tuple)):
         if max_children > 0 and len(obj) > max_children:
             obj = [o for o in obj[:max_children]]
             obj.append('...')
 
-        return wrap_value(
+        return format_value(
             "list",
             ', '.join([obj_str(child, max_children=max_children, stream=stream) for child in obj])
         )
     elif obj == None:
-        return null_str
+        return stream.ansi_format("{blue}<null>{reset}") if stream else "<null>"
     elif isinstance(obj, str):
         return obj
     return str(obj)
