@@ -41,7 +41,7 @@ def path_completer(shell, args, prefix):
                 root = '.' + os.path.sep + root
         else:
             root = '.' + os.path.sep
-        root = drive + root
+        root = os.path.join(drive, root)
     else:
         root = '.' + os.path.sep
 
