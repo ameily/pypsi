@@ -35,11 +35,13 @@ def path_completer(shell, args, prefix):
     root = None
     if args:
         root = args[-1]
+        drive, root = os.path.splitdrive(root)
         if root:
             if not root.startswith(os.path.sep) and not root.startswith('.' + os.path.sep):
                 root = '.' + os.path.sep + root
         else:
             root = '.' + os.path.sep
+        root = drive + root
     else:
         root = '.' + os.path.sep
 
@@ -56,7 +58,7 @@ def path_completer(shell, args, prefix):
         dirs = []
         for entry in os.listdir(root):
             full = os.path.join(root, entry)
-            if entry.startswith(prefix):
+            if os.path.normcase(entry).startswith(os.path.normcase(prefix)):
                 if os.path.isdir(full):
                     dirs.append(entry + os.path.sep)
                 else:
