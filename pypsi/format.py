@@ -114,7 +114,7 @@ def word_wrap(text, width, prefix=None, multiline=True):
             start = count
         else:
             lines.append(text[start:next_space])
-            if text[next_space].isspace():
+            if next_space < len(text) and text[next_space].isspace():
                 prev = start
                 for i in range(next_space, count):
                     if not text[i].isspace():
