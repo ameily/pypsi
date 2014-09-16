@@ -50,7 +50,7 @@ from pypsi.commands.tail import TailCommand
 from pypsi.commands.chdir import ChdirCommand
 from pypsi.commands.pwd import PwdCommand
 from pypsi.plugins.comment import CommentPlugin
-from pypsi.stream import AnsiStdout
+from pypsi.stream import AnsiCodes
 from pypsi import topics
 import sys
 
@@ -96,6 +96,8 @@ class DemoShell(Shell):
 
     def __init__(self):
         super(DemoShell, self).__init__()
+        self.bootstrap()
+
         try:
             self.tip_cmd.load_tips("./demo-tips.txt")
         except:
@@ -107,8 +109,8 @@ class DemoShell(Shell):
             self.error("failed to load message of the day file: demo-motd.txt")
 
         self.prompt = "{gray}[$time]{r} {cyan}pypsi{r} {green})>{r} ".format(
-            gray=AnsiStdout.gray, r=AnsiStdout.reset, cyan=AnsiStdout.cyan,
-            green=AnsiStdout.green
+            gray=AnsiCodes.gray, r=AnsiCodes.reset, cyan=AnsiCodes.cyan,
+            green=AnsiCodes.green
         )
         self.fallback_cmd = self.system_cmd
 
@@ -116,7 +118,7 @@ class DemoShell(Shell):
         self.help_cmd.add_topic(topics.IoRedirection)
 
     def on_cmdloop_begin(self):
-        print(AnsiStdout.clear_screen)
+        print(AnsiCodes.clear_screen)
         if self.tip_cmd.motd:
             self.tip_cmd.print_motd(self)
             print()
@@ -124,10 +126,10 @@ class DemoShell(Shell):
             print("No tips registered. Create the demo-tips.txt file for the tip of the day.")
 
         if self.tip_cmd.tips:
-            print(AnsiStdout.green, "Tip of the Day".center(self.width), sep='')
-            print('>' * self.width, AnsiStdout.reset, sep='')
+            print(AnsiCodes.green, "Tip of the Day".center(self.width), sep='')
+            print('>' * self.width, AnsiCodes.reset, sep='')
             self.tip_cmd.print_random_tip(self, False)
-            print(AnsiStdout.green, '<' * self.width, AnsiStdout.reset, sep='')
+            print(AnsiCodes.green, '<' * self.width, AnsiCodes.reset, sep='')
             print()
         else:
             print("To see the message of the day. Create the demo-motd.txt file for the MOTD.")

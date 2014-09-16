@@ -33,7 +33,7 @@ import readline
 import netaddr
 import re
 from pypsi.cmdline import StatementParser, StringToken
-from pypsi.stream import AnsiStdout
+from pypsi.stream import AnsiCodes
 from pypsi.format import word_wrap, title_str
 from pypsi.namespace import Namespace
 
@@ -226,12 +226,12 @@ class PromptWizard(object):
                     raw = input(prompt)
                 except (KeyboardInterrupt, EOFError):
                     print()
-                    print(AnsiStdout.red, "Wizard canceled", AnsiStdout.reset, sep='')
+                    print(AnsiCodes.red, "Wizard canceled", AnsiCodes.reset, sep='')
                     readline.set_completer(self.old_completer)
                     return None
 
                 if raw.lower() == 'quit':
-                    print(AnsiStdout.red, "Exiting wizard", AnsiStdout.reset, sep='')
+                    print(AnsiCodes.red, "Exiting wizard", AnsiCodes.reset, sep='')
                     readline.set_completer(self.old_completer)
                     return None
                 elif raw.lower() in ('?', 'help'):
@@ -243,8 +243,8 @@ class PromptWizard(object):
                     try:
                         value = step.validate(self.values, raw)
                     except ValueError as e:
-                        print(AnsiStdout.red, "Error: ", str(e), AnsiStdout.reset, sep='')
-                        print(AnsiStdout.yellow, step.name, ": ", step.help, sep='')
+                        print(AnsiCodes.red, "Error: ", str(e), AnsiCodes.reset, sep='')
+                        print(AnsiCodes.yellow, step.name, ": ", step.help, sep='')
                     else:
                         self.values[step.id] = value
                         valid = True

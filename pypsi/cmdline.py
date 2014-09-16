@@ -722,6 +722,8 @@ class Expression(object):
                     elif c in Expression.Whitespace:
                         if operator:
                             state = 'value'
+                            done = True
+                            value = ''
                     else:
                         state = 'value'
                         value = c

@@ -58,7 +58,7 @@ class AnsiCodesSingleton(object):
         self.green = AnsiCode('\x1b[1;32m')
         self.yellow = AnsiCode('\x1b[1;33m')
         self.blue = AnsiCode('\x1b[1;34m')
-        self.purple = AnsiCode('\x1b[1;35)')
+        self.purple = AnsiCode('\x1b[1;35m')
         self.cyan = AnsiCode('\x1b[1;36m')
         self.white = AnsiCode('\x1b[1;37m')
         self.black = AnsiCode('\x1b[0;30m')
@@ -89,9 +89,9 @@ class AnsiStream(object):
     ForceOn = 1
     ForceOff = 2
 
-    def __init__(self, stream, mode=TTY):
+    def __init__(self, stream, ansi_mode=TTY):
         self.stream = stream
-        self.mode = mode
+        self.ansi_mode = ansi_mode
         self.redirects = []
 
     def write(self, *args, flush=True):
@@ -130,9 +130,9 @@ class AnsiStream(object):
                 self.redirects = []
 
     def isatty(self):
-        if self.mode == AnsiStream.TTY:
+        if self.ansi_mode == AnsiStream.TTY:
             return self.stream.isatty()
-        return self.mode == AnsiStream.ForceOn
+        return self.ansi_mode == AnsiStream.ForceOn
 
     def close(self, was_pipe=False):
         if self.redirects:
@@ -145,3 +145,9 @@ class AnsiStream(object):
 
     def __getattr__(self, name):
         return getattr(self.stream, name)
+
+    def ansi_format(self, tmpl, **kwargs):
+        atty = self.isatty()
+        for (name, code) in AnsiCodes.codes.items():
+            kwargs[name] = code.code if atty else ''
+        return tmpl.format(**kwargs)

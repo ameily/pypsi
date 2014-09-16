@@ -175,8 +175,10 @@ class MacroCommand(BlockCommand):
 
                 self.macro_name = ns.name
                 self.begin_block(shell)
-                print("Beginning macro, use the '", shell.ctx.block.end_cmd,
-                      "' command to save.", sep='')
+                if sys.stdin.isatty():
+                    print("Beginning macro, use the '", shell.ctx.block.end_cmd,
+                          "' command to save.", sep='')
+
                 shell.ctx.macro_orig_eof_is_sigint = shell.eof_is_sigint
                 shell.eof_is_sigint = True
         elif ns.list:
