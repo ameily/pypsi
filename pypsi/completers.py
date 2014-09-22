@@ -30,7 +30,19 @@
 
 
 import os
+import sys
 
+path_completer = None
+
+
+if sys.platform == 'win32':
+    from pypsi.os.win32 import win32_path_completer
+    path_completer = win32_path_completer
+elif sys.platform == 'cygwin' or sys.platform.startswith('linux'):
+    from pypsi.os.unix import unix_path_completer
+    path_completer = unix_path_completer
+
+'''
 def path_completer(shell, args, prefix):
     root = None
     if args:
@@ -66,6 +78,8 @@ def path_completer(shell, args, prefix):
         return dirs + files
     else:
         return []
+'''
+
 
 def choice_completer(choices, case_sensitive=False):
     def complete(shell, args, prefix):
