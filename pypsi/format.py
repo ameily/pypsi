@@ -309,9 +309,19 @@ def title_str(title, width=80, align='left', hr='=', box=False):
 
 
 class Table(object):
-    # TODO: implement field overflow (maybe?)
+    '''
+    Variable width table.
+    '''
 
     def __init__(self, columns, width=80, spacing=1, header=True):
+        '''
+        :param multiple columns: a list of either class:`Column` instances or a
+            single `int` defining how many columns to create
+        :param int width: the maximum width of the entire table
+        :param int spacing: the amount of space characters to display between
+            columns
+        :param bool header: whether to display header row with the column names
+        '''
         if isinstance(columns, int):
             self.columns = [Column()] * columns
             header = False
@@ -323,17 +333,31 @@ class Table(object):
         self.rows = []
 
     def append(self, *args):
+        '''
+        Add a row to the table.
+
+        :param *args: the column values
+        '''
         self.rows.append(args)
         for (col, value) in zip(self.columns, args):
             col.width = max(col.width, len(str(value)))
         return self
 
     def extend(self, *args):
+        '''
+        Add multiple rows to the table, each argument should be a list of column
+        values.
+        '''
         for row in args:
             self.append(*row)
         return self
 
     def write(self, fp):
+        '''
+        Print the table to a specified file stream.
+
+        :param file fp: output stream
+        '''
         def write_overflow(row):
             overflow = [''] * len(self.columns)
             column_idx = 0
@@ -393,10 +417,20 @@ class Table(object):
 
 
 class Column(object):
+    '''
+    A table column.
+    '''
+
+    #: Size mode to have the column shrink to its contents
     Shrink = 0
+    #: Size mode to have the column grow to the maximum width it can have
     Grow = 1
 
     def __init__(self, text='', mode=0):
+        '''
+        :param str text: the column name
+        :param int mode: the column size mode
+        '''
         self.text = text
         self.mode = mode
         self.width = len(text)

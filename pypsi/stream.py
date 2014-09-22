@@ -37,8 +37,16 @@ Stream classes for writing to files.
 
 
 class AnsiCode(object):
+    '''
+    A single ansi escape code.
+    '''
 
     def __init__(self, code, s=None):
+        '''
+        :param str code: the ansi escape code, usually begins with '\\x1b['
+        :param str s: the body of the code, only useful if wrapping a string in
+            this code
+        '''
         self.code = code
         self.s = s
 
@@ -46,10 +54,21 @@ class AnsiCode(object):
         return self.code
 
     def __call__(self, s, postfix='\x1b[0m'):
+        '''
+        Wrap a given string in the escape code. This is useful for printing a
+        word or sentence in a specific color.
+
+        :param str s: the input string
+        :param str postfix: the postfix string to (default is the ansi reset
+            code)
+        '''
         return AnsiCode(self.code, s + (postfix or ''))
 
 
 class AnsiCodesSingleton(object):
+    '''
+    Holds all supported ansi escape codes.
+    '''
 
     def __init__(self):
         self.reset = AnsiCode('\x1b[0m')
@@ -65,6 +84,7 @@ class AnsiCodesSingleton(object):
         self.clear_screen = AnsiCode('\x1b[2J\x1b[;H')
         self.underline = AnsiCode('\x1b[4m')
 
+        #: all codes as a dict, useful for formatting an ansi string
         self.codes = dict(
             reset=self.reset,
             gray=self.gray,
@@ -80,10 +100,24 @@ class AnsiCodesSingleton(object):
             underline=self.underline
         )
 
-
+#: Global instance for all supported ansi codes
 AnsiCodes = AnsiCodesSingleton()
 
+
 def pypsi_print(*args, sep=' ', end='\n', file=None, flush=True, width=None, wrap=True):
+    '''
+    Wraps the functionality of the Python builtin `print` function. The
+    :meth:`pypsi.shell.Shell.bootstrap` overrides the Python :meth:`print`
+    function with :meth:`pypsi_print`.
+
+    :param str sep: string to print between arguments
+    :param str end: string to print at the end of the output
+    :param file file: output stream, if this is :const:`None`, the default is
+        :data:`sys.stdout`
+    :param bool flush: whether to flush the output stream
+    :param int width: override the stream's width
+    :param bool wrap: whether to word wrap the output
+    '''
     file = file or sys.stdout
     last = len(args) - 1
 
@@ -138,11 +172,33 @@ def pypsi_print(*args, sep=' ', end='\n', file=None, flush=True, width=None, wra
 
 
 class AnsiStream(object):
+    '''
+    Enhanced file stream wrapper that includes the ability to:
+
+    - redirect output to a new stream, while keeping a stack of redirections
+    - reset to the initial stream (cancel all redirects)
+    - format an ansi string
+
+    The :meth:`pypsi.shell.Shell.bootstrap` wraps both :data:`sys.stdout` and
+    :data:`sys.stderr` in an :class:`AnsiStream` instance.
+    '''
+
+    #: Ansi mode to rely on the stream's :meth:`file.isatty` function
     TTY = 0
+    #: Ansi mode to force ansi support always on
     ForceOn = 1
+    #: Ansi mode to force ansi support always off
     ForeceOff = 2
 
     def __init__(self, stream, ansi_mode=0, width=80):
+        '''
+        :param file stream: the initial stream to wrap (should be either
+            :data:`sys.stdout` or :data:`sys.stderr`)
+        :param int ansi_mode: the mode to use when checking if the active stream
+            supports ansi escape codes
+        :param int width: the streams width, which is used by
+            :meth:`pypsi_print` and :meth:`pypsi.format.wrap_line`
+        '''
         self.stream = stream
         self.ansi_mode = ansi_mode
         self.redirects = []
@@ -184,11 +240,24 @@ class AnsiStream(object):
 
 
     def redirect(self, stream, width=0):
+        '''
+        Redirect output to a new output stream.
+
+        :param file stream: new output stream
+        :param int width: the stream's width (0 indicates that no word wrapping
+            should take place)
+        '''
         self.redirects.append((self.stream, self.width))
         self.stream = stream
         self.width = width
 
     def reset(self, state=None):
+        '''
+        Reset the active stream to a specific state or the initial stream.
+
+        :param int state: the state to reset to, as returned by
+            :meth:`get_state` or :const:`None` to reset to the initial stream
+        '''
         if self.redirects:
             if state is not None:
                 if state == 0:
@@ -201,23 +270,50 @@ class AnsiStream(object):
                 self.redirects = []
 
     def isatty(self):
+        '''
+        Checks if the stream is a TTY (ie :data:`sys.stdout` or
+        :data:`sys.stderr`). This method will rely on the active ansi_mode.
+        '''
         if self.ansi_mode == AnsiStream.TTY:
             return self.stream.isatty()
         return self.ansi_mode == AnsiStream.ForceOn
 
     def close(self, was_pipe=False):
+        '''
+        Close and reset the active redirection.
+
+        :param bool was_pipe: whether the redirection was a pipe, in which case
+            the underlying file will not be closed
+        '''
         if self.redirects:
             if not was_pipe:
                 self.stream.close()
             (self.stream, self.width) = self.redirects.pop()
 
     def get_state(self):
+        '''
+        Get the state of the stream.
+
+        :returns int: the state id
+        '''
         return len(self.redirects)
 
     def __getattr__(self, name):
         return getattr(self.stream, name)
 
     def ansi_format(self, tmpl, **kwargs):
+        '''
+        Format a string that contains ansi code terms. This function allows
+        the following string to be the color red:
+
+        ``sys.stdout.ansi_format("{red}Hello, {name}{reset}", name="Adam")``
+
+        The :data:`pypsi.format.AnsiCodesSingleton.codes` dict contains all
+        valid ansi escape code terms. If the current stream does not support
+        ansi escape codes, they are dropped from the template prior to printing.
+
+        :param str tmpl: the string template
+        '''
         atty = self.isatty()
         for (name, code) in AnsiCodes.codes.items():
             kwargs[name] = code.code if atty else ''
