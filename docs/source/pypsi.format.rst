@@ -1,4 +1,4 @@
-pypsi.stream - Stream output formatting
+pypsi.format - Stream output formatting
 =======================================
 
 .. toctree::

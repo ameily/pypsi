@@ -336,7 +336,7 @@ class Table(object):
         '''
         Add a row to the table.
 
-        :param *args: the column values
+        :param list args: the column values
         '''
         self.rows.append(args)
         for (col, value) in zip(self.columns, args):
