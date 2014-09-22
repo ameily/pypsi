@@ -30,7 +30,6 @@
 
 from pypsi.base import Command, PypsiArgParser, CommandShortCircuit
 from pypsi.stream import AnsiCodes
-from pypsi.format import word_wrap
 from pypsi.utils import safe_open
 import random
 
@@ -101,7 +100,7 @@ class TipCommand(Command):
         
         if header:
             title = "Tip #{}".format(i+1)
-            title += '\n' + ('-'*len(title))
+            #title += '-' * len(title)
             print(AnsiCodes.green, title, AnsiCodes.reset, sep='')
 
         try:
@@ -109,7 +108,8 @@ class TipCommand(Command):
         except:
             cnt = self.tips[i]
 
-        print(word_wrap(cnt, shell.width))
+        #print(cnt)
+        print("Hello")
 
     def print_motd(self, shell):
         if not self.motd:
@@ -126,7 +126,7 @@ class TipCommand(Command):
             "Message of the Day".center(shell.width), '\n',
             '>' * shell.width, "\n",
             AnsiCodes.reset,
-            word_wrap(cnt, shell.width), '\n',
+            cnt, '\n',
             AnsiCodes.green,
             "<" * shell.width, "\n",
             AnsiCodes.reset,

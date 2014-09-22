@@ -29,7 +29,7 @@
 #
 
 from pypsi.base import Command, PypsiArgParser, CommandShortCircuit
-from pypsi.format import Table, Column, FixedColumnTable, title_str, word_wrap
+from pypsi.format import Table, Column, FixedColumnTable, title_str
 from pypsi.stream import AnsiCodes
 import sys
 
@@ -201,7 +201,7 @@ class HelpCommand(Command):
             except:
                 cnt = topic.content
 
-            print(word_wrap(cnt, shell.width))
+            print(cnt)
             print()
 
         if topic.commands:

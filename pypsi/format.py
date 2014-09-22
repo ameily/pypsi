@@ -28,7 +28,18 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+'''
+Provides functions and classes for dealing with command line input, output, and
+ansi codes.
+'''
+
+
 def ansi_len(value):
+    '''
+    Get the length of the provided `str`, not counting any ansi codes.
+
+    :param str value: the input string
+    '''
     count = 0
     esc_code = False
     for c in value:
@@ -42,6 +53,12 @@ def ansi_len(value):
     return count
 
 def ansi_center(s, width):
+    '''
+    Center the provided string for a given width.
+
+    :param str s: the input string
+    :param int width: the desired field width
+    '''
     count = ansi_len(s)
     if count >= width:
         return s
@@ -49,6 +66,13 @@ def ansi_center(s, width):
     return (' '*diff) + s
 
 def ansi_ljust(s, width):
+    '''
+    Left justify an input string, ensuring that it contains width charaters.
+
+    :param str s: the input string
+    :param int width: the desired output width
+    :returns str: the output string
+    '''
     count = ansi_len(s)
     if count >= width:
         return s
@@ -56,44 +80,87 @@ def ansi_ljust(s, width):
     return s + (' ' * diff)
 
 def ansi_rjust(s, width):
+    '''
+    Right justify the input string.
+
+    :param str s: the input string
+    :param int width: the desired width
+    :returns str: the output string
+    '''
     count = ansi_len(s)
     if count >= width:
         return s
     diff = width - count
     return (' '*diff) + s
 
-def ansi_find_break(s, beg, max_width):
+def get_lines(txt):
+    '''
+    Break text to individual lines.
+
+    :returns tuple: a tuple containing the next line and whether the line
+        contained a newline charater.
+    '''
+    start = 0
+    try:
+        while True:
+            i = txt.index('\n', start)
+            yield (txt[start:i], True)
+            start = i + 1
+            if start >= len(txt):
+                break
+    except:
+        yield (txt[start:], False)
+
+
+def wrap_line(txt, width):
+    '''
+    Word wrap a single line.
+
+    :param str txt: the line to wrap
+    :param int width: the maximum width of a wrapped line
+    :returns str: the next wrapped line
+    '''
+    start = 0
     count = 0
-    esc_code = False
-    prev = None
-    last_space = 0
-    for i in range(len(s)-beg):
-        c = s[i+beg]
-        if c == '\x1b':
-            esc_code = True
-        elif esc_code:
-            if c in 'ABCDEFGHJKSTfmnsulh':
-                esc_code = False
-        elif c.isspace():
-            count += 1
-            if not prev or not prev.isspace():
-                last_space = i
+    i = 0
+    total = len(txt)
+    while i < total:
+        esc_code = False
+        prev = None
+        while count <= width and i < total:
+            c = txt[i]
+            if c == '\x1b':
+                esc_code = True
+            elif esc_code:
+                if c in 'ABCDEFGHJKSTfmnsulh':
+                    esc_code = False
+            else:
+                count += 1
+                if c in ' \t':
+                    prev = i
+            i += 1
+
+        if i == total:
+            prev = i
         else:
-            count += 1
+            prev = prev or i
 
-        if count > max_width:
-            break
+        #if start < prev:
+        #    yield txt[start:prev]
+        yield txt[start:prev]
 
-    if count < max_width:
-        return None
+        start = prev
+        while start < total and txt[start] in '\t ':
+            start += 1
 
-    if last_space:
-        return beg+last_space
+        i = start
+        count = 0
 
-    return beg+max_width
+    if count:
+        yield txt[start:]
 
 
-
+'''
 def word_wrap(text, width, prefix=None, multiline=True):
     if multiline and '\n' in text:
         parts = text.split('\n')
@@ -127,9 +194,17 @@ def word_wrap(text, width, prefix=None, multiline=True):
                 start = next_space
 
     return '\n'.join(lines)
-
+'''
 
 def highlight(target, term, color='1;32'):
+    '''
+    Find and highlight a term inside of a block of text.
+
+    :param str target: the text to search in
+    :param str term: the term to search for
+    :param str color: the color to output when the term is found
+    :returns str: the input string with all occurrences of the term highlighted
+    '''
     if not color:
         return target
 
@@ -151,6 +226,13 @@ def highlight(target, term, color='1;32'):
 
 
 def file_size_str(value):
+    '''
+    Get the human readable file size string from a number. This will convert a
+    value of 1024 to 1Kb and 1048576 to 1Mb.
+
+    :param int value: the value to convert
+    :returns str: the human readable file size string
+    '''
     value = float(value)
     units = ['Kb', 'Mb', 'Gb', 'Tb']
     unit = 'B'
@@ -166,6 +248,7 @@ def file_size_str(value):
 
 
 def obj_str(obj, max_children=3, stream=None):
+    ## TODO, remove stream
     tmpl = "{blue}{type}({reset} {value} {blue}){reset}"
     format_value = None
     if stream:
@@ -196,6 +279,9 @@ def obj_str(obj, max_children=3, stream=None):
 
 
 def title_str(title, width=80, align='left', hr='=', box=False):
+    '''
+
+    '''
     lines = []
     if box:
         border = '+' + ('-'*(width-2)) + '+'
@@ -261,7 +347,8 @@ class Table(object):
                 if(len(value) <= col.width):
                     fp.write(ansi_ljust(value, col.width))
                 else:
-                    wrapped_line = word_wrap(value, col.width).split('\n')
+                    wrapped_line = [line for line in wrapped_line(value, col.width)]
+                    #word_wrap(value, col.width).split('\n')
                     if len(wrapped_line) > 1:
                         overflow[column_idx] = ' '.join(wrapped_line[1:])
                     fp.write(wrapped_line[0])
@@ -277,11 +364,10 @@ class Table(object):
 
         # Resize columns if last too wide
         # TODO: Smarter column resizing, maybe pick widest column
-        if total + self.spacing*(len(self.columns)-1) > self.width:
+        if (total + self.spacing * (len(self.columns)-1)) > self.width:
             self.columns[-1].mode = Column.Grow
 
-        for i in range(len(self.columns)):
-            col = self.columns[i]
+        for col in self.columns:
             if col.mode == Column.Grow:
                 remaining = self.width - ((len(self.columns)-1)*self.spacing) - total
                 col.width += remaining
@@ -317,12 +403,24 @@ class Column(object):
 
 
 class FixedColumnTable(object):
+    '''
+    A table that has preset column widths.
+    '''
 
     def __init__(self, widths):
+        '''
+        :param list widths: the list of column widths (`int`)
+        '''
         self.widths = [int(width) for width in widths]
         self.buffer = []
 
     def write_row(self, fp, *args):
+        '''
+        Print a single row.
+
+        :param file fp: the output file stream (usually sys.stdout or sys.stderr)
+        :param list args: the column values for the row
+        '''
         for (width, value) in zip(self.widths, args):
             fp.write(ansi_ljust(value, width))
             #diff = width - len(value)
@@ -331,12 +429,21 @@ class FixedColumnTable(object):
         fp.write('\n')
 
     def add_cell(self, fp, col):
+        '''
+        Add a single cell to the table. The current row is printed if the column
+        completes the row.
+        '''
         self.buffer.append(col)
         if len(self.buffer) == len(self.widths):
             self.write_row(fp, *self.buffer)
             self.buffer = []
 
     def flush(self, fp):
+        '''
+        Force a write of the table.
+
+        :param file fp: the output file stream
+        '''
         if self.buffer:
             self.write_row(fp, *self.buffer)
             self.buffer = []

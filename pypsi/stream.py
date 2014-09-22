@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2014, Adam Meily
+# .opyright (c) 2014, Adam Meily
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
@@ -29,7 +29,7 @@
 #
 
 import sys
-
+from pypsi.format import get_lines, wrap_line
 
 '''
 Stream classes for writing to files.
@@ -83,19 +83,77 @@ class AnsiCodesSingleton(object):
 
 AnsiCodes = AnsiCodesSingleton()
 
+def pypsi_print(*args, sep=' ', end='\n', file=None, flush=True, width=None, wrap=True):
+    file = file or sys.stdout
+    last = len(args) - 1
+
+    if wrap and hasattr(file, 'width') and file.width:
+        width = width or file.width
+        parts = []
+        for arg in args:
+            if isinstance(arg, str):
+                parts.append(arg)
+            elif arg is None:
+                parts.append('')
+            elif isinstance(arg, AnsiCode):
+                if file.isatty():
+                    parts.append(str(arg))
+            else:
+                parts.append(str(arg))
+
+        txt = sep.join(parts)
+        lineno = 0
+        for (line, endl) in get_lines(txt):
+            #file.write("Line: "+line+' ['+str(endl)+']\n')
+            if line:
+                first = True
+                wrapno = 0
+                for wrapped in wrap_line(line, width):
+                    if not wrapped:
+                        continue
+                    #file.write("Wrapped: '" + wrapped+"'\n")
+                    wrapno += 1
+                    if not first:
+                        file.write('\n')
+                    else:
+                        first = False
+                    file.write(wrapped)
+            
+            if not line or endl:
+                #file.write("NO Line\n")
+                file.write('\n')
+    else:
+        last = len(args) - 1
+        for (i, arg) in enumerate(args):
+            file.write(str(arg))
+            if sep and i != last:
+                file.write(sep)
+
+    if end:
+        file.write(end)
+    if flush:
+        file.flush()
+
+
+
 
 class AnsiStream(object):
     TTY = 0
     ForceOn = 1
-    ForceOff = 2
+    ForeceOff = 2
 
-    def __init__(self, stream, ansi_mode=TTY):
+    def __init__(self, stream, ansi_mode=0, width=80):
         self.stream = stream
         self.ansi_mode = ansi_mode
         self.redirects = []
+        self.width = width
 
-    def write(self, *args, flush=True):
+    '''
+    def write(self):  #*args, sep=' ', end='\n', flush=True):
+        #self.stream.write("write()\n")
+        #return
         for arg in args:
+            #self.stream.write(str(type(arg))+'\n')
             if isinstance(arg, str):
                 self.stream.write(arg)
             elif isinstance(arg, AnsiCode):
@@ -112,10 +170,23 @@ class AnsiStream(object):
         self.stream.write('\n')
         if flush:
             self.stream.flush()
+    '''
+    '''
+    def write(self, arg):
+        if isinstance(arg, str):
+            self.stream.write(arg)
+        elif isinstance(arg, AnsiCode):
+            if self.isatty():
+                self.stream.write(str(arg))
+        elif arg is not None:
+            self.stream.write(str(arg))
+    '''
 
-    def redirect(self, stream):
-        self.redirects.append(self.stream)
+
+    def redirect(self, stream, width=0):
+        self.redirects.append((self.stream, self.width))
         self.stream = stream
+        self.width = width
 
     def reset(self, state=None):
         if self.redirects:
@@ -124,9 +195,9 @@ class AnsiStream(object):
                     self.reset()
                 elif state < len(self.redirects):
                     self.redirects  = self.redirects[:state]
-                    self.stream = self.redirects.pop()
+                    (self.stream, self.width) = self.redirects.pop()
             else:
-                self.stream = self.redirects[0]
+                (self.stream, self.width) = self.redirects[0]
                 self.redirects = []
 
     def isatty(self):
@@ -138,7 +209,7 @@ class AnsiStream(object):
         if self.redirects:
             if not was_pipe:
                 self.stream.close()
-            self.stream = self.redirects.pop()
+            (self.stream, self.width) = self.redirects.pop()
 
     def get_state(self):
         return len(self.redirects)
