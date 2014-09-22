@@ -265,18 +265,3 @@ class PromptWizard(object):
         return self.completions[state] if state < len(self.completions) else None
 
 
-
-def test():
-    shell = Namespace(width=80)
-    ns = PromptWizard(
-        name="Datastore Configuration",
-        description="Setup Metasponse Datastore",
-        steps=(
-            WizardStep('host', 'Hostname', '', 'localhost', validators=required_validator),
-            WizardStep('port', "Port", '', 3306, validators=(required_validator, int_validator(0, 0xffff)))
-        )
-    ).run(shell)
-
-    print(ns.host)
-    print(ns.port)
-
