@@ -16,6 +16,7 @@ pypsi
     pypsi.base.rst
     pypsi.cmdline.rst
     pypsi.namespace.rst
+    pypsi.format.rst
     pypsi.stream.rst
     pypsi.utils.rst
 
