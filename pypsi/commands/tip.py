@@ -32,6 +32,7 @@ from pypsi.base import Command, PypsiArgParser, CommandShortCircuit
 from pypsi.stream import AnsiCodes
 from pypsi.utils import safe_open
 import random
+import sys
 
 class TipCommand(Command):
 
@@ -99,17 +100,16 @@ class TipCommand(Command):
         i = self.rand.randrange(len(self.tips)) #int(self.rand.random() * len(self.tips)
         
         if header:
-            title = "Tip #{}".format(i+1)
-            #title += '-' * len(title)
+            title = "Tip #{}\n".format(i+1)
+            title += '-' * len(title)
             print(AnsiCodes.green, title, AnsiCodes.reset, sep='')
 
         try:
-            cnt = self.tips[i].format(**self.vars)
+            cnt = sys.stdout.ansi_format(self.tips[i], **self.vars)
         except:
             cnt = self.tips[i]
 
-        #print(cnt)
-        print("Hello")
+        print(cnt)
 
     def print_motd(self, shell):
         if not self.motd:
@@ -117,8 +117,9 @@ class TipCommand(Command):
             return -1
 
         try:
-            cnt = self.motd.format(**self.vars)
+            cnt = sys.stdout.ansi_format(self.motd, **self.vars)
         except:
+            raise
             cnt = self.motd
 
         print(
