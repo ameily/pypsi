@@ -34,7 +34,7 @@ import netaddr
 import re
 from pypsi.cmdline import StatementParser, StringToken
 from pypsi.stream import AnsiCodes
-from pypsi.format import word_wrap, title_str
+from pypsi.format import title_str
 from pypsi.namespace import Namespace
 
 
@@ -202,10 +202,8 @@ class PromptWizard(object):
             title_str("Entering " + self.name + " Wizard", width=shell.width, box=True, align='center'),
             '\n',
             self.description, '\n\n',
-            word_wrap(
-                "To exit, enter either Ctrl+C, Ctrl+D, or 'quit'. For help "
-                "about the current step, enter 'help' or '?'.", shell.width
-            ),
+            "To exit, enter either Ctrl+C, Ctrl+D, or 'quit'. For help "
+            "about the current step, enter 'help' or '?'.",
             sep=''
         )
 
@@ -235,7 +233,7 @@ class PromptWizard(object):
                     readline.set_completer(self.old_completer)
                     return None
                 elif raw.lower() in ('?', 'help'):
-                    print(word_wrap(step.help, shell.width))
+                    print(step.help)
                 else:
                     if not raw.strip() and step.default is not None:
                         raw = step.default
@@ -266,19 +264,4 @@ class PromptWizard(object):
             self.completions = self.active_step.complete(self, args, prefix)
         return self.completions[state] if state < len(self.completions) else None
 
-
-
-def test():
-    shell = Namespace(width=80)
-    ns = PromptWizard(
-        name="Datastore Configuration",
-        description="Setup Metasponse Datastore",
-        steps=(
-            WizardStep('host', 'Hostname', '', 'localhost', validators=required_validator),
-            WizardStep('port', "Port", '', 3306, validators=(required_validator, int_validator(0, 0xffff)))
-        )
-    ).run(shell)
-
-    print(ns.host)
-    print(ns.port)
 

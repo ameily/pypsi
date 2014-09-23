@@ -231,6 +231,8 @@ class History(object):
         Get a single event at ``index`` or a :class:`slice` of events.
         '''
         if isinstance(index, slice):
+            if not self.__len__():
+                return []
             start = self.normalize_index(index.start or 0)
             stop = self.normalize_index((index.stop or self.__len__())-1)
             step = index.step or 1
