@@ -188,7 +188,7 @@ class AnsiStream(object):
     #: Ansi mode to force ansi support always on
     ForceOn = 1
     #: Ansi mode to force ansi support always off
-    ForeceOff = 2
+    ForceOff = 2
 
     def __init__(self, stream, ansi_mode=0, width=80):
         '''
@@ -315,6 +315,11 @@ class AnsiStream(object):
         :param str tmpl: the string template
         '''
         atty = self.isatty()
+        for (name, value) in kwargs.items():
+            if isinstance(value, AnsiCode):
+                kwargs[name] = str(value) if atty else ''
+
         for (name, code) in AnsiCodes.codes.items():
             kwargs[name] = code.code if atty else ''
+
         return tmpl.format(**kwargs)
