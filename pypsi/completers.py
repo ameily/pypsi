@@ -28,10 +28,16 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+'''
+Builtin tab completion functions.
+'''
+
 
 import os
 import sys
 
+#: Completion function for hard drive paths. The exact function is chosen at
+#: runtime because it is OS specific.
 path_completer = None
 
 
@@ -82,6 +88,12 @@ def path_completer(shell, args, prefix):
 
 
 def choice_completer(choices, case_sensitive=False):
+    '''
+    Tab complete from a list of choices.
+
+    :param list choices: the list of choices
+    :param bool case_sensitive: whether the choices are case sensitive
+    '''
     def complete(shell, args, prefix):
         r = []
         for choice in choices:
