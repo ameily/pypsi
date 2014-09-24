@@ -50,6 +50,13 @@ class AnsiCode(object):
         self.code = code
         self.s = s
 
+    def prompt(self):
+        '''
+        Wrap non-print-able characters in readline non visible markers. This is
+        required if the string is going to be passed into :meth:`input`.
+        '''
+        return "\x01" + self.code + "\x02" + (self.s or '')
+
     def __str__(self):
         return self.code
 
@@ -321,5 +328,22 @@ class AnsiStream(object):
 
         for (name, code) in AnsiCodes.codes.items():
             kwargs[name] = code.code if atty else ''
+
+        return tmpl.format(**kwargs)
+
+    def ansi_format_prompt(self, tmpl, **kwargs):
+        '''
+        Format a string that contains ansi code terms. This function allows
+        performs the same formatting as :meth:`ansi_format`, except this is
+        intended for formatting strings in prompt by calling
+        :meth:`AnsiCode.prompt` for each code.
+        '''
+        atty = self.isatty()
+        for (name, value) in kwargs.items():
+            if isinstance(value, AnsiCode):
+                kwargs[name] = value.prompt() if atty else ''
+
+        for (name, code) in AnsiCodes.codes.items():
+            kwargs[name] = code.prompt() if atty else ''
 
         return tmpl.format(**kwargs)
