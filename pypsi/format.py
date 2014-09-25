@@ -371,7 +371,7 @@ class Table(object):
                 if(len(value) <= col.width):
                     fp.write(ansi_ljust(value, col.width))
                 else:
-                    wrapped_line = [line for line in wrapped_line(value, col.width)]
+                    wrapped_line = [line for line in wrap_line(value, col.width)]
                     #word_wrap(value, col.width).split('\n')
                     if len(wrapped_line) > 1:
                         overflow[column_idx] = ' '.join(wrapped_line[1:])
