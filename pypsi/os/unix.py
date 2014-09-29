@@ -29,38 +29,42 @@
 #
 
 '''
-Builtin tab completion functions.
+Unix (Cygwin, Linux, etc) specific functions
 '''
 
+def unix_path_completer(shell, args, prefix):
+    root = None
+    if args:
+        root = args[-1]
+        if root:
+            if not root.startswith(os.path.sep) and not root.startswith('.' + os.path.sep):
+                root = '.' + os.path.sep + root
+        else:
+            root = '.' + os.path.sep
+    else:
+        root = '.' + os.path.sep
 
-import os
-import sys
+    if root.endswith(prefix) and prefix:
+        root = root[:0 - len(prefix)]
 
-#: Completion function for hard drive paths. The exact function is chosen at
-#: runtime because it is OS specific.
-path_completer = None
+    #return ['prefix:'+prefix, 'root:'+root]
 
+    if not os.path.exists(root):
+        return []
 
-if sys.platform == 'win32':
-    from pypsi.os.win32 import win32_path_completer
-    path_completer = win32_path_completer
-elif sys.platform == 'cygwin' or sys.platform.startswith('linux'):
-    from pypsi.os.unix import unix_path_completer
-    path_completer = unix_path_completer
+    if os.path.isdir(root):
+        files = []
+        dirs = []
+        for entry in os.listdir(root):
+            full = os.path.join(root, entry)
+            if entry.startswith(prefix):
+                if os.path.isdir(full):
+                    dirs.append(entry + os.path.sep)
+                else:
+                    files.append(entry)
+        files = sorted(files)
+        dirs = sorted(dirs)
+        return dirs + files
+    else:
+        return []
 
-
-
-def choice_completer(choices, case_sensitive=False):
-    '''
-    Tab complete from a list of choices.
-
-    :param list choices: the list of choices
-    :param bool case_sensitive: whether the choices are case sensitive
-    '''
-    def complete(shell, args, prefix):
-        r = []
-        for choice in choices:
-            if choice.startswith(prefix if case_sensitive else prefix.lower()):
-                r.append(choice)
-        return r
-    return complete

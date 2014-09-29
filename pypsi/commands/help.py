@@ -29,7 +29,7 @@
 #
 
 from pypsi.base import Command, PypsiArgParser, CommandShortCircuit
-from pypsi.format import Table, Column, FixedColumnTable, title_str, word_wrap
+from pypsi.format import Table, Column, FixedColumnTable, title_str
 from pypsi.stream import AnsiCodes
 import sys
 
@@ -73,20 +73,6 @@ class HelpCommand(Command):
         self.vars = vars or {}
 
     def complete(self, shell, args, prefix):
-        '''
-        args = [arg for arg in args if not arg.startswith('-')]
-
-        completions = []
-        base = []
-        for topic in self.topics:
-            base.append(topic.name or topic.id)
-            base.extend([command.name for command in topic.commands])
-
-        if len(args) <= 1:
-            completions.extend([x for x in base if x.startswith(prefix) or not prefix])
-
-        return sorted(completions)
-        '''
         #pre = args[-1] if args else prefix
         if self.dirty:
             self.reload(shell)
@@ -201,7 +187,7 @@ class HelpCommand(Command):
             except:
                 cnt = topic.content
 
-            print(word_wrap(cnt, shell.width))
+            print(cnt)
             print()
 
         if topic.commands:

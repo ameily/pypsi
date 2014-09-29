@@ -33,8 +33,7 @@ from pypsi.cmdline import StatementParser, StatementSyntaxError, StatementContex
 from pypsi.namespace import Namespace
 from pypsi.cmdline import StringToken, OperatorToken, WhitespaceToken
 from pypsi.completers import path_completer
-from pypsi.stream import AnsiStream, AnsiCodes
-from pypsi.format import word_wrap
+from pypsi.stream import AnsiStream, AnsiCodes, pypsi_print
 import readline
 import sys
 
@@ -76,8 +75,10 @@ class Shell(object):
         self.on_shell_ready()
 
     def bootstrap(self):
-        sys.stdout = AnsiStream(sys.stdout)
-        sys.stderr = AnsiStream(sys.stderr)
+        import builtins
+        sys.stdout = AnsiStream(sys.stdout, width=self.width)
+        sys.stderr = AnsiStream(sys.stderr, width=self.width)
+        builtins.print = pypsi_print #sys.stdout.write
 
     def register_base_plugins(self):
         '''
@@ -161,11 +162,8 @@ class Shell(object):
 
     def error(self, msg):
         print(
-            word_wrap(
-                "{}{}: {}{}".format(
-                    AnsiCodes.red, self.shell_name, msg, AnsiCodes.reset
-                ), self.width
-            ), file=sys.stderr
+            AnsiCodes.red, self.shell_name, msg, ": ", msg, AnsiCodes.reset,
+            file=sys.stderr, sep=''
         )
 
     def execute(self, raw, ctx=None):

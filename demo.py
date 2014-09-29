@@ -109,8 +109,8 @@ class DemoShell(Shell):
             self.error("failed to load message of the day file: demo-motd.txt")
 
         self.prompt = "{gray}[$time]{r} {cyan}pypsi{r} {green})>{r} ".format(
-            gray=AnsiCodes.gray, r=AnsiCodes.reset, cyan=AnsiCodes.cyan,
-            green=AnsiCodes.green
+            gray=AnsiCodes.gray.prompt(), r=AnsiCodes.reset.prompt(),
+            cyan=AnsiCodes.cyan.prompt(), green=AnsiCodes.green.prompt()
         )
         self.fallback_cmd = self.system_cmd
 

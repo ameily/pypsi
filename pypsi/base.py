@@ -36,7 +36,6 @@ Base classes for developing pluggable commands and plugins.
 import argparse
 import sys
 from pypsi.stream import AnsiCodes
-from pypsi.format import word_wrap
 
 
 class Plugin(object):
@@ -199,7 +198,7 @@ class Command(object):
         :param args: the error message to display
         '''
         msg = "{}: {}".format(self.name, ''.join([ str(a) for a in args]))
-        print(AnsiCodes.red, word_wrap(msg, shell.width), AnsiCodes.reset, file=sys.stderr, sep='')
+        print(AnsiCodes.red, msg, AnsiCodes.reset, file=sys.stderr, sep='')
 
     def run(self, shell, args, ctx):
         '''
