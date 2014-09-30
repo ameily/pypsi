@@ -89,7 +89,7 @@ class Macro(Command):
                     del shell.ctx.vars[s]
 
 
-MacroCmdUsage = """usage: %(prog)s -l
+MacroCmdUsage = """%(prog)s -l
    or: %(prog)s NAME
    or: %(prog)s [-d] [-p] NAME"""
 
