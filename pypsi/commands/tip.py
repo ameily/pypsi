@@ -125,11 +125,9 @@ class TipCommand(Command):
         print(
             AnsiCodes.green,
             "Message of the Day".center(shell.width), '\n',
-            '>' * shell.width, "\n",
-            AnsiCodes.reset,
-            cnt, '\n',
-            AnsiCodes.green,
-            "<" * shell.width, "\n",
+            AnsiCodes.green,'>' * shell.width, "\n",
+            AnsiCodes.reset,cnt, '\n',
+            AnsiCodes.green,"<" * shell.width, "\n",
             AnsiCodes.reset,
             sep=''
         )
