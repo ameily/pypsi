@@ -125,4 +125,3 @@ class StdinWidget(QtGui.QLineEdit):
     # tab = complete
     # up = history
     # shift+up = move up one line
-    # shit+page_up = move up a page
