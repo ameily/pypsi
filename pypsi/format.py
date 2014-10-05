@@ -254,6 +254,7 @@ def obj_str(obj, max_children=3, stream=None):
     if stream:
         format_value = lambda t, v: stream.ansi_format(tmpl, type=t, value=v)
     else:
+        tmpl = "{type}( {value} )"
         format_value = lambda t, v: tmpl.format(type=t, value=v)
 
     if isinstance(obj, bool):
