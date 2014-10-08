@@ -77,7 +77,10 @@ class HelpCommand(Command):
         if self.dirty:
             self.reload(shell)
 
-        completions = sorted([x.id for x in self.topics if x.id.startswith(prefix) or not prefix])
+        completions = [x.id for x in self.topics if x.id.startswith(prefix) or not prefix]
+        completions.extend([x for x in shell.commands if x.startswith(prefix) or not prefix])
+        completions = sorted(completions)
+        
         return completions
 
     def reload(self, shell):
