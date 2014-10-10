@@ -87,7 +87,7 @@ class AliasPlugin(Plugin):
         self.cmd = AliasCommand()
 
     def setup(self, shell):
-        shell.ctx.aliases = { 'print': 'echo fuck you' }
+        shell.ctx.aliases = { 'print': 'echo Hello to you' }
         shell.register(self.cmd)
         return 0
 

@@ -77,7 +77,7 @@ class VariableCommand(Command):
     '''
 
     Usage = """var name
-   or: var name = value
+   or: var EXPRESSION
    or: var -l
    or: var -d name"""
 
@@ -95,7 +95,7 @@ class VariableCommand(Command):
             '-d', '--delete', help='delete variable', metavar='VARIABLE'
         )
         self.parser.add_argument(
-            'exp', metavar='EXPRESSION', help='expression defining variable',
+            'exp', metavar='EXPRESSION', help='expression defining variable, in the form of NAME = [VALUE]',
             nargs=argparse.REMAINDER
         )
         super(VariableCommand, self).__init__(
