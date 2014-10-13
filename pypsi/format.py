@@ -121,81 +121,46 @@ def wrap_line(txt, width):
     :param int width: the maximum width of a wrapped line
     :returns str: the next wrapped line
     '''
-    start = 0
-    count = 0
-    i = 0
-    total = len(txt)
-    while i < total:
-        esc_code = False
-        prev = None
-        while count <= width and i < total:
-            c = txt[i]
-            if c == '\x1b':
-                esc_code = True
-            elif esc_code:
-                if c in 'ABCDEFGHJKSTfmnsulh':
-                    esc_code = False
-            else:
-                count += 1
-                if c in ' \t':
-                    prev = i
-            i += 1
-
-        if i == total:
-            prev = i
-        else:
-            prev = prev or i
-
-        #if start < prev:
-        #    yield txt[start:prev]
-        yield txt[start:prev]
-
-        start = prev
-        while start < total and txt[start] in '\t ':
-            start += 1
-
-        i = start
+    if width <= 0:
+        yield txt
+    else:
+        start = 0
         count = 0
+        i = 0
+        total = len(txt)
+        while i < total:
+            esc_code = False
+            prev = None
+            while count <= width and i < total:
+                c = txt[i]
+                if c == '\x1b':
+                    esc_code = True
+                elif esc_code:
+                    if c in 'ABCDEFGHJKSTfmnsulh':
+                        esc_code = False
+                else:
+                    count += 1
+                    if c in ' \t':
+                        prev = i
+                i += 1
 
-    if count:
-        yield txt[start:]
-
-
-'''
-def word_wrap(text, width, prefix=None, multiline=True):
-    if multiline and '\n' in text:
-        parts = text.split('\n')
-        return '\n'.join([word_wrap(t, width, prefix, False) for t in parts])
-
-    count = ansi_len(text)
-    if count < width:
-        return text
-
-    plen = ansi_len(prefix) if prefix else 0
-
-    lines = []
-    start = 0
-    while start < count:
-        next_space = ansi_find_break(text, start, width)
-        if next_space is None:
-            lines.append(text[start:])
-            start = count
-        else:
-            lines.append(text[start:next_space])
-            if next_space < len(text) and text[next_space].isspace():
-                prev = start
-                for i in range(next_space, count):
-                    if not text[i].isspace():
-                        start = i
-                        break
-                if start == prev:
-                    start = count
-                #TODO check if we're at the end of the string
+            if i >= total:
+                prev = i
             else:
-                start = next_space
+                prev = prev or i
 
-    return '\n'.join(lines)
-'''
+            yield txt[start:prev]
+
+            start = prev
+            while start < total and txt[start] in '\t ':
+                start += 1
+
+            i = start
+            count = 0
+
+        if count:
+            yield txt[start:]
+
 
 def highlight(target, term, color='1;32'):
     '''
