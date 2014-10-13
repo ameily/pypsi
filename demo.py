@@ -114,8 +114,8 @@ class DemoShell(Shell):
         )
         self.fallback_cmd = self.system_cmd
 
-        self.help_cmd.add_topic(Topic("shell", "Builtin Shell Commands"))
-        self.help_cmd.add_topic(topics.IoRedirection)
+        self.help_cmd.add_topic(self, Topic("shell", "Builtin Shell Commands"))
+        self.help_cmd.add_topic(self, topics.IoRedirection)
 
     def on_cmdloop_begin(self):
         print(AnsiCodes.clear_screen)
@@ -151,5 +151,6 @@ class DemoShell(Shell):
 
 if __name__ == '__main__':
     shell = DemoShell()
+    shell2 = DemoShell()
     rc = shell.cmdloop()
     sys.exit(rc)

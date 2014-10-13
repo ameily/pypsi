@@ -66,49 +66,52 @@ class HelpCommand(Command):
             topic=topic, **kwargs
         )
 
-        self.topics = list(topics or [])
-        self.uncat = Topic('uncat', 'Uncategorized Commands & Topics')
-        self.lookup = {t.id: t for t in self.topics}
-        self.dirty = True
         self.vars = vars or {}
+        self.topics = topics
+
+    def setup(self, shell):
+        shell.ctx.topics = list(self.topics or [])
+        shell.ctx.uncat_topic = Topic('uncat', 'Uncategorized Commands & Topics')
+        shell.ctx.topic_lookup = {t.id: t for t in shell.ctx.topics}
+        shell.ctx.topics_dirty = True
 
     def complete(self, shell, args, prefix):
         #pre = args[-1] if args else prefix
-        if self.dirty:
+        if shell.ctx.topics_dirty:
             self.reload(shell)
 
-        completions = [x.id for x in self.topics if x.id.startswith(prefix) or not prefix]
+        completions = [x.id for x in shell.ctx.topics if x.id.startswith(prefix) or not prefix]
         completions.extend([x for x in shell.commands if x.startswith(prefix) or not prefix])
         completions = sorted(completions)
         
         return completions
 
     def reload(self, shell):
-        self.uncat.commands = []
-        for id in self.lookup:
-            self.lookup[id].commands = []
+        shell.ctx.uncat_topic.commands = []
+        for id in shell.ctx.topic_lookup:
+            shell.ctx.topic_lookup[id].commands = []
 
         for (name, cmd) in shell.commands.items():
             if cmd.topic == '__hidden__':
                 continue
 
             if cmd.topic:
-                if cmd.topic in self.lookup:
-                    self.lookup[cmd.topic].commands.append(cmd)
+                if cmd.topic in shell.ctx.topic_lookup:
+                    shell.ctx.topic_lookup[cmd.topic].commands.append(cmd)
                 else:
                     self.add_topic(Topic(cmd.topic, commands=[cmd]))
             else:
-                self.uncat.commands.append(cmd)
-        self.dirty = False
+                shell.ctx.uncat_topic.commands.append(cmd)
+        shell.ctx.topics_dirty = False
         
-        for topic in self.topics:
+        for topic in shell.ctx.topics:
             if topic.commands:
                 topic.commands = sorted(topic.commands, key=lambda x: x.name)
 
-    def add_topic(self, topic):
-        self.dirty = True
-        self.lookup[topic.id] = topic
-        self.topics.append(topic)
+    def add_topic(self, shell, topic):
+        shell.ctx.topics_dirty = True
+        shell.ctx.topic_lookup[topic.id] = topic
+        shell.ctx.topics.append(topic)
 
     def print_topic_commands(self, shell, topic, title=None, name_col_width=20):
         print(
@@ -135,15 +138,15 @@ class HelpCommand(Command):
 
     def print_topics(self, shell):
         max_name_width = 0
-        for topic in self.topics:
+        for topic in shell.ctx.topics:
             for c in topic.commands:
                 max_name_width = max(len(c.name), max_name_width)
 
-        for c in self.uncat.commands:
+        for c in shell.ctx.uncat_topic.commands:
             max_name_width = max(len(c.name), max_name_width)
 
         addl = []
-        for topic in self.topics:
+        for topic in shell.ctx.topics:
             if topic.content or not topic.commands:
                 addl.append(topic)
 
@@ -151,8 +154,8 @@ class HelpCommand(Command):
                 self.print_topic_commands(shell, topic, name_col_width=max_name_width)
                 print()
 
-        if self.uncat.commands:
-            self.print_topic_commands(shell, self.uncat, name_col_width=max_name_width)
+        if shell.ctx.uncat_topic.commands:
+            self.print_topic_commands(shell, shell.ctx.uncat_topic, name_col_width=max_name_width)
             print()
 
         if addl:
@@ -173,7 +176,7 @@ class HelpCommand(Command):
             print(AnsiCodes.reset)
 
     def print_topic(self, shell, id):
-        if id not in self.lookup:
+        if id not in shell.ctx.topic_lookup:
             if id in shell.commands:
                 cmd = shell.commands[id]
                 print(AnsiCodes.yellow, cmd.usage, AnsiCodes.reset, sep='')
@@ -182,7 +185,7 @@ class HelpCommand(Command):
             self.error(shell, "unknown topic: ", id)
             return -1
 
-        topic = self.lookup[id]
+        topic = shell.ctx.topic_lookup[id]
         if topic.content:
             print(title_str(topic.name or topic.id, shell.width))
             try:
@@ -198,7 +201,7 @@ class HelpCommand(Command):
         return 0
 
     def run(self, shell, args, ctx):
-        if self.dirty:
+        if shell.ctx.topics_dirty:
             self.reload(shell)
 
         try:
