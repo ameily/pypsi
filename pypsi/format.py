@@ -63,7 +63,8 @@ def ansi_center(s, width):
     if count >= width:
         return s
     diff = (width - count) // 2
-    return (' '*diff) + s
+    space = (' '*diff)
+    return space + s + space
 
 def ansi_ljust(s, width):
     '''
