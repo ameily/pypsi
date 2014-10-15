@@ -183,7 +183,7 @@ def highlight(target, term, color='1;32'):
     ret = ''
     while end >= 0:
         ret += target[start:end]
-        ret += '\x1b[{color}m{term}\x1b[1;0m'.format(color=color, term=target[end:end+len(term)])
+        ret += '\x1b[{color}m{term}\x1b[0m'.format(color=color, term=target[end:end+len(term)])
         start = end + len(term)
         end = s.find(t, start)
 
