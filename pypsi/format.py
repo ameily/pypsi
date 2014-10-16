@@ -183,7 +183,7 @@ def highlight(target, term, color='1;32'):
     ret = ''
     while end >= 0:
         ret += target[start:end]
-        ret += '\x1b[{color}m{term}\x1b[1;0m'.format(color=color, term=target[end:end+len(term)])
+        ret += '\x1b[{color}m{term}\x1b[0m'.format(color=color, term=target[end:end+len(term)])
         start = end + len(term)
         end = s.find(t, start)
 
@@ -307,7 +307,7 @@ class Table(object):
         '''
         self.rows.append(args)
         for (col, value) in zip(self.columns, args):
-            col.width = max(col.width, len(str(value)))
+            col.width = max(col.width, ansi_len(str(value)))
         return self
 
     def extend(self, *args):
@@ -335,7 +335,7 @@ class Table(object):
                     pass
                 else:
                     value = str(value)
-                if(len(value) <= col.width):
+                if(ansi_len(value) <= col.width):
                     fp.write(ansi_ljust(value, col.width))
                 else:
                     wrapped_line = [line for line in wrap_line(value, col.width)]
@@ -400,7 +400,7 @@ class Column(object):
         '''
         self.text = text
         self.mode = mode
-        self.width = len(text)
+        self.width = ansi_len(text)
 
 
 class FixedColumnTable(object):
