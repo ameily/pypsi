@@ -91,7 +91,7 @@ class Macro(Command):
 
 MacroCmdUsage = """%(prog)s -l
    or: %(prog)s NAME
-   or: %(prog)s [-d] [-p] NAME"""
+   or: %(prog)s [-d] [-s] NAME"""
 
 
 class MacroCommand(BlockCommand):
