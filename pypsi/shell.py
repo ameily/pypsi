@@ -230,6 +230,9 @@ class Shell(object):
         except RuntimeError as e:
             self.error("command aborted: "+str(e))
             self.errno = -1
+        except KeyboardInterrupt:
+            print()
+            self.errno = -1
         return self.errno
 
     def preprocess(self, raw, origin):
