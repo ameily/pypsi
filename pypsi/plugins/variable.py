@@ -235,6 +235,13 @@ def get_subtokens(token, prefix):
         yield var
 
 
+def safe_date_format(format, dt):
+    try:
+        return dt.strftime(format)
+    except:
+        return "<invalid date time format>"
+
+
 class VariablePlugin(Plugin):
     '''
     Provides variable management and substitution in user input.
@@ -270,9 +277,9 @@ class VariablePlugin(Plugin):
             for k in self.base:
                 shell.ctx.vars[k] = self.base[k]
 
-            shell.ctx.vars.date = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.datefmt or "%x"))
-            shell.ctx.vars.time = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.timefmt or "%X"))
-            shell.ctx.vars.datetime = ManagedVariable(lambda shell: datetime.now().strftime(shell.ctx.vars.datetimefmt or "%c"))
+            shell.ctx.vars.date = ManagedVariable(lambda shell: safe_date_format(shell.ctx.vars.datefmt or "%x", datetime.now()))
+            shell.ctx.vars.time = ManagedVariable(lambda shell: safe_date_format(shell.ctx.vars.timefmt or "%X", datetime.now()))
+            shell.ctx.vars.datetime = ManagedVariable(lambda shell: safe_date_format(shell.ctx.vars.datetimefmt or "%c", datetime.now()))
             shell.ctx.vars.prompt = ManagedVariable(lambda shell: shell.prompt, self.set_prompt)
             shell.ctx.vars.errno = ManagedVariable(lambda shell: str(shell.errno))
         return 0
