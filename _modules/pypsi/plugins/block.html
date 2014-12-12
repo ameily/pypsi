@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pypsi.plugins.block &mdash; pypsi 0.1 documentation</title>
+    <title>pypsi.plugins.block &mdash; pypsi 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/pypsi.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '0.1',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="pypsi 0.1 documentation" href="../../../index.html" />
+    <link rel="top" title="pypsi 1.1 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">pypsi 0.1 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">pypsi 1.1 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -132,7 +132,6 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">BlockPlugin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">preprocess</span><span class="o">=</span><span class="n">preprocess</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">end_cmd</span> <span class="o">=</span> <span class="n">end_cmd</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">block</span> <span class="o">=</span> <span class="bp">None</span>
 
 <div class="viewcode-block" id="BlockPlugin.setup"><a class="viewcode-back" href="../../../pypsi.plugins.html#pypsi.plugins.block.BlockPlugin.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -141,15 +140,17 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="s">&#39;block&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="p">:</span>
             <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">block</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">if</span> <span class="s">&#39;recording_block&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="p">:</span>
+            <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">recording_block</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="k">return</span> <span class="mi">0</span>
 </div>
     <span class="k">def</span> <span class="nf">on_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">block</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">recording_block</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_cmd</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">end_block</span><span class="p">(</span><span class="n">shell</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">block</span><span class="p">[</span><span class="s">&#39;lines&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-            <span class="k">return</span> <span class="s">&#39;&#39;</span>
+                <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">recording_block</span><span class="p">[</span><span class="s">&#39;lines&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">None</span>
         <span class="k">return</span> <span class="n">line</span>
 
 <div class="viewcode-block" id="BlockPlugin.begin_block"><a class="viewcode-back" href="../../../pypsi.plugins.html#pypsi.plugins.block.BlockPlugin.begin_block">[docs]</a>    <span class="k">def</span> <span class="nf">begin_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">cmd</span><span class="p">):</span>
@@ -159,7 +160,7 @@
 <span class="sd">        :param pypsi.shell.Shell shell: the active shell</span>
 <span class="sd">        :param BlockCommand cmd: the active block command</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">block</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">recording_block</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s">&#39;cmd&#39;</span><span class="p">:</span> <span class="n">cmd</span><span class="p">,</span>
             <span class="s">&#39;lines&#39;</span><span class="p">:</span> <span class="p">[]</span>
         <span class="p">}</span>
@@ -170,11 +171,17 @@
 <span class="sd">        End the block. Calls the active block command&#39;s</span>
 <span class="sd">        :meth:`BlockCommand.end_block` method.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">shell</span><span class="o">.</span><span class="n">prompt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">block</span><span class="p">[</span><span class="s">&#39;cmd&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">old_prompt</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">block</span><span class="p">[</span><span class="s">&#39;cmd&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">end_block</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">block</span><span class="p">[</span><span class="s">&#39;lines&#39;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">block</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="k">return</span> <span class="mi">0</span></div></div>
-</pre></div>
+        <span class="n">shell</span><span class="o">.</span><span class="n">prompt</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">recording_block</span><span class="p">[</span><span class="s">&#39;cmd&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">old_prompt</span>
+        <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">recording_block</span><span class="p">[</span><span class="s">&#39;cmd&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">end_block</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">recording_block</span><span class="p">[</span><span class="s">&#39;lines&#39;</span><span class="p">])</span>
+        <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">recording_block</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="mi">0</span>
+</div>
+    <span class="k">def</span> <span class="nf">on_input_canceled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">recording_block</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">recording_block</span><span class="p">[</span><span class="s">&#39;cmd&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cancel_block</span><span class="p">(</span><span class="n">shell</span><span class="p">)</span>
+            <span class="n">shell</span><span class="o">.</span><span class="n">prompt</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">recording_block</span><span class="p">[</span><span class="s">&#39;cmd&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">old_prompt</span>
+            <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">recording_block</span> <span class="o">=</span> <span class="bp">None</span>
+</pre></div></div>
 
           </div>
         </div>
@@ -207,13 +214,13 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">pypsi 0.1 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">pypsi 1.1 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2014, Adam Meily.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>

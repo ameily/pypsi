@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>3. Pypsi Builtin Commands &mdash; pypsi 0.1 documentation</title>
+    <title>2. Pypsi Builtin Commands &mdash; pypsi 1.1 documentation</title>
     
     <link rel="stylesheet" href="_static/pypsi.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,9 +23,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="pypsi 0.1 documentation" href="index.html" />
-    <link rel="next" title="4. Pypsi Builtin Plugins" href="pypsi.plugins.html" />
-    <link rel="prev" title="2. Pypsi Shell" href="pypsi.shell.html" /> 
+    <link rel="top" title="pypsi 1.1 documentation" href="index.html" />
+    <link rel="next" title="3. Pypsi Builtin Plugins" href="pypsi.plugins.html" />
+    <link rel="prev" title="1. Overview" href="pypsi.html" /> 
   </head>
   <body>
     <div class="related">
@@ -38,12 +38,12 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="pypsi.plugins.html" title="4. Pypsi Builtin Plugins"
+          <a href="pypsi.plugins.html" title="3. Pypsi Builtin Plugins"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="pypsi.shell.html" title="2. Pypsi Shell"
+          <a href="pypsi.html" title="1. Overview"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">pypsi 0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pypsi 1.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -53,7 +53,7 @@
           <div class="body">
             
   <div class="section" id="pypsi-builtin-commands">
-<h1>3. Pypsi Builtin Commands<a class="headerlink" href="#pypsi-builtin-commands" title="Permalink to this headline">¶</a></h1>
+<h1>2. Pypsi Builtin Commands<a class="headerlink" href="#pypsi-builtin-commands" title="Permalink to this headline">¶</a></h1>
 <p>Pypsi ships with several commands that would be useful for any shell.</p>
 <div class="toctree-wrapper compound">
 <ul class="simple">
@@ -61,28 +61,28 @@
 </div>
 <dl class="class">
 <dt id="pypsi.commands.echo.EchoCommand">
-<em class="property">class </em><tt class="descclassname">pypsi.commands.echo.</tt><tt class="descname">EchoCommand</tt><big>(</big><em>name='echo'</em>, <em>topic='shell'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/commands/echo.html#EchoCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.commands.echo.EchoCommand" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">pypsi.commands.echo.</tt><tt class="descname">EchoCommand</tt><big>(</big><em>name='echo'</em>, <em>topic='shell'</em>, <em>brief='print a line of text'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/commands/echo.html#EchoCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.commands.echo.EchoCommand" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="pypsi.base.html#pypsi.base.Command" title="pypsi.base.Command"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.base.Command</span></tt></a></p>
 <p>Prints text to the screen.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="pypsi.commands.exit.ExitCommand">
-<em class="property">class </em><tt class="descclassname">pypsi.commands.exit.</tt><tt class="descname">ExitCommand</tt><big>(</big><em>name='exit'</em>, <em>topic='shell'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/commands/exit.html#ExitCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.commands.exit.ExitCommand" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">pypsi.commands.exit.</tt><tt class="descname">ExitCommand</tt><big>(</big><em>name='exit'</em>, <em>topic='shell'</em>, <em>brief='exit the shell'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/commands/exit.html#ExitCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.commands.exit.ExitCommand" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="pypsi.base.html#pypsi.base.Command" title="pypsi.base.Command"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.base.Command</span></tt></a></p>
 <p>Exit the active shell.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="pypsi.commands.help.HelpCommand">
-<em class="property">class </em><tt class="descclassname">pypsi.commands.help.</tt><tt class="descname">HelpCommand</tt><big>(</big><em>name='help'</em>, <em>topic='shell'</em>, <em>topics=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/commands/help.html#HelpCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.commands.help.HelpCommand" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">pypsi.commands.help.</tt><tt class="descname">HelpCommand</tt><big>(</big><em>name='help'</em>, <em>topic='shell'</em>, <em>brief='print information on a topic or command'</em>, <em>topics=None</em>, <em>vars=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/commands/help.html#HelpCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.commands.help.HelpCommand" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="pypsi.base.html#pypsi.base.Command" title="pypsi.base.Command"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.base.Command</span></tt></a></p>
 <p>Provides access to manpage-esque topics and command usage information.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="pypsi.commands.include.IncludeCommand">
-<em class="property">class </em><tt class="descclassname">pypsi.commands.include.</tt><tt class="descname">IncludeCommand</tt><big>(</big><em>name='include'</em>, <em>topic='shell'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/commands/include.html#IncludeCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.commands.include.IncludeCommand" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">pypsi.commands.include.</tt><tt class="descname">IncludeCommand</tt><big>(</big><em>name='include'</em>, <em>topic='shell'</em>, <em>brief='execute a script file'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/commands/include.html#IncludeCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.commands.include.IncludeCommand" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="pypsi.base.html#pypsi.base.Command" title="pypsi.base.Command"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.base.Command</span></tt></a></p>
 <p>Execute a script file. This entails reading each line of the given file and
 processing it as if it were typed into the shell.</p>
@@ -90,7 +90,7 @@ processing it as if it were typed into the shell.</p>
 
 <dl class="class">
 <dt id="pypsi.commands.macro.MacroCommand">
-<em class="property">class </em><tt class="descclassname">pypsi.commands.macro.</tt><tt class="descname">MacroCommand</tt><big>(</big><em>name='macro'</em>, <em>topic='shell'</em>, <em>macros={}</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/commands/macro.html#MacroCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.commands.macro.MacroCommand" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">pypsi.commands.macro.</tt><tt class="descname">MacroCommand</tt><big>(</big><em>name='macro'</em>, <em>topic='shell'</em>, <em>brief='manage registered macros'</em>, <em>macros=None</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/commands/macro.html#MacroCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.commands.macro.MacroCommand" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="pypsi.plugins.html#pypsi.plugins.block.BlockCommand" title="pypsi.plugins.block.BlockCommand"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.plugins.block.BlockCommand</span></tt></a></p>
 <p>Record and execute command macros. Macros can consist of one or more
 command statements. Macros are comparable to Bash functions. Once a macro
@@ -101,7 +101,7 @@ of a <tt class="xref py py-class docutils literal"><span class="pre">Macro</span
 
 <dl class="class">
 <dt id="pypsi.commands.system.SystemCommand">
-<em class="property">class </em><tt class="descclassname">pypsi.commands.system.</tt><tt class="descname">SystemCommand</tt><big>(</big><em>name='system'</em>, <em>topic='shell'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/commands/system.html#SystemCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.commands.system.SystemCommand" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">pypsi.commands.system.</tt><tt class="descname">SystemCommand</tt><big>(</big><em>name='system'</em>, <em>topic='shell'</em>, <em>use_shell=False</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/commands/system.html#SystemCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.commands.system.SystemCommand" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="pypsi.base.html#pypsi.base.Command" title="pypsi.base.Command"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.base.Command</span></tt></a></p>
 <p>Execute a command on the parent shell. This command can be used as the
 shell&#8217;s fallback command.</p>
@@ -115,9 +115,9 @@ shell&#8217;s fallback command.</p>
 
 <dl class="class">
 <dt id="pypsi.commands.xargs.XArgsCommand">
-<em class="property">class </em><tt class="descclassname">pypsi.commands.xargs.</tt><tt class="descname">XArgsCommand</tt><big>(</big><em>name='xargs'</em>, <em>topic='shell'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/commands/xargs.html#XArgsCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.commands.xargs.XArgsCommand" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">pypsi.commands.xargs.</tt><tt class="descname">XArgsCommand</tt><big>(</big><em>name='xargs'</em>, <em>topic='shell'</em>, <em>brief='build and execute command lines from stdin'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/commands/xargs.html#XArgsCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.commands.xargs.XArgsCommand" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="pypsi.base.html#pypsi.base.Command" title="pypsi.base.Command"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.base.Command</span></tt></a></p>
-<p>Execute a command for each line of input from <a class="reference external" href="http://docs.python.org/3.3/library/sys.html#sys.stdin" title="(in Python v3.3)"><tt class="xref py py-data docutils literal"><span class="pre">sys.stdin</span></tt></a>.</p>
+<p>Execute a command for each line of input from <a class="reference external" href="http://docs.python.org/3.3/library/sys.html#sys.stdin" title="(in Python v3.4)"><tt class="xref py py-data docutils literal"><span class="pre">sys.stdin</span></tt></a>.</p>
 </dd></dl>
 
 </div>
@@ -129,11 +129,11 @@ shell&#8217;s fallback command.</p>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="pypsi.shell.html"
-                        title="previous chapter">2. Pypsi Shell</a></p>
+  <p class="topless"><a href="pypsi.html"
+                        title="previous chapter">1. Overview</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="pypsi.plugins.html"
-                        title="next chapter">4. Pypsi Builtin Plugins</a></p>
+                        title="next chapter">3. Pypsi Builtin Plugins</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/pypsi.commands.txt"
@@ -166,17 +166,17 @@ shell&#8217;s fallback command.</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="pypsi.plugins.html" title="4. Pypsi Builtin Plugins"
+          <a href="pypsi.plugins.html" title="3. Pypsi Builtin Plugins"
              >next</a> |</li>
         <li class="right" >
-          <a href="pypsi.shell.html" title="2. Pypsi Shell"
+          <a href="pypsi.html" title="1. Overview"
              >previous</a> |</li>
-        <li><a href="index.html">pypsi 0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pypsi 1.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2014, Adam Meily.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>

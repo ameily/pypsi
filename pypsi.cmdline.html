@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>6. pypsi.cmdline - User input processing &mdash; pypsi 0.1 documentation</title>
+    <title>5. pypsi.cmdline - User input processing &mdash; pypsi 1.1 documentation</title>
     
     <link rel="stylesheet" href="_static/pypsi.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,9 +23,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="pypsi 0.1 documentation" href="index.html" />
-    <link rel="next" title="7. pypsi.namespace - Arbitrary attribute storage classes" href="pypsi.namespace.html" />
-    <link rel="prev" title="5. pypsi.base - Base classes for pluggable features" href="pypsi.base.html" /> 
+    <link rel="top" title="pypsi 1.1 documentation" href="index.html" />
+    <link rel="next" title="6. pypsi.namespace - Arbitrary attribute storage classes" href="pypsi.namespace.html" />
+    <link rel="prev" title="4. pypsi.base - Base classes for pluggable features" href="pypsi.base.html" /> 
   </head>
   <body>
     <div class="related">
@@ -38,12 +38,12 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="pypsi.namespace.html" title="7. pypsi.namespace - Arbitrary attribute storage classes"
+          <a href="pypsi.namespace.html" title="6. pypsi.namespace - Arbitrary attribute storage classes"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="pypsi.base.html" title="5. pypsi.base - Base classes for pluggable features"
+          <a href="pypsi.base.html" title="4. pypsi.base - Base classes for pluggable features"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">pypsi 0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pypsi 1.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -53,18 +53,18 @@
           <div class="body">
             
   <div class="section" id="pypsi-cmdline-user-input-processing">
-<h1>6. pypsi.cmdline - User input processing<a class="headerlink" href="#pypsi-cmdline-user-input-processing" title="Permalink to this headline">¶</a></h1>
+<h1>5. pypsi.cmdline - User input processing<a class="headerlink" href="#pypsi-cmdline-user-input-processing" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul class="simple">
 </ul>
 </div>
 <span class="target" id="module-pypsi.cmdline"></span><p>Classes used for parsing user input.</p>
 <div class="section" id="commands-and-expressions">
-<h2>6.1. Commands and expressions<a class="headerlink" href="#commands-and-expressions" title="Permalink to this headline">¶</a></h2>
+<h2>5.1. Commands and expressions<a class="headerlink" href="#commands-and-expressions" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pypsi.cmdline.Expression">
 <em class="property">class </em><tt class="descclassname">pypsi.cmdline.</tt><tt class="descname">Expression</tt><big>(</big><em>operand</em>, <em>operator</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/pypsi/cmdline.html#Expression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.cmdline.Expression" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
 <p>Holds a string-based expression in the form of <tt class="docutils literal"><span class="pre">operand</span> <span class="pre">operator</span> <span class="pre">value</span></tt>.
 This class makes parsing expressions that may be in a single string or a
 list of strings. For example, the <tt class="xref py py-class docutils literal"><span class="pre">pypsi.plugins.VarCommand</span></tt> command
@@ -85,7 +85,7 @@ would be created, regardless of how the input lines are tokenized:</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.3)"><em>list</em></a>) &#8211; arguments</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.4)"><em>list</em></a>) &#8211; arguments</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a tuple of <tt class="docutils literal"><span class="pre">(remaining,</span> <span class="pre">expression)</span></tt>, where <tt class="docutils literal"><span class="pre">remaining</span></tt> is
 the list of remaining string arguments of <tt class="docutils literal"><span class="pre">args</span></tt> after parsing has
@@ -101,51 +101,51 @@ completed, and <tt class="docutils literal"><span class="pre">expression</span><
 <dl class="class">
 <dt id="pypsi.cmdline.CommandParams">
 <em class="property">class </em><tt class="descclassname">pypsi.cmdline.</tt><tt class="descname">CommandParams</tt><big>(</big><em>name</em>, <em>args=None</em>, <em>stdout_path=None</em>, <em>stdout_mode='w'</em>, <em>stderr_path=None</em>, <em>stdin_path=None</em><big>)</big><a class="reference internal" href="_modules/pypsi/cmdline.html#CommandParams"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.cmdline.CommandParams" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
 <p>Wrapper around a called command&#8217;s parameters and information.</p>
 <dl class="attribute">
 <dt id="pypsi.cmdline.CommandParams.args">
 <tt class="descname">args</tt><em class="property"> = None</em><a class="headerlink" href="#pypsi.cmdline.CommandParams.args" title="Permalink to this definition">¶</a></dt>
-<dd><p>(<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.3)"><tt class="xref py py-class docutils literal"><span class="pre">list</span></tt></a>) list of <cite>str</cite> arguments passed in by the user</p>
+<dd><p>(<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">list</span></tt></a>) list of <cite>str</cite> arguments passed in by the user</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="pypsi.cmdline.CommandParams.name">
 <tt class="descname">name</tt><em class="property"> = None</em><a class="headerlink" href="#pypsi.cmdline.CommandParams.name" title="Permalink to this definition">¶</a></dt>
-<dd><p>(<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><tt class="xref py py-class docutils literal"><span class="pre">str</span></tt></a>) name of the command</p>
+<dd><p>(<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">str</span></tt></a>) name of the command</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="pypsi.cmdline.CommandParams.stderr_path">
 <tt class="descname">stderr_path</tt><em class="property"> = None</em><a class="headerlink" href="#pypsi.cmdline.CommandParams.stderr_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>(<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><tt class="xref py py-class docutils literal"><span class="pre">str</span></tt></a>) path to <cite>stderr</cite> if redirecting to a file</p>
+<dd><p>(<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">str</span></tt></a>) path to <cite>stderr</cite> if redirecting to a file</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="pypsi.cmdline.CommandParams.stdin_path">
 <tt class="descname">stdin_path</tt><em class="property"> = None</em><a class="headerlink" href="#pypsi.cmdline.CommandParams.stdin_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>(<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><tt class="xref py py-class docutils literal"><span class="pre">str</span></tt></a>) path to <cite>stdin</cite> if redirecting from a file</p>
+<dd><p>(<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">str</span></tt></a>) path to <cite>stdin</cite> if redirecting from a file</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="pypsi.cmdline.CommandParams.stdout_mode">
 <tt class="descname">stdout_mode</tt><em class="property"> = None</em><a class="headerlink" href="#pypsi.cmdline.CommandParams.stdout_mode" title="Permalink to this definition">¶</a></dt>
-<dd><p>(<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><tt class="xref py py-class docutils literal"><span class="pre">str</span></tt></a>) mode to pass to <cite>open()</cite> when opening the <cite>stdout</cite> redirection file</p>
+<dd><p>(<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">str</span></tt></a>) mode to pass to <cite>open()</cite> when opening the <cite>stdout</cite> redirection file</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="pypsi.cmdline.CommandParams.stdout_path">
 <tt class="descname">stdout_path</tt><em class="property"> = None</em><a class="headerlink" href="#pypsi.cmdline.CommandParams.stdout_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>(<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><tt class="xref py py-class docutils literal"><span class="pre">str</span></tt></a>) path to <cite>stdout</cite> if redirecting to a file</p>
+<dd><p>(<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">str</span></tt></a>) path to <cite>stdout</cite> if redirecting to a file</p>
 </dd></dl>
 
 </dd></dl>
 
 </div>
 <div class="section" id="tokens">
-<h2>6.2. Tokens<a class="headerlink" href="#tokens" title="Permalink to this headline">¶</a></h2>
+<h2>5.2. Tokens<a class="headerlink" href="#tokens" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="constants">
-<h3>6.2.1. Constants<a class="headerlink" href="#constants" title="Permalink to this headline">¶</a></h3>
+<h3>5.2.1. Constants<a class="headerlink" href="#constants" title="Permalink to this headline">¶</a></h3>
 <p>These constants are returned by each token&#8217;s <cite>add_char()</cite> function to determine
 where tokens begin, end, and what they contain.</p>
 <dl class="data">
@@ -168,17 +168,17 @@ where tokens begin, end, and what they contain.</p>
 
 </div>
 <div class="section" id="classes">
-<h3>6.2.2. Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h3>
+<h3>5.2.2. Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="pypsi.cmdline.Token">
 <em class="property">class </em><tt class="descclassname">pypsi.cmdline.</tt><tt class="descname">Token</tt><big>(</big><em>index</em><big>)</big><a class="reference internal" href="_modules/pypsi/cmdline.html#Token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.cmdline.Token" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
 <p>Base class for all tokens.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>index</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.3)"><em>int</em></a>) &#8211; the starting index of this token</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>index</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; the starting index of this token</td>
 </tr>
 </tbody>
 </table>
@@ -197,7 +197,7 @@ where tokens begin, end, and what they contain.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>c</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; the current character</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>c</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the current character</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns int:</th><td class="field-body">TokenEnd or TokenContinue</td>
 </tr>
@@ -218,8 +218,8 @@ escaped whitespace characters.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>c</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; the current string or character</li>
-<li><strong>quote</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; the surrounding quotes, <cite>None</cite> if there isn&#8217;t any</li>
+<li><strong>c</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the current string or character</li>
+<li><strong>quote</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the surrounding quotes, <cite>None</cite> if there isn&#8217;t any</li>
 </ul>
 </td>
 </tr>
@@ -233,7 +233,7 @@ escaped whitespace characters.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>c</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; the current character</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>c</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the current character</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns int:</th><td class="field-body">TokenEnd or TokenContinue</td>
 </tr>
@@ -255,7 +255,7 @@ same operator character. For example, the string &#8220;&gt;&gt;&#8221; would be
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>operator</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; the operator</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>operator</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the operator</td>
 </tr>
 </tbody>
 </table>
@@ -267,7 +267,7 @@ same operator character. For example, the string &#8220;&gt;&gt;&#8221; would be
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>c</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; the current character</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>c</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the current character</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns int:</th><td class="field-body">TokenEnd or TokenContinue</td>
 </tr>
@@ -286,11 +286,11 @@ same operator character. For example, the string &#8220;&gt;&gt;&#8221; would be
 </div>
 </div>
 <div class="section" id="statements">
-<h2>6.3. Statements<a class="headerlink" href="#statements" title="Permalink to this headline">¶</a></h2>
+<h2>5.3. Statements<a class="headerlink" href="#statements" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pypsi.cmdline.StatementContext">
 <em class="property">class </em><tt class="descclassname">pypsi.cmdline.</tt><tt class="descname">StatementContext</tt><a class="reference internal" href="_modules/pypsi/cmdline.html#StatementContext"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.cmdline.StatementContext" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
 <p>Holds information about the current context of a statement. This class wraps
 the handling of I/O redirection and piping by setting the system streams
 to their appropriate values for a given command, and resetting them once the
@@ -329,7 +329,7 @@ command parameters.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>cmd</strong> (<a class="reference internal" href="pypsi.base.html#pypsi.base.Command" title="pypsi.base.Command"><em>pypsi.base.Command</em></a>) &#8211; the current command</li>
 <li><strong>params</strong> (<em>CommandParams</em>) &#8211; the command parameters</li>
-<li><strong>op</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; the current chaining operator</li>
+<li><strong>op</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the current chaining operator</li>
 </ul>
 </td>
 </tr>
@@ -341,21 +341,9 @@ command parameters.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="pypsi.cmdline.StatementContext.backup_stderr">
-<tt class="descname">backup_stderr</tt><em class="property"> = None</em><a class="headerlink" href="#pypsi.cmdline.StatementContext.backup_stderr" title="Permalink to this definition">¶</a></dt>
-<dd><p>the <a class="reference external" href="http://docs.python.org/3.3/library/sys.html#sys.stderr" title="(in Python v3.3)"><tt class="xref py py-data docutils literal"><span class="pre">sys.stderr</span></tt></a> when the statement context was created</p>
-</dd></dl>
-
-<dl class="attribute">
 <dt id="pypsi.cmdline.StatementContext.backup_stdin">
 <tt class="descname">backup_stdin</tt><em class="property"> = None</em><a class="headerlink" href="#pypsi.cmdline.StatementContext.backup_stdin" title="Permalink to this definition">¶</a></dt>
-<dd><p>the <a class="reference external" href="http://docs.python.org/3.3/library/sys.html#sys.stdin" title="(in Python v3.3)"><tt class="xref py py-data docutils literal"><span class="pre">sys.stdin</span></tt></a> when the statement context was created</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="pypsi.cmdline.StatementContext.backup_stdout">
-<tt class="descname">backup_stdout</tt><em class="property"> = None</em><a class="headerlink" href="#pypsi.cmdline.StatementContext.backup_stdout" title="Permalink to this definition">¶</a></dt>
-<dd><p>the <a class="reference external" href="http://docs.python.org/3.3/library/sys.html#sys.stdout" title="(in Python v3.3)"><tt class="xref py py-data docutils literal"><span class="pre">sys.stdout</span></tt></a> when the statement context was created</p>
+<dd><p>the <a class="reference external" href="http://docs.python.org/3.3/library/sys.html#sys.stdin" title="(in Python v3.4)"><tt class="xref py py-data docutils literal"><span class="pre">sys.stdin</span></tt></a> when the statement context was created</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -381,7 +369,7 @@ command parameters.</p>
 <dl class="class">
 <dt id="pypsi.cmdline.StatementParser">
 <em class="property">class </em><tt class="descclassname">pypsi.cmdline.</tt><tt class="descname">StatementParser</tt><a class="reference internal" href="_modules/pypsi/cmdline.html#StatementParser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.cmdline.StatementParser" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
 <p>Parses raw user input into a <a class="reference internal" href="#pypsi.cmdline.Statement" title="pypsi.cmdline.Statement"><tt class="xref py py-class docutils literal"><span class="pre">Statement</span></tt></a>.</p>
 <dl class="method">
 <dt id="pypsi.cmdline.StatementParser.build">
@@ -394,7 +382,7 @@ and then <a class="reference internal" href="#pypsi.cmdline.StatementParser.cond
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>tokens</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.3)"><em>list</em></a>) &#8211; list of <a class="reference internal" href="#pypsi.cmdline.Token" title="pypsi.cmdline.Token"><tt class="xref py py-class docutils literal"><span class="pre">Token</span></tt></a> objects to process as a
+<li><strong>tokens</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.4)"><em>list</em></a>) &#8211; list of <a class="reference internal" href="#pypsi.cmdline.Token" title="pypsi.cmdline.Token"><tt class="xref py py-class docutils literal"><span class="pre">Token</span></tt></a> objects to process as a
 statement</li>
 <li><strong>ctx</strong> (<a class="reference internal" href="#pypsi.cmdline.StatementContext" title="pypsi.cmdline.StatementContext"><em>pypsi.cmdline.StatementContext</em></a>) &#8211; the current statement context to use</li>
 </ul>
@@ -418,7 +406,7 @@ statement</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tokens</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.3)"><em>list</em></a>) &#8211; <a class="reference internal" href="#pypsi.cmdline.Token" title="pypsi.cmdline.Token"><tt class="xref py py-class docutils literal"><span class="pre">Token</span></tt></a> objects to remove escape sequences</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tokens</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.4)"><em>list</em></a>) &#8211; <a class="reference internal" href="#pypsi.cmdline.Token" title="pypsi.cmdline.Token"><tt class="xref py py-class docutils literal"><span class="pre">Token</span></tt></a> objects to remove escape sequences</td>
 </tr>
 </tbody>
 </table>
@@ -435,7 +423,7 @@ statement</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tokens</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.3)"><em>list</em></a>) &#8211; <a class="reference internal" href="#pypsi.cmdline.Token" title="pypsi.cmdline.Token"><tt class="xref py py-class docutils literal"><span class="pre">Token</span></tt></a> objects to condense</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tokens</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.4)"><em>list</em></a>) &#8211; <a class="reference internal" href="#pypsi.cmdline.Token" title="pypsi.cmdline.Token"><tt class="xref py py-class docutils literal"><span class="pre">Token</span></tt></a> objects to condense</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">condensed <cite>list</cite> of <a class="reference internal" href="#pypsi.cmdline.Token" title="pypsi.cmdline.Token"><tt class="xref py py-class docutils literal"><span class="pre">Token</span></tt></a> objects</td>
 </tr>
@@ -452,8 +440,8 @@ statement</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>index</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.3)"><em>int</em></a>) &#8211; current character index</li>
-<li><strong>c</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; current character</li>
+<li><strong>index</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; current character index</li>
+<li><strong>c</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; current character</li>
 </ul>
 </td>
 </tr>
@@ -475,7 +463,7 @@ statement</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>line</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; the line of text to tokenize</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>line</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the line of text to tokenize</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><cite>list</cite> of <a class="reference internal" href="#pypsi.cmdline.Token" title="pypsi.cmdline.Token"><tt class="xref py py-class docutils literal"><span class="pre">Token</span></tt></a> objects</td>
 </tr>
@@ -488,7 +476,7 @@ statement</li>
 <dl class="class">
 <dt id="pypsi.cmdline.Statement">
 <em class="property">class </em><tt class="descclassname">pypsi.cmdline.</tt><tt class="descname">Statement</tt><big>(</big><em>ctx</em><big>)</big><a class="reference internal" href="_modules/pypsi/cmdline.html#Statement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.cmdline.Statement" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
 <p>A parsed statement to be executed. A statement may contain the following:</p>
 <ul class="simple">
 <li>Commands and arguments</li>
@@ -580,7 +568,7 @@ commands to execute</td>
 <dl class="attribute">
 <dt id="pypsi.cmdline.Statement.op">
 <tt class="descname">op</tt><a class="reference internal" href="_modules/pypsi/cmdline.html#Statement.op"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.cmdline.Statement.op" title="Permalink to this definition">¶</a></dt>
-<dd><p>(<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><tt class="xref py py-class docutils literal"><span class="pre">str</span></tt></a>) the current chaining operator</p>
+<dd><p>(<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">str</span></tt></a>) the current chaining operator</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -592,19 +580,19 @@ commands to execute</td>
 </dd></dl>
 
 <div class="section" id="exceptions">
-<h3>6.3.1. Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h3>
+<h3>5.3.1. Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="pypsi.cmdline.StatementSyntaxError">
 <em class="property">class </em><tt class="descclassname">pypsi.cmdline.</tt><tt class="descname">StatementSyntaxError</tt><big>(</big><em>message</em>, <em>index</em><big>)</big><a class="reference internal" href="_modules/pypsi/cmdline.html#StatementSyntaxError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.cmdline.StatementSyntaxError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.Exception</span></tt></p>
 <p>Invalid statement syntax was entered.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>message</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; error message</li>
-<li><strong>index</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.3)"><em>int</em></a>) &#8211; index in the statement that caused the error</li>
+<li><strong>message</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; error message</li>
+<li><strong>index</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; index in the statement that caused the error</li>
 </ul>
 </td>
 </tr>
@@ -624,15 +612,15 @@ commands to execute</td>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">6. pypsi.cmdline - User input processing</a><ul>
-<li><a class="reference internal" href="#commands-and-expressions">6.1. Commands and expressions</a></li>
-<li><a class="reference internal" href="#tokens">6.2. Tokens</a><ul>
-<li><a class="reference internal" href="#constants">6.2.1. Constants</a></li>
-<li><a class="reference internal" href="#classes">6.2.2. Classes</a></li>
+<li><a class="reference internal" href="#">5. pypsi.cmdline - User input processing</a><ul>
+<li><a class="reference internal" href="#commands-and-expressions">5.1. Commands and expressions</a></li>
+<li><a class="reference internal" href="#tokens">5.2. Tokens</a><ul>
+<li><a class="reference internal" href="#constants">5.2.1. Constants</a></li>
+<li><a class="reference internal" href="#classes">5.2.2. Classes</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#statements">6.3. Statements</a><ul>
-<li><a class="reference internal" href="#exceptions">6.3.1. Exceptions</a></li>
+<li><a class="reference internal" href="#statements">5.3. Statements</a><ul>
+<li><a class="reference internal" href="#exceptions">5.3.1. Exceptions</a></li>
 </ul>
 </li>
 </ul>
@@ -641,10 +629,10 @@ commands to execute</td>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="pypsi.base.html"
-                        title="previous chapter">5. pypsi.base - Base classes for pluggable features</a></p>
+                        title="previous chapter">4. pypsi.base - Base classes for pluggable features</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="pypsi.namespace.html"
-                        title="next chapter">7. pypsi.namespace - Arbitrary attribute storage classes</a></p>
+                        title="next chapter">6. pypsi.namespace - Arbitrary attribute storage classes</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/pypsi.cmdline.txt"
@@ -677,17 +665,17 @@ commands to execute</td>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="pypsi.namespace.html" title="7. pypsi.namespace - Arbitrary attribute storage classes"
+          <a href="pypsi.namespace.html" title="6. pypsi.namespace - Arbitrary attribute storage classes"
              >next</a> |</li>
         <li class="right" >
-          <a href="pypsi.base.html" title="5. pypsi.base - Base classes for pluggable features"
+          <a href="pypsi.base.html" title="4. pypsi.base - Base classes for pluggable features"
              >previous</a> |</li>
-        <li><a href="index.html">pypsi 0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pypsi 1.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2014, Adam Meily.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>

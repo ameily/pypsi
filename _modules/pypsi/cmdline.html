@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pypsi.cmdline &mdash; pypsi 0.1 documentation</title>
+    <title>pypsi.cmdline &mdash; pypsi 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../_static/pypsi.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.1',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="pypsi 0.1 documentation" href="../../index.html" />
+    <link rel="top" title="pypsi 1.1 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">pypsi 0.1 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">pypsi 1.1 documentation</a> &raquo;</li>
           <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -91,7 +91,7 @@
 <span class="n">TokenEnd</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="sd">&#39;&#39;&#39;The token does not accept the current character.&#39;&#39;&#39;</span>
 
-<span class="n">TokenTerm</span> <span class="o">=</span> <span class="mi">2</span> 
+<span class="n">TokenTerm</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="sd">&#39;&#39;&#39;The token is finished and the current character should not be processed again.&#39;&#39;&#39;</span>
 
 
@@ -122,7 +122,7 @@
 <span class="sd">        :param str c: the current character</span>
 <span class="sd">        :returns int: TokenEnd or TokenContinue</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">,</span><span class="s">&#39;</span><span class="se">\xa0</span><span class="s">&#39;</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">TokenContinue</span>
         <span class="k">return</span> <span class="n">TokenEnd</span>
 </div>
@@ -145,9 +145,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">quote</span> <span class="o">=</span> <span class="n">quote</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">escape</span> <span class="o">=</span> <span class="bp">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">open_quote</span> <span class="o">=</span> <span class="bp">False</span>
 
         <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s">&quot;&#39;&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">quote</span> <span class="o">=</span> <span class="n">c</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">open_quote</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="k">elif</span> <span class="n">c</span> <span class="o">==</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">escape</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="k">else</span><span class="p">:</span>
@@ -166,6 +168,8 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">quote</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">quote</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="n">c</span>
+                <span class="k">elif</span> <span class="n">c</span> <span class="o">==</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">&#39;</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">&#39;</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="n">c</span>
@@ -177,6 +181,7 @@
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">quote</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">quote</span><span class="p">:</span>
                 <span class="n">ret</span> <span class="o">=</span> <span class="n">TokenTerm</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">open_quote</span> <span class="o">=</span> <span class="bp">False</span>
             <span class="k">elif</span> <span class="n">c</span> <span class="o">==</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">&#39;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">escape</span> <span class="o">=</span> <span class="bp">True</span>
             <span class="k">else</span><span class="p">:</span>
@@ -184,7 +189,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">&#39;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">escape</span> <span class="o">=</span> <span class="bp">True</span>
-            <span class="k">elif</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">&#39;;&#39;</span><span class="p">,</span> <span class="s">&#39;|&#39;</span><span class="p">,</span> <span class="s">&#39;&amp;&#39;</span><span class="p">,</span> <span class="s">&#39;&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;&lt;&#39;</span><span class="p">):</span>
+            <span class="k">elif</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">&#39;;&#39;</span><span class="p">,</span> <span class="s">&#39;|&#39;</span><span class="p">,</span> <span class="s">&#39;&amp;&#39;</span><span class="p">,</span> <span class="s">&#39;&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;&lt;&#39;</span><span class="p">,</span><span class="s">&#39;</span><span class="se">\xa0</span><span class="s">&#39;</span><span class="p">):</span>
                 <span class="n">ret</span> <span class="o">=</span> <span class="n">TokenEnd</span>
             <span class="k">elif</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s">&quot;&#39;&quot;</span><span class="p">):</span>
                 <span class="n">ret</span> <span class="o">=</span> <span class="n">TokenEnd</span>
@@ -193,6 +198,12 @@
 
         <span class="k">return</span> <span class="n">ret</span>
 </div>
+    <span class="k">def</span> <span class="nf">combine_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="n">token</span><span class="o">.</span><span class="n">text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">open_quote</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">open_quote</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">escape</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">escape</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quote</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">quote</span>
+
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s">&quot;String( {quote}{text}{quote} )&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="n">quote</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">quote</span> <span class="ow">or</span> <span class="s">&#39;&#39;</span><span class="p">,</span>
@@ -233,6 +244,12 @@
 </div>
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="s">&quot;OperatorToken( {} )&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">operator</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">is_chain_operator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">operator</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;&lt;&#39;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">return</span> <span class="bp">True</span>
 
 </div>
 <div class="viewcode-block" id="Statement"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.Statement">[docs]</a><span class="k">class</span> <span class="nc">Statement</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -314,6 +331,13 @@
         <span class="p">)</span>
 
 </div></div>
+<span class="k">class</span> <span class="nc">IoRedirectionError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+
+
 <div class="viewcode-block" id="StatementContext"><a class="viewcode-back" href="../../pypsi.cmdline.html#pypsi.cmdline.StatementContext">[docs]</a><span class="k">class</span> <span class="nc">StatementContext</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Holds information about the current context of a statement. This class wraps</span>
@@ -325,11 +349,10 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pipe</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="c">#: the :data:`sys.stdout` when the statement context was created</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">backup_stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="bp">None</span>
 
-        <span class="c">#: the :data:`sys.stderr` when the statement context was created</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">backup_stderr</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stdout_state</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stderr_state</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
 
         <span class="c">#: the :data:`sys.stdin` when the statement context was created</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">backup_stdin</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span>
@@ -352,8 +375,8 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">ctx</span> <span class="o">=</span> <span class="n">StatementContext</span><span class="p">()</span>
         <span class="n">ctx</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">backup_stdin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdin</span>
-        <span class="n">ctx</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">backup_stdout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span>
-        <span class="n">ctx</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">backup_stderr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span>
+        <span class="c">#ctx.stdout = ctx.backup_stdout = self.stdout</span>
+        <span class="c">#ctx.stderr = ctx.backup_stderr = self.stderr</span>
         <span class="n">ctx</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="n">ctx</span><span class="o">.</span><span class="n">pipe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pipe</span>
         <span class="k">return</span> <span class="n">ctx</span>
@@ -368,26 +391,45 @@
 <span class="sd">        :param str op: the current chaining operator</span>
 <span class="sd">        :returns: 0 on success, -1 on error</span>
 <span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">prev_pipe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prev</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">prev</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;|&#39;</span>
         <span class="k">if</span> <span class="n">params</span><span class="o">.</span><span class="n">stdin_path</span><span class="p">:</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">stdin_path</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">prev</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">prev</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;|&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span>
+            <span class="c"># Setup stdin if redirecting from a file</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">stdin_path</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">IoRedirectionError</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">stdin_path</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">prev_pipe</span><span class="p">:</span>
+            <span class="c"># Previous command&#39;s stdout needs to be piped to current command&#39;s</span>
+            <span class="c"># stdin</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">stream</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="c"># Reset stdin</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backup_stdin</span>
 
         <span class="k">if</span> <span class="n">params</span><span class="o">.</span><span class="n">stdout_path</span><span class="p">:</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">stdout_path</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">stdout_mode</span><span class="p">)</span>
+            <span class="c"># Setup stdout if redirecting to a file</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">redirect</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">stdout_path</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">stdout_mode</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">IoRedirectionError</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">stdout_path</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
         <span class="k">elif</span> <span class="n">op</span> <span class="o">==</span> <span class="s">&#39;|&#39;</span><span class="p">:</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
+            <span class="c"># Next command is a pipe, redirect stdout to a buffer</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">redirect</span><span class="p">(</span><span class="n">StringIO</span><span class="p">())</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backup_stdout</span>
+            <span class="c"># Reset stdout</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">was_pipe</span><span class="o">=</span><span class="n">prev_pipe</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">params</span><span class="o">.</span><span class="n">stderr_path</span><span class="p">:</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">stderr_path</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+            <span class="c"># Setup stderr if redirecting to a file</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">redirect</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">stderr_path</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">IoRedirectionError</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">stderr_path</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backup_stderr</span>
+            <span class="c"># Reset stderr</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">prev</span> <span class="o">=</span> <span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
 
@@ -398,16 +440,13 @@
 <span class="sd">        Resets the system streams to their original values. This should be</span>
 <span class="sd">        called after a statement has finished executing.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backup_stdout</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backup_stdout</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backup_stderr</span><span class="p">:</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backup_stderr</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stdout_state</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stderr_state</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdin</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backup_stdin</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stdin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backup_stdin</span>
+
         <span class="k">return</span> <span class="mi">0</span>
 
 </div></div>
@@ -483,7 +522,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">pass</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">,</span><span class="s">&#39;</span><span class="se">\xa0</span><span class="s">&#39;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">WhitespaceToken</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;&gt;&#39;</span><span class="p">,</span> <span class="s">&#39;&lt;&#39;</span><span class="p">,</span> <span class="s">&#39;|&#39;</span><span class="p">,</span> <span class="s">&#39;&amp;&#39;</span><span class="p">,</span> <span class="s">&#39;;&#39;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">OperatorToken</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
@@ -550,7 +589,8 @@
         <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">StringToken</span><span class="p">):</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prev</span><span class="p">,</span> <span class="n">StringToken</span><span class="p">):</span>
-                    <span class="n">prev</span><span class="o">.</span><span class="n">text</span> <span class="o">+=</span> <span class="n">token</span><span class="o">.</span><span class="n">text</span>
+                    <span class="c">#prev.text += token.text</span>
+                    <span class="n">prev</span><span class="o">.</span><span class="n">combine_token</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
                     <span class="n">token</span> <span class="o">=</span> <span class="n">prev</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">condensed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
@@ -655,7 +695,7 @@
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prev</span><span class="p">,</span> <span class="n">StringToken</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">prev</span><span class="p">,</span> <span class="n">OperatorToken</span><span class="p">)</span> <span class="ow">and</span> <span class="n">prev</span><span class="o">.</span><span class="n">operator</span> <span class="o">==</span> <span class="s">&#39;;&#39;</span><span class="p">):</span>
             <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">prev</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">StatementSyntaxError</span><span class="p">(</span>
                 <span class="n">message</span><span class="o">=</span><span class="s">&quot;unexpected token: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">prev</span><span class="p">)),</span>
                 <span class="n">index</span><span class="o">=</span><span class="n">prev</span><span class="o">.</span><span class="n">index</span>
@@ -731,6 +771,8 @@
                     <span class="k">elif</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">Expression</span><span class="o">.</span><span class="n">Whitespace</span><span class="p">:</span>
                         <span class="k">if</span> <span class="n">operator</span><span class="p">:</span>
                             <span class="n">state</span> <span class="o">=</span> <span class="s">&#39;value&#39;</span>
+                            <span class="n">done</span> <span class="o">=</span> <span class="bp">True</span>
+                            <span class="n">value</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">state</span> <span class="o">=</span> <span class="s">&#39;value&#39;</span>
                         <span class="n">value</span> <span class="o">=</span> <span class="n">c</span>
@@ -748,8 +790,10 @@
             <span class="k">if</span> <span class="n">done</span><span class="p">:</span>
                 <span class="k">break</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="n">operator</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="p">(</span><span class="n">remaining</span><span class="p">,</span> <span class="n">Expression</span><span class="p">(</span><span class="n">operand</span><span class="p">,</span> <span class="n">operator</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
 </pre></div></div></div>
@@ -785,13 +829,13 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">pypsi 0.1 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">pypsi 1.1 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2014, Adam Meily.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>

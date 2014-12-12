@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>4. Pypsi Builtin Plugins &mdash; pypsi 0.1 documentation</title>
+    <title>3. Pypsi Builtin Plugins &mdash; pypsi 1.1 documentation</title>
     
     <link rel="stylesheet" href="_static/pypsi.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,9 +23,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="pypsi 0.1 documentation" href="index.html" />
-    <link rel="next" title="5. pypsi.base - Base classes for pluggable features" href="pypsi.base.html" />
-    <link rel="prev" title="3. Pypsi Builtin Commands" href="pypsi.commands.html" /> 
+    <link rel="top" title="pypsi 1.1 documentation" href="index.html" />
+    <link rel="next" title="4. pypsi.base - Base classes for pluggable features" href="pypsi.base.html" />
+    <link rel="prev" title="2. Pypsi Builtin Commands" href="pypsi.commands.html" /> 
   </head>
   <body>
     <div class="related">
@@ -38,12 +38,12 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="pypsi.base.html" title="5. pypsi.base - Base classes for pluggable features"
+          <a href="pypsi.base.html" title="4. pypsi.base - Base classes for pluggable features"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="pypsi.commands.html" title="3. Pypsi Builtin Commands"
+          <a href="pypsi.commands.html" title="2. Pypsi Builtin Commands"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">pypsi 0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pypsi 1.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -53,14 +53,14 @@
           <div class="body">
             
   <div class="section" id="pypsi-builtin-plugins">
-<h1>4. Pypsi Builtin Plugins<a class="headerlink" href="#pypsi-builtin-plugins" title="Permalink to this headline">¶</a></h1>
+<h1>3. Pypsi Builtin Plugins<a class="headerlink" href="#pypsi-builtin-plugins" title="Permalink to this headline">¶</a></h1>
 <p>Pypsi ships with several useful plugins that enhance the shell.</p>
 <div class="toctree-wrapper compound">
 <ul class="simple">
 </ul>
 </div>
 <span class="target" id="module-pypsi.plugins"></span><div class="section" id="module-pypsi.plugins.block">
-<span id="block-commands"></span><h2>4.1. Block Commands<a class="headerlink" href="#module-pypsi.plugins.block" title="Permalink to this headline">¶</a></h2>
+<span id="block-commands"></span><h2>3.1. Block Commands<a class="headerlink" href="#module-pypsi.plugins.block" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pypsi.plugins.block.BlockPlugin">
 <em class="property">class </em><tt class="descclassname">pypsi.plugins.block.</tt><tt class="descname">BlockPlugin</tt><big>(</big><em>end_cmd='end'</em>, <em>preprocess=20</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/plugins/block.html#BlockPlugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.plugins.block.BlockPlugin" title="Permalink to this definition">¶</a></dt>
@@ -76,7 +76,7 @@ is called.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>end_cmd</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; the statement that will terminate the active block</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>end_cmd</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the statement that will terminate the active block</td>
 </tr>
 </tbody>
 </table>
@@ -89,7 +89,7 @@ is called.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>shell</strong> (<a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell" title="pypsi.shell.Shell"><em>pypsi.shell.Shell</em></a>) &#8211; the active shell</li>
+<li><strong>shell</strong> (<em>pypsi.shell.Shell</em>) &#8211; the active shell</li>
 <li><strong>cmd</strong> (<em>BlockCommand</em>) &#8211; the active block command</li>
 </ul>
 </td>
@@ -141,8 +141,8 @@ method.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>shell</strong> (<a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell" title="pypsi.shell.Shell"><em>pypsi.shell.Shell</em></a>) &#8211; the active shell</li>
-<li><strong>lines</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.3)"><em>list</em></a>) &#8211; the list of unprocessed statements (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><tt class="xref py py-class docutils literal"><span class="pre">str</span></tt></a>)</li>
+<li><strong>shell</strong> (<em>pypsi.shell.Shell</em>) &#8211; the active shell</li>
+<li><strong>lines</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.4)"><em>list</em></a>) &#8211; the list of unprocessed statements (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">str</span></tt></a>)</li>
 </ul>
 </td>
 </tr>
@@ -154,7 +154,7 @@ method.</p>
 
 </div>
 <div class="section" id="escape-sequence-processors">
-<h2>4.2. Escape Sequence Processors<a class="headerlink" href="#escape-sequence-processors" title="Permalink to this headline">¶</a></h2>
+<h2>3.2. Escape Sequence Processors<a class="headerlink" href="#escape-sequence-processors" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pypsi.plugins.hexcode.HexCodePlugin">
 <em class="property">class </em><tt class="descclassname">pypsi.plugins.hexcode.</tt><tt class="descname">HexCodePlugin</tt><big>(</big><em>preprocess=5</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/plugins/hexcode.html#HexCodePlugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.plugins.hexcode.HexCodePlugin" title="Permalink to this definition">¶</a></dt>
@@ -185,7 +185,7 @@ the statement:</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>prompt</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; the prompt when recording a multiline statement</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>prompt</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the prompt when recording a multiline statement</td>
 </tr>
 </tbody>
 </table>
@@ -193,7 +193,7 @@ the statement:</p>
 
 </div>
 <div class="section" id="module-pypsi.plugins.history">
-<span id="shell-history"></span><h2>4.3. Shell History<a class="headerlink" href="#module-pypsi.plugins.history" title="Permalink to this headline">¶</a></h2>
+<span id="shell-history"></span><h2>3.3. Shell History<a class="headerlink" href="#module-pypsi.plugins.history" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pypsi.plugins.history.HistoryPlugin">
 <em class="property">class </em><tt class="descclassname">pypsi.plugins.history.</tt><tt class="descname">HistoryPlugin</tt><big>(</big><em>history_cmd='history'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/plugins/history.html#HistoryPlugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.plugins.history.HistoryPlugin" title="Permalink to this definition">¶</a></dt>
@@ -211,7 +211,7 @@ attribute.</p>
 
 <dl class="class">
 <dt id="pypsi.plugins.history.HistoryCommand">
-<em class="property">class </em><tt class="descclassname">pypsi.plugins.history.</tt><tt class="descname">HistoryCommand</tt><big>(</big><em>name='history'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/plugins/history.html#HistoryCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.plugins.history.HistoryCommand" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">pypsi.plugins.history.</tt><tt class="descname">HistoryCommand</tt><big>(</big><em>name='history'</em>, <em>brief='manage shell history'</em>, <em>topic='shell'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/plugins/history.html#HistoryCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.plugins.history.HistoryCommand" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="pypsi.base.html#pypsi.base.Command" title="pypsi.base.Command"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.base.Command</span></tt></a></p>
 <p>Interact with and manage the shell&#8217;s history.</p>
 </dd></dl>
@@ -219,19 +219,19 @@ attribute.</p>
 <dl class="class">
 <dt id="pypsi.plugins.history.History">
 <em class="property">class </em><tt class="descclassname">pypsi.plugins.history.</tt><tt class="descname">History</tt><a class="reference internal" href="_modules/pypsi/plugins/history.html#History"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.plugins.history.History" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
-<p>Wraps the <a class="reference external" href="http://docs.python.org/3.3/library/readline.html#module-readline" title="(in Python v3.3)"><tt class="xref py py-mod docutils literal"><span class="pre">readline</span></tt></a> module. Provides the following abilities:</p>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<p>Wraps the <a class="reference external" href="http://docs.python.org/3.3/library/readline.html#module-readline" title="(in Python v3.4)"><tt class="xref py py-mod docutils literal"><span class="pre">readline</span></tt></a> module. Provides the following abilities:</p>
 <ul class="simple">
 <li>Accessing and manipulating history items via <a class="reference internal" href="#pypsi.plugins.history.History.__getitem__" title="pypsi.plugins.history.History.__getitem__"><tt class="xref py py-meth docutils literal"><span class="pre">__getitem__()</span></tt></a>, 
 <a class="reference internal" href="#pypsi.plugins.history.History.__setitem__" title="pypsi.plugins.history.History.__setitem__"><tt class="xref py py-meth docutils literal"><span class="pre">__setitem__()</span></tt></a>, <a class="reference internal" href="#pypsi.plugins.history.History.__delitem__" title="pypsi.plugins.history.History.__delitem__"><tt class="xref py py-meth docutils literal"><span class="pre">__delitem__()</span></tt></a>, and <a class="reference internal" href="#pypsi.plugins.history.History.__iter__" title="pypsi.plugins.history.History.__iter__"><tt class="xref py py-meth docutils literal"><span class="pre">__iter__()</span></tt></a>. Indexes
 must be <tt class="xref py py-class docutils literal"><span class="pre">int</span></tt> and negative indexes are handled and automatically
-normalized before passing them to <a class="reference external" href="http://docs.python.org/3.3/library/readline.html#module-readline" title="(in Python v3.3)"><tt class="xref py py-mod docutils literal"><span class="pre">readline</span></tt></a>. <a class="reference internal" href="#pypsi.plugins.history.History.__getitem__" title="pypsi.plugins.history.History.__getitem__"><tt class="xref py py-meth docutils literal"><span class="pre">__getitem__()</span></tt></a> 
+normalized before passing them to <a class="reference external" href="http://docs.python.org/3.3/library/readline.html#module-readline" title="(in Python v3.4)"><tt class="xref py py-mod docutils literal"><span class="pre">readline</span></tt></a>. <a class="reference internal" href="#pypsi.plugins.history.History.__getitem__" title="pypsi.plugins.history.History.__getitem__"><tt class="xref py py-meth docutils literal"><span class="pre">__getitem__()</span></tt></a> 
 also supports slicing, which also normalizes negative indexes.</li>
 <li>Appending new history items via <a class="reference internal" href="#pypsi.plugins.history.History.append" title="pypsi.plugins.history.History.append"><tt class="xref py py-meth docutils literal"><span class="pre">append()</span></tt></a>.</li>
 <li>Clearing all history items via <a class="reference internal" href="#pypsi.plugins.history.History.clear" title="pypsi.plugins.history.History.clear"><tt class="xref py py-meth docutils literal"><span class="pre">clear()</span></tt></a>.</li>
 </ul>
 <p>Methods that access an index (or slice) will raise an
-<tt class="xref py py-class docutils literal"><span class="pre">IndexError</span></tt> if the index is invalid or out of range of the history.</p>
+<a class="reference external" href="http://docs.python.org/3.3/library/exceptions.html#IndexError" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">IndexError</span></tt></a> if the index is invalid or out of range of the history.</p>
 <dl class="method">
 <dt id="pypsi.plugins.history.History.__delitem__">
 <tt class="descname">__delitem__</tt><big>(</big><em>index</em><big>)</big><a class="reference internal" href="_modules/pypsi/plugins/history.html#History.__delitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.plugins.history.History.__delitem__" title="Permalink to this definition">¶</a></dt>
@@ -269,7 +269,7 @@ also supports slicing, which also normalizes negative indexes.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; event to append</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>event</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; event to append</td>
 </tr>
 </tbody>
 </table>
@@ -290,7 +290,7 @@ Provides a Bash <tt class="docutils literal"><span class="pre">![prefix]</span><
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>prefix</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; the prefix to search for</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>prefix</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the prefix to search for</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns str:</th><td class="field-body">the event, if found, <tt class="xref py py-const docutils literal"><span class="pre">None</span></tt> if no matching event is
 found</td>
@@ -303,10 +303,10 @@ found</td>
 
 </div>
 <div class="section" id="module-pypsi.plugins.variable">
-<span id="variables"></span><h2>4.4. Variables<a class="headerlink" href="#module-pypsi.plugins.variable" title="Permalink to this headline">¶</a></h2>
+<span id="variables"></span><h2>3.4. Variables<a class="headerlink" href="#module-pypsi.plugins.variable" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pypsi.plugins.variable.VariablePlugin">
-<em class="property">class </em><tt class="descclassname">pypsi.plugins.variable.</tt><tt class="descname">VariablePlugin</tt><big>(</big><em>var_cmd='var'</em>, <em>prefix='$'</em>, <em>locals=None</em>, <em>case_sensitive=True</em>, <em>preprocess=10</em>, <em>postprocess=90</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/plugins/variable.html#VariablePlugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.plugins.variable.VariablePlugin" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">pypsi.plugins.variable.</tt><tt class="descname">VariablePlugin</tt><big>(</big><em>var_cmd='var'</em>, <em>prefix='$'</em>, <em>locals=None</em>, <em>env=True</em>, <em>topic='shell'</em>, <em>case_sensitive=True</em>, <em>preprocess=10</em>, <em>postprocess=90</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/plugins/variable.html#VariablePlugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.plugins.variable.VariablePlugin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="pypsi.base.html#pypsi.base.Plugin" title="pypsi.base.Plugin"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.base.Plugin</span></tt></a></p>
 <p>Provides variable management and substitution in user input.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -314,10 +314,10 @@ found</td>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>var_cmd</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; the name of the variable command</li>
-<li><strong>prefix</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; the prefix that all variables need to start with</li>
-<li><strong>locals</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#dict" title="(in Python v3.3)"><em>dict</em></a>) &#8211; the base variables to register initially</li>
-<li><strong>case_sensitive</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#bool" title="(in Python v3.3)"><em>bool</em></a>) &#8211; whether variable names are case sensitive</li>
+<li><strong>var_cmd</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the name of the variable command</li>
+<li><strong>prefix</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the prefix that all variables need to start with</li>
+<li><strong>locals</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#dict" title="(in Python v3.4)"><em>dict</em></a>) &#8211; the base variables to register initially</li>
+<li><strong>case_sensitive</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a>) &#8211; whether variable names are case sensitive</li>
 </ul>
 </td>
 </tr>
@@ -334,7 +334,7 @@ found</td>
 
 <dl class="class">
 <dt id="pypsi.plugins.variable.VariableCommand">
-<em class="property">class </em><tt class="descclassname">pypsi.plugins.variable.</tt><tt class="descname">VariableCommand</tt><big>(</big><em>name='var'</em>, <em>usage='usage: var name = valuen   or: var -ln   or: var -d namenManage local variables.'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/plugins/variable.html#VariableCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.plugins.variable.VariableCommand" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">pypsi.plugins.variable.</tt><tt class="descname">VariableCommand</tt><big>(</big><em>name='var'</em>, <em>brief='manage local variables'</em>, <em>topic='shell'</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/plugins/variable.html#VariableCommand"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.plugins.variable.VariableCommand" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="pypsi.base.html#pypsi.base.Command" title="pypsi.base.Command"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.base.Command</span></tt></a></p>
 <p>Manage variables.</p>
 </dd></dl>
@@ -342,22 +342,22 @@ found</td>
 <dl class="class">
 <dt id="pypsi.plugins.variable.ManagedVariable">
 <em class="property">class </em><tt class="descclassname">pypsi.plugins.variable.</tt><tt class="descname">ManagedVariable</tt><big>(</big><em>getter</em>, <em>setter=None</em><big>)</big><a class="reference internal" href="_modules/pypsi/plugins/variable.html#ManagedVariable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.plugins.variable.ManagedVariable" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
 <p>Represents a variable that is managed by the shell. Managed variables have 
 get and set hooks that allow for input validation or read-only enforcement.
 Each variable needs a <tt class="docutils literal"><span class="pre">getter</span></tt>, which is called to retrieve the value, and
 possibly a <tt class="docutils literal"><span class="pre">setter</span></tt>, which is called to set the value. If the setter is
 <tt class="xref py py-const docutils literal"><span class="pre">None</span></tt>, the variable is read-only. The setter must accept two
-arguments when it is called: the active <a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell" title="pypsi.shell.Shell"><tt class="xref py py-class docutils literal"><span class="pre">Shell</span></tt></a>
-instance, and the <a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><tt class="xref py py-class docutils literal"><span class="pre">str</span></tt></a> value.</p>
+arguments when it is called: the active <tt class="xref py py-class docutils literal"><span class="pre">Shell</span></tt>
+instance, and the <a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">str</span></tt></a> value.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>getter</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#callable" title="(in Python v3.3)"><em>callable</em></a>) &#8211; the callable to call when retrieving the
+<li><strong>getter</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#callable" title="(in Python v3.4)"><em>callable</em></a>) &#8211; the callable to call when retrieving the
 variable&#8217;s value (must return a value)</li>
-<li><strong>setter</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#callable" title="(in Python v3.3)"><em>callable</em></a>) &#8211; the callable to call when setting the variable&#8217;s
+<li><strong>setter</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#callable" title="(in Python v3.4)"><em>callable</em></a>) &#8211; the callable to call when setting the variable&#8217;s
 value</li>
 </ul>
 </td>
@@ -368,20 +368,20 @@ value</li>
 
 </div>
 <div class="section" id="module-pypsi.plugins.cmd">
-<span id="cmd"></span><h2>4.5. Cmd<a class="headerlink" href="#module-pypsi.plugins.cmd" title="Permalink to this headline">¶</a></h2>
+<span id="cmd"></span><h2>3.5. Cmd<a class="headerlink" href="#module-pypsi.plugins.cmd" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pypsi.plugins.cmd.CmdPlugin">
 <em class="property">class </em><tt class="descclassname">pypsi.plugins.cmd.</tt><tt class="descname">CmdPlugin</tt><big>(</big><em>cmd_args=0</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/plugins/cmd.html#CmdPlugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.plugins.cmd.CmdPlugin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="pypsi.base.html#pypsi.base.Plugin" title="pypsi.base.Plugin"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.base.Plugin</span></tt></a></p>
-<p>Wraps existing <a class="reference external" href="http://docs.python.org/3.3/library/cmd.html#module-cmd" title="(in Python v3.3)"><tt class="xref py py-mod docutils literal"><span class="pre">cmd</span></tt></a>-based shell commands to be pypsi compatible. This
-plugin is designed to ease the transition from the <a class="reference external" href="http://docs.python.org/3.3/library/cmd.html#module-cmd" title="(in Python v3.3)"><tt class="xref py py-mod docutils literal"><span class="pre">cmd</span></tt></a> module and
+<p>Wraps existing <a class="reference external" href="http://docs.python.org/3.3/library/cmd.html#module-cmd" title="(in Python v3.4)"><tt class="xref py py-mod docutils literal"><span class="pre">cmd</span></tt></a>-based shell commands to be pypsi compatible. This
+plugin is designed to ease the transition from the <a class="reference external" href="http://docs.python.org/3.3/library/cmd.html#module-cmd" title="(in Python v3.4)"><tt class="xref py py-mod docutils literal"><span class="pre">cmd</span></tt></a> module and
 isn&#8217;t intended to be used in production. Tab completion is not supported for
-<a class="reference external" href="http://docs.python.org/3.3/library/cmd.html#module-cmd" title="(in Python v3.3)"><tt class="xref py py-mod docutils literal"><span class="pre">cmd</span></tt></a> commands.</p>
+<a class="reference external" href="http://docs.python.org/3.3/library/cmd.html#module-cmd" title="(in Python v3.4)"><tt class="xref py py-mod docutils literal"><span class="pre">cmd</span></tt></a> commands.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cmd_args</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.3)"><em>int</em></a>) &#8211; determines how the command arguments are passed to            the wrapped command (see <a class="reference internal" href="#pypsi.plugins.cmd.CmdArgsList" title="pypsi.plugins.cmd.CmdArgsList"><tt class="xref py py-data docutils literal"><span class="pre">CmdArgsList</span></tt></a> and             <a class="reference internal" href="#pypsi.plugins.cmd.CmdArgsString" title="pypsi.plugins.cmd.CmdArgsString"><tt class="xref py py-data docutils literal"><span class="pre">CmdArgsString</span></tt></a>)</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cmd_args</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; determines how the command arguments are passed to            the wrapped command (see <a class="reference internal" href="#pypsi.plugins.cmd.CmdArgsList" title="pypsi.plugins.cmd.CmdArgsList"><tt class="xref py py-data docutils literal"><span class="pre">CmdArgsList</span></tt></a> and             <a class="reference internal" href="#pypsi.plugins.cmd.CmdArgsString" title="pypsi.plugins.cmd.CmdArgsString"><tt class="xref py py-data docutils literal"><span class="pre">CmdArgsString</span></tt></a>)</td>
 </tr>
 </tbody>
 </table>
@@ -405,8 +405,8 @@ the commands to the shell.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>func</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#callable" title="(in Python v3.3)"><em>callable</em></a>) &#8211; the function to wrap</li>
-<li><strong>cmd_args</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.3)"><em>int</em></a>) &#8211; whether to keep the arguments as a list or convert
+<li><strong>func</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#callable" title="(in Python v3.4)"><em>callable</em></a>) &#8211; the function to wrap</li>
+<li><strong>cmd_args</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; whether to keep the arguments as a list or convert
 them to a single string</li>
 </ul>
 </td>
@@ -438,22 +438,22 @@ them to a single string</li>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">4. Pypsi Builtin Plugins</a><ul>
-<li><a class="reference internal" href="#module-pypsi.plugins.block">4.1. Block Commands</a></li>
-<li><a class="reference internal" href="#escape-sequence-processors">4.2. Escape Sequence Processors</a></li>
-<li><a class="reference internal" href="#module-pypsi.plugins.history">4.3. Shell History</a></li>
-<li><a class="reference internal" href="#module-pypsi.plugins.variable">4.4. Variables</a></li>
-<li><a class="reference internal" href="#module-pypsi.plugins.cmd">4.5. Cmd</a></li>
+<li><a class="reference internal" href="#">3. Pypsi Builtin Plugins</a><ul>
+<li><a class="reference internal" href="#module-pypsi.plugins.block">3.1. Block Commands</a></li>
+<li><a class="reference internal" href="#escape-sequence-processors">3.2. Escape Sequence Processors</a></li>
+<li><a class="reference internal" href="#module-pypsi.plugins.history">3.3. Shell History</a></li>
+<li><a class="reference internal" href="#module-pypsi.plugins.variable">3.4. Variables</a></li>
+<li><a class="reference internal" href="#module-pypsi.plugins.cmd">3.5. Cmd</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="pypsi.commands.html"
-                        title="previous chapter">3. Pypsi Builtin Commands</a></p>
+                        title="previous chapter">2. Pypsi Builtin Commands</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="pypsi.base.html"
-                        title="next chapter">5. pypsi.base - Base classes for pluggable features</a></p>
+                        title="next chapter">4. pypsi.base - Base classes for pluggable features</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/pypsi.plugins.txt"
@@ -486,17 +486,17 @@ them to a single string</li>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="pypsi.base.html" title="5. pypsi.base - Base classes for pluggable features"
+          <a href="pypsi.base.html" title="4. pypsi.base - Base classes for pluggable features"
              >next</a> |</li>
         <li class="right" >
-          <a href="pypsi.commands.html" title="3. Pypsi Builtin Commands"
+          <a href="pypsi.commands.html" title="2. Pypsi Builtin Commands"
              >previous</a> |</li>
-        <li><a href="index.html">pypsi 0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pypsi 1.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2014, Adam Meily.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>

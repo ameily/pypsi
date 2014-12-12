@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>7. pypsi.namespace - Arbitrary attribute storage classes &mdash; pypsi 0.1 documentation</title>
+    <title>6. pypsi.namespace - Arbitrary attribute storage classes &mdash; pypsi 1.1 documentation</title>
     
     <link rel="stylesheet" href="_static/pypsi.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,9 +23,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="pypsi 0.1 documentation" href="index.html" />
-    <link rel="next" title="8. pypsi.stream - File streams" href="pypsi.stream.html" />
-    <link rel="prev" title="6. pypsi.cmdline - User input processing" href="pypsi.cmdline.html" /> 
+    <link rel="top" title="pypsi 1.1 documentation" href="index.html" />
+    <link rel="next" title="7. pypsi.format - Stream output formatting" href="pypsi.format.html" />
+    <link rel="prev" title="5. pypsi.cmdline - User input processing" href="pypsi.cmdline.html" /> 
   </head>
   <body>
     <div class="related">
@@ -38,12 +38,12 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="pypsi.stream.html" title="8. pypsi.stream - File streams"
+          <a href="pypsi.format.html" title="7. pypsi.format - Stream output formatting"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="pypsi.cmdline.html" title="6. pypsi.cmdline - User input processing"
+          <a href="pypsi.cmdline.html" title="5. pypsi.cmdline - User input processing"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">pypsi 0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pypsi 1.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -53,7 +53,7 @@
           <div class="body">
             
   <div class="section" id="pypsi-namespace-arbitrary-attribute-storage-classes">
-<h1>7. pypsi.namespace - Arbitrary attribute storage classes<a class="headerlink" href="#pypsi-namespace-arbitrary-attribute-storage-classes" title="Permalink to this headline">¶</a></h1>
+<h1>6. pypsi.namespace - Arbitrary attribute storage classes<a class="headerlink" href="#pypsi-namespace-arbitrary-attribute-storage-classes" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul class="simple">
 </ul>
@@ -62,9 +62,9 @@
 <dl class="class">
 <dt id="pypsi.namespace.Namespace">
 <em class="property">class </em><tt class="descclassname">pypsi.namespace.</tt><tt class="descname">Namespace</tt><big>(</big><em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/namespace.html#Namespace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.namespace.Namespace" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
 <p>Provides dynamic attribute storage and retrieval. Attributes can be
-retrieved and set by either attribute accesses or <a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#dict" title="(in Python v3.3)"><tt class="xref py py-class docutils literal"><span class="pre">dict</span></tt></a> key access.
+retrieved and set by either attribute accesses or <a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#dict" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">dict</span></tt></a> key access.
 The following two lines of code retrieve and set the same attribute:</p>
 <ul class="simple">
 <li><tt class="docutils literal"><span class="pre">namespace.my_attr</span> <span class="pre">=</span> <span class="pre">1</span></tt></li>
@@ -103,17 +103,17 @@ The following two lines of code retrieve and set the same attribute:</p>
 <dl class="class">
 <dt id="pypsi.namespace.ScopedNamespace">
 <em class="property">class </em><tt class="descclassname">pypsi.namespace.</tt><tt class="descname">ScopedNamespace</tt><big>(</big><em>name</em>, <em>case_sensitive=True</em>, <em>locals=None</em>, <em>parent=None</em><big>)</big><a class="reference internal" href="_modules/pypsi/namespace.html#ScopedNamespace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.namespace.ScopedNamespace" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
 <p>Provides a configurable namespace for arbitrary attribute access.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>name</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; the root name</li>
-<li><strong>case_sensitive</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#bool" title="(in Python v3.3)"><em>bool</em></a>) &#8211; determines whether attribute names are case
+<li><strong>name</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the root name</li>
+<li><strong>case_sensitive</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a>) &#8211; determines whether attribute names are case
 sensitive</li>
-<li><strong>locals</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#dict" title="(in Python v3.3)"><em>dict</em></a>) &#8211; default attributes</li>
+<li><strong>locals</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#dict" title="(in Python v3.4)"><em>dict</em></a>) &#8211; default attributes</li>
 <li><strong>parent</strong> (<em>ScopedNamespace</em>) &#8211; the parent namespace</li>
 </ul>
 </td>
@@ -152,10 +152,10 @@ sensitive</li>
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
   <p class="topless"><a href="pypsi.cmdline.html"
-                        title="previous chapter">6. pypsi.cmdline - User input processing</a></p>
+                        title="previous chapter">5. pypsi.cmdline - User input processing</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="pypsi.stream.html"
-                        title="next chapter">8. pypsi.stream - File streams</a></p>
+  <p class="topless"><a href="pypsi.format.html"
+                        title="next chapter">7. pypsi.format - Stream output formatting</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/pypsi.namespace.txt"
@@ -188,17 +188,17 @@ sensitive</li>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="pypsi.stream.html" title="8. pypsi.stream - File streams"
+          <a href="pypsi.format.html" title="7. pypsi.format - Stream output formatting"
              >next</a> |</li>
         <li class="right" >
-          <a href="pypsi.cmdline.html" title="6. pypsi.cmdline - User input processing"
+          <a href="pypsi.cmdline.html" title="5. pypsi.cmdline - User input processing"
              >previous</a> |</li>
-        <li><a href="index.html">pypsi 0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pypsi 1.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2014, Adam Meily.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>

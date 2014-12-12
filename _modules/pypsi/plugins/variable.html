@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pypsi.plugins.variable &mdash; pypsi 0.1 documentation</title>
+    <title>pypsi.plugins.variable &mdash; pypsi 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/pypsi.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '0.1',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="pypsi 0.1 documentation" href="../../../index.html" />
+    <link rel="top" title="pypsi 1.1 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">pypsi 0.1 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">pypsi 1.1 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -77,10 +77,13 @@
 <span class="c"># SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="c">#</span>
 
-<span class="kn">from</span> <span class="nn">pypsi.base</span> <span class="kn">import</span> <span class="n">Plugin</span><span class="p">,</span> <span class="n">Command</span>
-<span class="kn">from</span> <span class="nn">pypsi.namespace</span> <span class="kn">import</span> <span class="n">ScopedNamespace</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">from</span> <span class="nn">pypsi.base</span> <span class="kn">import</span> <span class="n">Plugin</span><span class="p">,</span> <span class="n">Command</span><span class="p">,</span> <span class="n">PypsiArgParser</span><span class="p">,</span> <span class="n">CommandShortCircuit</span>
+<span class="kn">from</span> <span class="nn">pypsi.namespace</span> <span class="kn">import</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">ScopedNamespace</span>
 <span class="kn">from</span> <span class="nn">pypsi.cmdline</span> <span class="kn">import</span> <span class="n">Token</span><span class="p">,</span> <span class="n">StringToken</span><span class="p">,</span> <span class="n">WhitespaceToken</span><span class="p">,</span> <span class="n">TokenContinue</span><span class="p">,</span> <span class="n">TokenEnd</span><span class="p">,</span> <span class="n">Expression</span>
+<span class="kn">from</span> <span class="nn">pypsi.format</span> <span class="kn">import</span> <span class="n">Table</span><span class="p">,</span> <span class="n">Column</span><span class="p">,</span> <span class="n">obj_str</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 
 <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
@@ -122,89 +125,98 @@
 <span class="sd">    Manage variables.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="n">Usage</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;usage: var name = value</span>
+    <span class="n">Usage</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;var name</span>
+<span class="s">   or: var EXPRESSION</span>
 <span class="s">   or: var -l</span>
-<span class="s">   or: var -d name</span>
-<span class="s">Manage local variables.&quot;&quot;&quot;</span>
+<span class="s">   or: var -d name&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;var&#39;</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="n">Usage</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">VariableCommand</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="n">usage</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;var&#39;</span><span class="p">,</span> <span class="n">brief</span><span class="o">=</span><span class="s">&#39;manage local variables&#39;</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="s">&#39;shell&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parser</span> <span class="o">=</span> <span class="n">PypsiArgParser</span><span class="p">(</span>
+            <span class="n">prog</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">brief</span><span class="p">,</span>
+            <span class="n">usage</span><span class="o">=</span><span class="n">VariableCommand</span><span class="o">.</span><span class="n">Usage</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s">&#39;-l&#39;</span><span class="p">,</span> <span class="s">&#39;--list&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;list variables&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s">&#39;-d&#39;</span><span class="p">,</span> <span class="s">&#39;--delete&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;delete variable&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&#39;VARIABLE&#39;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s">&#39;exp&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&#39;EXPRESSION&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;expression defining variable, in the form of NAME = [VALUE]&#39;</span><span class="p">,</span>
+            <span class="n">nargs</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">REMAINDER</span>
+        <span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">VariableCommand</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">format_help</span><span class="p">(),</span> <span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">,</span>
+            <span class="n">brief</span><span class="o">=</span><span class="n">brief</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">usage_error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&quot;missing required argument&quot;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">CommandShortCircuit</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span>
 
-        <span class="n">count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;-h&#39;</span><span class="p">:</span>
-            <span class="n">shell</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">usage</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="mi">0</span>
-        <span class="k">elif</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;-l&#39;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">count</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&quot;invalid arguments</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
-                <span class="n">shell</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">usage</span><span class="p">)</span>
-                <span class="k">return</span> <span class="mi">1</span>
-
-            <span class="nb">vars</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">col1</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">ns</span><span class="o">.</span><span class="n">list</span><span class="p">:</span>
+            <span class="n">tbl</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span>
+                <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="n">Column</span><span class="p">(</span><span class="s">&quot;Variable&quot;</span><span class="p">),</span> <span class="n">Column</span><span class="p">(</span><span class="s">&quot;Value&quot;</span><span class="p">,</span> <span class="n">Column</span><span class="o">.</span><span class="n">Grow</span><span class="p">)),</span>
+                <span class="n">width</span><span class="o">=</span><span class="n">shell</span><span class="o">.</span><span class="n">width</span><span class="p">,</span>
+                <span class="n">spacing</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s">&#39;_&#39;</span><span class="p">:</span>
+                    <span class="k">continue</span>
                 <span class="n">s</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-                <span class="n">col1</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">col1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
                 <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
                     <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">()</span>
                 <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">ManagedVariable</span><span class="p">):</span>
-                    <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">getter</span><span class="p">(</span><span class="n">shell</span><span class="p">)</span>
-                <span class="nb">vars</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">s</span><span class="p">))</span>
-            <span class="nb">vars</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">vars</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">:</span>
-                <span class="n">shell</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39; &#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">col1</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span> <span class="s">&#39;    &#39;</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
-                <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;-d&#39;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">count</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&quot;invalid arguments</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
-                <span class="n">shell</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">usage</span><span class="p">)</span>
-                <span class="k">return</span> <span class="mi">1</span>
-
-            <span class="n">name</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="p">:</span>
-                <span class="k">del</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-            <span class="k">return</span> <span class="mi">0</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="p">(</span><span class="n">remaining</span><span class="p">,</span> <span class="n">exp</span><span class="p">)</span> <span class="o">=</span> <span class="n">Expression</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">remaining</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">usage_error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&quot;cannot set multiple variables&quot;</span><span class="p">)</span>
-                <span class="k">return</span> <span class="mi">1</span>
-
-            <span class="k">if</span> <span class="n">exp</span><span class="o">.</span><span class="n">operand</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">usage_error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&quot;missing variable name&quot;</span><span class="p">)</span>
-                <span class="k">return</span> <span class="mi">1</span>
-
-            <span class="k">if</span> <span class="n">exp</span><span class="o">.</span><span class="n">operator</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">usage_error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&quot;missing operator&quot;</span><span class="p">)</span>
-                <span class="k">return</span> <span class="mi">1</span>
-
-            <span class="k">if</span> <span class="n">exp</span><span class="o">.</span><span class="n">operator</span> <span class="o">!=</span> <span class="s">&#39;=&#39;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">usage_error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&quot;invalid operator &quot;</span><span class="p">,</span> <span class="n">exp</span><span class="o">.</span><span class="n">operator</span><span class="p">)</span>
-                <span class="k">return</span> <span class="mi">1</span>
-
-            <span class="k">if</span> <span class="n">exp</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-                <span class="c">#self.usage_error(shell, &quot;missing value&quot;)</span>
-                <span class="c">#return 1</span>
-                <span class="n">exp</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
-
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">name</span> <span class="o">=</span> <span class="n">exp</span><span class="o">.</span><span class="n">operand</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="n">exp</span><span class="o">.</span><span class="n">value</span>
-                <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="n">name</span><span class="p">],</span> <span class="n">ManagedVariable</span><span class="p">):</span>
-                    <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">shell</span><span class="p">)</span>
+                <span class="n">tbl</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">obj_str</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+            <span class="n">tbl</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">ns</span><span class="o">.</span><span class="n">delete</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ns</span><span class="o">.</span><span class="n">delete</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="p">:</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="n">ns</span><span class="o">.</span><span class="n">delete</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">ManagedVariable</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&quot;variable is managed and cannot be deleted&quot;</span><span class="p">)</span>
+                    <span class="n">rc</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-            <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&quot;error setting variable &quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="s">&quot;: &quot;</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+                    <span class="k">del</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="n">ns</span><span class="o">.</span><span class="n">delete</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&quot;unknown variable: &quot;</span><span class="p">,</span> <span class="n">ns</span><span class="o">.</span><span class="n">delete</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">ns</span><span class="o">.</span><span class="n">exp</span> <span class="ow">and</span> <span class="s">&#39;=&#39;</span> <span class="ow">in</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+            <span class="p">(</span><span class="n">remainder</span><span class="p">,</span> <span class="n">exp</span><span class="p">)</span> <span class="o">=</span> <span class="n">Expression</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">remainder</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">exp</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&quot;invalid expression&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="n">exp</span><span class="o">.</span><span class="n">operand</span><span class="p">],</span> <span class="n">ManagedVariable</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="n">exp</span><span class="o">.</span><span class="n">operand</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">exp</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&quot;could not set variable: &quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="n">exp</span><span class="o">.</span><span class="n">operand</span><span class="p">]</span> <span class="o">=</span> <span class="n">exp</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">elif</span> <span class="n">ns</span><span class="o">.</span><span class="n">exp</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="p">:</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                    <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+                        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">()</span>
+                    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">ManagedVariable</span><span class="p">):</span>
+                        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">getter</span><span class="p">(</span><span class="n">shell</span><span class="p">)</span>
+                    <span class="k">print</span><span class="p">(</span><span class="n">obj_str</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&quot;unknown variable: &quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="k">return</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&quot;invalid expression&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">usage_error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&quot;missing required EXPRESSION&quot;</span><span class="p">)</span>
+            <span class="n">rc</span> <span class="o">=</span><span class="mi">1</span>
 
-        <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">rc</span>
 
 
 </div>
@@ -272,12 +284,19 @@
         <span class="k">yield</span> <span class="n">var</span>
 
 
+<span class="k">def</span> <span class="nf">safe_date_format</span><span class="p">(</span><span class="n">format</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dt</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">format</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">&quot;&lt;invalid date time format&gt;&quot;</span>
+
+
 <div class="viewcode-block" id="VariablePlugin"><a class="viewcode-back" href="../../../pypsi.plugins.html#pypsi.plugins.variable.VariablePlugin">[docs]</a><span class="k">class</span> <span class="nc">VariablePlugin</span><span class="p">(</span><span class="n">Plugin</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Provides variable management and substitution in user input.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_cmd</span><span class="o">=</span><span class="s">&#39;var&#39;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s">&#39;$&#39;</span><span class="p">,</span> <span class="nb">locals</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_cmd</span><span class="o">=</span><span class="s">&#39;var&#39;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s">&#39;$&#39;</span><span class="p">,</span> <span class="nb">locals</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="s">&#39;shell&#39;</span><span class="p">,</span>
                  <span class="n">case_sensitive</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">preprocess</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">postprocess</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        :param str var_cmd: the name of the variable command</span>
@@ -286,12 +305,15 @@
 <span class="sd">        :param bool case_sensitive: whether variable names are case sensitive</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">VariablePlugin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">preprocess</span><span class="o">=</span><span class="n">preprocess</span><span class="p">,</span> <span class="n">postprocess</span><span class="o">=</span><span class="n">postprocess</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">var_cmd</span> <span class="o">=</span> <span class="n">VariableCommand</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">var_cmd</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">var_cmd</span> <span class="o">=</span> <span class="n">VariableCommand</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">var_cmd</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="n">prefix</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">namespace</span> <span class="o">=</span> <span class="n">ScopedNamespace</span><span class="p">(</span><span class="s">&#39;globals&#39;</span><span class="p">,</span> <span class="n">case_sensitive</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span> <span class="k">if</span> <span class="n">env</span> <span class="k">else</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">case_sensitive</span> <span class="o">=</span> <span class="n">case_sensitive</span>
         <span class="k">if</span> <span class="nb">locals</span><span class="p">:</span>
-            <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">locals</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">namespace</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">locals</span><span class="p">)</span>
+        <span class="c">#cls = Namespace if case_sensitive and False else CaseInsensitiveNamespace</span>
+        <span class="c">#self.namespace = cls(**os.environ)</span>
 
 <div class="viewcode-block" id="VariablePlugin.setup"><a class="viewcode-back" href="../../../pypsi.plugins.html#pypsi.plugins.variable.VariablePlugin.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -300,18 +322,24 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">shell</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">var_cmd</span><span class="p">)</span>
         <span class="k">if</span> <span class="s">&#39;vars&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="p">:</span>
-            <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespace</span>
-            <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="n">ManagedVariable</span><span class="p">(</span><span class="k">lambda</span> <span class="n">shell</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">datefmt</span> <span class="ow">or</span> <span class="s">&quot;</span><span class="si">%x</span><span class="s">&quot;</span><span class="p">))</span>
-            <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">ManagedVariable</span><span class="p">(</span><span class="k">lambda</span> <span class="n">shell</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">timefmt</span> <span class="ow">or</span> <span class="s">&quot;</span><span class="si">%X</span><span class="s">&quot;</span><span class="p">))</span>
-            <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">ManagedVariable</span><span class="p">(</span><span class="k">lambda</span> <span class="n">shell</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">datetimefmt</span> <span class="ow">or</span> <span class="s">&quot;</span><span class="si">%c</span><span class="s">&quot;</span><span class="p">))</span>
-            <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">prompt</span> <span class="o">=</span> <span class="n">ManagedVariable</span><span class="p">(</span><span class="k">lambda</span> <span class="n">shell</span><span class="p">:</span> <span class="n">shell</span><span class="o">.</span><span class="n">prompt</span><span class="p">)</span>
+            <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span> <span class="o">=</span> <span class="n">ScopedNamespace</span><span class="p">(</span><span class="s">&#39;globals&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">case_sensitive</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">:</span>
+                <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+            <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="n">ManagedVariable</span><span class="p">(</span><span class="k">lambda</span> <span class="n">shell</span><span class="p">:</span> <span class="n">safe_date_format</span><span class="p">(</span><span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">datefmt</span> <span class="ow">or</span> <span class="s">&quot;</span><span class="si">%x</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()))</span>
+            <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">ManagedVariable</span><span class="p">(</span><span class="k">lambda</span> <span class="n">shell</span><span class="p">:</span> <span class="n">safe_date_format</span><span class="p">(</span><span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">timefmt</span> <span class="ow">or</span> <span class="s">&quot;</span><span class="si">%X</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()))</span>
+            <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">datetime</span> <span class="o">=</span> <span class="n">ManagedVariable</span><span class="p">(</span><span class="k">lambda</span> <span class="n">shell</span><span class="p">:</span> <span class="n">safe_date_format</span><span class="p">(</span><span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">datetimefmt</span> <span class="ow">or</span> <span class="s">&quot;</span><span class="si">%c</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()))</span>
+            <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">prompt</span> <span class="o">=</span> <span class="n">ManagedVariable</span><span class="p">(</span><span class="k">lambda</span> <span class="n">shell</span><span class="p">:</span> <span class="n">shell</span><span class="o">.</span><span class="n">prompt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_prompt</span><span class="p">)</span>
             <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="o">.</span><span class="n">errno</span> <span class="o">=</span> <span class="n">ManagedVariable</span><span class="p">(</span><span class="k">lambda</span> <span class="n">shell</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">shell</span><span class="o">.</span><span class="n">errno</span><span class="p">))</span>
         <span class="k">return</span> <span class="mi">0</span>
 </div>
+    <span class="k">def</span> <span class="nf">set_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">shell</span><span class="p">,</span><span class="n">value</span><span class="p">):</span>
+        <span class="n">shell</span><span class="o">.</span><span class="n">prompt</span> <span class="o">=</span> <span class="n">value</span>
+
     <span class="k">def</span> <span class="nf">expand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">vart</span><span class="p">):</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">vart</span><span class="o">.</span><span class="n">var</span>
-        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespace</span><span class="p">:</span>
-            <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">namespace</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
             <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">s</span><span class="p">()</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">ManagedVariable</span><span class="p">):</span>
@@ -332,21 +360,17 @@
                     <span class="k">continue</span>
 
                 <span class="n">expanded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">subt</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">token</span><span class="o">.</span><span class="n">quote</span><span class="p">:</span>
-                    <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">StringToken</span><span class="p">(</span><span class="n">subt</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">expanded</span><span class="p">,</span> <span class="n">token</span><span class="o">.</span><span class="n">quote</span><span class="p">))</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">ws</span> <span class="o">=</span> <span class="bp">False</span>
-                    <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">expanded</span><span class="o">.</span><span class="n">split</span><span class="p">():</span>
-                        <span class="k">if</span> <span class="n">ws</span><span class="p">:</span>
-                            <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">WhitespaceToken</span><span class="p">(</span><span class="n">subt</span><span class="o">.</span><span class="n">index</span><span class="p">))</span>
-                        <span class="k">else</span><span class="p">:</span>
-                            <span class="n">ws</span> <span class="o">=</span> <span class="bp">True</span>
-                        <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">StringToken</span><span class="p">(</span><span class="n">subt</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">part</span><span class="p">))</span>
+                <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">                if token.quote:</span>
+<span class="sd">                    ret.append(StringToken(subt.index, expanded, token.quote))</span>
+<span class="sd">                else:</span>
+<span class="sd">                    ws = False</span>
+<span class="sd">                    for part in shell.parser.tokenize(expanded):</span>
+<span class="sd">                        ret.append(part)</span>
+<span class="sd">                &#39;&#39;&#39;</span>
+                <span class="n">ret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">StringToken</span><span class="p">(</span><span class="n">subt</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">expanded</span><span class="p">,</span> <span class="s">&#39;&quot;&#39;</span><span class="p">))</span>
 
-        <span class="k">return</span> <span class="n">ret</span>
-
-    <span class="k">def</span> <span class="nf">on_statement_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">):</span>
-        <span class="k">pass</span></div>
+        <span class="k">return</span> <span class="n">ret</span></div>
 </pre></div>
 
           </div>
@@ -380,13 +404,13 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">pypsi 0.1 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">pypsi 1.1 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2014, Adam Meily.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>

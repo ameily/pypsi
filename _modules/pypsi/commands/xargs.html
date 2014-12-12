@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pypsi.commands.xargs &mdash; pypsi 0.1 documentation</title>
+    <title>pypsi.commands.xargs &mdash; pypsi 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/pypsi.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '0.1',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="pypsi 0.1 documentation" href="../../../index.html" />
+    <link rel="top" title="pypsi 1.1 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">pypsi 0.1 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">pypsi 1.1 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -47,44 +47,76 @@
           <div class="body">
             
   <h1>Source code for pypsi.commands.xargs</h1><div class="highlight"><pre>
-<span class="kn">from</span> <span class="nn">pypsi.base</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">PypsiArgParser</span>
+<span class="c">#</span>
+<span class="c"># Copyright (c) 2014, Adam Meily</span>
+<span class="c"># All rights reserved.</span>
+<span class="c">#</span>
+<span class="c"># Redistribution and use in source and binary forms, with or without modification,</span>
+<span class="c"># are permitted provided that the following conditions are met:</span>
+<span class="c">#</span>
+<span class="c"># * Redistributions of source code must retain the above copyright notice, this</span>
+<span class="c">#   list of conditions and the following disclaimer.</span>
+<span class="c">#</span>
+<span class="c"># * Redistributions in binary form must reproduce the above copyright notice, this</span>
+<span class="c">#   list of conditions and the following disclaimer in the documentation and/or</span>
+<span class="c">#   other materials provided with the distribution.</span>
+<span class="c">#</span>
+<span class="c"># * Neither the name of the {organization} nor the names of its</span>
+<span class="c">#   contributors may be used to endorse or promote products derived from</span>
+<span class="c">#   this software without specific prior written permission.</span>
+<span class="c">#</span>
+<span class="c"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
+<span class="c"># ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
+<span class="c"># WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="c"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="c"># ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
+<span class="c"># (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<span class="c"># LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON</span>
+<span class="c"># ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<span class="c"># (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
+<span class="c"># SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="c">#</span>
+
+<span class="kn">from</span> <span class="nn">pypsi.base</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">PypsiArgParser</span><span class="p">,</span> <span class="n">CommandShortCircuit</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
 
-<span class="n">XArgsUsage</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;{name} [-h] [-I repstr] command&quot;&quot;&quot;</span>
+<span class="n">XArgsUsage</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;{name} [-h] [-I REPSTR] COMMAND&quot;&quot;&quot;</span>
 
 
-<span class="k">class</span> <span class="nc">XArgsCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
-<div class="viewcode-block" id="XArgsCommand"><a class="viewcode-back" href="../../../pypsi.commands.html#pypsi.commands.xargs.XArgsCommand">[docs]</a>    <span class="sd">&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="XArgsCommand"><a class="viewcode-back" href="../../../pypsi.commands.html#pypsi.commands.xargs.XArgsCommand">[docs]</a><span class="k">class</span> <span class="nc">XArgsCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Execute a command for each line of input from :data:`sys.stdin`.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;xargs&#39;</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="s">&#39;shell&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;xargs&#39;</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="s">&#39;shell&#39;</span><span class="p">,</span> <span class="n">brief</span><span class="o">=</span><span class="s">&#39;build and execute command lines from stdin&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parser</span> <span class="o">=</span> <span class="n">PypsiArgParser</span><span class="p">(</span>
             <span class="n">prog</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s">&#39;build and execute command lines from stdin&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">brief</span><span class="p">,</span>
             <span class="n">usage</span><span class="o">=</span><span class="n">XArgsUsage</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
             <span class="s">&#39;-I&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">&#39;{}&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store&#39;</span><span class="p">,</span>
-            <span class="n">metavar</span><span class="o">=</span><span class="s">&#39;repstr&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;string token to replace&#39;</span><span class="p">,</span>
+            <span class="n">metavar</span><span class="o">=</span><span class="s">&#39;REPSTR&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;string token to replace&#39;</span><span class="p">,</span>
             <span class="n">dest</span><span class="o">=</span><span class="s">&#39;token&#39;</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s">&#39;command&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">REMAINDER</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;command to execute&quot;</span>
+            <span class="s">&#39;command&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">REMAINDER</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;command to execute&quot;</span><span class="p">,</span>
+            <span class="n">metavar</span><span class="o">=</span><span class="s">&#39;COMMAND&#39;</span>
         <span class="p">)</span>
 
         <span class="nb">super</span><span class="p">(</span><span class="n">XArgsCommand</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">format_help</span><span class="p">(),</span>
-            <span class="n">brief</span><span class="o">=</span><span class="s">&#39;build and execute command lines from stdin&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="n">brief</span><span class="o">=</span><span class="n">brief</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
-        <span class="n">ns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">rc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">rc</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">CommandShortCircuit</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">ns</span><span class="o">.</span><span class="n">command</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&quot;missing command&quot;</span><span class="p">)</span>
@@ -99,8 +131,8 @@
             <span class="n">cmd</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">ns</span><span class="o">.</span><span class="n">token</span><span class="p">,</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
             <span class="n">shell</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">child</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="mi">0</span>
-</pre></div></div>
+        <span class="k">return</span> <span class="mi">0</span></div>
+</pre></div>
 
           </div>
         </div>
@@ -133,13 +165,13 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">pypsi 0.1 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">pypsi 1.1 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2014, Adam Meily.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>

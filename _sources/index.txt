@@ -10,12 +10,12 @@ pypsi
     :numbered:
 
     pypsi.rst
-    pypsi.shell.rst
     pypsi.commands.rst
     pypsi.plugins.rst
     pypsi.base.rst
     pypsi.cmdline.rst
     pypsi.namespace.rst
+    pypsi.format.rst
     pypsi.stream.rst
     pypsi.utils.rst
 

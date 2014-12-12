@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pypsi.plugins.history &mdash; pypsi 0.1 documentation</title>
+    <title>pypsi.plugins.history &mdash; pypsi 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/pypsi.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '0.1',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="pypsi 0.1 documentation" href="../../../index.html" />
+    <link rel="top" title="pypsi 1.1 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">pypsi 0.1 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">pypsi 1.1 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -77,46 +77,49 @@
 <span class="c"># SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="c">#</span>
 
-<span class="kn">from</span> <span class="nn">pypsi.base</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">Plugin</span><span class="p">,</span> <span class="n">PypsiArgParser</span>
+<span class="kn">from</span> <span class="nn">pypsi.base</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">Plugin</span><span class="p">,</span> <span class="n">PypsiArgParser</span><span class="p">,</span> <span class="n">CommandShortCircuit</span>
 <span class="kn">from</span> <span class="nn">pypsi.utils</span> <span class="kn">import</span> <span class="n">safe_open</span>
 <span class="kn">from</span> <span class="nn">pypsi.completers</span> <span class="kn">import</span> <span class="n">path_completer</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">readline</span>
 <span class="kn">import</span> <span class="nn">os</span>
 
-<span class="n">CmdUsage</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span><span class="si">%(prog)s</span><span class="s"> list [N]</span>
-<span class="s">   or: </span><span class="si">%(prog)s</span><span class="s"> clear</span>
+<span class="n">CmdUsage</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span><span class="si">%(prog)s</span><span class="s"> clear</span>
 <span class="s">   or: </span><span class="si">%(prog)s</span><span class="s"> delete N</span>
-<span class="s">   or: </span><span class="si">%(prog)s</span><span class="s"> save PATH</span>
+<span class="s">   or: </span><span class="si">%(prog)s</span><span class="s"> list [N]</span>
 <span class="s">   or: </span><span class="si">%(prog)s</span><span class="s"> load PATH</span>
-<span class="s">   or: </span><span class="si">%(prog)s</span><span class="s"> exec PREFIX&quot;&quot;&quot;</span>
+<span class="s">   or: </span><span class="si">%(prog)s</span><span class="s"> save PATH&quot;&quot;&quot;</span>
+
 
 <div class="viewcode-block" id="HistoryCommand"><a class="viewcode-back" href="../../../pypsi.plugins.html#pypsi.plugins.history.HistoryCommand">[docs]</a><span class="k">class</span> <span class="nc">HistoryCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Interact with and manage the shell&#39;s history.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;history&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">setup_parser</span><span class="p">()</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">HistoryCommand</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">format_help</span><span class="p">(),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;history&#39;</span><span class="p">,</span> <span class="n">brief</span><span class="o">=</span><span class="s">&#39;manage shell history&#39;</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="s">&#39;shell&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_parser</span><span class="p">(</span><span class="n">brief</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">HistoryCommand</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">format_help</span><span class="p">(),</span> <span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">,</span>
+            <span class="n">brief</span><span class="o">=</span><span class="n">brief</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;clear&#39;</span><span class="p">,</span> <span class="s">&#39;delete&#39;</span><span class="p">,</span> <span class="s">&#39;exec&#39;</span><span class="p">,</span> <span class="s">&#39;list&#39;</span><span class="p">,</span> <span class="s">&#39;load&#39;</span><span class="p">,</span> <span class="s">&#39;save&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">)]</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;clear&#39;</span><span class="p">,</span> <span class="s">&#39;delete&#39;</span><span class="p">,</span> <span class="s">&#39;list&#39;</span><span class="p">,</span> <span class="s">&#39;load&#39;</span><span class="p">,</span> <span class="s">&#39;save&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">)]</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;save&#39;</span> <span class="ow">or</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;load&#39;</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">path_completer</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[]</span>
 
-    <span class="k">def</span> <span class="nf">setup_parser</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">setup_parser</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">brief</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parser</span> <span class="o">=</span> <span class="n">PypsiArgParser</span><span class="p">(</span>
             <span class="n">prog</span><span class="o">=</span><span class="s">&#39;history&#39;</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s">&quot;Manage shell history&quot;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">brief</span><span class="p">,</span>
             <span class="n">usage</span><span class="o">=</span><span class="n">CmdUsage</span>
         <span class="p">)</span>
 
-        <span class="n">subcmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span><span class="n">prog</span><span class="o">=</span><span class="s">&#39;history&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&#39;subcmd&#39;</span><span class="p">)</span>
+        <span class="n">subcmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_subparsers</span><span class="p">(</span><span class="n">prog</span><span class="o">=</span><span class="s">&#39;history&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s">&#39;subcmd&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&#39;subcmd&#39;</span><span class="p">)</span>
         <span class="n">subcmd</span><span class="o">.</span><span class="n">required</span> <span class="o">=</span> <span class="bp">True</span>
 
         <span class="n">ls</span> <span class="o">=</span> <span class="n">subcmd</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s">&#39;list&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;list history events&#39;</span><span class="p">)</span>
@@ -140,15 +143,12 @@
             <span class="s">&#39;path&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&#39;PATH&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;load history from file located at PATH&#39;</span>
         <span class="p">)</span>
 
-        <span class="n">exe</span> <span class="o">=</span> <span class="n">subcmd</span><span class="o">.</span><span class="n">add_parser</span><span class="p">(</span><span class="s">&#39;exec&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;execute previous history event&#39;</span><span class="p">)</span>
-        <span class="n">exe</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s">&#39;prefix&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&#39;PREFIX&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;find and execute previous history event with give PREFIX&#39;</span>
-        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
-        <span class="n">ns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">rc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">rc</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="c">#(shell, args)</span>
+        <span class="k">except</span> <span class="n">CommandShortCircuit</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span>
 
         <span class="n">rc</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="n">ns</span><span class="o">.</span><span class="n">subcmd</span> <span class="o">==</span> <span class="s">&#39;list&#39;</span><span class="p">:</span>
@@ -160,28 +160,8 @@
 
             <span class="n">i</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="mi">1</span>
             <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="n">start</span><span class="p">:]:</span>
-                <span class="n">shell</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="s">&#39;    &#39;</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+                <span class="k">print</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="s">&#39;    &#39;</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">)</span>
                 <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">elif</span> <span class="n">ns</span><span class="o">.</span><span class="n">subcmd</span> <span class="o">==</span> <span class="s">&#39;exec&#39;</span><span class="p">:</span>
-            <span class="n">event</span> <span class="o">=</span> <span class="bp">None</span>
-            <span class="k">if</span> <span class="n">ns</span><span class="o">.</span><span class="n">prefix</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">or</span> <span class="p">(</span><span class="n">ns</span><span class="o">.</span><span class="n">prefix</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;-&#39;</span> <span class="ow">and</span> <span class="n">ns</span><span class="o">.</span><span class="n">prefix</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()):</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ns</span><span class="o">.</span><span class="n">prefix</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
-                    <span class="n">event</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
-                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&quot;invalid event index</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
-                    <span class="n">rc</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-                <span class="k">except</span> <span class="ne">IndexError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&quot;invalid event index</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
-                    <span class="n">rc</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">event</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">search_prefix</span><span class="p">(</span><span class="n">ns</span><span class="o">.</span><span class="n">prefix</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">event</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
-                    <span class="n">shell</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;event not found</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
-                    <span class="n">rc</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-
-            <span class="k">if</span> <span class="n">event</span><span class="p">:</span>
-                <span class="n">shell</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;found event: &quot;</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">ns</span><span class="o">.</span><span class="n">subcmd</span> <span class="o">==</span> <span class="s">&#39;clear&#39;</span><span class="p">:</span>
             <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="k">elif</span> <span class="n">ns</span><span class="o">.</span><span class="n">subcmd</span> <span class="o">==</span> <span class="s">&#39;delete&#39;</span><span class="p">:</span>
@@ -273,6 +253,8 @@
 <span class="sd">        Get a single event at ``index`` or a :class:`slice` of events.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__len__</span><span class="p">():</span>
+                <span class="k">return</span> <span class="p">[]</span>
             <span class="n">start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize_index</span><span class="p">(</span><span class="n">index</span><span class="o">.</span><span class="n">start</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">)</span>
             <span class="n">stop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize_index</span><span class="p">((</span><span class="n">index</span><span class="o">.</span><span class="n">stop</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">__len__</span><span class="p">())</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
             <span class="n">step</span> <span class="o">=</span> <span class="n">index</span><span class="o">.</span><span class="n">step</span> <span class="ow">or</span> <span class="mi">1</span>
@@ -301,6 +283,9 @@
         <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize_index</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
         <span class="n">readline</span><span class="o">.</span><span class="n">remove_history_item</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
 </div>
+    <span class="k">def</span> <span class="nf">__nonzero__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
 <div class="viewcode-block" id="History.__iter__"><a class="viewcode-back" href="../../../pypsi.plugins.html#pypsi.plugins.history.History.__iter__">[docs]</a>    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__getitem__</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">)))</span>
 </div>
@@ -365,13 +350,13 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">pypsi 0.1 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">pypsi 1.1 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2014, Adam Meily.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>

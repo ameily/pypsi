@@ -1,0 +1,542 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pypsi.format &mdash; pypsi 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/pypsi.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="pypsi 1.1 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">pypsi 1.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for pypsi.format</h1><div class="highlight"><pre>
+<span class="c">#</span>
+<span class="c"># Copyright (c) 2014, Adam Meily</span>
+<span class="c"># All rights reserved.</span>
+<span class="c">#</span>
+<span class="c"># Redistribution and use in source and binary forms, with or without modification,</span>
+<span class="c"># are permitted provided that the following conditions are met:</span>
+<span class="c">#</span>
+<span class="c"># * Redistributions of source code must retain the above copyright notice, this</span>
+<span class="c">#   list of conditions and the following disclaimer.</span>
+<span class="c">#</span>
+<span class="c"># * Redistributions in binary form must reproduce the above copyright notice, this</span>
+<span class="c">#   list of conditions and the following disclaimer in the documentation and/or</span>
+<span class="c">#   other materials provided with the distribution.</span>
+<span class="c">#</span>
+<span class="c"># * Neither the name of the {organization} nor the names of its</span>
+<span class="c">#   contributors may be used to endorse or promote products derived from</span>
+<span class="c">#   this software without specific prior written permission.</span>
+<span class="c">#</span>
+<span class="c"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
+<span class="c"># ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
+<span class="c"># WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="c"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="c"># ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
+<span class="c"># (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<span class="c"># LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON</span>
+<span class="c"># ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<span class="c"># (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
+<span class="c"># SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="c">#</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Provides functions and classes for dealing with command line input, output, and</span>
+<span class="sd">ansi codes.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+
+<div class="viewcode-block" id="ansi_len"><a class="viewcode-back" href="../../pypsi.format.html#pypsi.format.ansi_len">[docs]</a><span class="k">def</span> <span class="nf">ansi_len</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get the length of the provided `str`, not counting any ansi codes.</span>
+
+<span class="sd">    :param str value: the input string</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">esc_code</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="s">&#39;</span><span class="se">\x1b</span><span class="s">&#39;</span><span class="p">:</span>
+            <span class="n">esc_code</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">elif</span> <span class="n">esc_code</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="s">&#39;ABCDEFGHJKSTfmnsulh&#39;</span><span class="p">:</span>
+                <span class="n">esc_code</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">count</span>
+</div>
+<div class="viewcode-block" id="ansi_center"><a class="viewcode-back" href="../../pypsi.format.html#pypsi.format.ansi_center">[docs]</a><span class="k">def</span> <span class="nf">ansi_center</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Center the provided string for a given width.</span>
+
+<span class="sd">    :param str s: the input string</span>
+<span class="sd">    :param int width: the desired field width</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="n">ansi_len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;=</span> <span class="n">width</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">s</span>
+    <span class="n">diff</span> <span class="o">=</span> <span class="p">(</span><span class="n">width</span> <span class="o">-</span> <span class="n">count</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+    <span class="n">space</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39; &#39;</span><span class="o">*</span><span class="n">diff</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">space</span> <span class="o">+</span> <span class="n">s</span> <span class="o">+</span> <span class="n">space</span>
+</div>
+<div class="viewcode-block" id="ansi_ljust"><a class="viewcode-back" href="../../pypsi.format.html#pypsi.format.ansi_ljust">[docs]</a><span class="k">def</span> <span class="nf">ansi_ljust</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Left justify an input string, ensuring that it contains width charaters.</span>
+
+<span class="sd">    :param str s: the input string</span>
+<span class="sd">    :param int width: the desired output width</span>
+<span class="sd">    :returns str: the output string</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="n">ansi_len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;=</span> <span class="n">width</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">s</span>
+    <span class="n">diff</span> <span class="o">=</span> <span class="n">width</span> <span class="o">-</span> <span class="n">count</span>
+    <span class="k">return</span> <span class="n">s</span> <span class="o">+</span> <span class="p">(</span><span class="s">&#39; &#39;</span> <span class="o">*</span> <span class="n">diff</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ansi_rjust"><a class="viewcode-back" href="../../pypsi.format.html#pypsi.format.ansi_rjust">[docs]</a><span class="k">def</span> <span class="nf">ansi_rjust</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Right justify the input string.</span>
+
+<span class="sd">    :param str s: the input string</span>
+<span class="sd">    :param int width: the desired width</span>
+<span class="sd">    :returns str: the output string</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="n">ansi_len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;=</span> <span class="n">width</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">s</span>
+    <span class="n">diff</span> <span class="o">=</span> <span class="n">width</span> <span class="o">-</span> <span class="n">count</span>
+    <span class="k">return</span> <span class="p">(</span><span class="s">&#39; &#39;</span><span class="o">*</span><span class="n">diff</span><span class="p">)</span> <span class="o">+</span> <span class="n">s</span>
+</div>
+<div class="viewcode-block" id="get_lines"><a class="viewcode-back" href="../../pypsi.format.html#pypsi.format.get_lines">[docs]</a><span class="k">def</span> <span class="nf">get_lines</span><span class="p">(</span><span class="n">txt</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Break text to individual lines.</span>
+
+<span class="sd">    :returns tuple: a tuple containing the next line and whether the line</span>
+<span class="sd">        contained a newline charater.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="n">txt</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="p">(</span><span class="n">txt</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">i</span><span class="p">],</span> <span class="bp">True</span><span class="p">)</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">start</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">txt</span><span class="p">):</span>
+                <span class="k">break</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="p">(</span><span class="n">txt</span><span class="p">[</span><span class="n">start</span><span class="p">:],</span> <span class="bp">False</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="wrap_line"><a class="viewcode-back" href="../../pypsi.format.html#pypsi.format.wrap_line">[docs]</a><span class="k">def</span> <span class="nf">wrap_line</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Word wrap a single line.</span>
+
+<span class="sd">    :param str txt: the line to wrap</span>
+<span class="sd">    :param int width: the maximum width of a wrapped line</span>
+<span class="sd">    :returns str: the next wrapped line</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">width</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">txt</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">total</span><span class="p">:</span>
+            <span class="n">esc_code</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="n">prev</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">while</span> <span class="n">count</span> <span class="o">&lt;=</span> <span class="n">width</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">total</span><span class="p">:</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="n">txt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="s">&#39;</span><span class="se">\x1b</span><span class="s">&#39;</span><span class="p">:</span>
+                    <span class="n">esc_code</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="k">elif</span> <span class="n">esc_code</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="s">&#39;ABCDEFGHJKSTfmnsulh&#39;</span><span class="p">:</span>
+                        <span class="n">esc_code</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="s">&#39; </span><span class="se">\t</span><span class="s">&#39;</span><span class="p">:</span>
+                        <span class="n">prev</span> <span class="o">=</span> <span class="n">i</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="n">total</span><span class="p">:</span>
+                <span class="n">prev</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">prev</span> <span class="o">=</span> <span class="n">prev</span> <span class="ow">or</span> <span class="n">i</span>
+
+            <span class="k">yield</span> <span class="n">txt</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">prev</span><span class="p">]</span>
+
+            <span class="n">start</span> <span class="o">=</span> <span class="n">prev</span>
+            <span class="k">while</span> <span class="n">start</span> <span class="o">&lt;</span> <span class="n">total</span> <span class="ow">and</span> <span class="n">txt</span><span class="p">[</span><span class="n">start</span><span class="p">]</span> <span class="ow">in</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s"> &#39;</span><span class="p">:</span>
+                <span class="n">start</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">i</span> <span class="o">=</span> <span class="n">start</span>
+            <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="n">count</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">txt</span><span class="p">[</span><span class="n">start</span><span class="p">:]</span>
+
+</div>
+<div class="viewcode-block" id="highlight"><a class="viewcode-back" href="../../pypsi.format.html#pypsi.format.highlight">[docs]</a><span class="k">def</span> <span class="nf">highlight</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">term</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;1;32&#39;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Find and highlight a term inside of a block of text.</span>
+
+<span class="sd">    :param str target: the text to search in</span>
+<span class="sd">    :param str term: the term to search for</span>
+<span class="sd">    :param str color: the color to output when the term is found</span>
+<span class="sd">    :returns str: the input string with all occurrences of the term highlighted</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">color</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">target</span>
+
+    <span class="n">s</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">term</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="c">#print(&quot;term:&quot;, term)</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">end</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+    <span class="k">while</span> <span class="n">end</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">ret</span> <span class="o">+=</span> <span class="n">target</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+        <span class="n">ret</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\x1b</span><span class="s">[{color}m{term}</span><span class="se">\x1b</span><span class="s">[0m&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">term</span><span class="o">=</span><span class="n">target</span><span class="p">[</span><span class="n">end</span><span class="p">:</span><span class="n">end</span><span class="o">+</span><span class="nb">len</span><span class="p">(</span><span class="n">term</span><span class="p">)])</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">end</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">term</span><span class="p">)</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span>
+
+    <span class="n">ret</span> <span class="o">+=</span> <span class="n">target</span><span class="p">[</span><span class="n">start</span><span class="p">:]</span>
+    <span class="k">return</span> <span class="n">ret</span>
+
+</div>
+<div class="viewcode-block" id="file_size_str"><a class="viewcode-back" href="../../pypsi.format.html#pypsi.format.file_size_str">[docs]</a><span class="k">def</span> <span class="nf">file_size_str</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Get the human readable file size string from a number. This will convert a</span>
+<span class="sd">    value of 1024 to 1Kb and 1048576 to 1Mb.</span>
+
+<span class="sd">    :param int value: the value to convert</span>
+<span class="sd">    :returns str: the human readable file size string</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="n">units</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;Kb&#39;</span><span class="p">,</span> <span class="s">&#39;Mb&#39;</span><span class="p">,</span> <span class="s">&#39;Gb&#39;</span><span class="p">,</span> <span class="s">&#39;Tb&#39;</span><span class="p">]</span>
+    <span class="n">unit</span> <span class="o">=</span> <span class="s">&#39;B&#39;</span>
+    <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">units</span><span class="p">:</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">value</span> <span class="o">/</span> <span class="mf">1024.0</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="n">u</span>
+    <span class="k">if</span> <span class="n">unit</span> <span class="o">==</span> <span class="s">&#39;B&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">&quot;{} B&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+    <span class="k">return</span> <span class="s">&quot;{:.2f} {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">unit</span><span class="p">)</span>
+
+</div>
+<span class="k">def</span> <span class="nf">obj_str</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">max_children</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="c">## TODO, remove stream</span>
+    <span class="n">tmpl</span> <span class="o">=</span> <span class="s">&quot;{blue}{type}({reset} {value} {blue}){reset}&quot;</span>
+    <span class="n">format_value</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">if</span> <span class="n">stream</span><span class="p">:</span>
+        <span class="n">format_value</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">stream</span><span class="o">.</span><span class="n">ansi_format</span><span class="p">(</span><span class="n">tmpl</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">v</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tmpl</span> <span class="o">=</span> <span class="s">&quot;{type}( {value} )&quot;</span>
+        <span class="n">format_value</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">tmpl</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">t</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">v</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">format_value</span><span class="p">(</span><span class="s">&quot;bool&quot;</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">format_value</span><span class="p">(</span><span class="s">&quot;int&quot;</span><span class="p">,</span> <span class="s">&quot;{:d}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">format_value</span><span class="p">(</span><span class="s">&quot;float&quot;</span><span class="p">,</span> <span class="s">&quot;{:g}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">max_children</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_children</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">[:</span><span class="n">max_children</span><span class="p">]]</span>
+            <span class="n">obj</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;...&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">format_value</span><span class="p">(</span>
+            <span class="s">&quot;list&quot;</span><span class="p">,</span>
+            <span class="s">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">obj_str</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">max_children</span><span class="o">=</span><span class="n">max_children</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">)</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">])</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">obj</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">stream</span><span class="o">.</span><span class="n">ansi_format</span><span class="p">(</span><span class="s">&quot;{blue}&lt;null&gt;{reset}&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">stream</span> <span class="k">else</span> <span class="s">&quot;&lt;null&gt;&quot;</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">obj</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="title_str"><a class="viewcode-back" href="../../pypsi.format.html#pypsi.format.title_str">[docs]</a><span class="k">def</span> <span class="nf">title_str</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s">&#39;left&#39;</span><span class="p">,</span> <span class="n">hr</span><span class="o">=</span><span class="s">&#39;=&#39;</span><span class="p">,</span> <span class="n">box</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">box</span><span class="p">:</span>
+        <span class="n">border</span> <span class="o">=</span> <span class="s">&#39;+&#39;</span> <span class="o">+</span> <span class="p">(</span><span class="s">&#39;-&#39;</span><span class="o">*</span><span class="p">(</span><span class="n">width</span><span class="o">-</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="s">&#39;+&#39;</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="n">align</span> <span class="o">==</span> <span class="s">&#39;left&#39;</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">ansi_ljust</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">width</span><span class="o">-</span><span class="mi">4</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">align</span> <span class="o">==</span> <span class="s">&#39;center&#39;</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">ansi_center</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">width</span><span class="o">-</span><span class="mi">4</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">ansi_rjust</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">width</span><span class="o">-</span><span class="mi">4</span><span class="p">)</span>
+
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">border</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;| &#39;</span> <span class="o">+</span> <span class="n">t</span> <span class="o">+</span> <span class="s">&#39; |&#39;</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">border</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">align</span> <span class="o">==</span> <span class="s">&#39;left&#39;</span><span class="p">:</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">align</span> <span class="o">==</span> <span class="s">&#39;center&#39;</span><span class="p">:</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ansi_center</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">align</span> <span class="o">==</span> <span class="s">&#39;right&#39;</span><span class="p">:</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ansi_rjust</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hr</span> <span class="o">*</span> <span class="n">width</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+
+
+</div>
+<div class="viewcode-block" id="Table"><a class="viewcode-back" href="../../pypsi.format.html#pypsi.format.Table">[docs]</a><span class="k">class</span> <span class="nc">Table</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Variable width table.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">spacing</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :param multiple columns: a list of either class:`Column` instances or a</span>
+<span class="sd">            single `int` defining how many columns to create</span>
+<span class="sd">        :param int width: the maximum width of the entire table</span>
+<span class="sd">        :param int spacing: the amount of space characters to display between</span>
+<span class="sd">            columns</span>
+<span class="sd">        :param bool header: whether to display header row with the column names</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">Column</span><span class="p">()]</span> <span class="o">*</span> <span class="n">columns</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">columns</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spacing</span> <span class="o">=</span> <span class="n">spacing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">header</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="Table.append"><a class="viewcode-back" href="../../pypsi.format.html#pypsi.format.Table.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add a row to the table.</span>
+
+<span class="sd">        :param list args: the column values</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+            <span class="n">col</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">ansi_len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="bp">self</span>
+</div>
+<div class="viewcode-block" id="Table.extend"><a class="viewcode-back" href="../../pypsi.format.html#pypsi.format.Table.extend">[docs]</a>    <span class="k">def</span> <span class="nf">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add multiple rows to the table, each argument should be a list of column</span>
+<span class="sd">        values.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">*</span><span class="n">row</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+</div>
+<div class="viewcode-block" id="Table.write"><a class="viewcode-back" href="../../pypsi.format.html#pypsi.format.Table.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fp</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Print the table to a specified file stream.</span>
+
+<span class="sd">        :param file fp: output stream</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">def</span> <span class="nf">write_overflow</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
+            <span class="n">overflow</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+            <span class="n">column_idx</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">column_idx</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39; &#39;</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">spacing</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="k">pass</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">if</span><span class="p">(</span><span class="n">ansi_len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">col</span><span class="o">.</span><span class="n">width</span><span class="p">):</span>
+                    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ansi_ljust</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">col</span><span class="o">.</span><span class="n">width</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">wrapped_line</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">wrap_line</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">col</span><span class="o">.</span><span class="n">width</span><span class="p">)]</span>
+                    <span class="c">#word_wrap(value, col.width).split(&#39;\n&#39;)</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">wrapped_line</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">overflow</span><span class="p">[</span><span class="n">column_idx</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">wrapped_line</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+                    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">wrapped_line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="c"># Move to next column</span>
+                <span class="n">column_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+
+            <span class="c"># deal with overflowed data</span>
+            <span class="k">if</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">overflow</span><span class="p">):</span>
+                <span class="n">write_overflow</span><span class="p">(</span><span class="n">overflow</span><span class="p">)</span>
+
+        <span class="n">total</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span> <span class="n">col</span><span class="o">.</span><span class="n">width</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span> <span class="p">])</span>
+
+        <span class="c"># Resize columns if last too wide</span>
+        <span class="c"># TODO: Smarter column resizing, maybe pick widest column</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">total</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">spacing</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">Column</span><span class="o">.</span><span class="n">Grow</span>
+
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">col</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="n">Column</span><span class="o">.</span><span class="n">Grow</span><span class="p">:</span>
+                <span class="n">remaining</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">-</span> <span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">spacing</span><span class="p">)</span> <span class="o">-</span> <span class="n">total</span>
+                <span class="n">col</span><span class="o">.</span><span class="n">width</span> <span class="o">+=</span> <span class="n">remaining</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39; &#39;</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">spacing</span><span class="p">)</span>
+                <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ansi_ljust</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="n">col</span><span class="o">.</span><span class="n">width</span><span class="p">))</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;=&#39;</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">)</span>
+            <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rows</span><span class="p">:</span>
+            <span class="n">write_overflow</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="mi">0</span>
+
+
+
+</div></div>
+<div class="viewcode-block" id="Column"><a class="viewcode-back" href="../../pypsi.format.html#pypsi.format.Column">[docs]</a><span class="k">class</span> <span class="nc">Column</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A table column.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="c">#: Size mode to have the column shrink to its contents</span>
+    <span class="n">Shrink</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c">#: Size mode to have the column grow to the maximum width it can have</span>
+    <span class="n">Grow</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :param str text: the column name</span>
+<span class="sd">        :param int mode: the column size mode</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">ansi_len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="FixedColumnTable"><a class="viewcode-back" href="../../pypsi.format.html#pypsi.format.FixedColumnTable">[docs]</a><span class="k">class</span> <span class="nc">FixedColumnTable</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A table that has preset column widths.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widths</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :param list widths: the list of column widths (`int`)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">widths</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">width</span><span class="p">)</span> <span class="k">for</span> <span class="n">width</span> <span class="ow">in</span> <span class="n">widths</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="FixedColumnTable.write_row"><a class="viewcode-back" href="../../pypsi.format.html#pypsi.format.FixedColumnTable.write_row">[docs]</a>    <span class="k">def</span> <span class="nf">write_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Print a single row.</span>
+
+<span class="sd">        :param file fp: the output file stream (usually sys.stdout or sys.stderr)</span>
+<span class="sd">        :param list args: the column values for the row</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">widths</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+            <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ansi_ljust</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span>
+            <span class="c">#diff = width - len(value)</span>
+            <span class="c">#if diff &gt; 0:</span>
+            <span class="c">#    fp.write(&#39; &#39; * diff)</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="FixedColumnTable.add_cell"><a class="viewcode-back" href="../../pypsi.format.html#pypsi.format.FixedColumnTable.add_cell">[docs]</a>    <span class="k">def</span> <span class="nf">add_cell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fp</span><span class="p">,</span> <span class="n">col</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add a single cell to the table. The current row is printed if the column</span>
+<span class="sd">        completes the row.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">col</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">widths</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_row</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="p">[]</span>
+</div>
+<div class="viewcode-block" id="FixedColumnTable.flush"><a class="viewcode-back" href="../../pypsi.format.html#pypsi.format.FixedColumnTable.flush">[docs]</a>    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fp</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Force a write of the table.</span>
+
+<span class="sd">        :param file fp: the output file stream</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">write_row</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="p">[]</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">pypsi 1.1 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Adam Meily.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>

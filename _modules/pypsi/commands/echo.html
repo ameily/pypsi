@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pypsi.commands.echo &mdash; pypsi 0.1 documentation</title>
+    <title>pypsi.commands.echo &mdash; pypsi 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/pypsi.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '0.1',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="pypsi 0.1 documentation" href="../../../index.html" />
+    <link rel="top" title="pypsi 1.1 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">pypsi 0.1 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">pypsi 1.1 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -77,10 +77,11 @@
 <span class="c"># SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="c">#</span>
 
-<span class="kn">from</span> <span class="nn">pypsi.base</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">PypsiArgParser</span>
+<span class="kn">from</span> <span class="nn">pypsi.base</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">PypsiArgParser</span><span class="p">,</span> <span class="n">CommandShortCircuit</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
 
-<span class="n">EchoCmdUsage</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%(prog)s</span><span class="s"> [-hewi] [-n] [-h] message&quot;</span>
+<span class="n">EchoCmdUsage</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%(prog)s</span><span class="s"> [-n] [-h] message&quot;</span>
 
 
 <div class="viewcode-block" id="EchoCommand"><a class="viewcode-back" href="../../../pypsi.commands.html#pypsi.commands.echo.EchoCommand">[docs]</a><span class="k">class</span> <span class="nc">EchoCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
@@ -88,48 +89,38 @@
 <span class="sd">    Prints text to the screen.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;echo&#39;</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="s">&#39;shell&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;echo&#39;</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="s">&#39;shell&#39;</span><span class="p">,</span> <span class="n">brief</span><span class="o">=</span><span class="s">&#39;print a line of text&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parser</span> <span class="o">=</span> <span class="n">PypsiArgParser</span><span class="p">(</span>
             <span class="n">prog</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
-            <span class="n">description</span><span class="o">=</span><span class="s">&#39;display a line of text&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">brief</span><span class="p">,</span>
             <span class="n">usage</span><span class="o">=</span><span class="n">EchoCmdUsage</span>
         <span class="p">)</span>
 
         <span class="n">subcmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;Stream&#39;</span><span class="p">)</span>
-        <span class="n">subcmd</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s">&#39;-e&#39;</span><span class="p">,</span> <span class="s">&#39;--error&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;print to error stream&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span>
-        <span class="p">)</span>
-        <span class="n">subcmd</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s">&#39;-i&#39;</span><span class="p">,</span> <span class="s">&#39;--info&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;print to info stream&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span>
-        <span class="p">)</span>
-        <span class="n">subcmd</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s">&#39;-w&#39;</span><span class="p">,</span> <span class="s">&#39;--warn&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;print to warn stream&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span>
-        <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s">&#39;message&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;message to print&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">REMAINDER</span>
+            <span class="s">&#39;message&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;message to print&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">REMAINDER</span><span class="p">,</span>
+            <span class="n">metavar</span><span class="o">=</span><span class="s">&quot;MESSAGE&quot;</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
             <span class="s">&#39;-n&#39;</span><span class="p">,</span> <span class="s">&#39;--nolf&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;don&#39;t print newline character&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span>
         <span class="p">)</span>
 
-        <span class="nb">super</span><span class="p">(</span><span class="n">EchoCommand</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">format_help</span><span class="p">(),</span> <span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">,</span> <span class="n">brief</span><span class="o">=</span><span class="s">&#39;print a line of text&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">EchoCommand</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">format_help</span><span class="p">(),</span> <span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">,</span>
+            <span class="n">brief</span><span class="o">=</span><span class="n">brief</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
-        <span class="n">ns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">rc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">rc</span>
-
-        <span class="n">fn</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="n">info</span>
-        <span class="k">if</span> <span class="n">ns</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
-            <span class="n">fn</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="n">error</span>
-        <span class="k">elif</span> <span class="n">ns</span><span class="o">.</span><span class="n">warn</span><span class="p">:</span>
-            <span class="n">fn</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="n">warn</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">CommandShortCircuit</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span>
 
         <span class="n">tail</span> <span class="o">=</span> <span class="s">&#39;&#39;</span> <span class="k">if</span> <span class="n">ns</span><span class="o">.</span><span class="n">nolf</span> <span class="k">else</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
 
-        <span class="n">fn</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ns</span><span class="o">.</span><span class="n">message</span><span class="p">),</span> <span class="n">tail</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ns</span><span class="o">.</span><span class="n">message</span><span class="p">),</span> <span class="n">sep</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">tail</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="mi">0</span></div>
 </pre></div>
@@ -165,13 +156,13 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">pypsi 0.1 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">pypsi 1.1 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2014, Adam Meily.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>

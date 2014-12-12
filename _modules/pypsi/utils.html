@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pypsi.utils &mdash; pypsi 0.1 documentation</title>
+    <title>pypsi.utils &mdash; pypsi 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../_static/pypsi.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.1',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="pypsi 0.1 documentation" href="../../index.html" />
+    <link rel="top" title="pypsi 1.1 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">pypsi 0.1 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">pypsi 1.1 documentation</a> &raquo;</li>
           <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -85,10 +85,6 @@
 <span class="kn">import</span> <span class="nn">codecs</span>
 
 
-<span class="k">def</span> <span class="nf">Title</span><span class="p">(</span><span class="n">title</span><span class="p">):</span>
-    <span class="k">return</span> <span class="s">&quot;{title}</span><span class="se">\n</span><span class="s">{underline}</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">underline</span><span class="o">=</span><span class="s">&#39;=&#39;</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">title</span><span class="p">))</span>
-
-
 <div class="viewcode-block" id="safe_open"><a class="viewcode-back" href="../../pypsi.utils.html#pypsi.utils.safe_open">[docs]</a><span class="k">def</span> <span class="nf">safe_open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;r&#39;</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Retrieves a file&#39;s encoding and returns the opened file. If the opened file</span>
@@ -102,19 +98,22 @@
     <span class="n">u</span> <span class="o">=</span> <span class="n">UniversalDetector</span><span class="p">()</span>
     <span class="n">first</span> <span class="o">=</span> <span class="bp">None</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fp</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">first</span><span class="p">:</span>
-                <span class="n">first</span> <span class="o">=</span> <span class="n">line</span>
-            <span class="n">u</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">u</span><span class="o">.</span><span class="n">done</span><span class="p">:</span>
-                <span class="k">break</span>
+        <span class="nb">bin</span> <span class="o">=</span> <span class="n">first</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mh">0x1000</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">u</span><span class="o">.</span><span class="n">done</span> <span class="ow">and</span> <span class="nb">bin</span><span class="p">:</span>
+            <span class="n">u</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="nb">bin</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">u</span><span class="o">.</span><span class="n">done</span><span class="p">:</span>
+                <span class="nb">bin</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mh">0x1000</span><span class="p">)</span>
     <span class="n">u</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-    <span class="n">fp</span> <span class="o">=</span> <span class="n">codecs</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="s">&#39;encoding&#39;</span><span class="p">])</span>
-    <span class="k">for</span> <span class="n">bom</span> <span class="ow">in</span> <span class="p">(</span><span class="n">codecs</span><span class="o">.</span><span class="n">BOM_UTF8</span><span class="p">,</span> <span class="n">codecs</span><span class="o">.</span><span class="n">BOM_UTF16_BE</span><span class="p">,</span> <span class="n">codecs</span><span class="o">.</span><span class="n">BOM_UTF16_LE</span><span class="p">,</span> 
-                <span class="n">codecs</span><span class="o">.</span><span class="n">BOM_UTF32_BE</span><span class="p">,</span> <span class="n">codecs</span><span class="o">.</span><span class="n">BOM_UTF32_LE</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">first</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+
+    <span class="n">fp</span> <span class="o">=</span> <span class="n">codecs</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">u</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="s">&#39;encoding&#39;</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">bom</span> <span class="ow">in</span> <span class="p">(</span><span class="n">codecs</span><span class="o">.</span><span class="n">BOM_UTF32_BE</span><span class="p">,</span> <span class="n">codecs</span><span class="o">.</span><span class="n">BOM_UTF32_LE</span><span class="p">,</span> <span class="n">codecs</span><span class="o">.</span><span class="n">BOM_UTF8</span><span class="p">,</span>
+                <span class="n">codecs</span><span class="o">.</span><span class="n">BOM_UTF16_BE</span><span class="p">,</span> <span class="n">codecs</span><span class="o">.</span><span class="n">BOM_UTF16_LE</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">first</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">bom</span><span class="p">):</span>
-            <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">fp</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bom</span><span class="p">))</span>
             <span class="k">break</span>
 
     <span class="k">return</span> <span class="n">fp</span></div>
@@ -151,13 +150,13 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">pypsi 0.1 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">pypsi 1.1 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2014, Adam Meily.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>

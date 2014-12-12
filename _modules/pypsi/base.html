@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pypsi.base &mdash; pypsi 0.1 documentation</title>
+    <title>pypsi.base &mdash; pypsi 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../_static/pypsi.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.1',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="pypsi 0.1 documentation" href="../../index.html" />
+    <link rel="top" title="pypsi 1.1 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">pypsi 0.1 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">pypsi 1.1 documentation</a> &raquo;</li>
           <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -83,6 +83,8 @@
 
 
 <span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">pypsi.stream</span> <span class="kn">import</span> <span class="n">AnsiCodes</span>
 
 
 <div class="viewcode-block" id="Plugin"><a class="viewcode-back" href="../../pypsi.base.html#pypsi.base.Plugin">[docs]</a><span class="k">class</span> <span class="nc">Plugin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -157,7 +159,7 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="mi">0</span>
 </div>
-<div class="viewcode-block" id="Plugin.on_statement_finished"><a class="viewcode-back" href="../../pypsi.base.html#pypsi.base.Plugin.on_statement_finished">[docs]</a>    <span class="k">def</span> <span class="nf">on_statement_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">):</span>
+<div class="viewcode-block" id="Plugin.on_statement_finished"><a class="viewcode-back" href="../../pypsi.base.html#pypsi.base.Plugin.on_statement_finished">[docs]</a>    <span class="k">def</span> <span class="nf">on_statement_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">rc</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Called when a statement has been completely executed.</span>
 
@@ -211,7 +213,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">usage</span> <span class="o">=</span> <span class="n">usage</span> <span class="ow">or</span> <span class="s">&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">brief</span> <span class="o">=</span> <span class="n">brief</span> <span class="ow">or</span> <span class="s">&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">topic</span> <span class="o">=</span> <span class="n">topic</span> <span class="ow">or</span> <span class="s">&#39;misc&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">topic</span> <span class="o">=</span> <span class="n">topic</span> <span class="ow">or</span> <span class="s">&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pipe</span> <span class="o">=</span> <span class="n">pipe</span> <span class="ow">or</span> <span class="s">&#39;str&#39;</span>
 
 <div class="viewcode-block" id="Command.complete"><a class="viewcode-back" href="../../pypsi.base.html#pypsi.base.Command.complete">[docs]</a>    <span class="k">def</span> <span class="nf">complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
@@ -234,9 +236,8 @@
 <span class="sd">        :param pypsi.shell.Shell shell: the active shell</span>
 <span class="sd">        :param args: list of strings that are the error message</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">shell</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s">&quot;: &quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
-        <span class="n">shell</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
-        <span class="n">shell</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">usage</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">AnsiCodes</span><span class="o">.</span><span class="n">yellow</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">usage</span><span class="p">,</span> <span class="n">AnsiCodes</span><span class="o">.</span><span class="n">reset</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="Command.error"><a class="viewcode-back" href="../../pypsi.base.html#pypsi.base.Command.error">[docs]</a>    <span class="k">def</span> <span class="nf">error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -245,7 +246,8 @@
 <span class="sd">        :param pypsi.shell.Shell shell: the active shell</span>
 <span class="sd">        :param args: the error message to display</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">shell</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s">&quot;: &quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;{}: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span> <span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]))</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">AnsiCodes</span><span class="o">.</span><span class="n">red</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">AnsiCodes</span><span class="o">.</span><span class="n">reset</span><span class="p">,</span> <span class="nb">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="Command.run"><a class="viewcode-back" href="../../pypsi.base.html#pypsi.base.Command.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -285,16 +287,11 @@
 
 
 </div></div>
-<span class="k">class</span> <span class="nc">PrintHelpMessage</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">CommandShortCircuit</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
-
-
-<span class="k">class</span> <span class="nc">ArgumentError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CommandShortCircuit</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="n">code</span>
 
 
 <div class="viewcode-block" id="PypsiArgParser"><a class="viewcode-back" href="../../pypsi.base.html#pypsi.base.PypsiArgParser">[docs]</a><span class="k">class</span> <span class="nc">PypsiArgParser</span><span class="p">(</span><span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">):</span>
@@ -308,31 +305,23 @@
 <span class="sd">      stream</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">PypsiArgParser</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">message</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">AnsiCodes</span><span class="o">.</span><span class="n">red</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">AnsiCodes</span><span class="o">.</span><span class="n">reset</span><span class="p">,</span> <span class="nb">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">CommandShortCircuit</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">parse_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">rc</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">help_msg</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">PypsiArgParser</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">PrintHelpMessage</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">shell</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">rc</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">except</span> <span class="n">ArgumentError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">rc</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="n">shell</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
-            <span class="n">shell</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format_help</span><span class="p">())</span>
-        <span class="k">return</span> <span class="bp">None</span>
+    <span class="k">def</span> <span class="nf">print_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">file</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">file</span> <span class="ow">or</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">AnsiCodes</span><span class="o">.</span><span class="n">yellow</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_usage</span><span class="p">(),</span> <span class="n">AnsiCodes</span><span class="o">.</span><span class="n">reset</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="nb">file</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">print_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">file</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">file</span> <span class="ow">or</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">AnsiCodes</span><span class="o">.</span><span class="n">yellow</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_help</span><span class="p">(),</span> <span class="n">AnsiCodes</span><span class="o">.</span><span class="n">reset</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="nb">file</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="n">ArgumentError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="n">PrintHelpMessage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">help_msg</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_print_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="nb">file</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">help_msg</span> <span class="o">=</span> <span class="n">msg</span></div>
+        <span class="k">print</span><span class="p">(</span><span class="n">AnsiCodes</span><span class="o">.</span><span class="n">red</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prog</span><span class="p">,</span> <span class="s">&quot;: error: &quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">AnsiCodes</span><span class="o">.</span><span class="n">reset</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="nb">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print_usage</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
 </pre></div>
 
           </div>
@@ -366,13 +355,13 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">pypsi 0.1 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">pypsi 1.1 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2014, Adam Meily.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>

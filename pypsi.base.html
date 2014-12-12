@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>5. pypsi.base - Base classes for pluggable features &mdash; pypsi 0.1 documentation</title>
+    <title>4. pypsi.base - Base classes for pluggable features &mdash; pypsi 1.1 documentation</title>
     
     <link rel="stylesheet" href="_static/pypsi.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,9 +23,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="pypsi 0.1 documentation" href="index.html" />
-    <link rel="next" title="6. pypsi.cmdline - User input processing" href="pypsi.cmdline.html" />
-    <link rel="prev" title="4. Pypsi Builtin Plugins" href="pypsi.plugins.html" /> 
+    <link rel="top" title="pypsi 1.1 documentation" href="index.html" />
+    <link rel="next" title="5. pypsi.cmdline - User input processing" href="pypsi.cmdline.html" />
+    <link rel="prev" title="3. Pypsi Builtin Plugins" href="pypsi.plugins.html" /> 
   </head>
   <body>
     <div class="related">
@@ -38,12 +38,12 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="pypsi.cmdline.html" title="6. pypsi.cmdline - User input processing"
+          <a href="pypsi.cmdline.html" title="5. pypsi.cmdline - User input processing"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="pypsi.plugins.html" title="4. Pypsi Builtin Plugins"
+          <a href="pypsi.plugins.html" title="3. Pypsi Builtin Plugins"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">pypsi 0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pypsi 1.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -53,18 +53,18 @@
           <div class="body">
             
   <div class="section" id="pypsi-base-base-classes-for-pluggable-features">
-<h1>5. pypsi.base - Base classes for pluggable features<a class="headerlink" href="#pypsi-base-base-classes-for-pluggable-features" title="Permalink to this headline">¶</a></h1>
+<h1>4. pypsi.base - Base classes for pluggable features<a class="headerlink" href="#pypsi-base-base-classes-for-pluggable-features" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul class="simple">
 </ul>
 </div>
 <span class="target" id="module-pypsi.base"></span><p>Base classes for developing pluggable commands and plugins.</p>
 <div class="section" id="command-objects">
-<h2>5.1. Command objects<a class="headerlink" href="#command-objects" title="Permalink to this headline">¶</a></h2>
+<h2>4.1. Command objects<a class="headerlink" href="#command-objects" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pypsi.base.Command">
 <em class="property">class </em><tt class="descclassname">pypsi.base.</tt><tt class="descname">Command</tt><big>(</big><em>name</em>, <em>usage=None</em>, <em>brief=None</em>, <em>topic=None</em>, <em>pipe='str'</em><big>)</big><a class="reference internal" href="_modules/pypsi/base.html#Command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.base.Command" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
 <p>A pluggable command that users can execute. All commands need to derive from
 this class. When a command is executed by a user, the command&#8217;s <a class="reference internal" href="#pypsi.base.Command.run" title="pypsi.base.Command.run"><tt class="xref py py-meth docutils literal"><span class="pre">run()</span></tt></a>
 method will be called. The return value of the <a class="reference internal" href="#pypsi.base.Command.run" title="pypsi.base.Command.run"><tt class="xref py py-meth docutils literal"><span class="pre">run()</span></tt></a> method is used
@@ -82,7 +82,7 @@ found by the shell. The return value of <a class="reference internal" href="#pyp
 purpose as the return value of <a class="reference internal" href="#pypsi.base.Command.run" title="pypsi.base.Command.run"><tt class="xref py py-meth docutils literal"><span class="pre">run()</span></tt></a>.</p>
 <p>By the time <a class="reference internal" href="#pypsi.base.Command.run" title="pypsi.base.Command.run"><tt class="xref py py-meth docutils literal"><span class="pre">run()</span></tt></a> is called, the system streams have been updated to
 point to the current file streams. This means that the statement context&#8217;s
-system streams are the same as the global streams in the <a class="reference external" href="http://docs.python.org/3.3/library/sys.html#module-sys" title="(in Python v3.3)"><tt class="xref py py-mod docutils literal"><span class="pre">sys</span></tt></a> module.
+system streams are the same as the global streams in the <a class="reference external" href="http://docs.python.org/3.3/library/sys.html#module-sys" title="(in Python v3.4)"><tt class="xref py py-mod docutils literal"><span class="pre">sys</span></tt></a> module.
 For example, to write to <cite>stdout</cite>, a command may perform any of the
 following in the <a class="reference internal" href="#pypsi.base.Command.run" title="pypsi.base.Command.run"><tt class="xref py py-meth docutils literal"><span class="pre">run()</span></tt></a> method, all of which are equivalent:</p>
 <ul class="simple">
@@ -95,12 +95,12 @@ following in the <a class="reference internal" href="#pypsi.base.Command.run" ti
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>name</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; the name of the command which the user will reference
+<li><strong>name</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the name of the command which the user will reference
 in the shell</li>
-<li><strong>usage</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; the usage message to be displayed to the user</li>
-<li><strong>brief</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; a brief description of the command</li>
-<li><strong>topic</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; the topic that this command belongs to</li>
-<li><strong>pipe</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; the type of data that will be read from and written to
+<li><strong>usage</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the usage message to be displayed to the user</li>
+<li><strong>brief</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; a brief description of the command</li>
+<li><strong>topic</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the topic that this command belongs to</li>
+<li><strong>pipe</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the type of data that will be read from and written to
 any pipes</li>
 </ul>
 </td>
@@ -116,10 +116,10 @@ any pipes</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>shell</strong> (<a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell" title="pypsi.shell.Shell"><em>pypsi.shell.Shell</em></a>) &#8211; the active shell</li>
-<li><strong>args</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.3)"><em>list</em></a>) &#8211; the list of arguments, the last one containing the
+<li><strong>shell</strong> (<em>pypsi.shell.Shell</em>) &#8211; the active shell</li>
+<li><strong>args</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.4)"><em>list</em></a>) &#8211; the list of arguments, the last one containing the
 cursor position</li>
-<li><strong>prefix</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; the prefix that all items returned must start with</li>
+<li><strong>prefix</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the prefix that all items returned must start with</li>
 </ul>
 </td>
 </tr>
@@ -139,7 +139,7 @@ cursor position</li>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>shell</strong> (<a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell" title="pypsi.shell.Shell"><em>pypsi.shell.Shell</em></a>) &#8211; the active shell</li>
+<li><strong>shell</strong> (<em>pypsi.shell.Shell</em>) &#8211; the active shell</li>
 <li><strong>args</strong> &#8211; the error message to display</li>
 </ul>
 </td>
@@ -159,9 +159,9 @@ command name that was entered by the user.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>shell</strong> (<a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell" title="pypsi.shell.Shell"><em>pypsi.shell.Shell</em></a>) &#8211; the active shell</li>
-<li><strong>name</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; the name of the command to run</li>
-<li><strong>args</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.3)"><em>list</em></a>) &#8211; arguments</li>
+<li><strong>shell</strong> (<em>pypsi.shell.Shell</em>) &#8211; the active shell</li>
+<li><strong>name</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the name of the command to run</li>
+<li><strong>args</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.4)"><em>list</em></a>) &#8211; arguments</li>
 <li><strong>ctx</strong> (<a class="reference internal" href="pypsi.cmdline.html#pypsi.cmdline.StatementContext" title="pypsi.cmdline.StatementContext"><em>pypsi.cmdline.StatementContext</em></a>) &#8211; the active context</li>
 </ul>
 </td>
@@ -183,8 +183,8 @@ invalid usage</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>shell</strong> (<a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell" title="pypsi.shell.Shell"><em>pypsi.shell.Shell</em></a>) &#8211; the active shell</li>
-<li><strong>args</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.3)"><em>list</em></a>) &#8211; list of string arguments</li>
+<li><strong>shell</strong> (<em>pypsi.shell.Shell</em>) &#8211; the active shell</li>
+<li><strong>args</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.4)"><em>list</em></a>) &#8211; list of string arguments</li>
 <li><strong>pypsi.cmdline.StatementContext</strong> &#8211; the current statement context</li>
 </ul>
 </td>
@@ -205,7 +205,7 @@ invalid usage</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>shell</strong> (<a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell" title="pypsi.shell.Shell"><em>pypsi.shell.Shell</em></a>) &#8211; the active shell</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>shell</strong> (<em>pypsi.shell.Shell</em>) &#8211; the active shell</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns int:</th><td class="field-body">0 on success, -1 on error</td>
 </tr>
@@ -223,7 +223,7 @@ After the error is displayed, the usage is printed.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>shell</strong> (<a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell" title="pypsi.shell.Shell"><em>pypsi.shell.Shell</em></a>) &#8211; the active shell</li>
+<li><strong>shell</strong> (<em>pypsi.shell.Shell</em>) &#8211; the active shell</li>
 <li><strong>args</strong> &#8211; list of strings that are the error message</li>
 </ul>
 </td>
@@ -236,17 +236,17 @@ After the error is displayed, the usage is printed.</p>
 
 </div>
 <div class="section" id="plugin-objects">
-<h2>5.2. Plugin objects<a class="headerlink" href="#plugin-objects" title="Permalink to this headline">¶</a></h2>
+<h2>4.2. Plugin objects<a class="headerlink" href="#plugin-objects" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pypsi.base.Plugin">
 <em class="property">class </em><tt class="descclassname">pypsi.base.</tt><tt class="descname">Plugin</tt><big>(</big><em>preprocess=None</em>, <em>postprocess=None</em><big>)</big><a class="reference internal" href="_modules/pypsi/base.html#Plugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.base.Plugin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
-<p>A plugin is an object that is able to modify a <a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell" title="pypsi.shell.Shell"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.shell.Shell</span></tt></a>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<p>A plugin is an object that is able to modify a <tt class="xref py py-class docutils literal"><span class="pre">pypsi.shell.Shell</span></tt>
 object&#8217;s behavior. Whereas a command can be execute from user input, the
 <cite>Plugin</cite> class does not contain a <cite>run()</cite> function.</p>
 <p>Constructor can take two parameters: <cite>preprocess</cite> and <cite>postprocess</cite>. These
 values determine where the plugin resides inside of the preprocess and
-postprocess list. This list, inside of <a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell" title="pypsi.shell.Shell"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.shell.Shell</span></tt></a>, is iterated
+postprocess list. This list, inside of <tt class="xref py py-class docutils literal"><span class="pre">pypsi.shell.Shell</span></tt>, is iterated
 sequentially, from most priority to least. So, the highest priority
 value is 0, which means it will be the first plugin to run, and the
 lowest value is 100, which means it will be the last plugin to run. If
@@ -258,8 +258,8 @@ then postprocess should be set to <tt class="xref py py-const docutils literal">
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>preprocess</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.3)"><em>int</em></a>) &#8211; the preprocess priority</li>
-<li><strong>postprocess</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.3)"><em>int</em></a>) &#8211; the postprocess priority</li>
+<li><strong>preprocess</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; the preprocess priority</li>
+<li><strong>postprocess</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; the postprocess priority</li>
 </ul>
 </td>
 </tr>
@@ -277,8 +277,8 @@ unmodified.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>shell</strong> (<a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell" title="pypsi.shell.Shell"><em>pypsi.shell.Shell</em></a>) &#8211; the active shell</li>
-<li><strong>line</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; the current input statement string</li>
+<li><strong>shell</strong> (<em>pypsi.shell.Shell</em>) &#8211; the active shell</li>
+<li><strong>line</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the current input statement string</li>
 </ul>
 </td>
 </tr>
@@ -298,7 +298,7 @@ unmodified.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>shell</strong> (<a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell" title="pypsi.shell.Shell"><em>pypsi.shell.Shell</em></a>) &#8211; the active shell</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>shell</strong> (<em>pypsi.shell.Shell</em>) &#8211; the active shell</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns int:</th><td class="field-body">0 on success, -1 on error</td>
 </tr>
@@ -308,13 +308,13 @@ unmodified.</p>
 
 <dl class="method">
 <dt id="pypsi.base.Plugin.on_statement_finished">
-<tt class="descname">on_statement_finished</tt><big>(</big><em>shell</em><big>)</big><a class="reference internal" href="_modules/pypsi/base.html#Plugin.on_statement_finished"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.base.Plugin.on_statement_finished" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">on_statement_finished</tt><big>(</big><em>shell</em>, <em>rc</em><big>)</big><a class="reference internal" href="_modules/pypsi/base.html#Plugin.on_statement_finished"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.base.Plugin.on_statement_finished" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when a statement has been completely executed.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>shell</strong> (<a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell" title="pypsi.shell.Shell"><em>pypsi.shell.Shell</em></a>) &#8211; the active shell</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>shell</strong> (<em>pypsi.shell.Shell</em>) &#8211; the active shell</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns int:</th><td class="field-body">0 on success, -1 on error</td>
 </tr>
@@ -332,9 +332,9 @@ performs no preprocessing, return the tokens unmodified.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>shell</strong> (<a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell" title="pypsi.shell.Shell"><em>pypsi.shell.Shell</em></a>) &#8211; the active shell</li>
-<li><strong>tokens</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.3)"><em>list</em></a>) &#8211; the list of <a class="reference internal" href="pypsi.cmdline.html#pypsi.cmdline.Token" title="pypsi.cmdline.Token"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.cmdline.Token</span></tt></a> objects</li>
-<li><strong>origin</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.3)"><em>str</em></a>) &#8211; the origin of the input, can be either &#8216;input&#8217; if
+<li><strong>shell</strong> (<em>pypsi.shell.Shell</em>) &#8211; the active shell</li>
+<li><strong>tokens</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.4)"><em>list</em></a>) &#8211; the list of <a class="reference internal" href="pypsi.cmdline.html#pypsi.cmdline.Token" title="pypsi.cmdline.Token"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.cmdline.Token</span></tt></a> objects</li>
+<li><strong>origin</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the origin of the input, can be either &#8216;input&#8217; if
 received from a call to <cite>input()</cite> or &#8216;prompt&#8217; if the input is the
 prompt to display to the user</li>
 </ul>
@@ -356,7 +356,7 @@ objects</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>shell</strong> (<a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell" title="pypsi.shell.Shell"><em>pypsi.shell.Shell</em></a>) &#8211; the active shell</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>shell</strong> (<em>pypsi.shell.Shell</em>) &#8211; the active shell</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns int:</th><td class="field-body">0 on success, -1 on failure</td>
 </tr>
@@ -368,12 +368,12 @@ objects</p>
 
 </div>
 <div class="section" id="argument-parsing">
-<h2>5.3. Argument parsing<a class="headerlink" href="#argument-parsing" title="Permalink to this headline">¶</a></h2>
+<h2>4.3. Argument parsing<a class="headerlink" href="#argument-parsing" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="pypsi.base.PypsiArgParser">
-<em class="property">class </em><tt class="descclassname">pypsi.base.</tt><tt class="descname">PypsiArgParser</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/base.html#PypsiArgParser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.base.PypsiArgParser" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="http://docs.python.org/3.3/library/argparse.html#argparse.ArgumentParser" title="(in Python v3.3)"><tt class="xref py py-class docutils literal"><span class="pre">argparse.ArgumentParser</span></tt></a></p>
-<p>Customized <a class="reference external" href="http://docs.python.org/3.3/library/argparse.html#argparse.ArgumentParser" title="(in Python v3.3)"><tt class="xref py py-class docutils literal"><span class="pre">argparse.ArgumentParser</span></tt></a> for use in pypsi. This class slightly
+<em class="property">class </em><tt class="descclassname">pypsi.base.</tt><tt class="descname">PypsiArgParser</tt><big>(</big><em>prog=None</em>, <em>usage=None</em>, <em>description=None</em>, <em>epilog=None</em>, <em>parents=[]</em>, <em>formatter_class=&lt;class 'argparse.HelpFormatter'&gt;</em>, <em>prefix_chars='-'</em>, <em>fromfile_prefix_chars=None</em>, <em>argument_default=None</em>, <em>conflict_handler='error'</em>, <em>add_help=True</em><big>)</big><a class="reference internal" href="_modules/pypsi/base.html#PypsiArgParser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.base.PypsiArgParser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="http://docs.python.org/3.3/library/argparse.html#argparse.ArgumentParser" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">argparse.ArgumentParser</span></tt></a></p>
+<p>Customized <a class="reference external" href="http://docs.python.org/3.3/library/argparse.html#argparse.ArgumentParser" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">argparse.ArgumentParser</span></tt></a> for use in pypsi. This class slightly
 modifies the base ArgumentParser so that the following occurs:</p>
 <ul class="simple">
 <li>The whole program does not exit on printing the help message or bad
@@ -394,20 +394,20 @@ stream</li>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">5. pypsi.base - Base classes for pluggable features</a><ul>
-<li><a class="reference internal" href="#command-objects">5.1. Command objects</a></li>
-<li><a class="reference internal" href="#plugin-objects">5.2. Plugin objects</a></li>
-<li><a class="reference internal" href="#argument-parsing">5.3. Argument parsing</a></li>
+<li><a class="reference internal" href="#">4. pypsi.base - Base classes for pluggable features</a><ul>
+<li><a class="reference internal" href="#command-objects">4.1. Command objects</a></li>
+<li><a class="reference internal" href="#plugin-objects">4.2. Plugin objects</a></li>
+<li><a class="reference internal" href="#argument-parsing">4.3. Argument parsing</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="pypsi.plugins.html"
-                        title="previous chapter">4. Pypsi Builtin Plugins</a></p>
+                        title="previous chapter">3. Pypsi Builtin Plugins</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="pypsi.cmdline.html"
-                        title="next chapter">6. pypsi.cmdline - User input processing</a></p>
+                        title="next chapter">5. pypsi.cmdline - User input processing</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/pypsi.base.txt"
@@ -440,17 +440,17 @@ stream</li>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="pypsi.cmdline.html" title="6. pypsi.cmdline - User input processing"
+          <a href="pypsi.cmdline.html" title="5. pypsi.cmdline - User input processing"
              >next</a> |</li>
         <li class="right" >
-          <a href="pypsi.plugins.html" title="4. Pypsi Builtin Plugins"
+          <a href="pypsi.plugins.html" title="3. Pypsi Builtin Plugins"
              >previous</a> |</li>
-        <li><a href="index.html">pypsi 0.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">pypsi 1.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2014, Adam Meily.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>

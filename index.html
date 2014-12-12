@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pypsi &mdash; pypsi 0.1 documentation</title>
+    <title>pypsi &mdash; pypsi 1.1 documentation</title>
     
     <link rel="stylesheet" href="_static/pypsi.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,8 +23,8 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="pypsi 0.1 documentation" href="#" />
-    <link rel="next" title="1. pypsi Overview" href="pypsi.html" /> 
+    <link rel="top" title="pypsi 1.1 documentation" href="#" />
+    <link rel="next" title="1. Overview" href="pypsi.html" /> 
   </head>
   <body>
     <div class="related">
@@ -37,9 +37,9 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="pypsi.html" title="1. pypsi Overview"
+          <a href="pypsi.html" title="1. Overview"
              accesskey="N">next</a> |</li>
-        <li><a href="#">pypsi 0.1 documentation</a> &raquo;</li> 
+        <li><a href="#">pypsi 1.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -52,56 +52,57 @@
 <h1>pypsi<a class="headerlink" href="#pypsi" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.html">1. pypsi Overview</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.html#why-not-just-use-the-cmd-module">1.1. Why not just use the <tt class="docutils literal"><span class="pre">cmd</span></tt> module?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.html#who-should-use-pypsi">1.2. Who should use pypsi?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.html#caveats">1.3. Caveats</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.html#features">1.4. Features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.html#capabilities">1.5. Capabilities</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pypsi.html#variables">1.5.1. Variables</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pypsi.html#i-o-redirection">1.5.2. I/O redirection</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pypsi.html#system-commands">1.5.3. System commands</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pypsi.html#fallback-command">1.5.4. Fallback command</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pypsi.html#command-chaining">1.5.5. Command chaining</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pypsi.html#multiline-commands">1.5.6. Multiline commands</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pypsi.html#macros">1.5.7. Macros</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pypsi.html#history">1.5.8. History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.html">1. Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.html#caveats">1.1. Caveats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.html#releases">1.2. Releases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.html#features">1.3. Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.html#demo">1.4. Demo</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pypsi.html#variables">1.4.1. Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypsi.html#i-o-redirection">1.4.2. I/O redirection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypsi.html#system-commands">1.4.3. System commands</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypsi.html#fallback-command">1.4.4. Fallback command</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypsi.html#command-chaining">1.4.5. Command chaining</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypsi.html#multiline-commands">1.4.6. Multiline commands</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypsi.html#macros">1.4.7. Macros</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.html#license">1.5. License</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.commands.html">2. Pypsi Builtin Commands</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.plugins.html">3. Pypsi Builtin Plugins</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.block">3.1. Block Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#escape-sequence-processors">3.2. Escape Sequence Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.history">3.3. Shell History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.variable">3.4. Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.cmd">3.5. Cmd</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.base.html">4. pypsi.base - Base classes for pluggable features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#command-objects">4.1. Command objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#plugin-objects">4.2. Plugin objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#argument-parsing">4.3. Argument parsing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.cmdline.html">5. pypsi.cmdline - User input processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#commands-and-expressions">5.1. Commands and expressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#tokens">5.2. Tokens</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pypsi.cmdline.html#constants">5.2.1. Constants</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypsi.cmdline.html#classes">5.2.2. Classes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#statements">5.3. Statements</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pypsi.cmdline.html#exceptions">5.3.1. Exceptions</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.shell.html">2. Pypsi Shell</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.commands.html">3. Pypsi Builtin Commands</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="pypsi.namespace.html">6. pypsi.namespace - Arbitrary attribute storage classes</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.plugins.html">4. Pypsi Builtin Plugins</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.block">4.1. Block Commands</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#escape-sequence-processors">4.2. Escape Sequence Processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.history">4.3. Shell History</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.variable">4.4. Variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.cmd">4.5. Cmd</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.base.html">5. pypsi.base - Base classes for pluggable features</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#command-objects">5.1. Command objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#plugin-objects">5.2. Plugin objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#argument-parsing">5.3. Argument parsing</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.cmdline.html">6. pypsi.cmdline - User input processing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#commands-and-expressions">6.1. Commands and expressions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#tokens">6.2. Tokens</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pypsi.cmdline.html#constants">6.2.1. Constants</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pypsi.cmdline.html#classes">6.2.2. Classes</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#statements">6.3. Statements</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pypsi.cmdline.html#exceptions">6.3.1. Exceptions</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.namespace.html">7. pypsi.namespace - Arbitrary attribute storage classes</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="pypsi.format.html">7. pypsi.format - Stream output formatting</a><ul class="simple">
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="pypsi.stream.html">8. pypsi.stream - File streams</a><ul class="simple">
@@ -130,15 +131,13 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">pypsi</a><ul>
-</ul>
-</li>
+<li><a class="reference internal" href="#">pypsi</a></li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 
   <h4>Next topic</h4>
   <p class="topless"><a href="pypsi.html"
-                        title="next chapter">1. pypsi Overview</a></p>
+                        title="next chapter">1. Overview</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/index.txt"
@@ -171,14 +170,14 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="pypsi.html" title="1. pypsi Overview"
+          <a href="pypsi.html" title="1. Overview"
              >next</a> |</li>
-        <li><a href="#">pypsi 0.1 documentation</a> &raquo;</li> 
+        <li><a href="#">pypsi 1.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2014, Adam Meily.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pypsi.commands.include &mdash; pypsi 0.1 documentation</title>
+    <title>pypsi.commands.include &mdash; pypsi 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/pypsi.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '0.1',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="pypsi 0.1 documentation" href="../../../index.html" />
+    <link rel="top" title="pypsi 1.1 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">pypsi 0.1 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">pypsi 1.1 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -77,8 +77,12 @@
 <span class="c"># SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="c">#</span>
 
-<span class="kn">from</span> <span class="nn">pypsi.base</span> <span class="kn">import</span> <span class="n">Command</span>
+<span class="kn">from</span> <span class="nn">pypsi.base</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">PypsiArgParser</span><span class="p">,</span> <span class="n">CommandShortCircuit</span>
+<span class="kn">from</span> <span class="nn">pypsi.utils</span> <span class="kn">import</span> <span class="n">safe_open</span>
+<span class="kn">from</span> <span class="nn">pypsi.completers</span> <span class="kn">import</span> <span class="n">path_completer</span>
 <span class="kn">import</span> <span class="nn">os</span>
+
+
 
 
 <span class="k">class</span> <span class="nc">IncludeFile</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -88,6 +92,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">abspath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">line</span> <span class="o">=</span> <span class="n">line</span>
 
+<span class="c">#IncludeCmdUsage = &quot;%(prog)s PATH&quot;</span>
+
 
 <div class="viewcode-block" id="IncludeCommand"><a class="viewcode-back" href="../../../pypsi.commands.html#pypsi.commands.include.IncludeCommand">[docs]</a><span class="k">class</span> <span class="nc">IncludeCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -95,46 +101,67 @@
 <span class="sd">    processing it as if it were typed into the shell.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;include&#39;</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="s">&#39;shell&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">IncludeCommand</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">,</span> <span class="n">brief</span><span class="o">=</span><span class="s">&#39;execute a script file&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;include&#39;</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="s">&#39;shell&#39;</span><span class="p">,</span> <span class="n">brief</span><span class="o">=</span><span class="s">&#39;execute a script file&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parser</span> <span class="o">=</span> <span class="n">PypsiArgParser</span><span class="p">(</span>
+            <span class="n">prog</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">brief</span><span class="p">,</span>
+            <span class="c">#usage=IncludeCmdUsage</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s">&#39;path&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&#39;PATH&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;file to execute&#39;</span>
+        <span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">IncludeCommand</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">,</span> <span class="n">brief</span><span class="o">=</span><span class="n">brief</span><span class="p">,</span>
+            <span class="n">usage</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">format_help</span><span class="p">(),</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stack</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">def</span> <span class="nf">complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">path_completer</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">CommandShortCircuit</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">include_file</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">ns</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">ctx</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">include_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
         <span class="n">fp</span> <span class="o">=</span> <span class="bp">None</span>
-        <span class="n">ifile</span> <span class="o">=</span> <span class="n">IncludeFile</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">ifile</span> <span class="o">=</span> <span class="n">IncludeFile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
         <span class="n">top</span> <span class="o">=</span> <span class="bp">False</span>
         <span class="n">templ</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="p">:</span>
-            <span class="n">templ</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">prefix</span>
+            <span class="c">#templ = shell.error.prefix</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">abspath</span> <span class="o">==</span> <span class="n">ifile</span><span class="o">.</span><span class="n">abspath</span><span class="p">:</span>
-                    <span class="n">shell</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;recursive include for file &quot;</span><span class="p">,</span> <span class="n">ifile</span><span class="o">.</span><span class="n">abspath</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&quot;recursive include for file &quot;</span><span class="p">,</span> <span class="n">ifile</span><span class="o">.</span><span class="n">abspath</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
                     <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">templ</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">prefix</span> <span class="o">+</span> <span class="s">&quot;error in file {file} on line {line}: &quot;</span>
+            <span class="c">#templ = shell.error.prefix + &quot;error in file {file} on line {line}: &quot;</span>
             <span class="n">top</span> <span class="o">=</span> <span class="bp">True</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ifile</span><span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">fp</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+            <span class="n">fp</span> <span class="o">=</span> <span class="n">safe_open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">IOError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">shell</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;error opening file &quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&quot;: &quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&quot;error opening file &quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="s">&quot;: &quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
             <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
 
-        <span class="n">orig_prefix</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">prefix</span>
+        <span class="c">#orig_prefix = shell.error.prefix</span>
         <span class="nb">next</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">fork</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fp</span><span class="p">:</span>
-            <span class="n">shell</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="n">templ</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">file</span><span class="o">=</span><span class="n">ifile</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="n">ifile</span><span class="o">.</span><span class="n">line</span><span class="p">)</span>
+            <span class="c">#shell.error.prefix = templ.format(file=ifile.name, line=ifile.line)</span>
             <span class="n">shell</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="nb">next</span><span class="p">)</span>
             <span class="n">ifile</span><span class="o">.</span><span class="n">line</span> <span class="o">+=</span> <span class="mi">1</span>
 
-        <span class="k">if</span> <span class="n">top</span><span class="p">:</span>
-            <span class="n">shell</span><span class="o">.</span><span class="n">error</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="n">orig_prefix</span>
+        <span class="c">#if top:</span>
+        <span class="c">#    shell.error.prefix = orig_prefix</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
         <span class="n">fp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
@@ -173,13 +200,13 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">pypsi 0.1 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">pypsi 1.1 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2014, Adam Meily.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>

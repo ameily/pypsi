@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pypsi.commands.system &mdash; pypsi 0.1 documentation</title>
+    <title>pypsi.commands.system &mdash; pypsi 1.1 documentation</title>
     
     <link rel="stylesheet" href="../../../_static/pypsi.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
-        VERSION:     '0.1',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <link rel="top" title="pypsi 0.1 documentation" href="../../../index.html" />
+    <link rel="top" title="pypsi 1.1 documentation" href="../../../index.html" />
     <link rel="up" title="Module code" href="../../index.html" /> 
   </head>
   <body>
@@ -36,7 +36,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">pypsi 0.1 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">pypsi 1.1 documentation</a> &raquo;</li>
           <li><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -77,8 +77,16 @@
 <span class="c"># SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
 <span class="c">#</span>
 
-<span class="kn">from</span> <span class="nn">pypsi.base</span> <span class="kn">import</span> <span class="n">Command</span>
+<span class="kn">from</span> <span class="nn">pypsi.base</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">PypsiArgParser</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
+
+<span class="n">SystemUsage</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;usage: {name} COMMAND</span>
+
+<span class="s">execute a system shell command</span>
+
+<span class="s">positional arguments:</span>
+<span class="s">  COMMAND            command to execute&quot;&quot;&quot;</span>
+
 
 <div class="viewcode-block" id="SystemCommand"><a class="viewcode-back" href="../../../pypsi.commands.html#pypsi.commands.system.SystemCommand">[docs]</a><span class="k">class</span> <span class="nc">SystemCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -86,17 +94,32 @@
 <span class="sd">    shell&#39;s fallback command.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;system&#39;</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="s">&#39;shell&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">SystemCommand</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">,</span> <span class="n">brief</span><span class="o">=</span><span class="s">&#39;execute a system shell command&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;system&#39;</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="s">&#39;shell&#39;</span><span class="p">,</span> <span class="n">use_shell</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SystemCommand</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">,</span>
+            <span class="n">brief</span><span class="o">=</span><span class="s">&#39;execute a system shell command&#39;</span><span class="p">,</span>
+            <span class="n">usage</span><span class="o">=</span><span class="n">SystemUsage</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">),</span>
+            <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_shell</span> <span class="o">=</span> <span class="n">use_shell</span>
 
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
         <span class="n">rc</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="n">proc</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">shell</span><span class="o">.</span><span class="n">real_stdin</span> <span class="o">==</span> <span class="n">ctx</span><span class="o">.</span><span class="n">stdin</span><span class="p">:</span>
-                <span class="n">proc</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+            <span class="n">stdout</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">pipe_stdout</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">if</span> <span class="n">shell</span><span class="o">.</span><span class="n">real_stdout</span> <span class="o">==</span> <span class="n">ctx</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">stream</span><span class="p">:</span>
+                <span class="n">stdout</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">stream</span>
+                <span class="n">pipe_stdout</span> <span class="o">=</span> <span class="bp">False</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">proc</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">stdin</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+                <span class="n">stdout</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span>
+
+            <span class="k">if</span> <span class="n">shell</span><span class="o">.</span><span class="n">real_stdin</span> <span class="o">==</span> <span class="n">ctx</span><span class="o">.</span><span class="n">stdin</span><span class="p">:</span>
+                <span class="n">proc</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">stream</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">use_shell</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">proc</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">stdin</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">stream</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">use_shell</span><span class="p">)</span>
                 <span class="n">buff</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">buff</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
                     <span class="n">buff</span> <span class="o">=</span> <span class="n">buff</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">)</span>
@@ -105,12 +128,21 @@
                 <span class="n">proc</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">errno</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-                <span class="n">shell</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s">&quot;: executable not found</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
-                <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&quot;executable not found&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">e</span><span class="o">.</span><span class="n">errno</span>
 
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">proc</span><span class="o">.</span><span class="n">stdout</span><span class="p">:</span>
-            <span class="n">ctx</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">&#39;utf-8&#39;</span><span class="p">))</span>
-        <span class="n">rc</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">pipe_stdout</span><span class="p">:</span>
+                <span class="n">encoding</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">encoding</span> <span class="ow">or</span> <span class="n">shell</span><span class="o">.</span><span class="n">real_stdout</span><span class="o">.</span><span class="n">encoding</span> <span class="ow">or</span> <span class="s">&#39;utf-8&#39;</span>
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">proc</span><span class="o">.</span><span class="n">stdout</span><span class="p">:</span>
+                    <span class="n">ctx</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">encoding</span><span class="p">))</span>
+            <span class="n">rc</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>            
+        <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+            <span class="n">proc</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+            <span class="n">proc</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+            <span class="n">rc</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">rc</span> <span class="k">if</span> <span class="n">rc</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
 
 <div class="viewcode-block" id="SystemCommand.fallback"><a class="viewcode-back" href="../../../pypsi.commands.html#pypsi.commands.system.SystemCommand.fallback">[docs]</a>    <span class="k">def</span> <span class="nf">fallback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
@@ -152,13 +184,13 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../../index.html">pypsi 0.1 documentation</a> &raquo;</li>
+        <li><a href="../../../index.html">pypsi 1.1 documentation</a> &raquo;</li>
           <li><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2014, Adam Meily.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
     </div>
   </body>
 </html>

@@ -1,0 +1,419 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>7. pypsi.format - Stream output formatting &mdash; pypsi 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/pypsi.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="pypsi 1.1 documentation" href="index.html" />
+    <link rel="next" title="8. pypsi.stream - File streams" href="pypsi.stream.html" />
+    <link rel="prev" title="6. pypsi.namespace - Arbitrary attribute storage classes" href="pypsi.namespace.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pypsi.stream.html" title="8. pypsi.stream - File streams"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pypsi.namespace.html" title="6. pypsi.namespace - Arbitrary attribute storage classes"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">pypsi 1.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="pypsi-format-stream-output-formatting">
+<h1>7. pypsi.format - Stream output formatting<a class="headerlink" href="#pypsi-format-stream-output-formatting" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<span class="target" id="module-pypsi.format"></span><p>Provides functions and classes for dealing with command line input, output, and
+ansi codes.</p>
+<dl class="class">
+<dt id="pypsi.format.Column">
+<em class="property">class </em><tt class="descclassname">pypsi.format.</tt><tt class="descname">Column</tt><big>(</big><em>text=''</em>, <em>mode=0</em><big>)</big><a class="reference internal" href="_modules/pypsi/format.html#Column"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.Column" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<p>A table column.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>text</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the column name</li>
+<li><strong>mode</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; the column size mode</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="pypsi.format.Column.Grow">
+<tt class="descname">Grow</tt><em class="property"> = 1</em><a class="headerlink" href="#pypsi.format.Column.Grow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Size mode to have the column grow to the maximum width it can have</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pypsi.format.Column.Shrink">
+<tt class="descname">Shrink</tt><em class="property"> = 0</em><a class="headerlink" href="#pypsi.format.Column.Shrink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Size mode to have the column shrink to its contents</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pypsi.format.FixedColumnTable">
+<em class="property">class </em><tt class="descclassname">pypsi.format.</tt><tt class="descname">FixedColumnTable</tt><big>(</big><em>widths</em><big>)</big><a class="reference internal" href="_modules/pypsi/format.html#FixedColumnTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.FixedColumnTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<p>A table that has preset column widths.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>widths</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.4)"><em>list</em></a>) &#8211; the list of column widths (<cite>int</cite>)</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pypsi.format.FixedColumnTable.add_cell">
+<tt class="descname">add_cell</tt><big>(</big><em>fp</em>, <em>col</em><big>)</big><a class="reference internal" href="_modules/pypsi/format.html#FixedColumnTable.add_cell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.FixedColumnTable.add_cell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a single cell to the table. The current row is printed if the column
+completes the row.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypsi.format.FixedColumnTable.flush">
+<tt class="descname">flush</tt><big>(</big><em>fp</em><big>)</big><a class="reference internal" href="_modules/pypsi/format.html#FixedColumnTable.flush"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.FixedColumnTable.flush" title="Permalink to this definition">¶</a></dt>
+<dd><p>Force a write of the table.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fp</strong> (<em>file</em>) &#8211; the output file stream</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypsi.format.FixedColumnTable.write_row">
+<tt class="descname">write_row</tt><big>(</big><em>fp</em>, <em>*args</em><big>)</big><a class="reference internal" href="_modules/pypsi/format.html#FixedColumnTable.write_row"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.FixedColumnTable.write_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print a single row.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fp</strong> (<em>file</em>) &#8211; the output file stream (usually sys.stdout or sys.stderr)</li>
+<li><strong>args</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.4)"><em>list</em></a>) &#8211; the column values for the row</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pypsi.format.Table">
+<em class="property">class </em><tt class="descclassname">pypsi.format.</tt><tt class="descname">Table</tt><big>(</big><em>columns</em>, <em>width=80</em>, <em>spacing=1</em>, <em>header=True</em><big>)</big><a class="reference internal" href="_modules/pypsi/format.html#Table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.Table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<p>Variable width table.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>columns</strong> (<em>multiple</em>) &#8211; a list of either class:<cite>Column</cite> instances or a
+single <cite>int</cite> defining how many columns to create</li>
+<li><strong>width</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; the maximum width of the entire table</li>
+<li><strong>spacing</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; the amount of space characters to display between
+columns</li>
+<li><strong>header</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a>) &#8211; whether to display header row with the column names</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pypsi.format.Table.append">
+<tt class="descname">append</tt><big>(</big><em>*args</em><big>)</big><a class="reference internal" href="_modules/pypsi/format.html#Table.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.Table.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a row to the table.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>args</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.4)"><em>list</em></a>) &#8211; the column values</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypsi.format.Table.extend">
+<tt class="descname">extend</tt><big>(</big><em>*args</em><big>)</big><a class="reference internal" href="_modules/pypsi/format.html#Table.extend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.Table.extend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add multiple rows to the table, each argument should be a list of column
+values.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypsi.format.Table.write">
+<tt class="descname">write</tt><big>(</big><em>fp</em><big>)</big><a class="reference internal" href="_modules/pypsi/format.html#Table.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.Table.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print the table to a specified file stream.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fp</strong> (<em>file</em>) &#8211; output stream</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pypsi.format.ansi_center">
+<tt class="descclassname">pypsi.format.</tt><tt class="descname">ansi_center</tt><big>(</big><em>s</em>, <em>width</em><big>)</big><a class="reference internal" href="_modules/pypsi/format.html#ansi_center"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.ansi_center" title="Permalink to this definition">¶</a></dt>
+<dd><p>Center the provided string for a given width.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>s</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the input string</li>
+<li><strong>width</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; the desired field width</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypsi.format.ansi_len">
+<tt class="descclassname">pypsi.format.</tt><tt class="descname">ansi_len</tt><big>(</big><em>value</em><big>)</big><a class="reference internal" href="_modules/pypsi/format.html#ansi_len"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.ansi_len" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the length of the provided <cite>str</cite>, not counting any ansi codes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the input string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypsi.format.ansi_ljust">
+<tt class="descclassname">pypsi.format.</tt><tt class="descname">ansi_ljust</tt><big>(</big><em>s</em>, <em>width</em><big>)</big><a class="reference internal" href="_modules/pypsi/format.html#ansi_ljust"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.ansi_ljust" title="Permalink to this definition">¶</a></dt>
+<dd><p>Left justify an input string, ensuring that it contains width charaters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>s</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the input string</li>
+<li><strong>width</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; the desired output width</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns str:</th><td class="field-body"><p class="first last">the output string</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypsi.format.ansi_rjust">
+<tt class="descclassname">pypsi.format.</tt><tt class="descname">ansi_rjust</tt><big>(</big><em>s</em>, <em>width</em><big>)</big><a class="reference internal" href="_modules/pypsi/format.html#ansi_rjust"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.ansi_rjust" title="Permalink to this definition">¶</a></dt>
+<dd><p>Right justify the input string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>s</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the input string</li>
+<li><strong>width</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; the desired width</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns str:</th><td class="field-body"><p class="first last">the output string</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypsi.format.file_size_str">
+<tt class="descclassname">pypsi.format.</tt><tt class="descname">file_size_str</tt><big>(</big><em>value</em><big>)</big><a class="reference internal" href="_modules/pypsi/format.html#file_size_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.file_size_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the human readable file size string from a number. This will convert a
+value of 1024 to 1Kb and 1048576 to 1Mb.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; the value to convert</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns str:</th><td class="field-body">the human readable file size string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypsi.format.get_lines">
+<tt class="descclassname">pypsi.format.</tt><tt class="descname">get_lines</tt><big>(</big><em>txt</em><big>)</big><a class="reference internal" href="_modules/pypsi/format.html#get_lines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.get_lines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Break text to individual lines.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns tuple:</th><td class="field-body">a tuple containing the next line and whether the line
+contained a newline charater.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypsi.format.highlight">
+<tt class="descclassname">pypsi.format.</tt><tt class="descname">highlight</tt><big>(</big><em>target</em>, <em>term</em>, <em>color='1;32'</em><big>)</big><a class="reference internal" href="_modules/pypsi/format.html#highlight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.highlight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find and highlight a term inside of a block of text.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>target</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the text to search in</li>
+<li><strong>term</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the term to search for</li>
+<li><strong>color</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the color to output when the term is found</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns str:</th><td class="field-body"><p class="first last">the input string with all occurrences of the term highlighted</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypsi.format.title_str">
+<tt class="descclassname">pypsi.format.</tt><tt class="descname">title_str</tt><big>(</big><em>title</em>, <em>width=80</em>, <em>align='left'</em>, <em>hr='='</em>, <em>box=False</em><big>)</big><a class="reference internal" href="_modules/pypsi/format.html#title_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.title_str" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pypsi.format.wrap_line">
+<tt class="descclassname">pypsi.format.</tt><tt class="descname">wrap_line</tt><big>(</big><em>txt</em>, <em>width</em><big>)</big><a class="reference internal" href="_modules/pypsi/format.html#wrap_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.wrap_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Word wrap a single line.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>txt</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the line to wrap</li>
+<li><strong>width</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; the maximum width of a wrapped line</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns str:</th><td class="field-body"><p class="first last">the next wrapped line</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pypsi.namespace.html"
+                        title="previous chapter">6. pypsi.namespace - Arbitrary attribute storage classes</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pypsi.stream.html"
+                        title="next chapter">8. pypsi.stream - File streams</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/pypsi.format.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pypsi.stream.html" title="8. pypsi.stream - File streams"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pypsi.namespace.html" title="6. pypsi.namespace - Arbitrary attribute storage classes"
+             >previous</a> |</li>
+        <li><a href="index.html">pypsi 1.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Adam Meily.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
