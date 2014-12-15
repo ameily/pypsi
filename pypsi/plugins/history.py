@@ -37,7 +37,6 @@ import os
 
 CmdUsage = """%(prog)s clear
    or: %(prog)s delete N
-   or: %(prog)s exec PREFIX
    or: %(prog)s list [N]
    or: %(prog)s load PATH
    or: %(prog)s save PATH"""
@@ -57,7 +56,7 @@ class HistoryCommand(Command):
 
     def complete(self, shell, args, prefix):
         if len(args) == 1:
-            return [x for x in ('clear', 'delete', 'exec', 'list', 'load', 'save') if x.startswith(prefix)]
+            return [x for x in ('clear', 'delete', 'list', 'load', 'save') if x.startswith(prefix)]
 
         if len(args) == 2:
             if args[0] == 'save' or args[0] == 'load':
@@ -95,10 +94,6 @@ class HistoryCommand(Command):
             'path', metavar='PATH', help='load history from file located at PATH'
         )
 
-        exe = subcmd.add_parser('exec', help='execute previous history event')
-        exe.add_argument(
-            'prefix', metavar='PREFIX', help='find and execute previous history event with give PREFIX'
-        )
 
     def run(self, shell, args, ctx):
         try:
@@ -118,28 +113,6 @@ class HistoryCommand(Command):
             for event in shell.ctx.history[start:]:
                 print(i, '    ', event, sep='')
                 i += 1
-        elif ns.subcmd == 'exec':
-            event = None
-            if ns.prefix.isdigit() or (ns.prefix[0] == '-' and ns.prefix[1:].isdigit()):
-                try:
-                    index = int(ns.prefix) - 1
-                    event = shell.ctx.history[index]
-                except ValueError:
-                    self.error(shell, "invalid event index\n")
-                    rc = -1
-                except IndexError as e:
-                    self.error(shell, "invalid event index\n")
-                    rc = -1
-            else:
-                event = shell.ctx.history.search_prefix(ns.prefix)
-                if event is None:
-                    self.error(shell, "event not found")
-                    rc = -1
-
-            if event:
-                print("found event: ", event, sep='')
-                shell.execute(event,None)
-                
         elif ns.subcmd == 'clear':
             shell.ctx.history.clear()
         elif ns.subcmd == 'delete':

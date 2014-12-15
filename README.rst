@@ -8,7 +8,7 @@ Pypsi was designed around the Python ``cmd`` module. The Python ``cmd`` module
 is fine for small projects with a limited number of commands and features.
 However, as the interface grows, maintainability and extensibility becomes
 increasingly hard. Adding features such as argument parsing after a few commands
-have been implemented is exectremely time consuming.
+have been implemented is extremely time consuming.
 
 Pypsi is targetted towards both rapid prototype interfaces and large stable
 shells. The bootstraping code is very small with very little boilerplate. Pypsi
