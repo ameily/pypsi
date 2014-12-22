@@ -1,26 +1,22 @@
 Overview
-========================================
+========
 
 Python Pluggable Shell Interface, or pypsi, is a framework for developing
-command line based shell interfaces, akin to bash or csh.
-
-Pypsi was designed around the Python ``cmd`` module. The Python ``cmd`` module
-is fine for small projects with a limited number of commands and features.
-However, as the interface grows, maintainability and extensibility becomes
-increasingly hard. Adding features such as argument parsing after a few commands
-have been implemented is extremely time consuming.
+command line based shell interfaces, akin to bash or csh. It is intended to be
+a replacement for the builtin Python ``cmd`` module. A ``cmd`` plugin is
+available for use to make the transition from ``cmd``-based shells to Pypsi.
 
 Pypsi is targetted towards both rapid prototype interfaces and large stable
 shells. The bootstraping code is very small with very little boilerplate. Pypsi
-ships with a great deal of capabilities box of the box, all of which can be used
-or ignore. Pypsi is pluggable which allows commands, features, and plugins be
+ships with a great deal of capabilities out of the box, all of which can be used
+or ignored. Pypsi is pluggable which allows commands, features, and plugins to be
 developed independently in their own source files and/or Python classes. This
 results in a very clean source repository. The actual code to setup and run the
 shell is exetremely small, on the order of ~20-50 lines of code.
 
 Pypsi, at its core, is pluggable. There are many hooks that allow plugin authors
 to extend and modify the core behavior of pypsi. Commands are isolated classes
-that make distribution, sharing, and modifing easy.
+that make distribution, sharing, and modification easy.
 
 Caveats
 -------
@@ -31,13 +27,17 @@ The only major caveat when using pypsi is that it only supports Python 3. Python
 Releases
 --------
 
-The pypsi source code is located on `GitHub <https://github.com/ameily/pypsi>`_
-and on `PyPI <https://pypi.python.org/pypi/pypsi>`_. The latest version can also
-be install via pip:
+The pypsi source code is hosted at `GitHub <https://github.com/ameily/pypsi>`_
+and releases are stored at `PyPI <https://pypi.python.org/pypi/pypsi>`_. The
+latest version can also be install via pip:
 
 ::
 
     pip install pypsi
+
+Documentation can be found on `GitHub Pages <http://ameily.github.io/pypsi>`_,
+`Python Hosted <http://pythonhosted.org/pypsi/>`_, and on
+`Read the Docs <http://pypsi.readthedocs.org/en/latest/>`_.
 
 
 Features
@@ -181,6 +181,26 @@ new commands in the shell.
     Hello, Adam
     Goodbye from macro hello
 
+Background
+----------
+
+I developed Pypsi while working on a commerical product with a command line
+interface. Originally, we used the ``cmd`` module, which was fine when we only
+had a few commands that didn't accept complex arguments. As we added more
+commands and more features, maintainability and extensibility became extremely
+complicated and time consuming.
+
+I took what I had learned from the ``cmd`` module, ORM libraries such as
+MongoEngine, and features from proven great command line interfaces such as Git
+and then I developed Pypsi. In order for Pypsi to be viable for our project, I
+knew that Pypsi had to be compatible with ``cmd``, the porting process had to
+take as little time as possible, and it had to be easy to understand and
+maintain.
+
+The porting process from ``cmd`` to Pypsi for our commerical project took place
+in January 2014. Since then, we've had 4 stable releases, had real world
+feedback, and have successfully created many Pypsi commands and plugins with
+ease.
 
 License
 -------
