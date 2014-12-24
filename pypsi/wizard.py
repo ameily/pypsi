@@ -270,6 +270,21 @@ class WizardStep(object):
             self.validators = []
 
     def validate(self, ns, value):
+        '''
+        Validate the input value. This will call the local validators
+        (``self.validators``) sequentially with the following arguments:
+
+         - ns (:class:`~pypsi.namespace.Namespace`) - the current input values
+         - value - the value to validate
+
+        Validators may change the value in place (if it is a mutable object) or
+        may return the validated value that will be passed to the remaining
+        validators. If a validation error occurs, raise a ValueError exception.
+
+        :param pypsi.namespace.Namespace ns: current input values
+        :param value: current input value
+        :returns: validated value
+        '''
         if self.validators:
             v = value
             for c in self.validators:
@@ -295,8 +310,32 @@ class WizardStep(object):
 
 
 class PromptWizard(object):
+    '''
+    A user input prompt wizards.
+
+    PromptWizards will walk the user through a series of questions
+    (:class:`WizardStep`) and accept input. The user may at any time enter the
+    ``?`` key to get help regarding the current step.
+
+    Each step can have validators that determine if a value is valid before
+    proceeding to the next step. Also, each step can have a default value that
+    is saved if the user hits ``Return`` with no input.
+
+    Once complete, the wizard will return a :class:`~pypsi.namespace.Namespace`
+    object that contains all the user's answers. Each step contains an ``id``
+    attribute that determines what variable is set in the returned namespace.
+
+    For example, a step may have an id of ``"ip_addr"``. When the user enters
+    ``"192.168.0.1"`` for this step, the input can be retrieved through the
+    namespace's ``ip_addr`` attribute.
+    '''
 
     def __init__(self, name, description, steps=None):
+        '''
+        :param str name: the prompt wizard name to display to the user
+        :param str description: a short description of what the wizard does
+        :param list steps: a list of :class:`WizardStep` objects
+        '''
         self.name = name
         self.description = description
         self.steps = steps
@@ -304,6 +343,14 @@ class PromptWizard(object):
         self.parser = StatementParser()
 
     def run(self, shell):
+        '''
+        Execute the wizard, prompting the user for input.
+
+        :param pypsi.shell.Shell shell: the active shell
+        :returns: a :class:`~pypsi.namespace.Namespace` object containing all
+         the answers on success, :const:`None` if the user exited the wizard
+        '''
+
         self.old_completer = readline.get_completer()
         readline.set_completer(self.complete)
         print(
@@ -350,7 +397,7 @@ class PromptWizard(object):
                         value = step.validate(self.values, raw)
                     except ValueError as e:
                         print(AnsiCodes.red, "Error: ", str(e), AnsiCodes.reset, sep='')
-                        print(AnsiCodes.yellow, step.name, ": ", step.help, sep='')
+                        print(AnsiCodes.yellow, step.name, ": ", step.help, AnsiCodes.reset, sep='')
                     else:
                         self.values[step.id] = value
                         valid = True
@@ -359,6 +406,10 @@ class PromptWizard(object):
         return self.values
 
     def complete(self, text, state):
+        '''
+        Tab complete for the current step.
+        '''
+
         if state == 0:
             begidx = readline.get_begidx()
             endidx = readline.get_endidx()
