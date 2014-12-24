@@ -67,7 +67,8 @@ The ``demo.py`` source file can be run to show off some of the base commands and
 features that ship with pypsi (the ``demo.py`` file can be downloaded from the
 git repo at https://github.com/ameily/pypsi/blob/master/demo.py). The commands
 displayed below are all optional: pypsi does not require the use of any command
-or plugin.
+or plugin. The ``demo.py`` file is meant to be a reference to the Pypsi API and
+design. Use it as a starting point for your first shell.
 
 Variables
 ~~~~~~~~~
@@ -216,13 +217,13 @@ configuration of components that require a substantial amount of input.
     Error: Invalid choice
     Shell mode: Mode of the shell
     Shell mode [local]: remote
-    
-    Prompt completed; Values:
-      ip_addr: 192.168.0.10
-      port:    1337
-      path:    /var/log/dpkg.log
-      mode:    remote
 
+    Config ID    Config Value                                                       
+    ================================================================================
+    ip_addr      172.16.11.204                                                      
+    port         1337                                                               
+    path         /var/log/dpkg.log
+    mode         remote
 
 Background
 ----------

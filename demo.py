@@ -51,6 +51,7 @@ from pypsi.commands.pwd import PwdCommand
 from pypsi.plugins.comment import CommentPlugin
 
 from pypsi import wizard as wiz
+from pypsi.format import Table, Column, title_str
 from pypsi.completers import path_completer
 
 
@@ -74,13 +75,20 @@ class WizardCommand(Command):
         ns = ConfigWizard.run(shell)
         if ns:
             print()
-            print("Prompt completed; Values:")
-            print("  ip_addr:", ns.ip_addr)
-            print("  port:   ", ns.port)
-            print("  path:   ", ns.path),
-            print("  mode:   ", ns.mode)
+            Table(
+                columns=(
+                    Column('Config ID', Column.Shrink),
+                    Column('Config Value', Column.Grow)
+                ),
+                spacing=4
+            ).extend(
+                ('ip_addr', ns.ip_addr),
+                ('port', ns.port),
+                ('path', ns.path),
+                ('mode', ns.mode)
+            ).write(sys.stdout)
         else:
-            print("Wizard cancelled")
+            pass
 
         return 0
 
@@ -199,6 +207,5 @@ class DemoShell(Shell):
 
 if __name__ == '__main__':
     shell = DemoShell()
-    shell2 = DemoShell()
     rc = shell.cmdloop()
     sys.exit(rc)
