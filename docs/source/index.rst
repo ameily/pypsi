@@ -18,6 +18,7 @@ pypsi
     pypsi.format.rst
     pypsi.stream.rst
     pypsi.utils.rst
+    pypsi.wizard.rst
 
 
 
