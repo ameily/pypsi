@@ -30,7 +30,6 @@
 
 from pypsi.shell import Shell
 from pypsi.base import Command
-#from pypsi.plugins.alias import AliasPlugin
 from pypsi.plugins.cmd import CmdPlugin
 from pypsi.plugins.block import BlockPlugin
 from pypsi.plugins.hexcode import HexCodePlugin
@@ -50,6 +49,11 @@ from pypsi.commands.tail import TailCommand
 from pypsi.commands.chdir import ChdirCommand
 from pypsi.commands.pwd import PwdCommand
 from pypsi.plugins.comment import CommentPlugin
+
+from pypsi import wizard as wiz
+from pypsi.completers import path_completer
+
+
 from pypsi.stream import AnsiCodes
 from pypsi import topics
 import sys
@@ -61,19 +65,63 @@ and This is a double"""
 
 
 
-class TestCommand(Command):
+class WizardCommand(Command):
 
-    def __init__(self, name='test', **kwargs):
-        super(TestCommand, self).__init__(name=name, **kwargs)
+    def __init__(self, name='wizard', **kwargs):
+        super(WizardCommand, self).__init__(name=name, **kwargs)
 
     def run(self, shell, args, ctx):
-        print("TEST!")
+        ns = ConfigWizard.run(shell)
+        if ns:
+            print()
+            print("Prompt completed; Values:")
+            print("  ip_addr:", ns.ip_addr)
+            print("  port:   ", ns.port)
+            print("  path:   ", ns.path),
+            print("  mode:   ", ns.mode)
+        else:
+            print("Wizard cancelled")
+
         return 0
+
+ConfigWizard = wiz.PromptWizard(
+    name="Example Configuration",
+    description="Shows various examples of wizard steps",
+    steps=(
+        wiz.WizardStep(
+            id="ip_addr",
+            name="IP Address",
+            help="Local IP Address or Host name",
+            validators=(wiz.required_validator, wiz.hostname_or_ip_validator)
+        ),
+        wiz.WizardStep(
+            id='port',
+            name="TCP Port",
+            help="TCP port to listen on",
+            validators=(wiz.required_validator, wiz.int_validator(1024, 65535)),
+            default=1337
+        ),
+        wiz.WizardStep(
+            id='path',
+            name='File path',
+            help='File path to log file',
+            validators=wiz.file_validator,
+            completer=path_completer
+        ),
+        wiz.WizardStep(
+            id='mode',
+            name='Shell mode',
+            help='Mode of the shell',
+            default='local',
+            validators=(wiz.required_validator, wiz.choice_validator(['local', 'remote']))
+        )
+    )
+)
 
 
 class DemoShell(Shell):
 
-    test_cmd = TestCommand()
+    wizard_cmd = WizardCommand()
     echo_cmd = EchoCommand()
     block_plugin = BlockPlugin()
     hexcode_plugin = HexCodePlugin()

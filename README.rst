@@ -181,6 +181,49 @@ new commands in the shell.
     Hello, Adam
     Goodbye from macro hello
 
+Prompt Wizards
+~~~~~~~~~~~~~~
+
+Prompt wizards ask the user a series of questions and request input. Input is
+tab completed, validated, and returned. The wizard can be used for easy
+configuration of components that require a substantial amount of input.
+
+::
+
+    pypsi)> wizard
+    +-----------------------------------------------------------------------------+
+    |                    Entering Example Configuration Wizard                    |
+    +-----------------------------------------------------------------------------+
+    Shows various examples of wizard steps
+
+    To exit, enter either Ctrl+C, Ctrl+D, or 'quit'. For help about the current
+    step, enter 'help' or '?'.
+    IP Address: <enter>
+    Error: Value is required
+    IP Address: Local IP Address or Host name
+    IP Address: 192.168.0.10
+    TCP Port [1337]: <enter>
+    File path: /var/lo<tab>
+    local/  lock/   log/    
+    File path: /var/log/<tab>
+    Xorg.1.log        btmp              faillog           upstart/
+    Xorg.1.log.old    dist-upgrade/     fontconfig.log    wtmp
+    alternatives.log  distccd.log       fsck/             
+    apt/              dmesg             lastlog           
+    bootstrap.log     dpkg.log          mongodb/          
+    File path: /var/log/dpkg.log
+    Shell mode [local]: asdf
+    Error: Invalid choice
+    Shell mode: Mode of the shell
+    Shell mode [local]: remote
+    
+    Prompt completed; Values:
+      ip_addr: 192.168.0.10
+      port:    1337
+      path:    /var/log/dpkg.log
+      mode:    remote
+
+
 Background
 ----------
 
