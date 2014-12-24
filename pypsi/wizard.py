@@ -28,9 +28,12 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+'''
+Command line input wizards.
+'''
+
 import os
 import readline
-import netaddr
 import re
 from pypsi.cmdline import StatementParser, StringToken
 from pypsi.stream import AnsiCodes
@@ -38,7 +41,20 @@ from pypsi.format import title_str
 from pypsi.namespace import Namespace
 
 
+HOSTNAME_RE = re.compile(r'^[a-zA-Z0-9.\-]+$')
+IPV4_RE = re.compile(r'^[1-9](?:[0-9]{0,2})\.(?:[0-9]{1,3})\.(?:[0-9]{1,3})\.(?:[0-9]{1,3})(?:/\d{1,2})?$')
+MODULE_NAME_RE = re.compile(r'^(?:[a-zA-Z_][a-zA-Z0-9_]*)(?:\.[a-zA-Z_][a-zA-Z0-9_]*)*')
+PACKAGE_NAME_RE = re.compile(r'^[a-zA-Z_][a-zA-Z0-9_]+$')
+
+
 def required_validator(ns, value):
+    '''
+    Required value wizard validator. Raises ValueError on validation error.
+
+    :param pypsi.namespace.Namespace ns: active namespace
+    :param value: input value
+    :returns: validated value
+    '''
     if value is None:
         raise ValueError("Value is required")
 
@@ -53,6 +69,14 @@ def required_validator(ns, value):
 
 
 def int_validator(min=None, max=None):
+    '''
+    Integer value wizard validator creator.
+
+    :param int min: minimum value, :const:`None` if no minimum
+    :param int max: maximum value, :const:`None` if no maximum
+    :returns: validator function
+    '''
+
     def validator(ns, value):
         if not value:
             return value
@@ -67,18 +91,42 @@ def int_validator(min=None, max=None):
 
 
 def file_validator(ns, value):
+    '''
+    File path validator. Raises ValueError on validation error.
+
+    :param pypsi.namespace.Namespace ns: active namespace
+    :param value: input value
+    :returns: validated value
+    '''
+
     if value and (not os.path.exists(value) or not os.path.isfile(value)):
         raise ValueError("File does not exist")
     return value
 
 
 def directory_validator(ns, value):
+    '''
+    Directory path validator. Raises ValueError on validation error.
+
+    :param pypsi.namespace.Namespace ns: active namespace
+    :param value: input value
+    :returns: validated value
+    '''
+
     if value and (not os.path.exists(value) or not os.path.isdir(value)):
         raise ValueError("Directory does not exist")
     return value
 
 
 def hostname_or_ip_validator(ns, value):
+    '''
+    Network hostname or IPv4 address validator. Raises ValueError on validation error.
+
+    :param pypsi.namespace.Namespace ns: active namespace
+    :param value: input value
+    :returns: validated value
+    '''
+
     if value is None:
         return value
 
@@ -87,18 +135,23 @@ def hostname_or_ip_validator(ns, value):
         return value
 
     if value[0].isdigit():
-        try:
-            ip = netaddr.IPAddress(value)
-        except:
-            raise ValueError("Invalid IP address")
+        if not IPV4_RE.match(value):
+            raise ValueError("Invalid IPv4 address")
     else:
-        hostname_re = re.compile(r'^[a-zA-Z0-9.\-]+$')
-        if not re.match(r'^[a-zA-Z0-9.\-]+$', value):
+        if not HOSTNAME_RE.match(value):
             raise ValueError("Invalid hostname")
     return value
 
 
 def module_name_validator(type_str):
+    '''
+    Python module name validator. Raises ValueError on validation error.
+
+    :param str type_str: the input type to reference when raising validation
+     errors.
+    :returns: validator function
+    '''
+
     def validator(ns, value):
         if not isinstance(value, str):
             return value
@@ -107,13 +160,21 @@ def module_name_validator(type_str):
         if not value:
             return value
 
-        if not re.match(r'^(?:[a-zA-Z]+)(?:\.[a-zA-Z]+)*', value):
+        if not MODULE_NAME_RE.match(value):
             raise ValueError("Invalid "+type_str)
         return value
     return validator
 
 
 def package_name_validator(type_str):
+    '''
+    Python package name validator. Raises ValueError on validation error.
+
+    :param str type_str: the input type to reference when raising validation
+     errors.
+    :returns: validator function
+    '''
+
     def validator(ns, value):
         if not isinstance(value, str):
             return value
@@ -122,13 +183,20 @@ def package_name_validator(type_str):
         if not value:
             return value
 
-        if not re.match(r'^[a-zA-Z][a-zA-Z0-9_]+$', value):
+        if not PACKAGE_NAME_RE.match(value):
             raise ValueError("Invalid "+type_str)
 
         return value
     return validator
 
 def choice_validator(choices):
+    '''
+    String choice validator. Raises ValueError if input isn't a valid choice.
+
+    :param list choices: valid choices
+    :returns: validator function
+    '''
+
     def validator(ns, value):
         if not isinstance(value, str):
             return value
@@ -144,6 +212,13 @@ def choice_validator(choices):
     return validator
 
 def boolean_validator(ns, value):
+    '''
+    Boolean validator. Raises ValueError if input isn't a boolean string.
+
+    :param pypsi.namespace.Namespace ns: active namespace
+    :param value: input value
+    :returns bool: validated value
+    '''
     if isinstance(value, bool):
         return value
     if isinstance(value, str):
@@ -155,13 +230,33 @@ def boolean_validator(ns, value):
     raise ValueError("Value is not true or false")
 
 def lowercase_validator(ns, value):
+    '''
+    Converts input string to lowercase.
+
+    :param pypsi.namespace.Namespace ns: active namespace
+    :param value: input value
+    :returns: validated value (in lowercase)
+    '''
+
     return value.lower() if value else ''
 
 
 
 class WizardStep(object):
+    '''
+    A single input step in a prompt wizard.
+    '''
 
     def __init__(self, id, name, help, default=None, completer=None, validators=None):
+        '''
+        :param str id: the step io, used for referencing the step's value
+        :param str name: the name to display for input to the user
+        :param str help: the help message to display to the user
+        :param str default: the default value if the user immediately hits "Return"
+        :param completer: a completion function
+        :param validators: a single or a list of validators
+        '''
+
         self.id = id
         self.name = name
         self.help = help
@@ -183,6 +278,19 @@ class WizardStep(object):
         return value
 
     def complete(self, wizard, args, prefix):
+        '''
+        Get the list of possible completions for input. This will call the local
+        completer function (``self.completer`` with the arguments:
+        (``wizard``, ``args``, ``prefix``).
+
+         - wizard (:class:`PromptWizard`) - the active wizard
+         - args (``list``) - the list of input arguments
+         - prefix (``str``) - the input prefix
+
+        This function mirrors the command :meth:`~pypsi.base.Command.complete`
+        function.
+        '''
+
         return self.completer(wizard, args, prefix) if self.completer else []
 
 
