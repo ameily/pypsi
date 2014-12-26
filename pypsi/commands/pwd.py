@@ -43,5 +43,5 @@ class PwdCommand(Command):
         super(PwdCommand, self).__init__(name=name, topic=topic, brief=brief, **kwargs)
 
     def run(self, shell, args, ctx):
-        print("hey:", os.getcwd())
+        print(os.getcwd())
         return 0
