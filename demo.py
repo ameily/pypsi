@@ -28,6 +28,13 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+'''
+This is an example Pypsi shell using several key features of the Pypsi API and
+architecture. The code is provided as an example of the overarching Pypsi design
+and API. The demo shell can be used as a skeleton for new shells and can be
+easily modified.
+'''
+
 from pypsi.shell import Shell
 from pypsi.base import Command
 from pypsi.plugins.cmd import CmdPlugin
@@ -67,6 +74,9 @@ and This is a double"""
 
 
 class WizardCommand(Command):
+    '''
+    Simple command to launch an example configuration wizard.
+    '''
 
     def __init__(self, name='wizard', **kwargs):
         super(WizardCommand, self).__init__(name=name, **kwargs)
@@ -75,18 +85,25 @@ class WizardCommand(Command):
         ns = ConfigWizard.run(shell)
         if ns:
             print()
+            # Create a table with optimally sized columns.
             Table(
                 columns=(
+                    # FIrst column is the configuration ID. This column will be
+                    # the minimum width possible without wrapping
                     Column('Config ID', Column.Shrink),
+                    # Second column is the configuration value. This column will
+                    # grow to a maximum width possible.
                     Column('Config Value', Column.Grow)
                 ),
+                # Number of spaces between each column.
                 spacing=4
             ).extend(
+                # Each tuple is a row
                 ('ip_addr', ns.ip_addr),
                 ('port', ns.port),
                 ('path', ns.path),
                 ('mode', ns.mode)
-            ).write(sys.stdout)
+            ).write(sys.stdout) # Write the table to stdout
         else:
             pass
 
@@ -96,10 +113,15 @@ ConfigWizard = wiz.PromptWizard(
     name="Example Configuration",
     description="Shows various examples of wizard steps",
     steps=(
+        # The list of input prompts to ask the user.
         wiz.WizardStep(
+            # ID where the value will be stored
             id="ip_addr",
+            # Display name
             name="IP Address",
+            # Help message
             help="Local IP Address or Host name",
+            # List of validators to run on the input
             validators=(wiz.required_validator, wiz.hostname_or_ip_validator)
         ),
         wiz.WizardStep(
@@ -114,6 +136,7 @@ ConfigWizard = wiz.PromptWizard(
             name='File path',
             help='File path to log file',
             validators=wiz.file_validator,
+            # Tab complete based on path
             completer=path_completer
         ),
         wiz.WizardStep(
@@ -128,7 +151,11 @@ ConfigWizard = wiz.PromptWizard(
 
 
 class DemoShell(Shell):
+    '''
+    Example demonstration shell.
+    '''
 
+    # First, add commands and plugins to the shell
     wizard_cmd = WizardCommand()
     echo_cmd = EchoCommand()
     block_plugin = BlockPlugin()
@@ -151,15 +178,21 @@ class DemoShell(Shell):
     alias_plugin = AliasPlugin()
 
     def __init__(self):
+        # You must call the Shell.__init__() method.
         super(DemoShell, self).__init__()
+
+        # Bootstrap MUST be called. This sets up the wrapped stdout stream and
+        # the custom version of the print() function.
         self.bootstrap()
 
         try:
+            # Attempt to load tips
             self.tip_cmd.load_tips("./demo-tips.txt")
         except:
             self.error("failed to load tips file: demo-tips.txt")
 
         try:
+            # Attempt to load the message of the day (MOTD)
             self.tip_cmd.load_motd("./demo-motd.txt")
         except:
             self.error("failed to load message of the day file: demo-motd.txt")
@@ -170,7 +203,9 @@ class DemoShell(Shell):
         )
         self.fallback_cmd = self.system_cmd
 
+        # Register the shell topic for the help command
         self.help_cmd.add_topic(self, Topic("shell", "Builtin Shell Commands"))
+        # Add the I/O redirection topic
         self.help_cmd.add_topic(self, topics.IoRedirection)
 
     def on_cmdloop_begin(self):
@@ -190,6 +225,10 @@ class DemoShell(Shell):
         else:
             print("To see the message of the day. Create the demo-motd.txt file for the MOTD.")
 
+    ############################################################################
+    # This functions demonstrate that existing Python :mod:`cmd` shell commands
+    # work without modification in Pypsi.
+    ############################################################################
     def do_cmddoc(self, args):
         '''
         This is some long description for the cmdargs command.

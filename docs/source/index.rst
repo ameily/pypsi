@@ -19,6 +19,7 @@ pypsi
     pypsi.stream.rst
     pypsi.utils.rst
     pypsi.wizard.rst
+    pypsi.demo.rst
 
 
 
