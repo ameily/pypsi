@@ -46,6 +46,8 @@ class Shell(object):
 
     def __init__(self, shell_name='pypsi', width=79, exit_rc=-1024, ctx=None):
         '''
+        Subclasses need to call the Shell constructor to properly initialize it.
+
         :param str shell_name: the name of the shell; used in error messages
         :param int exit_rc: the exit return code that is returned from a command
             when the shell needs to end execution
@@ -72,13 +74,20 @@ class Shell(object):
 
         self.eof_is_sigint = False
 
+        self.bootstrap()
+
         self.on_shell_ready()
 
     def bootstrap(self):
         import builtins
-        sys.stdout = AnsiStream(sys.stdout, width=self.width)
-        sys.stderr = AnsiStream(sys.stderr, width=self.width)
-        builtins.print = pypsi_print #sys.stdout.write
+        if not isinstance(sys.stdout, AnsiStream):
+            sys.stdout = AnsiStream(sys.stdout, width=self.width)
+        
+        if not isinstance(sys.stderr, AnsiStream):
+            sys.stderr = AnsiStream(sys.stderr, width=self.width)
+
+        if builtins.print != pypsi_print:
+            builtins.print = pypsi_print
 
     def register_base_plugins(self):
         '''
@@ -112,18 +121,35 @@ class Shell(object):
         return 0
 
     def on_shell_ready(self):
+        '''
+        Hook that is called after the shell has been created.
+        '''
+
         return 0
 
     def on_cmdloop_begin(self):
+        '''
+        Hook that is called once the :meth:`cmdloop` function is called.
+        '''
+
         return 0
 
     def on_cmdloop_end(self):
+        '''
+        Hook that is called once the :meth:`cmdloop` has ended.
+        '''
+
         return 0
 
     def get_current_prompt(self):
         return self.preprocess_single(self.prompt, 'prompt')
 
     def cmdloop(self):
+        '''
+        Begin the input processing loop where the user will be prompted for
+        input.
+        '''
+
         self.running = True
         self.on_cmdloop_begin()
         readline.parse_and_bind("tab: complete")
