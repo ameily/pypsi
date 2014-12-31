@@ -367,6 +367,7 @@ class PromptWizard(object):
             self.active_step = step
             valid = False
             while not valid:
+                print()
                 raw = None
                 prompt = step.name
                 if step.default is not None:

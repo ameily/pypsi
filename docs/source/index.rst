@@ -3,13 +3,16 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-pypsi
-=====
+.. include:: ../../README.rst
+
+
+API Documentation
+-----------------
 
 .. toctree::
     :numbered:
 
-    pypsi.rst
+    pypsi.tutorial.rst
     pypsi.commands.rst
     pypsi.plugins.rst
     pypsi.base.rst

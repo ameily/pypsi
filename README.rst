@@ -1,10 +1,9 @@
-Overview
-========
+Pypsi - Python Pluggable Shell Interface
+========================================
 
 Python Pluggable Shell Interface, or pypsi, is a framework for developing
 command line based shell interfaces, akin to bash or csh. It is intended to be
-a replacement for the builtin Python ``cmd`` module. A ``cmd`` plugin is
-available for use to make the transition from ``cmd``-based shells to Pypsi.
+a replacement for the builtin Python ``cmd`` module.
 
 Pypsi is targetted towards both rapid prototype interfaces and large stable
 shells. The bootstraping code is very small with very little boilerplate. Pypsi
@@ -33,7 +32,7 @@ latest version can also be install via pip:
 
 ::
 
-    pip install pypsi
+    $ pip install pypsi
 
 Documentation can be found on `GitHub Pages <http://ameily.github.io/pypsi>`_,
 `Python Hosted <http://pythonhosted.org/pypsi/>`_, and on
@@ -46,7 +45,6 @@ Features
 The following capabilities ship with pypsi and are available out of the box.
 
 -  I/O redirection
--  String-based pipes
 -  Flexible API
 -  Tab completion
 -  Multiplatform
@@ -76,17 +74,26 @@ Variables
 ::
 
     pypsi)> var name = "Paul"
+
     pypsi)> var house = "Atredis"
+
     pypsi)> echo My name is $name, and I belong to House $house
+
     My name is Paul, and I belong to House Atredis
+    
     pypsi)> var -l
+    
     name     Paul
     house    Atredis
+    
     pypsi)> var -d name
+    
     pypsi)> echo $name
 
     pypsi)> var name = "Paul $house"
+    
     pypsi)> echo $name
+    
     Paul Atredis
 
 I/O redirection
@@ -95,13 +102,20 @@ I/O redirection
 ::
 
     pypsi)> echo Hello
+    
     Hello
+    
     pypsi)> echo Hello > output.txt
+    
     pypsi)> echo Goodbye
+    
     pypsi)> xargs -I{} "echo line: {}" < output.txt
+    
     line: Hello
     line: Goodbye
+    
     pypsi)> cat output.txt | grep ll
+    
     Hello
 
 System commands
@@ -113,12 +127,17 @@ Allows execution of external applications. Command mimics Python's
 ::
 
     pypsi)> ls
+    
     pypsi: ls: command not found
+    
     pypsi)> system ls
+    
     include/
     src/
     README.md
+    
     pypsi)> system ls | system grep md
+    
     README.md
 
 Fallback command
@@ -132,6 +151,7 @@ any OS installed executables. In this example, the fallback command is
 ::
 
     pypsi)> ls
+    
     include/
     src/
     README.md
@@ -142,13 +162,18 @@ Command chaining
 ::
 
     pypsi)> echo Hello && echo --bad-arg && echo goodbye
+    
     Hello
     echo: unrecgonized arguments: --bad-arg
+    
     pypsi)> echo Hello ; echo --bad-arg ; echo goodbye
+    
     Hello
     echo: unrecgonized arguments: --bad-arg
     goodbye
+    
     pypsi)> echo --bad-arg || echo first failed
+    
     echo: unrecgonized arguments: --bad-arg
     first failed
 
@@ -159,11 +184,14 @@ Multiline commands
 
     pypsi)> echo Hello, \
     > Dave
+    
     Hello, Dave
+    
     pypsi)> echo This \
     > is \
     > pypsi \
     > and it rocks
+    
     This is pypsi and it rocks
 
 Macros
@@ -178,7 +206,9 @@ new commands in the shell.
     > echo Hello, $1
     > echo Goodbye from macro $0
     > end
+    
     pypsi)> hello Adam
+    
     Hello, Adam
     Goodbye from macro hello
 
@@ -199,23 +229,36 @@ configuration of components that require a substantial amount of input.
 
     To exit, enter either Ctrl+C, Ctrl+D, or 'quit'. For help about the current
     step, enter 'help' or '?'.
+    
     IP Address: <enter>
+    
     Error: Value is required
-    IP Address: Local IP Address or Host name
+    Local IP Address or Host name
+    
     IP Address: 192.168.0.10
+    
     TCP Port [1337]: <enter>
+    
     File path: /var/lo<tab>
+    
     local/  lock/   log/    
+    
     File path: /var/log/<tab>
+    
     Xorg.1.log        btmp              faillog           upstart/
     Xorg.1.log.old    dist-upgrade/     fontconfig.log    wtmp
     alternatives.log  distccd.log       fsck/             
     apt/              dmesg             lastlog           
     bootstrap.log     dpkg.log          mongodb/          
+    
     File path: /var/log/dpkg.log
+    
     Shell mode [local]: asdf
+    
     Error: Invalid choice
-    Shell mode: Mode of the shell
+    
+    Mode of the shell
+    
     Shell mode [local]: remote
 
     Config ID    Config Value                                                       
