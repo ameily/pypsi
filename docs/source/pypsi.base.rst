@@ -27,3 +27,6 @@ Argument parsing
 
 .. autoclass:: PypsiArgParser
     :members:
+
+.. autoclass:: CommandShortCircuit
+    :members:

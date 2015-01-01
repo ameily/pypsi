@@ -15,6 +15,7 @@ API Documentation
     pypsi.tutorial.rst
     pypsi.commands.rst
     pypsi.plugins.rst
+    pypsi.shell.rst
     pypsi.base.rst
     pypsi.cmdline.rst
     pypsi.namespace.rst
