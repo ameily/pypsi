@@ -12,6 +12,8 @@ API Documentation
 .. toctree::
     :numbered:
 
+    Github <https://github.com/ameily/pypsi>
+    Releases <https://pypi.python.org/pypi/pypsi>
     pypsi.tutorial.rst
     pypsi.commands.rst
     pypsi.plugins.rst

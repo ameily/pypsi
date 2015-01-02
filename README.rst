@@ -34,10 +34,7 @@ latest version can also be install via pip:
 
     $ pip install pypsi
 
-Documentation can be found on `GitHub Pages <http://ameily.github.io/pypsi>`_,
-`Python Hosted <http://pythonhosted.org/pypsi/>`_, and on
-`Read the Docs <http://pypsi.readthedocs.org/en/latest/>`_.
-
+Documentation can be found on `GitHub Pages <http://ameily.github.io/pypsi>`_.
 
 Features
 --------
