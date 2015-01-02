@@ -1,0 +1,715 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>12. Pypsi Demo Shell &mdash; pypsi 1.2 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="pypsi 1.2 documentation" href="index.html"/>
+        <link rel="prev" title="11. pypsi.wizard - Prompt Wizards" href="pypsi.wizard.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="index.html" class="fa fa-home"> pypsi</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul class="current">
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ameily/pypsi">Github</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pypi.python.org/pypi/pypsi">Releases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.tutorial.html">1. Pypsi Shell and Command Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.tutorial.html#command-api">1.1. Command API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.tutorial.html#shell-api">1.2. Shell API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.commands.html">2. Pypsi Builtin Commands</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.plugins.html">3. Pypsi Builtin Plugins</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.block">3.1. Block Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#escape-sequence-processors">3.2. Escape Sequence Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.history">3.3. Shell History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.variable">3.4. Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.cmd">3.5. Cmd</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.shell.html">4. pypsi.shell - Pypsi Shell</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.base.html">5. pypsi.base - Base classes for pluggable features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#command-objects">5.1. Command objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#plugin-objects">5.2. Plugin objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#argument-parsing">5.3. Argument parsing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.cmdline.html">6. pypsi.cmdline - User input processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#commands-and-expressions">6.1. Commands and expressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#tokens">6.2. Tokens</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#statements">6.3. Statements</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.namespace.html">7. pypsi.namespace - Arbitrary attribute storage classes</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.format.html">8. pypsi.format - Stream output formatting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.stream.html">9. pypsi.stream - File streams</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.utils.html">10. pypsi.utils - Utility functions</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.wizard.html">11. pypsi.wizard - Prompt Wizards</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">12. Pypsi Demo Shell</a></li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">pypsi</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>12. Pypsi Demo Shell</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/pypsi.demo.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <div class="section" id="pypsi-demo-shell">
+<h1>12. Pypsi Demo Shell<a class="headerlink" href="#pypsi-demo-shell" title="Permalink to this headline">¶</a></h1>
+<p>The source code for this file is located in <tt class="docutils literal"><span class="pre">/demo.py</span></tt>. The code is provided
+as an example of the overarching Pypsi design and API. The demo shell can be
+used as a skeleton for new shells and can be easily modified.</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+ 16
+ 17
+ 18
+ 19
+ 20
+ 21
+ 22
+ 23
+ 24
+ 25
+ 26
+ 27
+ 28
+ 29
+ 30
+ 31
+ 32
+ 33
+ 34
+ 35
+ 36
+ 37
+ 38
+ 39
+ 40
+ 41
+ 42
+ 43
+ 44
+ 45
+ 46
+ 47
+ 48
+ 49
+ 50
+ 51
+ 52
+ 53
+ 54
+ 55
+ 56
+ 57
+ 58
+ 59
+ 60
+ 61
+ 62
+ 63
+ 64
+ 65
+ 66
+ 67
+ 68
+ 69
+ 70
+ 71
+ 72
+ 73
+ 74
+ 75
+ 76
+ 77
+ 78
+ 79
+ 80
+ 81
+ 82
+ 83
+ 84
+ 85
+ 86
+ 87
+ 88
+ 89
+ 90
+ 91
+ 92
+ 93
+ 94
+ 95
+ 96
+ 97
+ 98
+ 99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250</pre></div></td><td class="code"><div class="highlight"><pre><span class="c">#</span>
+<span class="c"># Copyright (c) 2014, Adam Meily</span>
+<span class="c"># All rights reserved.</span>
+<span class="c">#</span>
+<span class="c"># Redistribution and use in source and binary forms, with or without modification,</span>
+<span class="c"># are permitted provided that the following conditions are met:</span>
+<span class="c">#</span>
+<span class="c"># * Redistributions of source code must retain the above copyright notice, this</span>
+<span class="c">#   list of conditions and the following disclaimer.</span>
+<span class="c">#</span>
+<span class="c"># * Redistributions in binary form must reproduce the above copyright notice, this</span>
+<span class="c">#   list of conditions and the following disclaimer in the documentation and/or</span>
+<span class="c">#   other materials provided with the distribution.</span>
+<span class="c">#</span>
+<span class="c"># * Neither the name of the {organization} nor the names of its</span>
+<span class="c">#   contributors may be used to endorse or promote products derived from</span>
+<span class="c">#   this software without specific prior written permission.</span>
+<span class="c">#</span>
+<span class="c"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
+<span class="c"># ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
+<span class="c"># WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
+<span class="c"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR</span>
+<span class="c"># ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
+<span class="c"># (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
+<span class="c"># LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON</span>
+<span class="c"># ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
+<span class="c"># (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
+<span class="c"># SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<span class="c">#</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">This is an example Pypsi shell using several key features of the Pypsi API and</span>
+<span class="sd">architecture. The code is provided as an example of the overarching Pypsi design</span>
+<span class="sd">and API. The demo shell can be used as a skeleton for new shells and can be</span>
+<span class="sd">easily modified.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">from</span> <span class="nn">pypsi.shell</span> <span class="kn">import</span> <span class="n">Shell</span>
+<span class="kn">from</span> <span class="nn">pypsi.base</span> <span class="kn">import</span> <span class="n">Command</span>
+<span class="kn">from</span> <span class="nn">pypsi.plugins.cmd</span> <span class="kn">import</span> <span class="n">CmdPlugin</span>
+<span class="kn">from</span> <span class="nn">pypsi.plugins.block</span> <span class="kn">import</span> <span class="n">BlockPlugin</span>
+<span class="kn">from</span> <span class="nn">pypsi.plugins.hexcode</span> <span class="kn">import</span> <span class="n">HexCodePlugin</span>
+<span class="kn">from</span> <span class="nn">pypsi.commands.macro</span> <span class="kn">import</span> <span class="n">MacroCommand</span>
+<span class="kn">from</span> <span class="nn">pypsi.commands.system</span> <span class="kn">import</span> <span class="n">SystemCommand</span>
+<span class="kn">from</span> <span class="nn">pypsi.plugins.multiline</span> <span class="kn">import</span> <span class="n">MultilinePlugin</span>
+<span class="kn">from</span> <span class="nn">pypsi.commands.xargs</span> <span class="kn">import</span> <span class="n">XArgsCommand</span>
+<span class="kn">from</span> <span class="nn">pypsi.commands.exit</span> <span class="kn">import</span> <span class="n">ExitCommand</span>
+<span class="kn">from</span> <span class="nn">pypsi.plugins.variable</span> <span class="kn">import</span> <span class="n">VariablePlugin</span>
+<span class="kn">from</span> <span class="nn">pypsi.plugins.history</span> <span class="kn">import</span> <span class="n">HistoryPlugin</span>
+<span class="kn">from</span> <span class="nn">pypsi.plugins.alias</span> <span class="kn">import</span> <span class="n">AliasPlugin</span>
+<span class="kn">from</span> <span class="nn">pypsi.commands.echo</span> <span class="kn">import</span> <span class="n">EchoCommand</span>
+<span class="kn">from</span> <span class="nn">pypsi.commands.include</span> <span class="kn">import</span> <span class="n">IncludeCommand</span>
+<span class="kn">from</span> <span class="nn">pypsi.commands.help</span> <span class="kn">import</span> <span class="n">HelpCommand</span><span class="p">,</span> <span class="n">Topic</span>
+<span class="kn">from</span> <span class="nn">pypsi.commands.tip</span> <span class="kn">import</span> <span class="n">TipCommand</span>
+<span class="kn">from</span> <span class="nn">pypsi.commands.tail</span> <span class="kn">import</span> <span class="n">TailCommand</span>
+<span class="kn">from</span> <span class="nn">pypsi.commands.chdir</span> <span class="kn">import</span> <span class="n">ChdirCommand</span>
+<span class="kn">from</span> <span class="nn">pypsi.commands.pwd</span> <span class="kn">import</span> <span class="n">PwdCommand</span>
+<span class="kn">from</span> <span class="nn">pypsi.plugins.comment</span> <span class="kn">import</span> <span class="n">CommentPlugin</span>
+
+<span class="kn">from</span> <span class="nn">pypsi</span> <span class="kn">import</span> <span class="n">wizard</span> <span class="k">as</span> <span class="n">wiz</span>
+<span class="kn">from</span> <span class="nn">pypsi.format</span> <span class="kn">import</span> <span class="n">Table</span><span class="p">,</span> <span class="n">Column</span><span class="p">,</span> <span class="n">title_str</span>
+<span class="kn">from</span> <span class="nn">pypsi.completers</span> <span class="kn">import</span> <span class="n">path_completer</span>
+
+
+<span class="kn">from</span> <span class="nn">pypsi.stream</span> <span class="kn">import</span> <span class="n">AnsiCodes</span>
+<span class="kn">from</span> <span class="nn">pypsi</span> <span class="kn">import</span> <span class="n">topics</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="n">ShellTopic</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;These commands are built into the Pypsi shell (all glory and honor to the pypsi shell).</span>
+<span class="s">This is a single newline</span>
+
+<span class="s">and This is a double&quot;&quot;&quot;</span>
+
+
+
+<span class="k">class</span> <span class="nc">WizardCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Simple command to launch an example configuration wizard.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;wizard&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WizardCommand</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+        <span class="n">ns</span> <span class="o">=</span> <span class="n">ConfigWizard</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">shell</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ns</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">()</span>
+            <span class="c"># Create a table with optimally sized columns.</span>
+            <span class="n">Table</span><span class="p">(</span>
+                <span class="n">columns</span><span class="o">=</span><span class="p">(</span>
+                    <span class="c"># FIrst column is the configuration ID. This column will be</span>
+                    <span class="c"># the minimum width possible without wrapping</span>
+                    <span class="n">Column</span><span class="p">(</span><span class="s">&#39;Config ID&#39;</span><span class="p">,</span> <span class="n">Column</span><span class="o">.</span><span class="n">Shrink</span><span class="p">),</span>
+                    <span class="c"># Second column is the configuration value. This column will</span>
+                    <span class="c"># grow to a maximum width possible.</span>
+                    <span class="n">Column</span><span class="p">(</span><span class="s">&#39;Config Value&#39;</span><span class="p">,</span> <span class="n">Column</span><span class="o">.</span><span class="n">Grow</span><span class="p">)</span>
+                <span class="p">),</span>
+                <span class="c"># Number of spaces between each column.</span>
+                <span class="n">spacing</span><span class="o">=</span><span class="mi">4</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                <span class="c"># Each tuple is a row</span>
+                <span class="p">(</span><span class="s">&#39;ip_addr&#39;</span><span class="p">,</span> <span class="n">ns</span><span class="o">.</span><span class="n">ip_addr</span><span class="p">),</span>
+                <span class="p">(</span><span class="s">&#39;port&#39;</span><span class="p">,</span> <span class="n">ns</span><span class="o">.</span><span class="n">port</span><span class="p">),</span>
+                <span class="p">(</span><span class="s">&#39;path&#39;</span><span class="p">,</span> <span class="n">ns</span><span class="o">.</span><span class="n">path</span><span class="p">),</span>
+                <span class="p">(</span><span class="s">&#39;mode&#39;</span><span class="p">,</span> <span class="n">ns</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span> <span class="c"># Write the table to stdout</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">return</span> <span class="mi">0</span>
+
+<span class="n">ConfigWizard</span> <span class="o">=</span> <span class="n">wiz</span><span class="o">.</span><span class="n">PromptWizard</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s">&quot;Example Configuration&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s">&quot;Shows various examples of wizard steps&quot;</span><span class="p">,</span>
+    <span class="n">steps</span><span class="o">=</span><span class="p">(</span>
+        <span class="c"># The list of input prompts to ask the user.</span>
+        <span class="n">wiz</span><span class="o">.</span><span class="n">WizardStep</span><span class="p">(</span>
+            <span class="c"># ID where the value will be stored</span>
+            <span class="nb">id</span><span class="o">=</span><span class="s">&quot;ip_addr&quot;</span><span class="p">,</span>
+            <span class="c"># Display name</span>
+            <span class="n">name</span><span class="o">=</span><span class="s">&quot;IP Address&quot;</span><span class="p">,</span>
+            <span class="c"># Help message</span>
+            <span class="n">help</span><span class="o">=</span><span class="s">&quot;Local IP Address or Host name&quot;</span><span class="p">,</span>
+            <span class="c"># List of validators to run on the input</span>
+            <span class="n">validators</span><span class="o">=</span><span class="p">(</span><span class="n">wiz</span><span class="o">.</span><span class="n">required_validator</span><span class="p">,</span> <span class="n">wiz</span><span class="o">.</span><span class="n">hostname_or_ip_validator</span><span class="p">)</span>
+        <span class="p">),</span>
+        <span class="n">wiz</span><span class="o">.</span><span class="n">WizardStep</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="s">&#39;port&#39;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s">&quot;TCP Port&quot;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s">&quot;TCP port to listen on&quot;</span><span class="p">,</span>
+            <span class="n">validators</span><span class="o">=</span><span class="p">(</span><span class="n">wiz</span><span class="o">.</span><span class="n">required_validator</span><span class="p">,</span> <span class="n">wiz</span><span class="o">.</span><span class="n">int_validator</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">65535</span><span class="p">)),</span>
+            <span class="n">default</span><span class="o">=</span><span class="mi">1337</span>
+        <span class="p">),</span>
+        <span class="n">wiz</span><span class="o">.</span><span class="n">WizardStep</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="s">&#39;path&#39;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s">&#39;File path&#39;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s">&#39;File path to log file&#39;</span><span class="p">,</span>
+            <span class="n">validators</span><span class="o">=</span><span class="n">wiz</span><span class="o">.</span><span class="n">file_validator</span><span class="p">,</span>
+            <span class="c"># Tab complete based on path</span>
+            <span class="n">completer</span><span class="o">=</span><span class="n">path_completer</span>
+        <span class="p">),</span>
+        <span class="n">wiz</span><span class="o">.</span><span class="n">WizardStep</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="s">&#39;mode&#39;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s">&#39;Shell mode&#39;</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s">&#39;Mode of the shell&#39;</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="s">&#39;local&#39;</span><span class="p">,</span>
+            <span class="n">validators</span><span class="o">=</span><span class="p">(</span><span class="n">wiz</span><span class="o">.</span><span class="n">required_validator</span><span class="p">,</span> <span class="n">wiz</span><span class="o">.</span><span class="n">choice_validator</span><span class="p">([</span><span class="s">&#39;local&#39;</span><span class="p">,</span> <span class="s">&#39;remote&#39;</span><span class="p">]))</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">DemoShell</span><span class="p">(</span><span class="n">Shell</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Example demonstration shell.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="c"># First, add commands and plugins to the shell</span>
+    <span class="n">wizard_cmd</span> <span class="o">=</span> <span class="n">WizardCommand</span><span class="p">()</span>
+    <span class="n">echo_cmd</span> <span class="o">=</span> <span class="n">EchoCommand</span><span class="p">()</span>
+    <span class="n">block_plugin</span> <span class="o">=</span> <span class="n">BlockPlugin</span><span class="p">()</span>
+    <span class="n">hexcode_plugin</span> <span class="o">=</span> <span class="n">HexCodePlugin</span><span class="p">()</span>
+    <span class="n">macro_cmd</span> <span class="o">=</span> <span class="n">MacroCommand</span><span class="p">()</span>
+    <span class="n">system_cmd</span> <span class="o">=</span> <span class="n">SystemCommand</span><span class="p">()</span>
+    <span class="n">ml_plugin</span> <span class="o">=</span> <span class="n">MultilinePlugin</span><span class="p">()</span>
+    <span class="n">xargs_cmd</span> <span class="o">=</span> <span class="n">XArgsCommand</span><span class="p">()</span>
+    <span class="n">exit_cmd</span> <span class="o">=</span> <span class="n">ExitCommand</span><span class="p">()</span>
+    <span class="n">history_plugin</span> <span class="o">=</span> <span class="n">HistoryPlugin</span><span class="p">()</span>
+    <span class="n">include_cmd</span> <span class="o">=</span> <span class="n">IncludeCommand</span><span class="p">()</span>
+    <span class="n">cmd_plugin</span> <span class="o">=</span> <span class="n">CmdPlugin</span><span class="p">(</span><span class="n">cmd_args</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">tip_cmd</span> <span class="o">=</span> <span class="n">TipCommand</span><span class="p">()</span>
+    <span class="n">tail_cmd</span> <span class="o">=</span> <span class="n">TailCommand</span><span class="p">()</span>
+    <span class="n">help_cmd</span> <span class="o">=</span> <span class="n">HelpCommand</span><span class="p">()</span>
+    <span class="n">var_plugin</span> <span class="o">=</span> <span class="n">VariablePlugin</span><span class="p">(</span><span class="n">case_sensitive</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">env</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">comment_plugin</span> <span class="o">=</span> <span class="n">CommentPlugin</span><span class="p">()</span>
+    <span class="n">chdir_cmd</span> <span class="o">=</span> <span class="n">ChdirCommand</span><span class="p">()</span>
+    <span class="n">pwd_cmd</span> <span class="o">=</span> <span class="n">PwdCommand</span><span class="p">()</span>
+    <span class="n">alias_plugin</span> <span class="o">=</span> <span class="n">AliasPlugin</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># You must call the Shell.__init__() method.</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DemoShell</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+
+        <span class="c"># Bootstrap MUST be called. This sets up the wrapped stdout stream and</span>
+        <span class="c"># the custom version of the print() function.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bootstrap</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c"># Attempt to load tips</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tip_cmd</span><span class="o">.</span><span class="n">load_tips</span><span class="p">(</span><span class="s">&quot;./demo-tips.txt&quot;</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;failed to load tips file: demo-tips.txt&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c"># Attempt to load the message of the day (MOTD)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tip_cmd</span><span class="o">.</span><span class="n">load_motd</span><span class="p">(</span><span class="s">&quot;./demo-motd.txt&quot;</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s">&quot;failed to load message of the day file: demo-motd.txt&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">prompt</span> <span class="o">=</span> <span class="s">&quot;{gray}[$time]{r} {cyan}pypsi{r} {green})&gt;{r} &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">gray</span><span class="o">=</span><span class="n">AnsiCodes</span><span class="o">.</span><span class="n">gray</span><span class="o">.</span><span class="n">prompt</span><span class="p">(),</span> <span class="n">r</span><span class="o">=</span><span class="n">AnsiCodes</span><span class="o">.</span><span class="n">reset</span><span class="o">.</span><span class="n">prompt</span><span class="p">(),</span>
+            <span class="n">cyan</span><span class="o">=</span><span class="n">AnsiCodes</span><span class="o">.</span><span class="n">cyan</span><span class="o">.</span><span class="n">prompt</span><span class="p">(),</span> <span class="n">green</span><span class="o">=</span><span class="n">AnsiCodes</span><span class="o">.</span><span class="n">green</span><span class="o">.</span><span class="n">prompt</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fallback_cmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">system_cmd</span>
+
+        <span class="c"># Register the shell topic for the help command</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">help_cmd</span><span class="o">.</span><span class="n">add_topic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Topic</span><span class="p">(</span><span class="s">&quot;shell&quot;</span><span class="p">,</span> <span class="s">&quot;Builtin Shell Commands&quot;</span><span class="p">))</span>
+        <span class="c"># Add the I/O redirection topic</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">help_cmd</span><span class="o">.</span><span class="n">add_topic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">topics</span><span class="o">.</span><span class="n">IoRedirection</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">on_cmdloop_begin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">AnsiCodes</span><span class="o">.</span><span class="n">clear_screen</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tip_cmd</span><span class="o">.</span><span class="n">motd</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tip_cmd</span><span class="o">.</span><span class="n">print_motd</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot;No tips registered. Create the demo-tips.txt file for the tip of the day.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tip_cmd</span><span class="o">.</span><span class="n">tips</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">AnsiCodes</span><span class="o">.</span><span class="n">green</span><span class="p">,</span> <span class="s">&quot;Tip of the Day&quot;</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">),</span> <span class="n">sep</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&#39;&gt;&#39;</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">AnsiCodes</span><span class="o">.</span><span class="n">reset</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tip_cmd</span><span class="o">.</span><span class="n">print_random_tip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">AnsiCodes</span><span class="o">.</span><span class="n">green</span><span class="p">,</span> <span class="s">&#39;&lt;&#39;</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">AnsiCodes</span><span class="o">.</span><span class="n">reset</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot;To see the message of the day. Create the demo-motd.txt file for the MOTD.&quot;</span><span class="p">)</span>
+
+    <span class="c">############################################################################</span>
+    <span class="c"># This functions demonstrate that existing Python :mod:`cmd` shell commands</span>
+    <span class="c"># work without modification in Pypsi.</span>
+    <span class="c">############################################################################</span>
+    <span class="k">def</span> <span class="nf">do_cmddoc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        This is some long description for the cmdargs command.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;do_cmdargs(&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="s">&quot;)&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">help_cmdout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;this is the help message for the cmdout command&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">do_cmdout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;do_cmdout(&quot;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="s">&quot;)&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">shell</span> <span class="o">=</span> <span class="n">DemoShell</span><span class="p">()</span>
+    <span class="n">rc</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="n">cmdloop</span><span class="p">()</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">rc</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="pypsi.wizard.html" class="btn btn-neutral" title="11. pypsi.wizard - Prompt Wizards"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Adam Meily.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<a href="https://github.com/ameily/pypsi"><img style="z-index:10; position: fixed; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+
+</body>
+</html>

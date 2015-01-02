@@ -1,0 +1,542 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>11. pypsi.wizard - Prompt Wizards &mdash; pypsi 1.2 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="pypsi 1.2 documentation" href="index.html"/>
+        <link rel="next" title="12. Pypsi Demo Shell" href="pypsi.demo.html"/>
+        <link rel="prev" title="10. pypsi.utils - Utility functions" href="pypsi.utils.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="index.html" class="fa fa-home"> pypsi</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul class="current">
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ameily/pypsi">Github</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pypi.python.org/pypi/pypsi">Releases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.tutorial.html">1. Pypsi Shell and Command Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.tutorial.html#command-api">1.1. Command API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.tutorial.html#shell-api">1.2. Shell API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.commands.html">2. Pypsi Builtin Commands</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.plugins.html">3. Pypsi Builtin Plugins</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.block">3.1. Block Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#escape-sequence-processors">3.2. Escape Sequence Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.history">3.3. Shell History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.variable">3.4. Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.cmd">3.5. Cmd</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.shell.html">4. pypsi.shell - Pypsi Shell</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.base.html">5. pypsi.base - Base classes for pluggable features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#command-objects">5.1. Command objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#plugin-objects">5.2. Plugin objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#argument-parsing">5.3. Argument parsing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.cmdline.html">6. pypsi.cmdline - User input processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#commands-and-expressions">6.1. Commands and expressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#tokens">6.2. Tokens</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#statements">6.3. Statements</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.namespace.html">7. pypsi.namespace - Arbitrary attribute storage classes</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.format.html">8. pypsi.format - Stream output formatting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.stream.html">9. pypsi.stream - File streams</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.utils.html">10. pypsi.utils - Utility functions</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">11. pypsi.wizard - Prompt Wizards</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.demo.html">12. Pypsi Demo Shell</a></li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">pypsi</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>11. pypsi.wizard - Prompt Wizards</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/pypsi.wizard.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
+  <div class="section" id="pypsi-wizard-prompt-wizards">
+<h1>11. pypsi.wizard - Prompt Wizards<a class="headerlink" href="#pypsi-wizard-prompt-wizards" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<span class="target" id="module-pypsi.wizard"></span><p>Command line input wizards.</p>
+<dl class="class">
+<dt id="pypsi.wizard.PromptWizard">
+<em class="property">class </em><tt class="descclassname">pypsi.wizard.</tt><tt class="descname">PromptWizard</tt><big>(</big><em>name</em>, <em>description</em>, <em>steps=None</em><big>)</big><a class="reference internal" href="_modules/pypsi/wizard.html#PromptWizard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.wizard.PromptWizard" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<p>A user input prompt wizards.</p>
+<p>PromptWizards will walk the user through a series of questions
+(<a class="reference internal" href="#pypsi.wizard.WizardStep" title="pypsi.wizard.WizardStep"><tt class="xref py py-class docutils literal"><span class="pre">WizardStep</span></tt></a>) and accept input. The user may at any time enter the
+<tt class="docutils literal"><span class="pre">?</span></tt> key to get help regarding the current step.</p>
+<p>Each step can have validators that determine if a value is valid before
+proceeding to the next step. Also, each step can have a default value that
+is saved if the user hits <tt class="docutils literal"><span class="pre">Return</span></tt> with no input.</p>
+<p>Once complete, the wizard will return a <a class="reference internal" href="pypsi.namespace.html#pypsi.namespace.Namespace" title="pypsi.namespace.Namespace"><tt class="xref py py-class docutils literal"><span class="pre">Namespace</span></tt></a>
+object that contains all the user&#8217;s answers. Each step contains an <tt class="docutils literal"><span class="pre">id</span></tt>
+attribute that determines what variable is set in the returned namespace.</p>
+<p>For example, a step may have an id of <tt class="docutils literal"><span class="pre">&quot;ip_addr&quot;</span></tt>. When the user enters
+<tt class="docutils literal"><span class="pre">&quot;192.168.0.1&quot;</span></tt> for this step, the input can be retrieved through the
+namespace&#8217;s <tt class="docutils literal"><span class="pre">ip_addr</span></tt> attribute.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the prompt wizard name to display to the user</li>
+<li><strong>description</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; a short description of what the wizard does</li>
+<li><strong>steps</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.4)"><em>list</em></a>) &#8211; a list of <a class="reference internal" href="#pypsi.wizard.WizardStep" title="pypsi.wizard.WizardStep"><tt class="xref py py-class docutils literal"><span class="pre">WizardStep</span></tt></a> objects</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pypsi.wizard.PromptWizard.complete">
+<tt class="descname">complete</tt><big>(</big><em>text</em>, <em>state</em><big>)</big><a class="reference internal" href="_modules/pypsi/wizard.html#PromptWizard.complete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.wizard.PromptWizard.complete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tab complete for the current step.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypsi.wizard.PromptWizard.run">
+<tt class="descname">run</tt><big>(</big><em>shell</em><big>)</big><a class="reference internal" href="_modules/pypsi/wizard.html#PromptWizard.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.wizard.PromptWizard.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute the wizard, prompting the user for input.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>shell</strong> (<a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell" title="pypsi.shell.Shell"><em>pypsi.shell.Shell</em></a>) &#8211; the active shell</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a <a class="reference internal" href="pypsi.namespace.html#pypsi.namespace.Namespace" title="pypsi.namespace.Namespace"><tt class="xref py py-class docutils literal"><span class="pre">Namespace</span></tt></a> object containing all
+the answers on success, <tt class="xref py py-const docutils literal"><span class="pre">None</span></tt> if the user exited the wizard</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pypsi.wizard.WizardStep">
+<em class="property">class </em><tt class="descclassname">pypsi.wizard.</tt><tt class="descname">WizardStep</tt><big>(</big><em>id</em>, <em>name</em>, <em>help</em>, <em>default=None</em>, <em>completer=None</em>, <em>validators=None</em><big>)</big><a class="reference internal" href="_modules/pypsi/wizard.html#WizardStep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.wizard.WizardStep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<p>A single input step in a prompt wizard.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>id</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the step io, used for referencing the step&#8217;s value</li>
+<li><strong>name</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the name to display for input to the user</li>
+<li><strong>help</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the help message to display to the user</li>
+<li><strong>default</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the default value if the user immediately hits &#8220;Return&#8221;</li>
+<li><strong>completer</strong> &#8211; a completion function</li>
+<li><strong>validators</strong> &#8211; a single or a list of validators</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pypsi.wizard.WizardStep.complete">
+<tt class="descname">complete</tt><big>(</big><em>wizard</em>, <em>args</em>, <em>prefix</em><big>)</big><a class="reference internal" href="_modules/pypsi/wizard.html#WizardStep.complete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.wizard.WizardStep.complete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the list of possible completions for input. This will call the local
+completer function (<tt class="docutils literal"><span class="pre">self.completer</span></tt> with the arguments:
+(<tt class="docutils literal"><span class="pre">wizard</span></tt>, <tt class="docutils literal"><span class="pre">args</span></tt>, <tt class="docutils literal"><span class="pre">prefix</span></tt>).</p>
+<blockquote>
+<div><ul class="simple">
+<li>wizard (<a class="reference internal" href="#pypsi.wizard.PromptWizard" title="pypsi.wizard.PromptWizard"><tt class="xref py py-class docutils literal"><span class="pre">PromptWizard</span></tt></a>) - the active wizard</li>
+<li>args (<tt class="docutils literal"><span class="pre">list</span></tt>) - the list of input arguments</li>
+<li>prefix (<tt class="docutils literal"><span class="pre">str</span></tt>) - the input prefix</li>
+</ul>
+</div></blockquote>
+<p>This function mirrors the command <a class="reference internal" href="pypsi.base.html#pypsi.base.Command.complete" title="pypsi.base.Command.complete"><tt class="xref py py-meth docutils literal"><span class="pre">complete()</span></tt></a>
+function.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypsi.wizard.WizardStep.validate">
+<tt class="descname">validate</tt><big>(</big><em>ns</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/pypsi/wizard.html#WizardStep.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.wizard.WizardStep.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate the input value. This will call the local validators
+(<tt class="docutils literal"><span class="pre">self.validators</span></tt>) sequentially with the following arguments:</p>
+<blockquote>
+<div><ul class="simple">
+<li>ns (<a class="reference internal" href="pypsi.namespace.html#pypsi.namespace.Namespace" title="pypsi.namespace.Namespace"><tt class="xref py py-class docutils literal"><span class="pre">Namespace</span></tt></a>) - the current input values</li>
+<li>value - the value to validate</li>
+</ul>
+</div></blockquote>
+<p>Validators may change the value in place (if it is a mutable object) or
+may return the validated value that will be passed to the remaining
+validators. If a validation error occurs, raise a ValueError exception.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ns</strong> (<a class="reference internal" href="pypsi.namespace.html#pypsi.namespace.Namespace" title="pypsi.namespace.Namespace"><em>pypsi.namespace.Namespace</em></a>) &#8211; current input values</li>
+<li><strong>value</strong> &#8211; current input value</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">validated value</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pypsi.wizard.boolean_validator">
+<tt class="descclassname">pypsi.wizard.</tt><tt class="descname">boolean_validator</tt><big>(</big><em>ns</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/pypsi/wizard.html#boolean_validator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.wizard.boolean_validator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Boolean validator. Raises ValueError if input isn&#8217;t a boolean string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ns</strong> (<a class="reference internal" href="pypsi.namespace.html#pypsi.namespace.Namespace" title="pypsi.namespace.Namespace"><em>pypsi.namespace.Namespace</em></a>) &#8211; active namespace</li>
+<li><strong>value</strong> &#8211; input value</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns bool:</th><td class="field-body"><p class="first last">validated value</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypsi.wizard.choice_validator">
+<tt class="descclassname">pypsi.wizard.</tt><tt class="descname">choice_validator</tt><big>(</big><em>choices</em><big>)</big><a class="reference internal" href="_modules/pypsi/wizard.html#choice_validator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.wizard.choice_validator" title="Permalink to this definition">¶</a></dt>
+<dd><p>String choice validator. Raises ValueError if input isn&#8217;t a valid choice.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>choices</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.4)"><em>list</em></a>) &#8211; valid choices</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">validator function</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypsi.wizard.directory_validator">
+<tt class="descclassname">pypsi.wizard.</tt><tt class="descname">directory_validator</tt><big>(</big><em>ns</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/pypsi/wizard.html#directory_validator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.wizard.directory_validator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Directory path validator. Raises ValueError on validation error.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ns</strong> (<a class="reference internal" href="pypsi.namespace.html#pypsi.namespace.Namespace" title="pypsi.namespace.Namespace"><em>pypsi.namespace.Namespace</em></a>) &#8211; active namespace</li>
+<li><strong>value</strong> &#8211; input value</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">validated value</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypsi.wizard.file_validator">
+<tt class="descclassname">pypsi.wizard.</tt><tt class="descname">file_validator</tt><big>(</big><em>ns</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/pypsi/wizard.html#file_validator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.wizard.file_validator" title="Permalink to this definition">¶</a></dt>
+<dd><p>File path validator. Raises ValueError on validation error.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ns</strong> (<a class="reference internal" href="pypsi.namespace.html#pypsi.namespace.Namespace" title="pypsi.namespace.Namespace"><em>pypsi.namespace.Namespace</em></a>) &#8211; active namespace</li>
+<li><strong>value</strong> &#8211; input value</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">validated value</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypsi.wizard.hostname_or_ip_validator">
+<tt class="descclassname">pypsi.wizard.</tt><tt class="descname">hostname_or_ip_validator</tt><big>(</big><em>ns</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/pypsi/wizard.html#hostname_or_ip_validator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.wizard.hostname_or_ip_validator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Network hostname or IPv4 address validator. Raises ValueError on validation error.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ns</strong> (<a class="reference internal" href="pypsi.namespace.html#pypsi.namespace.Namespace" title="pypsi.namespace.Namespace"><em>pypsi.namespace.Namespace</em></a>) &#8211; active namespace</li>
+<li><strong>value</strong> &#8211; input value</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">validated value</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypsi.wizard.int_validator">
+<tt class="descclassname">pypsi.wizard.</tt><tt class="descname">int_validator</tt><big>(</big><em>min=None</em>, <em>max=None</em><big>)</big><a class="reference internal" href="_modules/pypsi/wizard.html#int_validator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.wizard.int_validator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Integer value wizard validator creator.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>min</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; minimum value, <tt class="xref py py-const docutils literal"><span class="pre">None</span></tt> if no minimum</li>
+<li><strong>max</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; maximum value, <tt class="xref py py-const docutils literal"><span class="pre">None</span></tt> if no maximum</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">validator function</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypsi.wizard.lowercase_validator">
+<tt class="descclassname">pypsi.wizard.</tt><tt class="descname">lowercase_validator</tt><big>(</big><em>ns</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/pypsi/wizard.html#lowercase_validator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.wizard.lowercase_validator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts input string to lowercase.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ns</strong> (<a class="reference internal" href="pypsi.namespace.html#pypsi.namespace.Namespace" title="pypsi.namespace.Namespace"><em>pypsi.namespace.Namespace</em></a>) &#8211; active namespace</li>
+<li><strong>value</strong> &#8211; input value</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">validated value (in lowercase)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypsi.wizard.module_name_validator">
+<tt class="descclassname">pypsi.wizard.</tt><tt class="descname">module_name_validator</tt><big>(</big><em>type_str</em><big>)</big><a class="reference internal" href="_modules/pypsi/wizard.html#module_name_validator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.wizard.module_name_validator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Python module name validator. Raises ValueError on validation error.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>type_str</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the input type to reference when raising validation
+errors.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">validator function</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypsi.wizard.package_name_validator">
+<tt class="descclassname">pypsi.wizard.</tt><tt class="descname">package_name_validator</tt><big>(</big><em>type_str</em><big>)</big><a class="reference internal" href="_modules/pypsi/wizard.html#package_name_validator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.wizard.package_name_validator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Python package name validator. Raises ValueError on validation error.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>type_str</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the input type to reference when raising validation
+errors.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">validator function</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypsi.wizard.required_validator">
+<tt class="descclassname">pypsi.wizard.</tt><tt class="descname">required_validator</tt><big>(</big><em>ns</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/pypsi/wizard.html#required_validator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.wizard.required_validator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Required value wizard validator. Raises ValueError on validation error.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ns</strong> (<a class="reference internal" href="pypsi.namespace.html#pypsi.namespace.Namespace" title="pypsi.namespace.Namespace"><em>pypsi.namespace.Namespace</em></a>) &#8211; active namespace</li>
+<li><strong>value</strong> &#8211; input value</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">validated value</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="pypsi.demo.html" class="btn btn-neutral float-right" title="12. Pypsi Demo Shell"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="pypsi.utils.html" class="btn btn-neutral" title="10. pypsi.utils - Utility functions"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Adam Meily.
+    </p>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<a href="https://github.com/ameily/pypsi"><img style="z-index:10; position: fixed; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+
+</body>
+</html>

@@ -1,100 +1,183 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>1. Overview &mdash; pypsi 1.1 documentation</title>
-    
-    <link rel="stylesheet" href="_static/pypsi.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '1.1',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="pypsi 1.1 documentation" href="index.html" />
-    <link rel="next" title="2. Pypsi Builtin Commands" href="pypsi.commands.html" />
-    <link rel="prev" title="pypsi" href="index.html" /> 
-  </head>
-  <body>
-    <div class="related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="pypsi.commands.html" title="2. Pypsi Builtin Commands"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="index.html" title="pypsi"
-             accesskey="P">previous</a> |</li>
-        <li><a href="index.html">pypsi 1.1 documentation</a> &raquo;</li> 
-      </ul>
-    </div>  
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Pypsi - Python Pluggable Shell Interface &mdash; pypsi 1.2 documentation</title>
+  
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body">
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+    <link rel="top" title="pypsi 1.2 documentation" href="index.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="index.html" class="fa fa-home"> pypsi</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+        
+            <ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ameily/pypsi">Github</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pypi.python.org/pypi/pypsi">Releases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.tutorial.html">1. Pypsi Shell and Command Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.tutorial.html#command-api">1.1. Command API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.tutorial.html#shell-api">1.2. Shell API</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.commands.html">2. Pypsi Builtin Commands</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.plugins.html">3. Pypsi Builtin Plugins</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.block">3.1. Block Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#escape-sequence-processors">3.2. Escape Sequence Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.history">3.3. Shell History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.variable">3.4. Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.cmd">3.5. Cmd</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.shell.html">4. pypsi.shell - Pypsi Shell</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.base.html">5. pypsi.base - Base classes for pluggable features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#command-objects">5.1. Command objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#plugin-objects">5.2. Plugin objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#argument-parsing">5.3. Argument parsing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.cmdline.html">6. pypsi.cmdline - User input processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#commands-and-expressions">6.1. Commands and expressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#tokens">6.2. Tokens</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#statements">6.3. Statements</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.namespace.html">7. pypsi.namespace - Arbitrary attribute storage classes</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.format.html">8. pypsi.format - Stream output formatting</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.stream.html">9. pypsi.stream - File streams</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.utils.html">10. pypsi.utils - Utility functions</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.wizard.html">11. pypsi.wizard - Prompt Wizards</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.demo.html">12. Pypsi Demo Shell</a></li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">pypsi</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Pypsi - Python Pluggable Shell Interface</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/pypsi.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
             
   <div class="toctree-wrapper compound">
 <ul class="simple">
 </ul>
 </div>
-<div class="section" id="overview">
-<h1>1. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="pypsi-python-pluggable-shell-interface">
+<h1>Pypsi - Python Pluggable Shell Interface<a class="headerlink" href="#pypsi-python-pluggable-shell-interface" title="Permalink to this headline">¶</a></h1>
 <p>Python Pluggable Shell Interface, or pypsi, is a framework for developing
-command line based shell interfaces, akin to bash or csh.</p>
-<p>Pypsi was designed around the Python <tt class="docutils literal"><span class="pre">cmd</span></tt> module. The Python <tt class="docutils literal"><span class="pre">cmd</span></tt> module
-is fine for small projects with a limited number of commands and features.
-However, as the interface grows, maintainability and extensibility becomes
-increasingly hard. Adding features such as argument parsing after a few commands
-have been implemented is extremely time consuming.</p>
+command line based shell interfaces, akin to bash or csh. It is intended to be
+a replacement for the builtin Python <tt class="docutils literal"><span class="pre">cmd</span></tt> module.</p>
 <p>Pypsi is targetted towards both rapid prototype interfaces and large stable
 shells. The bootstraping code is very small with very little boilerplate. Pypsi
-ships with a great deal of capabilities box of the box, all of which can be used
-or ignore. Pypsi is pluggable which allows commands, features, and plugins be
+ships with a great deal of capabilities out of the box, all of which can be used
+or ignored. Pypsi is pluggable which allows commands, features, and plugins to be
 developed independently in their own source files and/or Python classes. This
 results in a very clean source repository. The actual code to setup and run the
 shell is exetremely small, on the order of ~20-50 lines of code.</p>
 <p>Pypsi, at its core, is pluggable. There are many hooks that allow plugin authors
 to extend and modify the core behavior of pypsi. Commands are isolated classes
-that make distribution, sharing, and modifing easy.</p>
+that make distribution, sharing, and modification easy.</p>
 <div class="section" id="caveats">
-<h2>1.1. Caveats<a class="headerlink" href="#caveats" title="Permalink to this headline">¶</a></h2>
+<h2>Caveats<a class="headerlink" href="#caveats" title="Permalink to this headline">¶</a></h2>
 <p>The only major caveat when using pypsi is that it only supports Python 3. Python
 3 is the future.</p>
 </div>
 <div class="section" id="releases">
-<h2>1.2. Releases<a class="headerlink" href="#releases" title="Permalink to this headline">¶</a></h2>
-<p>The pypsi source code is located on <a class="reference external" href="https://github.com/ameily/pypsi">GitHub</a>
-and on <a class="reference external" href="https://pypi.python.org/pypi/pypsi">PyPI</a>. The latest version can also
-be install via pip:</p>
-<div class="highlight-python"><div class="highlight"><pre>pip install pypsi
+<h2>Releases<a class="headerlink" href="#releases" title="Permalink to this headline">¶</a></h2>
+<p>The pypsi source code is hosted at <a class="reference external" href="https://github.com/ameily/pypsi">GitHub</a>
+and releases are stored at <a class="reference external" href="https://pypi.python.org/pypi/pypsi">PyPI</a>. The
+latest version can also be install via pip:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ pip install pypsi
 </pre></div>
 </div>
+<p>Documentation can be found on <a class="reference external" href="http://ameily.github.io/pypsi">GitHub Pages</a>.</p>
 </div>
 <div class="section" id="features">
-<h2>1.3. Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
+<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
 <p>The following capabilities ship with pypsi and are available out of the box.</p>
 <ul class="simple">
 <li>I/O redirection</li>
-<li>String-based pipes</li>
 <li>Flexible API</li>
 <li>Tab completion</li>
 <li>Multiplatform</li>
@@ -110,66 +193,89 @@ be install via pip:</p>
 </ul>
 </div>
 <div class="section" id="demo">
-<h2>1.4. Demo<a class="headerlink" href="#demo" title="Permalink to this headline">¶</a></h2>
+<h2>Demo<a class="headerlink" href="#demo" title="Permalink to this headline">¶</a></h2>
 <p>The <tt class="docutils literal"><span class="pre">demo.py</span></tt> source file can be run to show off some of the base commands and
 features that ship with pypsi (the <tt class="docutils literal"><span class="pre">demo.py</span></tt> file can be downloaded from the
 git repo at <a class="reference external" href="https://github.com/ameily/pypsi/blob/master/demo.py">https://github.com/ameily/pypsi/blob/master/demo.py</a>). The commands
 displayed below are all optional: pypsi does not require the use of any command
-or plugin.</p>
+or plugin. The <tt class="docutils literal"><span class="pre">demo.py</span></tt> file is meant to be a reference to the Pypsi API and
+design. Use it as a starting point for your first shell.</p>
 <div class="section" id="variables">
-<h3>1.4.1. Variables<a class="headerlink" href="#variables" title="Permalink to this headline">¶</a></h3>
+<h3>Variables<a class="headerlink" href="#variables" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python"><div class="highlight"><pre>pypsi)&gt; var name = &quot;Paul&quot;
+
 pypsi)&gt; var house = &quot;Atredis&quot;
+
 pypsi)&gt; echo My name is $name, and I belong to House $house
+
 My name is Paul, and I belong to House Atredis
+
 pypsi)&gt; var -l
+
 name     Paul
 house    Atredis
+
 pypsi)&gt; var -d name
+
 pypsi)&gt; echo $name
 
 pypsi)&gt; var name = &quot;Paul $house&quot;
+
 pypsi)&gt; echo $name
+
 Paul Atredis
 </pre></div>
 </div>
 </div>
 <div class="section" id="i-o-redirection">
-<h3>1.4.2. I/O redirection<a class="headerlink" href="#i-o-redirection" title="Permalink to this headline">¶</a></h3>
+<h3>I/O redirection<a class="headerlink" href="#i-o-redirection" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python"><div class="highlight"><pre>pypsi)&gt; echo Hello
+
 Hello
+
 pypsi)&gt; echo Hello &gt; output.txt
+
 pypsi)&gt; echo Goodbye
+
 pypsi)&gt; xargs -I{} &quot;echo line: {}&quot; &lt; output.txt
+
 line: Hello
 line: Goodbye
+
 pypsi)&gt; cat output.txt | grep ll
+
 Hello
 </pre></div>
 </div>
 </div>
 <div class="section" id="system-commands">
-<h3>1.4.3. System commands<a class="headerlink" href="#system-commands" title="Permalink to this headline">¶</a></h3>
+<h3>System commands<a class="headerlink" href="#system-commands" title="Permalink to this headline">¶</a></h3>
 <p>Allows execution of external applications. Command mimics Python&#8217;s
 <tt class="docutils literal"><span class="pre">os.system()</span></tt> function.</p>
 <div class="highlight-python"><div class="highlight"><pre>pypsi)&gt; ls
+
 pypsi: ls: command not found
+
 pypsi)&gt; system ls
+
 include/
 src/
 README.md
+
 pypsi)&gt; system ls | system grep md
+
 README.md
 </pre></div>
 </div>
 </div>
 <div class="section" id="fallback-command">
-<h3>1.4.4. Fallback command<a class="headerlink" href="#fallback-command" title="Permalink to this headline">¶</a></h3>
+<h3>Fallback command<a class="headerlink" href="#fallback-command" title="Permalink to this headline">¶</a></h3>
 <p>Allows the developer to set which command gets called if one does not exist in
 the current shell. This is very useful, for example, if you want to fallback on
 any OS installed executables. In this example, the fallback command is
 <tt class="docutils literal"><span class="pre">system</span></tt>.</p>
 <div class="highlight-python"><div class="highlight"><pre>pypsi)&gt; ls
+
 include/
 src/
 README.md
@@ -177,130 +283,191 @@ README.md
 </div>
 </div>
 <div class="section" id="command-chaining">
-<h3>1.4.5. Command chaining<a class="headerlink" href="#command-chaining" title="Permalink to this headline">¶</a></h3>
+<h3>Command chaining<a class="headerlink" href="#command-chaining" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python"><div class="highlight"><pre>pypsi)&gt; echo Hello &amp;&amp; echo --bad-arg &amp;&amp; echo goodbye
+
 Hello
 echo: unrecgonized arguments: --bad-arg
+
 pypsi)&gt; echo Hello ; echo --bad-arg ; echo goodbye
+
 Hello
 echo: unrecgonized arguments: --bad-arg
 goodbye
+
 pypsi)&gt; echo --bad-arg || echo first failed
+
 echo: unrecgonized arguments: --bad-arg
 first failed
 </pre></div>
 </div>
 </div>
 <div class="section" id="multiline-commands">
-<h3>1.4.6. Multiline commands<a class="headerlink" href="#multiline-commands" title="Permalink to this headline">¶</a></h3>
+<h3>Multiline commands<a class="headerlink" href="#multiline-commands" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-python"><div class="highlight"><pre>pypsi)&gt; echo Hello, \
 &gt; Dave
+
 Hello, Dave
+
 pypsi)&gt; echo This \
 &gt; is \
 &gt; pypsi \
 &gt; and it rocks
+
 This is pypsi and it rocks
 </pre></div>
 </div>
 </div>
 <div class="section" id="macros">
-<h3>1.4.7. Macros<a class="headerlink" href="#macros" title="Permalink to this headline">¶</a></h3>
+<h3>Macros<a class="headerlink" href="#macros" title="Permalink to this headline">¶</a></h3>
 <p>Macros are analogous to functions in bash. They provide the ability to create
 new commands in the shell.</p>
 <div class="highlight-python"><div class="highlight"><pre>pypsi)&gt; macro hello
 &gt; echo Hello, $1
 &gt; echo Goodbye from macro $0
 &gt; end
+
 pypsi)&gt; hello Adam
+
 Hello, Adam
 Goodbye from macro hello
 </pre></div>
 </div>
 </div>
+<div class="section" id="prompt-wizards">
+<h3>Prompt Wizards<a class="headerlink" href="#prompt-wizards" title="Permalink to this headline">¶</a></h3>
+<p>Prompt wizards ask the user a series of questions and request input. Input is
+tab completed, validated, and returned. The wizard can be used for easy
+configuration of components that require a substantial amount of input.</p>
+<div class="highlight-python"><div class="highlight"><pre>pypsi)&gt; wizard
++-----------------------------------------------------------------------------+
+|                    Entering Example Configuration Wizard                    |
++-----------------------------------------------------------------------------+
+Shows various examples of wizard steps
+
+To exit, enter either Ctrl+C, Ctrl+D, or &#39;quit&#39;. For help about the current
+step, enter &#39;help&#39; or &#39;?&#39;.
+
+IP Address: &lt;enter&gt;
+
+Error: Value is required
+Local IP Address or Host name
+
+IP Address: 192.168.0.10
+
+TCP Port [1337]: &lt;enter&gt;
+
+File path: /var/lo&lt;tab&gt;
+
+local/  lock/   log/
+
+File path: /var/log/&lt;tab&gt;
+
+Xorg.1.log        btmp              faillog           upstart/
+Xorg.1.log.old    dist-upgrade/     fontconfig.log    wtmp
+alternatives.log  distccd.log       fsck/
+apt/              dmesg             lastlog
+bootstrap.log     dpkg.log          mongodb/
+
+File path: /var/log/dpkg.log
+
+Shell mode [local]: asdf
+
+Error: Invalid choice
+
+Mode of the shell
+
+Shell mode [local]: remote
+
+Config ID    Config Value
+================================================================================
+ip_addr      172.16.11.204
+port         1337
+path         /var/log/dpkg.log
+mode         remote
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>I developed Pypsi while working on a commerical product with a command line
+interface. Originally, we used the <tt class="docutils literal"><span class="pre">cmd</span></tt> module, which was fine when we only
+had a few commands that didn&#8217;t accept complex arguments. As we added more
+commands and more features, maintainability and extensibility became extremely
+complicated and time consuming.</p>
+<p>I took what I had learned from the <tt class="docutils literal"><span class="pre">cmd</span></tt> module, ORM libraries such as
+MongoEngine, and features from proven great command line interfaces such as Git
+and then I developed Pypsi. In order for Pypsi to be viable for our project, I
+knew that Pypsi had to be compatible with <tt class="docutils literal"><span class="pre">cmd</span></tt>, the porting process had to
+take as little time as possible, and it had to be easy to understand and
+maintain.</p>
+<p>The porting process from <tt class="docutils literal"><span class="pre">cmd</span></tt> to Pypsi for our commerical project took place
+in January 2014. Since then, we&#8217;ve had 4 stable releases, had real world
+feedback, and have successfully created many Pypsi commands and plugins with
+ease.</p>
 </div>
 <div class="section" id="license">
-<h2>1.5. License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
+<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
 <p><tt class="docutils literal"><span class="pre">pypsi</span></tt> is released under the BSD 3-Clause license.</p>
 </div>
 </div>
 
 
           </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">1. Overview</a><ul>
-<li><a class="reference internal" href="#caveats">1.1. Caveats</a></li>
-<li><a class="reference internal" href="#releases">1.2. Releases</a></li>
-<li><a class="reference internal" href="#features">1.3. Features</a></li>
-<li><a class="reference internal" href="#demo">1.4. Demo</a><ul>
-<li><a class="reference internal" href="#variables">1.4.1. Variables</a></li>
-<li><a class="reference internal" href="#i-o-redirection">1.4.2. I/O redirection</a></li>
-<li><a class="reference internal" href="#system-commands">1.4.3. System commands</a></li>
-<li><a class="reference internal" href="#fallback-command">1.4.4. Fallback command</a></li>
-<li><a class="reference internal" href="#command-chaining">1.4.5. Command chaining</a></li>
-<li><a class="reference internal" href="#multiline-commands">1.4.6. Multiline commands</a></li>
-<li><a class="reference internal" href="#macros">1.4.7. Macros</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#license">1.5. License</a></li>
-</ul>
-</li>
-</ul>
+          <footer>
+  
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="index.html"
-                        title="previous chapter">pypsi</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="pypsi.commands.html"
-                        title="next chapter">2. Pypsi Builtin Commands</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/pypsi.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2014, Adam Meily.
     </p>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+  </div>
+
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+</footer>
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="pypsi.commands.html" title="2. Pypsi Builtin Commands"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="index.html" title="pypsi"
-             >previous</a> |</li>
-        <li><a href="index.html">pypsi 1.1 documentation</a> &raquo;</li> 
-      </ul>
-    </div>
-    <div class="footer">
-        &copy; Copyright 2014, Adam Meily.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
-    </div>
-  </body>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+<a href="https://github.com/ameily/pypsi"><img style="z-index:10; position: fixed; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+
+</body>
 </html>
