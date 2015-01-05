@@ -78,17 +78,29 @@ class AnsiCodesSingleton(object):
     '''
 
     def __init__(self):
+        #: Reset terminal color and style
         self.reset = AnsiCode('\x1b[0m')
+        #: Gray
         self.gray = AnsiCode('\x1b[1;30m')
+        #: Red (bold)
         self.red = AnsiCode('\x1b[1;31m')
+        #: Green (bold)
         self.green = AnsiCode('\x1b[1;32m')
+        #: Yellow (bold)
         self.yellow = AnsiCode('\x1b[1;33m')
+        #: Blue (bold)
         self.blue = AnsiCode('\x1b[1;34m')
+        #: Purple (bold)
         self.purple = AnsiCode('\x1b[1;35m')
+        #: Cyan (bold)
         self.cyan = AnsiCode('\x1b[1;36m')
+        #: White (bold)
         self.white = AnsiCode('\x1b[1;37m')
+        #: Black
         self.black = AnsiCode('\x1b[0;30m')
+        #: Clear the screen
         self.clear_screen = AnsiCode('\x1b[2J\x1b[;H')
+        #: Underline text
         self.underline = AnsiCode('\x1b[4m')
 
         #: all codes as a dict, useful for formatting an ansi string
@@ -107,7 +119,8 @@ class AnsiCodesSingleton(object):
             underline=self.underline
         )
 
-#: Global instance for all supported ansi codes
+#: Global instance for all supported ansi codes (instance of
+#: :class:`AnsiCodesSingleton`)
 AnsiCodes = AnsiCodesSingleton()
 
 

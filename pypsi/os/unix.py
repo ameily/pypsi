@@ -32,6 +32,8 @@
 Unix (Cygwin, Linux, etc) specific functions
 '''
 
+import os
+
 def unix_path_completer(shell, args, prefix):
     root = None
     if args:
@@ -46,8 +48,6 @@ def unix_path_completer(shell, args, prefix):
 
     if root.endswith(prefix) and prefix:
         root = root[:0 - len(prefix)]
-
-    #return ['prefix:'+prefix, 'root:'+root]
 
     if not os.path.exists(root):
         return []

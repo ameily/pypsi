@@ -239,8 +239,16 @@ class Command(object):
 
 
 class CommandShortCircuit(Exception):
+    '''
+    Exception raised when the user enter invalid arguments or requests usage
+    information via the -h and --help flags.
+    '''
 
     def __init__(self, code):
+        '''
+        :param int code: the code the command should return
+        '''
+
         super(CommandShortCircuit, self).__init__(code)
         self.code = code
 
