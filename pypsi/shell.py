@@ -147,6 +147,7 @@ class Shell(object):
 
     def set_readline_completer(self):
         if readline.get_completer() != self.complete:
+            readline.parse_and_bind("tab: complete")
             self._backup_completer = readline.get_completer()
             readline.set_completer(self.complete)
 
