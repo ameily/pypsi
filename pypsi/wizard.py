@@ -342,7 +342,7 @@ class PromptWizard(object):
         self.values = Namespace()
         self.parser = StatementParser()
 
-    def run(self, shell):
+    def run(self, shell, print_header=True):
         '''
         Execute the wizard, prompting the user for input.
 
@@ -353,14 +353,16 @@ class PromptWizard(object):
 
         self.old_completer = readline.get_completer()
         readline.set_completer(self.complete)
-        print(
-            title_str("Entering " + self.name + " Wizard", width=shell.width, box=True, align='center'),
-            '\n',
-            self.description, '\n\n',
-            "To exit, enter either Ctrl+C, Ctrl+D, or 'quit'. For help "
-            "about the current step, enter 'help' or '?'.",
-            sep=''
-        )
+
+        if print_header:
+            print(
+                title_str("Entering " + self.name + " Wizard", width=shell.width, box=True, align='center'),
+                '\n',
+                self.description, '\n\n',
+                "To exit, enter either Ctrl+C, Ctrl+D, or 'quit'. For help "
+                "about the current step, enter 'help' or '?'.",
+                sep=''
+            )
 
         running = True
         for step in self.steps:
