@@ -119,7 +119,6 @@ class TipCommand(Command):
         try:
             cnt = sys.stdout.ansi_format(self.motd, **self.vars)
         except:
-            raise
             cnt = self.motd
 
         print(
