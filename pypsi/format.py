@@ -101,6 +101,10 @@ def get_lines(txt):
     :returns tuple: a tuple containing the next line and whether the line
         contained a newline charater.
     '''
+
+    if not txt:
+        return iter([])
+
     start = 0
     try:
         while True:

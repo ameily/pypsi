@@ -32,11 +32,11 @@
 Utility functions and classes.
 '''
 
-from chardet.universaldetector import UniversalDetector
+import chardet
 import codecs
 
 
-def safe_open(path, mode='r'):
+def safe_open(path, mode='r', chunk_size=4096, ascii_is_utf8=True, errors='ignore'):
     '''
     Retrieves a file's encoding and returns the opened file. If the opened file
     begins with a BOM, it is read before the file object is returned. This
@@ -44,23 +44,27 @@ def safe_open(path, mode='r'):
 
     :param str path: file path to open
     :param str mode: the mode to open the file (see :func:`open`)
+    :param int chunk_size: number of bytes to read to determine encoding
+    :param bool ascii_is_utf8: whether to force UTF-8 encoding if the file is
+    dected as ASCII
+    :param str errors: determines how errors are handled and is passed to
+    the call to :func:`open`.
     :returns file: the opened file object
     '''
-    u = UniversalDetector()
+
     first = None
     with open(path, 'rb') as fp:
-        bin = first = fp.read(0x1000)
-
-        while not u.done and bin:
-            u.feed(bin)
-            if not u.done:
-                bin = fp.read(0x1000)
-    u.close()
+        bin = first = fp.read(chunk_size)
+        result = chardet.detect(bin)
 
     if not first:
         return open(path, mode)
 
-    fp = codecs.open(path, mode, encoding=u.result['encoding'])
+    enc = result['encoding']
+    if ascii_is_utf8 and enc == 'ascii':
+        enc = 'utf-8'
+
+    fp = codecs.open(path, mode, encoding=enc, errors=errors)
     for bom in (codecs.BOM_UTF32_BE, codecs.BOM_UTF32_LE, codecs.BOM_UTF8,
                 codecs.BOM_UTF16_BE, codecs.BOM_UTF16_LE):
         if first.startswith(bom):

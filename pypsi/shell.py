@@ -73,6 +73,7 @@ class Shell(object):
         self.fallback_cmd = None
 
         self.eof_is_sigint = False
+        self._backup_completer = readline.get_completer()
 
         self.bootstrap()
 
@@ -144,6 +145,16 @@ class Shell(object):
     def get_current_prompt(self):
         return self.preprocess_single(self.prompt, 'prompt')
 
+    def set_readline_completer(self):
+        if readline.get_completer() != self.complete:
+            readline.parse_and_bind("tab: complete")
+            self._backup_completer = readline.get_completer()
+            readline.set_completer(self.complete)
+
+    def reset_readline_completer(self):
+        if readline.get_completer() == self.complete:
+            readline.set_completer(self._backup_completer)
+
     def cmdloop(self):
         '''
         Begin the input processing loop where the user will be prompted for
@@ -151,10 +162,8 @@ class Shell(object):
         '''
 
         self.running = True
+        self.set_readline_completer()
         self.on_cmdloop_begin()
-        readline.parse_and_bind("tab: complete")
-        old_completer = readline.get_completer()
-        readline.set_completer(self.complete)
         rc = 0
         try:
             while self.running:
@@ -183,7 +192,7 @@ class Shell(object):
                         self.running = False
         finally:
             self.on_cmdloop_end()
-            readline.set_completer(old_completer)
+            self.reset_readline_completer()
         return rc
 
     def error(self, msg):

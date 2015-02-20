@@ -99,7 +99,7 @@ class HelpCommand(Command):
                 if cmd.topic in shell.ctx.topic_lookup:
                     shell.ctx.topic_lookup[cmd.topic].commands.append(cmd)
                 else:
-                    self.add_topic(Topic(cmd.topic, commands=[cmd]))
+                    self.add_topic(shell, Topic(cmd.topic, commands=[cmd]))
             else:
                 shell.ctx.uncat_topic.commands.append(cmd)
         shell.ctx.topics_dirty = False
