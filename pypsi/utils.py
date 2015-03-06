@@ -45,10 +45,10 @@ def safe_open(path, mode='r', chunk_size=4096, ascii_is_utf8=True, errors='ignor
     :param str path: file path to open
     :param str mode: the mode to open the file (see :func:`open`)
     :param int chunk_size: number of bytes to read to determine encoding
-    :param bool ascii_is_utf8: whether to force UTF-8 encoding if the file is
-    dected as ASCII
-    :param str errors: determines how errors are handled and is passed to
-    the call to :func:`open`.
+    :param bool ascii_is_utf8: whether to force UTF-8 encoding if the file is \
+        dected as ASCII
+    :param str errors: determines how errors are handled and is passed to \
+        the call to :func:`open`.
     :returns file: the opened file object
     '''
 
