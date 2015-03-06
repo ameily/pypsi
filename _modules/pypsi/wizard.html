@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>pypsi.wizard &mdash; pypsi 1.2 documentation</title>
+  <title>pypsi.wizard &mdash; pypsi 1.3 documentation</title>
   
 
   
@@ -28,7 +28,7 @@
   
 
   
-    <link rel="top" title="pypsi 1.2 documentation" href="../../index.html"/>
+    <link rel="top" title="pypsi 1.3 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -485,7 +485,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">Namespace</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parser</span> <span class="o">=</span> <span class="n">StatementParser</span><span class="p">()</span>
 
-<div class="viewcode-block" id="PromptWizard.run"><a class="viewcode-back" href="../../pypsi.wizard.html#pypsi.wizard.PromptWizard.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">):</span>
+<div class="viewcode-block" id="PromptWizard.run"><a class="viewcode-back" href="../../pypsi.wizard.html#pypsi.wizard.PromptWizard.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">print_header</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Execute the wizard, prompting the user for input.</span>
 
@@ -496,14 +496,16 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">old_completer</span> <span class="o">=</span> <span class="n">readline</span><span class="o">.</span><span class="n">get_completer</span><span class="p">()</span>
         <span class="n">readline</span><span class="o">.</span><span class="n">set_completer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">complete</span><span class="p">)</span>
-        <span class="k">print</span><span class="p">(</span>
-            <span class="n">title_str</span><span class="p">(</span><span class="s">&quot;Entering &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&quot; Wizard&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">shell</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">box</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s">&#39;center&#39;</span><span class="p">),</span>
-            <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\n\n</span><span class="s">&#39;</span><span class="p">,</span>
-            <span class="s">&quot;To exit, enter either Ctrl+C, Ctrl+D, or &#39;quit&#39;. For help &quot;</span>
-            <span class="s">&quot;about the current step, enter &#39;help&#39; or &#39;?&#39;.&quot;</span><span class="p">,</span>
-            <span class="n">sep</span><span class="o">=</span><span class="s">&#39;&#39;</span>
-        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">print_header</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span>
+                <span class="n">title_str</span><span class="p">(</span><span class="s">&quot;Entering &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&quot; Wizard&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">shell</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">box</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">align</span><span class="o">=</span><span class="s">&#39;center&#39;</span><span class="p">),</span>
+                <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="s">&#39;</span><span class="se">\n\n</span><span class="s">&#39;</span><span class="p">,</span>
+                <span class="s">&quot;To exit, enter either Ctrl+C, Ctrl+D, or &#39;quit&#39;. For help &quot;</span>
+                <span class="s">&quot;about the current step, enter &#39;help&#39; or &#39;?&#39;.&quot;</span><span class="p">,</span>
+                <span class="n">sep</span><span class="o">=</span><span class="s">&#39;&#39;</span>
+            <span class="p">)</span>
 
         <span class="n">running</span> <span class="o">=</span> <span class="bp">True</span>
         <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">steps</span><span class="p">:</span>
@@ -596,7 +598,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'1.2',
+            VERSION:'1.3',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
@@ -620,8 +622,7 @@
           SphinxRtdTheme.StickyNav.enable();
       });
   </script>
-  
-<a href="https://github.com/ameily/pypsi"><img style="z-index:10; position: fixed; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>
+   
 
 </body>
 </html>
