@@ -30,7 +30,7 @@
 
 from pypsi.plugins.block import BlockCommand
 from pypsi.base import Command, PypsiArgParser, CommandShortCircuit
-from pypsi.format import FixedColumnTable, title_str
+from pypsi.format import Table, Column, FixedColumnTable, title_str
 import sys
 
 
@@ -182,11 +182,34 @@ class MacroCommand(BlockCommand):
                 shell.ctx.macro_orig_eof_is_sigint = shell.eof_is_sigint
                 shell.eof_is_sigint = True
         elif ns.list:
+            '''
+            Left justified table
+            '''
+            print(title_str("Registered Macros", shell.width))
+            chunk_size = 3
+            
+            tbl = Table(
+                columns=(Column(''), Column(''),Column('', Column.Grow)),
+                spacing=4,
+                header=False,
+                width=shell.width
+            )
+            macro_names = list(shell.ctx.macros.keys())
+            for i in range(0,len(macro_names),chunk_size):
+                chunk = macro_names[i:i+chunk_size]
+                tbl.extend(chunk)
+            tbl.write(sys.stdout)
+            
+            '''
+            Old not left justified table
+            '''
+            '''
             tbl = FixedColumnTable(widths=[shell.width//3]*3)
             print(title_str("Registered Macros", shell.width))
             for name in shell.ctx.macros:
                 tbl.add_cell(sys.stdout, name)
             tbl.flush(sys.stdout)
+            '''
         else:
             self.usage_error(shell, "missing required argument: NAME")
             rc = 1
