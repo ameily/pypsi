@@ -7,14 +7,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>9. pypsi.stream - File streams &mdash; pypsi 1.3 documentation</title>
+  <title>3. pypsi.stream - File streams &mdash; pypsi 1.2.1 documentation</title>
   
 
   
   
 
   
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
 
   
   
@@ -28,9 +28,11 @@
   
 
   
-    <link rel="top" title="pypsi 1.3 documentation" href="index.html"/>
-        <link rel="next" title="10. pypsi.utils - Utility functions" href="pypsi.utils.html"/>
-        <link rel="prev" title="8. pypsi.format - Stream output formatting" href="pypsi.format.html"/> 
+
+  
+    <link rel="top" title="pypsi 1.2.1 documentation" href="index.html"/>
+        <link rel="next" title="pypsi.utils - Utility functions" href="pypsi.utils.html"/>
+        <link rel="prev" title="pypsi.format - Stream output formatting" href="pypsi.format.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -44,9 +46,12 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-nav-search">
-        <a href="index.html" class="fa fa-home"> pypsi</a>
-        <div role="search">
-  <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+        
+          <a href="index.html" class="fa fa-home"> pypsi</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -56,8 +61,9 @@
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
         
-        
-            <ul class="current">
+          
+          
+              <ul class="current">
 <li class="toctree-l1"><a class="reference external" href="https://github.com/ameily/pypsi">Github</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://pypi.python.org/pypi/pypsi">Releases</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pypsi.tutorial.html">1. Pypsi Shell and Command Tutorial</a><ul>
@@ -65,50 +71,51 @@
 <li class="toctree-l2"><a class="reference internal" href="pypsi.tutorial.html#shell-api">1.2. Shell API</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.commands.html">2. Pypsi Builtin Commands</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="pypsi.commands.html">Pypsi Builtin Commands</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.plugins.html">3. Pypsi Builtin Plugins</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.block">3.1. Block Commands</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#escape-sequence-processors">3.2. Escape Sequence Processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.history">3.3. Shell History</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.variable">3.4. Variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.cmd">3.5. Cmd</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.plugins.html">Pypsi Builtin Plugins</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.block">Block Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#escape-sequence-processors">Escape Sequence Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.history">Shell History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.variable">Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.cmd">Cmd</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.shell.html">4. pypsi.shell - Pypsi Shell</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="pypsi.shell.html">2. pypsi.shell - Pypsi Shell</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.base.html">5. pypsi.base - Base classes for pluggable features</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#command-objects">5.1. Command objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#plugin-objects">5.2. Plugin objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#argument-parsing">5.3. Argument parsing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.base.html">pypsi.base - Base classes for pluggable features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#command-objects">Command objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#plugin-objects">Plugin objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#argument-parsing">Argument parsing</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.cmdline.html">6. pypsi.cmdline - User input processing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#commands-and-expressions">6.1. Commands and expressions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#tokens">6.2. Tokens</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#statements">6.3. Statements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.cmdline.html">pypsi.cmdline - User input processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#commands-and-expressions">Commands and expressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#tokens">Tokens</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#statements">Statements</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.namespace.html">7. pypsi.namespace - Arbitrary attribute storage classes</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="pypsi.namespace.html">pypsi.namespace - Arbitrary attribute storage classes</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.format.html">8. pypsi.format - Stream output formatting</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="pypsi.format.html">pypsi.format - Stream output formatting</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">9. pypsi.stream - File streams</a><ul class="simple">
+<li class="toctree-l1 current"><a class="current reference internal" href="">3. pypsi.stream - File streams</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.utils.html">10. pypsi.utils - Utility functions</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="pypsi.utils.html">pypsi.utils - Utility functions</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.wizard.html">11. pypsi.wizard - Prompt Wizards</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="pypsi.wizard.html">pypsi.wizard - Prompt Wizards</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.demo.html">12. Pypsi Demo Shell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.demo.html">4. Pypsi Demo Shell</a></li>
 </ul>
 
+          
         
       </div>
       &nbsp;
@@ -130,7 +137,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>9. pypsi.stream - File streams</li>
+    <li>3. pypsi.stream - File streams</li>
       <li class="wy-breadcrumbs-aside">
         
           <a href="_sources/pypsi.stream.txt" rel="nofollow"> View page source</a>
@@ -139,18 +146,18 @@
   </ul>
   <hr/>
 </div>
-          <div role="main">
+          <div role="main" class="document">
             
   <div class="section" id="pypsi-stream-file-streams">
-<h1>9. pypsi.stream - File streams<a class="headerlink" href="#pypsi-stream-file-streams" title="Permalink to this headline">¶</a></h1>
+<h1>3. pypsi.stream - File streams<a class="headerlink" href="#pypsi-stream-file-streams" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul class="simple">
 </ul>
 </div>
 <span class="target" id="module-pypsi.stream"></span><dl class="class">
 <dt id="pypsi.stream.AnsiCode">
-<em class="property">class </em><tt class="descclassname">pypsi.stream.</tt><tt class="descname">AnsiCode</tt><big>(</big><em>code</em>, <em>s=None</em><big>)</big><a class="reference internal" href="_modules/pypsi/stream.html#AnsiCode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.AnsiCode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<em class="property">class </em><code class="descclassname">pypsi.stream.</code><code class="descname">AnsiCode</code><span class="sig-paren">(</span><em>code</em>, <em>s=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/stream.html#AnsiCode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.AnsiCode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>A single ansi escape code.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -167,7 +174,7 @@ this code</li>
 </table>
 <dl class="method">
 <dt id="pypsi.stream.AnsiCode.__call__">
-<tt class="descname">__call__</tt><big>(</big><em>s</em>, <em>postfix='\x1b[0m'</em><big>)</big><a class="reference internal" href="_modules/pypsi/stream.html#AnsiCode.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.AnsiCode.__call__" title="Permalink to this definition">¶</a></dt>
+<code class="descname">__call__</code><span class="sig-paren">(</span><em>s</em>, <em>postfix='\x1b[0m'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/stream.html#AnsiCode.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.AnsiCode.__call__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrap a given string in the escape code. This is useful for printing a
 word or sentence in a specific color.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -187,93 +194,93 @@ code)</li>
 
 <dl class="method">
 <dt id="pypsi.stream.AnsiCode.prompt">
-<tt class="descname">prompt</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pypsi/stream.html#AnsiCode.prompt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.AnsiCode.prompt" title="Permalink to this definition">¶</a></dt>
+<code class="descname">prompt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/stream.html#AnsiCode.prompt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.AnsiCode.prompt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrap non-print-able characters in readline non visible markers. This is
-required if the string is going to be passed into <tt class="xref py py-meth docutils literal"><span class="pre">input()</span></tt>.</p>
+required if the string is going to be passed into <code class="xref py py-meth docutils literal"><span class="pre">input()</span></code>.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="pypsi.stream.AnsiCodesSingleton">
-<em class="property">class </em><tt class="descclassname">pypsi.stream.</tt><tt class="descname">AnsiCodesSingleton</tt><a class="reference internal" href="_modules/pypsi/stream.html#AnsiCodesSingleton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<em class="property">class </em><code class="descclassname">pypsi.stream.</code><code class="descname">AnsiCodesSingleton</code><a class="reference internal" href="_modules/pypsi/stream.html#AnsiCodesSingleton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>Holds all supported ansi escape codes.</p>
 <dl class="attribute">
 <dt id="pypsi.stream.AnsiCodesSingleton.black">
-<tt class="descname">black</tt><em class="property"> = None</em><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton.black" title="Permalink to this definition">¶</a></dt>
+<code class="descname">black</code><em class="property"> = None</em><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton.black" title="Permalink to this definition">¶</a></dt>
 <dd><p>Black</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="pypsi.stream.AnsiCodesSingleton.blue">
-<tt class="descname">blue</tt><em class="property"> = None</em><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton.blue" title="Permalink to this definition">¶</a></dt>
+<code class="descname">blue</code><em class="property"> = None</em><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton.blue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Blue (bold)</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="pypsi.stream.AnsiCodesSingleton.clear_screen">
-<tt class="descname">clear_screen</tt><em class="property"> = None</em><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton.clear_screen" title="Permalink to this definition">¶</a></dt>
+<code class="descname">clear_screen</code><em class="property"> = None</em><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton.clear_screen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clear the screen</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="pypsi.stream.AnsiCodesSingleton.codes">
-<tt class="descname">codes</tt><em class="property"> = None</em><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton.codes" title="Permalink to this definition">¶</a></dt>
+<code class="descname">codes</code><em class="property"> = None</em><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton.codes" title="Permalink to this definition">¶</a></dt>
 <dd><p>all codes as a dict, useful for formatting an ansi string</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="pypsi.stream.AnsiCodesSingleton.cyan">
-<tt class="descname">cyan</tt><em class="property"> = None</em><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton.cyan" title="Permalink to this definition">¶</a></dt>
+<code class="descname">cyan</code><em class="property"> = None</em><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton.cyan" title="Permalink to this definition">¶</a></dt>
 <dd><p>Cyan (bold)</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="pypsi.stream.AnsiCodesSingleton.gray">
-<tt class="descname">gray</tt><em class="property"> = None</em><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton.gray" title="Permalink to this definition">¶</a></dt>
+<code class="descname">gray</code><em class="property"> = None</em><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton.gray" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gray</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="pypsi.stream.AnsiCodesSingleton.green">
-<tt class="descname">green</tt><em class="property"> = None</em><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton.green" title="Permalink to this definition">¶</a></dt>
+<code class="descname">green</code><em class="property"> = None</em><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton.green" title="Permalink to this definition">¶</a></dt>
 <dd><p>Green (bold)</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="pypsi.stream.AnsiCodesSingleton.purple">
-<tt class="descname">purple</tt><em class="property"> = None</em><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton.purple" title="Permalink to this definition">¶</a></dt>
+<code class="descname">purple</code><em class="property"> = None</em><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton.purple" title="Permalink to this definition">¶</a></dt>
 <dd><p>Purple (bold)</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="pypsi.stream.AnsiCodesSingleton.red">
-<tt class="descname">red</tt><em class="property"> = None</em><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton.red" title="Permalink to this definition">¶</a></dt>
+<code class="descname">red</code><em class="property"> = None</em><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton.red" title="Permalink to this definition">¶</a></dt>
 <dd><p>Red (bold)</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="pypsi.stream.AnsiCodesSingleton.reset">
-<tt class="descname">reset</tt><em class="property"> = None</em><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton.reset" title="Permalink to this definition">¶</a></dt>
+<code class="descname">reset</code><em class="property"> = None</em><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton.reset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reset terminal color and style</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="pypsi.stream.AnsiCodesSingleton.underline">
-<tt class="descname">underline</tt><em class="property"> = None</em><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton.underline" title="Permalink to this definition">¶</a></dt>
+<code class="descname">underline</code><em class="property"> = None</em><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton.underline" title="Permalink to this definition">¶</a></dt>
 <dd><p>Underline text</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="pypsi.stream.AnsiCodesSingleton.white">
-<tt class="descname">white</tt><em class="property"> = None</em><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton.white" title="Permalink to this definition">¶</a></dt>
+<code class="descname">white</code><em class="property"> = None</em><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton.white" title="Permalink to this definition">¶</a></dt>
 <dd><p>White (bold)</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="pypsi.stream.AnsiCodesSingleton.yellow">
-<tt class="descname">yellow</tt><em class="property"> = None</em><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton.yellow" title="Permalink to this definition">¶</a></dt>
+<code class="descname">yellow</code><em class="property"> = None</em><a class="headerlink" href="#pypsi.stream.AnsiCodesSingleton.yellow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Yellow (bold)</p>
 </dd></dl>
 
@@ -281,27 +288,27 @@ required if the string is going to be passed into <tt class="xref py py-meth doc
 
 <dl class="class">
 <dt id="pypsi.stream.AnsiStream">
-<em class="property">class </em><tt class="descclassname">pypsi.stream.</tt><tt class="descname">AnsiStream</tt><big>(</big><em>stream</em>, <em>ansi_mode=0</em>, <em>width=80</em><big>)</big><a class="reference internal" href="_modules/pypsi/stream.html#AnsiStream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.AnsiStream" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<em class="property">class </em><code class="descclassname">pypsi.stream.</code><code class="descname">AnsiStream</code><span class="sig-paren">(</span><em>stream</em>, <em>ansi_mode=0</em>, <em>width=80</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/stream.html#AnsiStream"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.AnsiStream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>Enhanced file stream wrapper that includes the ability to:</p>
 <ul class="simple">
 <li>redirect output to a new stream, while keeping a stack of redirections</li>
 <li>reset to the initial stream (cancel all redirects)</li>
 <li>format an ansi string</li>
 </ul>
-<p>The <tt class="xref py py-meth docutils literal"><span class="pre">pypsi.shell.Shell.bootstrap()</span></tt> wraps both <a class="reference external" href="http://docs.python.org/3.3/library/sys.html#sys.stdout" title="(in Python v3.4)"><tt class="xref py py-data docutils literal"><span class="pre">sys.stdout</span></tt></a> and
-<a class="reference external" href="http://docs.python.org/3.3/library/sys.html#sys.stderr" title="(in Python v3.4)"><tt class="xref py py-data docutils literal"><span class="pre">sys.stderr</span></tt></a> in an <a class="reference internal" href="#pypsi.stream.AnsiStream" title="pypsi.stream.AnsiStream"><tt class="xref py py-class docutils literal"><span class="pre">AnsiStream</span></tt></a> instance.</p>
+<p>The <code class="xref py py-meth docutils literal"><span class="pre">pypsi.shell.Shell.bootstrap()</span></code> wraps both <a class="reference external" href="http://docs.python.org/3.3/library/sys.html#sys.stdout" title="(in Python v3.4)"><code class="xref py py-data docutils literal"><span class="pre">sys.stdout</span></code></a> and
+<a class="reference external" href="http://docs.python.org/3.3/library/sys.html#sys.stderr" title="(in Python v3.4)"><code class="xref py py-data docutils literal"><span class="pre">sys.stderr</span></code></a> in an <a class="reference internal" href="#pypsi.stream.AnsiStream" title="pypsi.stream.AnsiStream"><code class="xref py py-class docutils literal"><span class="pre">AnsiStream</span></code></a> instance.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>stream</strong> (<em>file</em>) &#8211; the initial stream to wrap (should be either
-<a class="reference external" href="http://docs.python.org/3.3/library/sys.html#sys.stdout" title="(in Python v3.4)"><tt class="xref py py-data docutils literal"><span class="pre">sys.stdout</span></tt></a> or <a class="reference external" href="http://docs.python.org/3.3/library/sys.html#sys.stderr" title="(in Python v3.4)"><tt class="xref py py-data docutils literal"><span class="pre">sys.stderr</span></tt></a>)</li>
+<a class="reference external" href="http://docs.python.org/3.3/library/sys.html#sys.stdout" title="(in Python v3.4)"><code class="xref py py-data docutils literal"><span class="pre">sys.stdout</span></code></a> or <a class="reference external" href="http://docs.python.org/3.3/library/sys.html#sys.stderr" title="(in Python v3.4)"><code class="xref py py-data docutils literal"><span class="pre">sys.stderr</span></code></a>)</li>
 <li><strong>ansi_mode</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; the mode to use when checking if the active stream
 supports ansi escape codes</li>
 <li><strong>width</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; the streams width, which is used by
-<a class="reference internal" href="#pypsi.stream.pypsi_print" title="pypsi.stream.pypsi_print"><tt class="xref py py-meth docutils literal"><span class="pre">pypsi_print()</span></tt></a> and <a class="reference internal" href="pypsi.format.html#pypsi.format.wrap_line" title="pypsi.format.wrap_line"><tt class="xref py py-meth docutils literal"><span class="pre">pypsi.format.wrap_line()</span></tt></a></li>
+<a class="reference internal" href="#pypsi.stream.pypsi_print" title="pypsi.stream.pypsi_print"><code class="xref py py-meth docutils literal"><span class="pre">pypsi_print()</span></code></a> and <a class="reference internal" href="pypsi.format.html#pypsi.format.wrap_line" title="pypsi.format.wrap_line"><code class="xref py py-meth docutils literal"><span class="pre">pypsi.format.wrap_line()</span></code></a></li>
 </ul>
 </td>
 </tr>
@@ -309,11 +316,11 @@ supports ansi escape codes</li>
 </table>
 <dl class="method">
 <dt id="pypsi.stream.AnsiStream.ansi_format">
-<tt class="descname">ansi_format</tt><big>(</big><em>tmpl</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/stream.html#AnsiStream.ansi_format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.AnsiStream.ansi_format" title="Permalink to this definition">¶</a></dt>
+<code class="descname">ansi_format</code><span class="sig-paren">(</span><em>tmpl</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/stream.html#AnsiStream.ansi_format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.AnsiStream.ansi_format" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format a string that contains ansi code terms. This function allows
 the following string to be the color red:</p>
-<p><tt class="docutils literal"><span class="pre">sys.stdout.ansi_format(&quot;{red}Hello,</span> <span class="pre">{name}{reset}&quot;,</span> <span class="pre">name=&quot;Adam&quot;)</span></tt></p>
-<p>The <tt class="xref py py-data docutils literal"><span class="pre">pypsi.format.AnsiCodesSingleton.codes</span></tt> dict contains all
+<p><code class="docutils literal"><span class="pre">sys.stdout.ansi_format(&quot;{red}Hello,</span> <span class="pre">{name}{reset}&quot;,</span> <span class="pre">name=&quot;Adam&quot;)</span></code></p>
+<p>The <code class="xref py py-data docutils literal"><span class="pre">pypsi.format.AnsiCodesSingleton.codes</span></code> dict contains all
 valid ansi escape code terms. If the current stream does not support
 ansi escape codes, they are dropped from the template prior to printing.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -328,16 +335,16 @@ ansi escape codes, they are dropped from the template prior to printing.</p>
 
 <dl class="method">
 <dt id="pypsi.stream.AnsiStream.ansi_format_prompt">
-<tt class="descname">ansi_format_prompt</tt><big>(</big><em>tmpl</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="_modules/pypsi/stream.html#AnsiStream.ansi_format_prompt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.AnsiStream.ansi_format_prompt" title="Permalink to this definition">¶</a></dt>
+<code class="descname">ansi_format_prompt</code><span class="sig-paren">(</span><em>tmpl</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/stream.html#AnsiStream.ansi_format_prompt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.AnsiStream.ansi_format_prompt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Format a string that contains ansi code terms. This function allows
-performs the same formatting as <a class="reference internal" href="#pypsi.stream.AnsiStream.ansi_format" title="pypsi.stream.AnsiStream.ansi_format"><tt class="xref py py-meth docutils literal"><span class="pre">ansi_format()</span></tt></a>, except this is
+performs the same formatting as <a class="reference internal" href="#pypsi.stream.AnsiStream.ansi_format" title="pypsi.stream.AnsiStream.ansi_format"><code class="xref py py-meth docutils literal"><span class="pre">ansi_format()</span></code></a>, except this is
 intended for formatting strings in prompt by calling
-<a class="reference internal" href="#pypsi.stream.AnsiCode.prompt" title="pypsi.stream.AnsiCode.prompt"><tt class="xref py py-meth docutils literal"><span class="pre">AnsiCode.prompt()</span></tt></a> for each code.</p>
+<a class="reference internal" href="#pypsi.stream.AnsiCode.prompt" title="pypsi.stream.AnsiCode.prompt"><code class="xref py py-meth docutils literal"><span class="pre">AnsiCode.prompt()</span></code></a> for each code.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypsi.stream.AnsiStream.close">
-<tt class="descname">close</tt><big>(</big><em>was_pipe=False</em><big>)</big><a class="reference internal" href="_modules/pypsi/stream.html#AnsiStream.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.AnsiStream.close" title="Permalink to this definition">¶</a></dt>
+<code class="descname">close</code><span class="sig-paren">(</span><em>was_pipe=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/stream.html#AnsiStream.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.AnsiStream.close" title="Permalink to this definition">¶</a></dt>
 <dd><p>Close and reset the active redirection.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -352,7 +359,7 @@ the underlying file will not be closed</td>
 
 <dl class="method">
 <dt id="pypsi.stream.AnsiStream.get_state">
-<tt class="descname">get_state</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pypsi/stream.html#AnsiStream.get_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.AnsiStream.get_state" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/stream.html#AnsiStream.get_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.AnsiStream.get_state" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the state of the stream.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -366,14 +373,14 @@ the underlying file will not be closed</td>
 
 <dl class="method">
 <dt id="pypsi.stream.AnsiStream.isatty">
-<tt class="descname">isatty</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pypsi/stream.html#AnsiStream.isatty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.AnsiStream.isatty" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks if the stream is a TTY (ie <a class="reference external" href="http://docs.python.org/3.3/library/sys.html#sys.stdout" title="(in Python v3.4)"><tt class="xref py py-data docutils literal"><span class="pre">sys.stdout</span></tt></a> or
-<a class="reference external" href="http://docs.python.org/3.3/library/sys.html#sys.stderr" title="(in Python v3.4)"><tt class="xref py py-data docutils literal"><span class="pre">sys.stderr</span></tt></a>). This method will rely on the active ansi_mode.</p>
+<code class="descname">isatty</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/stream.html#AnsiStream.isatty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.AnsiStream.isatty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the stream is a TTY (ie <a class="reference external" href="http://docs.python.org/3.3/library/sys.html#sys.stdout" title="(in Python v3.4)"><code class="xref py py-data docutils literal"><span class="pre">sys.stdout</span></code></a> or
+<a class="reference external" href="http://docs.python.org/3.3/library/sys.html#sys.stderr" title="(in Python v3.4)"><code class="xref py py-data docutils literal"><span class="pre">sys.stderr</span></code></a>). This method will rely on the active ansi_mode.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypsi.stream.AnsiStream.redirect">
-<tt class="descname">redirect</tt><big>(</big><em>stream</em>, <em>width=0</em><big>)</big><a class="reference internal" href="_modules/pypsi/stream.html#AnsiStream.redirect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.AnsiStream.redirect" title="Permalink to this definition">¶</a></dt>
+<code class="descname">redirect</code><span class="sig-paren">(</span><em>stream</em>, <em>width=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/stream.html#AnsiStream.redirect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.AnsiStream.redirect" title="Permalink to this definition">¶</a></dt>
 <dd><p>Redirect output to a new output stream.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -392,14 +399,14 @@ should take place)</li>
 
 <dl class="method">
 <dt id="pypsi.stream.AnsiStream.reset">
-<tt class="descname">reset</tt><big>(</big><em>state=None</em><big>)</big><a class="reference internal" href="_modules/pypsi/stream.html#AnsiStream.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.AnsiStream.reset" title="Permalink to this definition">¶</a></dt>
+<code class="descname">reset</code><span class="sig-paren">(</span><em>state=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/stream.html#AnsiStream.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.AnsiStream.reset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reset the active stream to a specific state or the initial stream.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>state</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; the state to reset to, as returned by
-<a class="reference internal" href="#pypsi.stream.AnsiStream.get_state" title="pypsi.stream.AnsiStream.get_state"><tt class="xref py py-meth docutils literal"><span class="pre">get_state()</span></tt></a> or <tt class="xref py py-const docutils literal"><span class="pre">None</span></tt> to reset to the initial stream</td>
+<a class="reference internal" href="#pypsi.stream.AnsiStream.get_state" title="pypsi.stream.AnsiStream.get_state"><code class="xref py py-meth docutils literal"><span class="pre">get_state()</span></code></a> or <code class="xref py py-const docutils literal"><span class="pre">None</span></code> to reset to the initial stream</td>
 </tr>
 </tbody>
 </table>
@@ -407,30 +414,30 @@ should take place)</li>
 
 <dl class="attribute">
 <dt id="pypsi.stream.AnsiStream.ForceOff">
-<tt class="descname">ForceOff</tt><em class="property"> = 2</em><a class="headerlink" href="#pypsi.stream.AnsiStream.ForceOff" title="Permalink to this definition">¶</a></dt>
+<code class="descname">ForceOff</code><em class="property"> = 2</em><a class="headerlink" href="#pypsi.stream.AnsiStream.ForceOff" title="Permalink to this definition">¶</a></dt>
 <dd><p>Ansi mode to force ansi support always off</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="pypsi.stream.AnsiStream.ForceOn">
-<tt class="descname">ForceOn</tt><em class="property"> = 1</em><a class="headerlink" href="#pypsi.stream.AnsiStream.ForceOn" title="Permalink to this definition">¶</a></dt>
+<code class="descname">ForceOn</code><em class="property"> = 1</em><a class="headerlink" href="#pypsi.stream.AnsiStream.ForceOn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Ansi mode to force ansi support always on</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="pypsi.stream.AnsiStream.TTY">
-<tt class="descname">TTY</tt><em class="property"> = 0</em><a class="headerlink" href="#pypsi.stream.AnsiStream.TTY" title="Permalink to this definition">¶</a></dt>
-<dd><p>Ansi mode to rely on the stream&#8217;s <tt class="xref py py-meth docutils literal"><span class="pre">file.isatty()</span></tt> function</p>
+<code class="descname">TTY</code><em class="property"> = 0</em><a class="headerlink" href="#pypsi.stream.AnsiStream.TTY" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ansi mode to rely on the stream&#8217;s <code class="xref py py-meth docutils literal"><span class="pre">file.isatty()</span></code> function</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="function">
 <dt id="pypsi.stream.pypsi_print">
-<tt class="descclassname">pypsi.stream.</tt><tt class="descname">pypsi_print</tt><big>(</big><em>*args</em>, <em>sep=' '</em>, <em>end='\n'</em>, <em>file=None</em>, <em>flush=True</em>, <em>width=None</em>, <em>wrap=True</em><big>)</big><a class="reference internal" href="_modules/pypsi/stream.html#pypsi_print"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.pypsi_print" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pypsi.stream.</code><code class="descname">pypsi_print</code><span class="sig-paren">(</span><em>*args</em>, <em>sep=' '</em>, <em>end='\n'</em>, <em>file=None</em>, <em>flush=True</em>, <em>width=None</em>, <em>wrap=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/stream.html#pypsi_print"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.stream.pypsi_print" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wraps the functionality of the Python builtin <cite>print</cite> function. The
-<tt class="xref py py-meth docutils literal"><span class="pre">pypsi.shell.Shell.bootstrap()</span></tt> overrides the Python <tt class="xref py py-meth docutils literal"><span class="pre">print()</span></tt>
-function with <a class="reference internal" href="#pypsi.stream.pypsi_print" title="pypsi.stream.pypsi_print"><tt class="xref py py-meth docutils literal"><span class="pre">pypsi_print()</span></tt></a>.</p>
+<code class="xref py py-meth docutils literal"><span class="pre">pypsi.shell.Shell.bootstrap()</span></code> overrides the Python <code class="xref py py-meth docutils literal"><span class="pre">print()</span></code>
+function with <a class="reference internal" href="#pypsi.stream.pypsi_print" title="pypsi.stream.pypsi_print"><code class="xref py py-meth docutils literal"><span class="pre">pypsi_print()</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -438,8 +445,8 @@ function with <a class="reference internal" href="#pypsi.stream.pypsi_print" tit
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>sep</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; string to print between arguments</li>
 <li><strong>end</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; string to print at the end of the output</li>
-<li><strong>file</strong> (<em>file</em>) &#8211; output stream, if this is <tt class="xref py py-const docutils literal"><span class="pre">None</span></tt>, the default is
-<a class="reference external" href="http://docs.python.org/3.3/library/sys.html#sys.stdout" title="(in Python v3.4)"><tt class="xref py py-data docutils literal"><span class="pre">sys.stdout</span></tt></a></li>
+<li><strong>file</strong> (<em>file</em>) &#8211; output stream, if this is <code class="xref py py-const docutils literal"><span class="pre">None</span></code>, the default is
+<a class="reference external" href="http://docs.python.org/3.3/library/sys.html#sys.stdout" title="(in Python v3.4)"><code class="xref py py-data docutils literal"><span class="pre">sys.stdout</span></code></a></li>
 <li><strong>flush</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a>) &#8211; whether to flush the output stream</li>
 <li><strong>width</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; override the stream&#8217;s width</li>
 <li><strong>wrap</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a>) &#8211; whether to word wrap the output</li>
@@ -452,9 +459,9 @@ function with <a class="reference internal" href="#pypsi.stream.pypsi_print" tit
 
 <dl class="data">
 <dt id="pypsi.stream.AnsiCodes">
-<tt class="descclassname">pypsi.stream.</tt><tt class="descname">AnsiCodes</tt><em class="property"> = &lt;pypsi.stream.AnsiCodesSingleton object at 0x7fe88bedd6a0&gt;</em><a class="headerlink" href="#pypsi.stream.AnsiCodes" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pypsi.stream.</code><code class="descname">AnsiCodes</code><em class="property"> = &lt;pypsi.stream.AnsiCodesSingleton object&gt;</em><a class="headerlink" href="#pypsi.stream.AnsiCodes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Global instance for all supported ansi codes (instance of
-<a class="reference internal" href="#pypsi.stream.AnsiCodesSingleton" title="pypsi.stream.AnsiCodesSingleton"><tt class="xref py py-class docutils literal"><span class="pre">AnsiCodesSingleton</span></tt></a>)</p>
+<a class="reference internal" href="#pypsi.stream.AnsiCodesSingleton" title="pypsi.stream.AnsiCodesSingleton"><code class="xref py py-class docutils literal"><span class="pre">AnsiCodesSingleton</span></code></a>)</p>
 </dd></dl>
 
 </div>
@@ -465,10 +472,10 @@ function with <a class="reference internal" href="#pypsi.stream.pypsi_print" tit
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="pypsi.utils.html" class="btn btn-neutral float-right" title="10. pypsi.utils - Utility functions"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="pypsi.utils.html" class="btn btn-neutral float-right" title="pypsi.utils - Utility functions">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="pypsi.format.html" class="btn btn-neutral" title="8. pypsi.format - Stream output formatting"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="pypsi.format.html" class="btn btn-neutral" title="pypsi.format - Stream output formatting"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -481,7 +488,8 @@ function with <a class="reference internal" href="#pypsi.stream.pypsi_print" tit
     </p>
   </div>
 
-  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
 </footer>
         </div>
       </div>
@@ -497,7 +505,7 @@ function with <a class="reference internal" href="#pypsi.stream.pypsi_print" tit
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.3',
+            VERSION:'1.2.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

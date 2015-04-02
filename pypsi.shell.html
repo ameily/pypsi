@@ -7,14 +7,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>4. pypsi.shell - Pypsi Shell &mdash; pypsi 1.3 documentation</title>
+  <title>2. pypsi.shell - Pypsi Shell &mdash; pypsi 1.2.1 documentation</title>
   
 
   
   
 
   
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
 
   
   
@@ -28,9 +28,11 @@
   
 
   
-    <link rel="top" title="pypsi 1.3 documentation" href="index.html"/>
-        <link rel="next" title="5. pypsi.base - Base classes for pluggable features" href="pypsi.base.html"/>
-        <link rel="prev" title="3. Pypsi Builtin Plugins" href="pypsi.plugins.html"/> 
+
+  
+    <link rel="top" title="pypsi 1.2.1 documentation" href="index.html"/>
+        <link rel="next" title="pypsi.base - Base classes for pluggable features" href="pypsi.base.html"/>
+        <link rel="prev" title="Pypsi Builtin Plugins" href="pypsi.plugins.html"/> 
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
@@ -44,9 +46,12 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-nav-search">
-        <a href="index.html" class="fa fa-home"> pypsi</a>
-        <div role="search">
-  <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+        
+          <a href="index.html" class="fa fa-home"> pypsi</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -56,8 +61,9 @@
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
         
-        
-            <ul class="current">
+          
+          
+              <ul class="current">
 <li class="toctree-l1"><a class="reference external" href="https://github.com/ameily/pypsi">Github</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://pypi.python.org/pypi/pypsi">Releases</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pypsi.tutorial.html">1. Pypsi Shell and Command Tutorial</a><ul>
@@ -65,50 +71,51 @@
 <li class="toctree-l2"><a class="reference internal" href="pypsi.tutorial.html#shell-api">1.2. Shell API</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.commands.html">2. Pypsi Builtin Commands</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="pypsi.commands.html">Pypsi Builtin Commands</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.plugins.html">3. Pypsi Builtin Plugins</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.block">3.1. Block Commands</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#escape-sequence-processors">3.2. Escape Sequence Processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.history">3.3. Shell History</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.variable">3.4. Variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.cmd">3.5. Cmd</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.plugins.html">Pypsi Builtin Plugins</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.block">Block Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#escape-sequence-processors">Escape Sequence Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.history">Shell History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.variable">Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.cmd">Cmd</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">4. pypsi.shell - Pypsi Shell</a><ul class="simple">
+<li class="toctree-l1 current"><a class="current reference internal" href="">2. pypsi.shell - Pypsi Shell</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.base.html">5. pypsi.base - Base classes for pluggable features</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#command-objects">5.1. Command objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#plugin-objects">5.2. Plugin objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#argument-parsing">5.3. Argument parsing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.base.html">pypsi.base - Base classes for pluggable features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#command-objects">Command objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#plugin-objects">Plugin objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#argument-parsing">Argument parsing</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.cmdline.html">6. pypsi.cmdline - User input processing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#commands-and-expressions">6.1. Commands and expressions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#tokens">6.2. Tokens</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#statements">6.3. Statements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.cmdline.html">pypsi.cmdline - User input processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#commands-and-expressions">Commands and expressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#tokens">Tokens</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#statements">Statements</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.namespace.html">7. pypsi.namespace - Arbitrary attribute storage classes</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="pypsi.namespace.html">pypsi.namespace - Arbitrary attribute storage classes</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.format.html">8. pypsi.format - Stream output formatting</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="pypsi.format.html">pypsi.format - Stream output formatting</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.stream.html">9. pypsi.stream - File streams</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="pypsi.stream.html">3. pypsi.stream - File streams</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.utils.html">10. pypsi.utils - Utility functions</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="pypsi.utils.html">pypsi.utils - Utility functions</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.wizard.html">11. pypsi.wizard - Prompt Wizards</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="pypsi.wizard.html">pypsi.wizard - Prompt Wizards</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.demo.html">12. Pypsi Demo Shell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.demo.html">4. Pypsi Demo Shell</a></li>
 </ul>
 
+          
         
       </div>
       &nbsp;
@@ -130,7 +137,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href="index.html">Docs</a> &raquo;</li>
       
-    <li>4. pypsi.shell - Pypsi Shell</li>
+    <li>2. pypsi.shell - Pypsi Shell</li>
       <li class="wy-breadcrumbs-aside">
         
           <a href="_sources/pypsi.shell.txt" rel="nofollow"> View page source</a>
@@ -139,18 +146,18 @@
   </ul>
   <hr/>
 </div>
-          <div role="main">
+          <div role="main" class="document">
             
   <div class="section" id="pypsi-shell-pypsi-shell">
-<h1>4. pypsi.shell - Pypsi Shell<a class="headerlink" href="#pypsi-shell-pypsi-shell" title="Permalink to this headline">¶</a></h1>
+<h1>2. pypsi.shell - Pypsi Shell<a class="headerlink" href="#pypsi-shell-pypsi-shell" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul class="simple">
 </ul>
 </div>
 <span class="target" id="module-pypsi.shell"></span><dl class="class">
 <dt id="pypsi.shell.Shell">
-<em class="property">class </em><tt class="descclassname">pypsi.shell.</tt><tt class="descname">Shell</tt><big>(</big><em>shell_name='pypsi'</em>, <em>width=79</em>, <em>exit_rc=-1024</em>, <em>ctx=None</em><big>)</big><a class="reference internal" href="_modules/pypsi/shell.html#Shell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.shell.Shell" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">builtins.object</span></tt></p>
+<em class="property">class </em><code class="descclassname">pypsi.shell.</code><code class="descname">Shell</code><span class="sig-paren">(</span><em>shell_name='pypsi'</em>, <em>width=79</em>, <em>exit_rc=-1024</em>, <em>ctx=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/shell.html#Shell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.shell.Shell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>The command line interface that the user interacts with. All shell&#8217;s need to
 inherit this base class.</p>
 <p>Subclasses need to call the Shell constructor to properly initialize it.</p>
@@ -170,38 +177,38 @@ when the shell needs to end execution</li>
 </table>
 <dl class="method">
 <dt id="pypsi.shell.Shell.cmdloop">
-<tt class="descname">cmdloop</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pypsi/shell.html#Shell.cmdloop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.shell.Shell.cmdloop" title="Permalink to this definition">¶</a></dt>
+<code class="descname">cmdloop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/shell.html#Shell.cmdloop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.shell.Shell.cmdloop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Begin the input processing loop where the user will be prompted for
 input.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypsi.shell.Shell.on_cmdloop_begin">
-<tt class="descname">on_cmdloop_begin</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pypsi/shell.html#Shell.on_cmdloop_begin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.shell.Shell.on_cmdloop_begin" title="Permalink to this definition">¶</a></dt>
-<dd><p>Hook that is called once the <a class="reference internal" href="#pypsi.shell.Shell.cmdloop" title="pypsi.shell.Shell.cmdloop"><tt class="xref py py-meth docutils literal"><span class="pre">cmdloop()</span></tt></a> function is called.</p>
+<code class="descname">on_cmdloop_begin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/shell.html#Shell.on_cmdloop_begin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.shell.Shell.on_cmdloop_begin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook that is called once the <a class="reference internal" href="#pypsi.shell.Shell.cmdloop" title="pypsi.shell.Shell.cmdloop"><code class="xref py py-meth docutils literal"><span class="pre">cmdloop()</span></code></a> function is called.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypsi.shell.Shell.on_cmdloop_end">
-<tt class="descname">on_cmdloop_end</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pypsi/shell.html#Shell.on_cmdloop_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.shell.Shell.on_cmdloop_end" title="Permalink to this definition">¶</a></dt>
-<dd><p>Hook that is called once the <a class="reference internal" href="#pypsi.shell.Shell.cmdloop" title="pypsi.shell.Shell.cmdloop"><tt class="xref py py-meth docutils literal"><span class="pre">cmdloop()</span></tt></a> has ended.</p>
+<code class="descname">on_cmdloop_end</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/shell.html#Shell.on_cmdloop_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.shell.Shell.on_cmdloop_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook that is called once the <a class="reference internal" href="#pypsi.shell.Shell.cmdloop" title="pypsi.shell.Shell.cmdloop"><code class="xref py py-meth docutils literal"><span class="pre">cmdloop()</span></code></a> has ended.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypsi.shell.Shell.on_shell_ready">
-<tt class="descname">on_shell_ready</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pypsi/shell.html#Shell.on_shell_ready"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.shell.Shell.on_shell_ready" title="Permalink to this definition">¶</a></dt>
+<code class="descname">on_shell_ready</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/shell.html#Shell.on_shell_ready"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.shell.Shell.on_shell_ready" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hook that is called after the shell has been created.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypsi.shell.Shell.register">
-<tt class="descname">register</tt><big>(</big><em>obj</em><big>)</big><a class="reference internal" href="_modules/pypsi/shell.html#Shell.register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.shell.Shell.register" title="Permalink to this definition">¶</a></dt>
-<dd><p>Register a <a class="reference internal" href="pypsi.base.html#pypsi.base.Command" title="pypsi.base.Command"><tt class="xref py py-class docutils literal"><span class="pre">Command</span></tt></a> or a <a class="reference internal" href="pypsi.base.html#pypsi.base.Plugin" title="pypsi.base.Plugin"><tt class="xref py py-class docutils literal"><span class="pre">Plugin</span></tt></a>.</p>
+<code class="descname">register</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/shell.html#Shell.register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.shell.Shell.register" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register a <a class="reference internal" href="pypsi.base.html#pypsi.base.Command" title="pypsi.base.Command"><code class="xref py py-class docutils literal"><span class="pre">Command</span></code></a> or a <a class="reference internal" href="pypsi.base.html#pypsi.base.Plugin" title="pypsi.base.Plugin"><code class="xref py py-class docutils literal"><span class="pre">Plugin</span></code></a>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="pypsi.shell.Shell.register_base_plugins">
-<tt class="descname">register_base_plugins</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/pypsi/shell.html#Shell.register_base_plugins"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.shell.Shell.register_base_plugins" title="Permalink to this definition">¶</a></dt>
+<code class="descname">register_base_plugins</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/shell.html#Shell.register_base_plugins"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.shell.Shell.register_base_plugins" title="Permalink to this definition">¶</a></dt>
 <dd><p>Register all base plugins that are defined.</p>
 </dd></dl>
 
@@ -215,10 +222,10 @@ input.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="pypsi.base.html" class="btn btn-neutral float-right" title="5. pypsi.base - Base classes for pluggable features"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="pypsi.base.html" class="btn btn-neutral float-right" title="pypsi.base - Base classes for pluggable features">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="pypsi.plugins.html" class="btn btn-neutral" title="3. Pypsi Builtin Plugins"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="pypsi.plugins.html" class="btn btn-neutral" title="Pypsi Builtin Plugins"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -231,7 +238,8 @@ input.</p>
     </p>
   </div>
 
-  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
 </footer>
         </div>
       </div>
@@ -247,7 +255,7 @@ input.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.3',
+            VERSION:'1.2.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -7,14 +7,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>1. Pypsi Shell and Command Tutorial &mdash; pypsi 1.3 documentation</title>
+  <title>1. Pypsi Shell and Command Tutorial &mdash; pypsi 1.2.1 documentation</title>
   
 
   
   
 
   
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
 
   
   
@@ -28,8 +28,10 @@
   
 
   
-    <link rel="top" title="pypsi 1.3 documentation" href="index.html"/>
-        <link rel="next" title="2. Pypsi Builtin Commands" href="pypsi.commands.html"/>
+
+  
+    <link rel="top" title="pypsi 1.2.1 documentation" href="index.html"/>
+        <link rel="next" title="Pypsi Builtin Commands" href="pypsi.commands.html"/>
         <link rel="prev" title="Pypsi - Python Pluggable Shell Interface" href="index.html"/> 
 
   
@@ -44,9 +46,12 @@
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-nav-search">
-        <a href="index.html" class="fa fa-home"> pypsi</a>
-        <div role="search">
-  <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+        
+          <a href="index.html" class="fa fa-home"> pypsi</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -56,8 +61,9 @@
 
       <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
         
-        
-            <ul class="current">
+          
+          
+              <ul class="current">
 <li class="toctree-l1"><a class="reference external" href="https://github.com/ameily/pypsi">Github</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://pypi.python.org/pypi/pypsi">Releases</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">1. Pypsi Shell and Command Tutorial</a><ul>
@@ -65,50 +71,51 @@
 <li class="toctree-l2"><a class="reference internal" href="#shell-api">1.2. Shell API</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.commands.html">2. Pypsi Builtin Commands</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="pypsi.commands.html">Pypsi Builtin Commands</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.plugins.html">3. Pypsi Builtin Plugins</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.block">3.1. Block Commands</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#escape-sequence-processors">3.2. Escape Sequence Processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.history">3.3. Shell History</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.variable">3.4. Variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.cmd">3.5. Cmd</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.plugins.html">Pypsi Builtin Plugins</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.block">Block Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#escape-sequence-processors">Escape Sequence Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.history">Shell History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.variable">Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.cmd">Cmd</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.shell.html">4. pypsi.shell - Pypsi Shell</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="pypsi.shell.html">2. pypsi.shell - Pypsi Shell</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.base.html">5. pypsi.base - Base classes for pluggable features</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#command-objects">5.1. Command objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#plugin-objects">5.2. Plugin objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#argument-parsing">5.3. Argument parsing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.base.html">pypsi.base - Base classes for pluggable features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#command-objects">Command objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#plugin-objects">Plugin objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#argument-parsing">Argument parsing</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.cmdline.html">6. pypsi.cmdline - User input processing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#commands-and-expressions">6.1. Commands and expressions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#tokens">6.2. Tokens</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#statements">6.3. Statements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.cmdline.html">pypsi.cmdline - User input processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#commands-and-expressions">Commands and expressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#tokens">Tokens</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#statements">Statements</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.namespace.html">7. pypsi.namespace - Arbitrary attribute storage classes</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="pypsi.namespace.html">pypsi.namespace - Arbitrary attribute storage classes</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.format.html">8. pypsi.format - Stream output formatting</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="pypsi.format.html">pypsi.format - Stream output formatting</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.stream.html">9. pypsi.stream - File streams</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="pypsi.stream.html">3. pypsi.stream - File streams</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.utils.html">10. pypsi.utils - Utility functions</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="pypsi.utils.html">pypsi.utils - Utility functions</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.wizard.html">11. pypsi.wizard - Prompt Wizards</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="pypsi.wizard.html">pypsi.wizard - Prompt Wizards</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.demo.html">12. Pypsi Demo Shell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.demo.html">4. Pypsi Demo Shell</a></li>
 </ul>
 
+          
         
       </div>
       &nbsp;
@@ -139,7 +146,7 @@
   </ul>
   <hr/>
 </div>
-          <div role="main">
+          <div role="main" class="document">
             
   <div class="section" id="pypsi-shell-and-command-tutorial">
 <h1>1. Pypsi Shell and Command Tutorial<a class="headerlink" href="#pypsi-shell-and-command-tutorial" title="Permalink to this headline">¶</a></h1>
@@ -147,29 +154,29 @@
 <div class="section" id="command-api">
 <h2>1.1. Command API<a class="headerlink" href="#command-api" title="Permalink to this headline">¶</a></h2>
 <p>All Pypsi commands will inherit from the base command class:
-<a class="reference internal" href="pypsi.base.html#pypsi.base.Command" title="pypsi.base.Command"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.base.Command</span></tt></a>. Each command has several attributes that determines
+<a class="reference internal" href="pypsi.base.html#pypsi.base.Command" title="pypsi.base.Command"><code class="xref py py-class docutils literal"><span class="pre">pypsi.base.Command</span></code></a>. Each command has several attributes that determines
 how the command is added to the shell. These are:</p>
 <blockquote>
 <div><ul class="simple">
-<li><tt class="docutils literal"><span class="pre">name</span></tt> - the command name that the user will type. Commands may contain
+<li><code class="docutils literal"><span class="pre">name</span></code> - the command name that the user will type. Commands may contain
 letters, numbers, underscores, and dashes.</li>
-<li><tt class="docutils literal"><span class="pre">brief</span></tt> - a short description of what the command does.</li>
-<li><tt class="docutils literal"><span class="pre">usage</span></tt> - the usage message displayed when the user requests help.</li>
-<li><tt class="docutils literal"><span class="pre">topic</span></tt> - the topic ID used to categorize the command. This is useful when
+<li><code class="docutils literal"><span class="pre">brief</span></code> - a short description of what the command does.</li>
+<li><code class="docutils literal"><span class="pre">usage</span></code> - the usage message displayed when the user requests help.</li>
+<li><code class="docutils literal"><span class="pre">topic</span></code> - the topic ID used to categorize the command. This is useful when
 the user lists all available commands. The shell will attempt to categorize
 commands under headings. All builtin commands have, by default, their topic
-set to <tt class="docutils literal"><span class="pre">&quot;shell&quot;</span></tt>.</li>
+set to <code class="docutils literal"><span class="pre">&quot;shell&quot;</span></code>.</li>
 </ul>
 </div></blockquote>
 <p>To ensure that commands are pluggable, commands should accept all of these
 attribtues in their constructor so that a shell may customize the command when
 loading. However, this is not a requirement. All builtin commands
 accept all of the attribute in their constructor.</p>
-<p>The command hook <a class="reference internal" href="pypsi.base.html#pypsi.base.Command.setup" title="pypsi.base.Command.setup"><tt class="xref py py-meth docutils literal"><span class="pre">setup()</span></tt></a> is called once the command
+<p>The command hook <a class="reference internal" href="pypsi.base.html#pypsi.base.Command.setup" title="pypsi.base.Command.setup"><code class="xref py py-meth docutils literal"><span class="pre">setup()</span></code></a> is called once the command
 has been created and added to the shell. The setup hook is where setup and
 initialization code will reside. Commands should not hold any configuration or
 state information in the command itself. However, use the
-shell&#8217;s <tt class="xref py py-attr docutils literal"><span class="pre">ctx</span></tt> attribute to hold stateful information. Storing
+shell&#8217;s <code class="xref py py-attr docutils literal"><span class="pre">ctx</span></code> attribute to hold stateful information. Storing
 information in the shell&#8217;s context is done for two reasons:</p>
 <blockquote>
 <div><ul class="simple">
@@ -180,52 +187,52 @@ sessions.</li>
 </ul>
 </div></blockquote>
 <p>When a command is executed by the user, the command&#8217;s
-<a class="reference internal" href="pypsi.base.html#pypsi.base.Command.run" title="pypsi.base.Command.run"><tt class="xref py py-meth docutils literal"><span class="pre">run()</span></tt></a> function is called.</p>
+<a class="reference internal" href="pypsi.base.html#pypsi.base.Command.run" title="pypsi.base.Command.run"><code class="xref py py-meth docutils literal"><span class="pre">run()</span></code></a> function is called.</p>
 <div class="section" id="accepting-arguments">
 <h3>1.1.1. Accepting Arguments<a class="headerlink" href="#accepting-arguments" title="Permalink to this headline">¶</a></h3>
-<p>All of Pypsi&#8217;s bultin commands use a wrapped version of Python&#8217;s <a class="reference external" href="http://docs.python.org/3.3/library/argparse.html#module-argparse" title="(in Python v3.4)"><tt class="xref py py-mod docutils literal"><span class="pre">argparse</span></tt></a>
-module for argument parsing. The class <a class="reference internal" href="pypsi.base.html#pypsi.base.PypsiArgParser" title="pypsi.base.PypsiArgParser"><tt class="xref py py-class docutils literal"><span class="pre">PypsiArgParser</span></tt></a>
-wraps <a class="reference external" href="http://docs.python.org/3.3/library/argparse.html#argparse.ArgumentParser" title="(in Python v3.4)"><tt class="xref py py-class docutils literal"><span class="pre">ArgumentParser</span></tt></a> to change the parser&#8217;s behavior when the
+<p>All of Pypsi&#8217;s bultin commands use a wrapped version of Python&#8217;s <a class="reference external" href="http://docs.python.org/3.3/library/argparse.html#module-argparse" title="(in Python v3.4)"><code class="xref py py-mod docutils literal"><span class="pre">argparse</span></code></a>
+module for argument parsing. The class <a class="reference internal" href="pypsi.base.html#pypsi.base.PypsiArgParser" title="pypsi.base.PypsiArgParser"><code class="xref py py-class docutils literal"><span class="pre">PypsiArgParser</span></code></a>
+wraps <a class="reference external" href="http://docs.python.org/3.3/library/argparse.html#argparse.ArgumentParser" title="(in Python v3.4)"><code class="xref py py-class docutils literal"><span class="pre">ArgumentParser</span></code></a> to change the parser&#8217;s behavior when the
 user passes invalid arguments or asks for help. By default, the base
 ArgumentParser will exit the entire program, which isn&#8217;t ideal for Pypsi.</p>
-<p>The only difference between the Pypsi <a class="reference internal" href="pypsi.base.html#pypsi.base.PypsiArgParser" title="pypsi.base.PypsiArgParser"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.base.PypsiArgParser</span></tt></a> and
-<tt class="xref py py-mod docutils literal"><span class="pre">argparse.ArgumentParser</span></tt> is that the former will raise a
-<a class="reference internal" href="pypsi.base.html#pypsi.base.CommandShortCircuit" title="pypsi.base.CommandShortCircuit"><tt class="xref py py-class docutils literal"><span class="pre">pypsi.base.CommandShortCircuit</span></tt></a> exception when the arguments aren&#8217;t
-valid or the user requests help (via <tt class="docutils literal"><span class="pre">-h</span></tt> or <tt class="docutils literal"><span class="pre">--help</span></tt>.)</p>
+<p>The only difference between the Pypsi <a class="reference internal" href="pypsi.base.html#pypsi.base.PypsiArgParser" title="pypsi.base.PypsiArgParser"><code class="xref py py-class docutils literal"><span class="pre">pypsi.base.PypsiArgParser</span></code></a> and
+<code class="xref py py-mod docutils literal"><span class="pre">argparse.ArgumentParser</span></code> is that the former will raise a
+<a class="reference internal" href="pypsi.base.html#pypsi.base.CommandShortCircuit" title="pypsi.base.CommandShortCircuit"><code class="xref py py-class docutils literal"><span class="pre">pypsi.base.CommandShortCircuit</span></code></a> exception when the arguments aren&#8217;t
+valid or the user requests help (via <code class="docutils literal"><span class="pre">-h</span></code> or <code class="docutils literal"><span class="pre">--help</span></code>.)</p>
 </div>
 <div class="section" id="printing">
 <h3>1.1.2. Printing<a class="headerlink" href="#printing" title="Permalink to this headline">¶</a></h3>
-<p>Pypsi wraps the <tt class="xref py py-meth docutils literal"><span class="pre">print()</span></tt> function with its own
-<a class="reference internal" href="pypsi.stream.html#pypsi.stream.pypsi_print" title="pypsi.stream.pypsi_print"><tt class="xref py py-meth docutils literal"><span class="pre">pypsi_print()</span></tt></a> function, which handles automatic word
+<p>Pypsi wraps the <code class="xref py py-meth docutils literal"><span class="pre">print()</span></code> function with its own
+<a class="reference internal" href="pypsi.stream.html#pypsi.stream.pypsi_print" title="pypsi.stream.pypsi_print"><code class="xref py py-meth docutils literal"><span class="pre">pypsi_print()</span></code></a> function, which handles automatic word
 wrapping and smart coloring.</p>
 <div class="section" id="colors">
 <h4>1.1.2.1. Colors<a class="headerlink" href="#colors" title="Permalink to this headline">¶</a></h4>
 <p>Pypsi supplies color constants that can be printed to the screen. Colors will
-only print if the output stream is a terminal (ie. the stream&#8217;s <tt class="docutils literal"><span class="pre">isatty()</span></tt>
-returns <tt class="xref py py-const docutils literal"><span class="pre">True</span></tt>.) This means that commands don&#8217;t need to handle printing
-colors and not printing colors, the <a class="reference internal" href="pypsi.stream.html#pypsi.stream.pypsi_print" title="pypsi.stream.pypsi_print"><tt class="xref py py-meth docutils literal"><span class="pre">pypsi_print()</span></tt></a> function
+only print if the output stream is a terminal (ie. the stream&#8217;s <code class="docutils literal"><span class="pre">isatty()</span></code>
+returns <code class="xref py py-const docutils literal"><span class="pre">True</span></code>.) This means that commands don&#8217;t need to handle printing
+colors and not printing colors, the <a class="reference internal" href="pypsi.stream.html#pypsi.stream.pypsi_print" title="pypsi.stream.pypsi_print"><code class="xref py py-meth docutils literal"><span class="pre">pypsi_print()</span></code></a> function
 handles it.</p>
-<p>Color codes are held in the <a class="reference internal" href="pypsi.stream.html#pypsi.stream.AnsiCodes" title="pypsi.stream.AnsiCodes"><tt class="xref py py-const docutils literal"><span class="pre">AnsiCodes</span></tt></a> object. Using this
+<p>Color codes are held in the <a class="reference internal" href="pypsi.stream.html#pypsi.stream.AnsiCodes" title="pypsi.stream.AnsiCodes"><code class="xref py py-const docutils literal"><span class="pre">AnsiCodes</span></code></a> object. Using this
 constant is straight forward. In this example, the text &#8220;Hello, World!&#8221; is
 printed in red and then in green:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="k">print</span><span class="p">(</span><span class="n">AnsiCodes</span><span class="o">.</span><span class="n">red</span><span class="p">,</span> <span class="s">&quot;Hello, &quot;</span><span class="p">,</span> <span class="n">AnsiCodes</span><span class="o">.</span><span class="n">green</span><span class="p">,</span> <span class="s">&quot;World!&quot;</span><span class="p">,</span> <span class="n">AnsiCodes</span><span class="o">.</span><span class="n">reset</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>It is important to pass in <tt class="docutils literal"><span class="pre">sep=''</span></tt> when printing colors. Otherwise, the above
+<p>It is important to pass in <code class="docutils literal"><span class="pre">sep=''</span></code> when printing colors. Otherwise, the above
 statement would add a space around each color, which will be confusing to the
 user.</p>
 </div>
 <div class="section" id="errors">
 <h4>1.1.2.2. Errors<a class="headerlink" href="#errors" title="Permalink to this headline">¶</a></h4>
-<p>To ensure uniform error messages, the <a class="reference internal" href="pypsi.base.html#pypsi.base.Command.error" title="pypsi.base.Command.error"><tt class="xref py py-meth docutils literal"><span class="pre">error()</span></tt></a> function
+<p>To ensure uniform error messages, the <a class="reference internal" href="pypsi.base.html#pypsi.base.Command.error" title="pypsi.base.Command.error"><code class="xref py py-meth docutils literal"><span class="pre">error()</span></code></a> function
 is provided to correctly format error messages. With color enabled, this will
-print in red: <tt class="docutils literal"><span class="pre">&lt;command_name&gt;:</span> <span class="pre">error:</span> <span class="pre">&lt;error_message&gt;</span></tt>.</p>
+print in red: <code class="docutils literal"><span class="pre">&lt;command_name&gt;:</span> <span class="pre">error:</span> <span class="pre">&lt;error_message&gt;</span></code>.</p>
 </div>
 </div>
 <div class="section" id="example">
 <h3>1.1.3. Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
 <p>This example is the source code of the
-<a class="reference internal" href="pypsi.commands.html#pypsi.commands.echo.EchoCommand" title="pypsi.commands.echo.EchoCommand"><tt class="xref py py-class docutils literal"><span class="pre">EchoCommand</span></tt></a>, which prints the arguments passed
+<a class="reference internal" href="pypsi.commands.html#pypsi.commands.echo.EchoCommand" title="pypsi.commands.echo.EchoCommand"><code class="xref py py-class docutils literal"><span class="pre">EchoCommand</span></code></a>, which prints the arguments passed
 into it to the screen:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="c"># Pypsi imports</span>
 <span class="kn">from</span> <span class="nn">pypsi.base</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">PypsiArgParser</span><span class="p">,</span> <span class="n">CommandShortCircuit</span>
@@ -276,16 +283,16 @@ into it to the screen:</p>
         <span class="k">return</span> <span class="mi">0</span>
 </pre></div>
 </div>
-<p>The echo command only accepts a single argument: <tt class="docutils literal"><span class="pre">-n|--nolf</span></tt>. The command
+<p>The echo command only accepts a single argument: <code class="docutils literal"><span class="pre">-n|--nolf</span></code>. The command
 itself mirrors a simple Python command line application. This means that porting
 existing applications to Pypsi commands is extremely easy. Also, notice the
-<tt class="docutils literal"><span class="pre">try...except...</span></tt> around <tt class="docutils literal"><span class="pre">parser.parse_args</span></tt>. This is catching the
-<a class="reference internal" href="pypsi.base.html#pypsi.base.CommandShortCircuit" title="pypsi.base.CommandShortCircuit"><tt class="xref py py-class docutils literal"><span class="pre">CommandShortCircuit</span></tt></a> exception, which in this case will be
+<code class="docutils literal"><span class="pre">try...except...</span></code> around <code class="docutils literal"><span class="pre">parser.parse_args</span></code>. This is catching the
+<a class="reference internal" href="pypsi.base.html#pypsi.base.CommandShortCircuit" title="pypsi.base.CommandShortCircuit"><code class="xref py py-class docutils literal"><span class="pre">CommandShortCircuit</span></code></a> exception, which in this case will be
 thrown if the user enters any of the following:</p>
 <blockquote>
 <div><ul class="simple">
-<li><tt class="docutils literal"><span class="pre">-h</span></tt>, <tt class="docutils literal"><span class="pre">--help</span></tt> - print usage information</li>
-<li><tt class="docutils literal"><span class="pre">-x</span></tt> - an invalid argument for the echo command</li>
+<li><code class="docutils literal"><span class="pre">-h</span></code>, <code class="docutils literal"><span class="pre">--help</span></code> - print usage information</li>
+<li><code class="docutils literal"><span class="pre">-x</span></code> - an invalid argument for the echo command</li>
 </ul>
 </div></blockquote>
 </div>
@@ -295,9 +302,9 @@ thrown if the user enters any of the following:</p>
 <p>Pypsi shells are typically barebones and do not contain much. This is a similar
 design to ORM libraries such as Django and MongoEngine, where the database table
 (or document) just holds the list of attributes as class variables.</p>
-<p>All shells much inherit from the base class <a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell" title="pypsi.shell.Shell"><tt class="xref py py-class docutils literal"><span class="pre">Shell</span></tt></a>. Then,
+<p>All shells much inherit from the base class <a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell" title="pypsi.shell.Shell"><code class="xref py py-class docutils literal"><span class="pre">Shell</span></code></a>. Then,
 add command instances. In this example, a new shell is created, given the name
-&#8220;example&#8221; and the echo command is added, but renamed to <tt class="docutils literal"><span class="pre">print</span></tt>:</p>
+&#8220;example&#8221; and the echo command is added, but renamed to <code class="docutils literal"><span class="pre">print</span></code>:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="c"># Pypsi Imports</span>
 <span class="kn">from</span> <span class="nn">pypsi.shell</span> <span class="kn">import</span> <span class="n">Shell</span>
 <span class="kn">from</span> <span class="nn">pypsi.commands.echo</span> <span class="kn">import</span> <span class="n">EchoCommand</span>
@@ -310,14 +317,14 @@ add command instances. In this example, a new shell is created, given the name
 </pre></div>
 </div>
 <p>Once running, the user will be presented with a prompt and will be able to use
-the <tt class="docutils literal"><span class="pre">print</span></tt> command (which is the <a class="reference internal" href="pypsi.commands.html#pypsi.commands.echo.EchoCommand" title="pypsi.commands.echo.EchoCommand"><tt class="xref py py-class docutils literal"><span class="pre">EchoCommand</span></tt></a>.)</p>
+the <code class="docutils literal"><span class="pre">print</span></code> command (which is the <a class="reference internal" href="pypsi.commands.html#pypsi.commands.echo.EchoCommand" title="pypsi.commands.echo.EchoCommand"><code class="xref py py-class docutils literal"><span class="pre">EchoCommand</span></code></a>.)</p>
 <p>Several hooks exist in the shell that can be overriden. These include:</p>
 <blockquote>
 <div><ul class="simple">
-<li><a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell.on_shell_ready" title="pypsi.shell.Shell.on_shell_ready"><tt class="xref py py-meth docutils literal"><span class="pre">on_shell_ready()</span></tt></a> - called when the shell is created</li>
-<li><a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell.on_cmdloop_begin" title="pypsi.shell.Shell.on_cmdloop_begin"><tt class="xref py py-meth docutils literal"><span class="pre">on_cmdloop_begin()</span></tt></a> - called when the
-<a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell.cmdloop" title="pypsi.shell.Shell.cmdloop"><tt class="xref py py-meth docutils literal"><span class="pre">cmdloop()</span></tt></a> function is called</li>
-<li><a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell.on_cmdloop_end" title="pypsi.shell.Shell.on_cmdloop_end"><tt class="xref py py-meth docutils literal"><span class="pre">on_cmdloop_end()</span></tt></a> - called when the cmdloop has ended
+<li><a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell.on_shell_ready" title="pypsi.shell.Shell.on_shell_ready"><code class="xref py py-meth docutils literal"><span class="pre">on_shell_ready()</span></code></a> - called when the shell is created</li>
+<li><a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell.on_cmdloop_begin" title="pypsi.shell.Shell.on_cmdloop_begin"><code class="xref py py-meth docutils literal"><span class="pre">on_cmdloop_begin()</span></code></a> - called when the
+<a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell.cmdloop" title="pypsi.shell.Shell.cmdloop"><code class="xref py py-meth docutils literal"><span class="pre">cmdloop()</span></code></a> function is called</li>
+<li><a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell.on_cmdloop_end" title="pypsi.shell.Shell.on_cmdloop_end"><code class="xref py py-meth docutils literal"><span class="pre">on_cmdloop_end()</span></code></a> - called when the cmdloop has ended
 (usually because the user is exiting the shell)</li>
 </ul>
 </div></blockquote>
@@ -330,7 +337,7 @@ the <tt class="docutils literal"><span class="pre">print</span></tt> command (wh
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="pypsi.commands.html" class="btn btn-neutral float-right" title="2. Pypsi Builtin Commands"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="pypsi.commands.html" class="btn btn-neutral float-right" title="Pypsi Builtin Commands">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="index.html" class="btn btn-neutral" title="Pypsi - Python Pluggable Shell Interface"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -346,7 +353,8 @@ the <tt class="docutils literal"><span class="pre">print</span></tt> command (wh
     </p>
   </div>
 
-  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
 </footer>
         </div>
       </div>
@@ -362,7 +370,7 @@ the <tt class="docutils literal"><span class="pre">print</span></tt> command (wh
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.3',
+            VERSION:'1.2.1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
