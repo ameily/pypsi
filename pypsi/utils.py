@@ -73,7 +73,7 @@ def safe_open(path, mode='r', chunk_size=4096, ascii_is_utf8=True, errors='ignor
 
     return fp
 
-def safe_open_fp(fp, job, mode='r', chunk_size=4096, ascii_is_utf8=True, errors='ignore'):
+def safe_open_fp(fp, mode='r', chunk_size=4096, ascii_is_utf8=True, errors='ignore'):
     '''
     Retrieves a file's encoding from an open file. If the file
     begins with a BOM (Byte Order Mark), it is read before the file object is returned. This
