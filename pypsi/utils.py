@@ -52,6 +52,9 @@ def safe_open(path, mode='r', chunk_size=4096, ascii_is_utf8=True, errors='ignor
     :returns file: the opened file object
     '''
 
+    if 'b' in mode:
+        return open(path, mode)
+
     first = None
     with open(path, 'rb') as fp:
         bin = first = fp.read(chunk_size)
