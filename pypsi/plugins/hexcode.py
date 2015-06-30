@@ -69,6 +69,7 @@ class HexCodePlugin(Plugin):
                             hexcode = None
                         except ValueError:
                             text += '\\x' + hexcode
+                            hexcode = None
                 elif c == '\\':
                     escape = True
                 else:
