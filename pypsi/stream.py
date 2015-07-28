@@ -337,7 +337,7 @@ class AnsiStream(object):
             if isinstance(part, AnsiCode):
                 if self.isatty():
                     if prompt:
-                        r.append(part.prompt)
+                        r.append(part.prompt())
                     else:
                         r.append(str(part))
                 elif part.s:
