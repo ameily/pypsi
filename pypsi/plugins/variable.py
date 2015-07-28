@@ -42,7 +42,7 @@ from io import StringIO
 
 class ManagedVariable(object):
     '''
-    Represents a variable that is managed by the shell. Managed variables have 
+    Represents a variable that is managed by the shell. Managed variables have
     get and set hooks that allow for input validation or read-only enforcement.
     Each variable needs a ``getter``, which is called to retrieve the value, and
     possibly a ``setter``, which is called to set the value. If the setter is
@@ -280,11 +280,11 @@ class VariablePlugin(Plugin):
             shell.ctx.vars.date = ManagedVariable(lambda shell: safe_date_format(shell.ctx.vars.datefmt or "%x", datetime.now()))
             shell.ctx.vars.time = ManagedVariable(lambda shell: safe_date_format(shell.ctx.vars.timefmt or "%X", datetime.now()))
             shell.ctx.vars.datetime = ManagedVariable(lambda shell: safe_date_format(shell.ctx.vars.datetimefmt or "%c", datetime.now()))
-            shell.ctx.vars.prompt = ManagedVariable(lambda shell: shell.prompt, self.set_prompt)
+            shell.ctx.vars.prompt = ManagedVariable(lambda shell: shell.get_current_prompt(), self.set_prompt)
             shell.ctx.vars.errno = ManagedVariable(lambda shell: str(shell.errno))
         return 0
 
-    def set_prompt(self,shell,value):
+    def set_prompt(self, shell, value):
         shell.prompt = value
 
     def expand(self, shell, vart):
