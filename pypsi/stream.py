@@ -172,7 +172,7 @@ def pypsi_print(*args, sep=' ', end='\n', file=None, flush=True, width=None, wra
                     else:
                         first = False
                     file.write(wrapped)
-            
+
             if not line or endl:
                 #file.write("NO Line\n")
                 file.write('\n')
@@ -224,40 +224,8 @@ class AnsiStream(object):
         self.redirects = []
         self.width = width
 
-    '''
-    def write(self):  #*args, sep=' ', end='\n', flush=True):
-        #self.stream.write("write()\n")
-        #return
-        for arg in args:
-            #self.stream.write(str(type(arg))+'\n')
-            if isinstance(arg, str):
-                self.stream.write(arg)
-            elif isinstance(arg, AnsiCode):
-                if self.isatty():
-                    self.stream.write(str(arg))
-            elif arg is not None:
-                self.stream.write(str(arg))
-
-        if flush:
-            self.stream.flush()
-
-    def writeln(self, *args, flush=True):
-        self.write(*args, flush=False)
-        self.stream.write('\n')
-        if flush:
-            self.stream.flush()
-    '''
-    '''
-    def write(self, arg):
-        if isinstance(arg, str):
-            self.stream.write(arg)
-        elif isinstance(arg, AnsiCode):
-            if self.isatty():
-                self.stream.write(str(arg))
-        elif arg is not None:
-            self.stream.write(str(arg))
-    '''
-
+    def has_changed(self, state):
+        return  self.get_state() != state
 
     def redirect(self, stream, width=0):
         '''

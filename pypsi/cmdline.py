@@ -368,7 +368,7 @@ class StatementContext(object):
         elif op == '|':
             # Next command is a pipe, redirect stdout to a buffer
             sys.stdout.redirect(StringIO())
-        else:
+        elif sys.stdout.has_changed(self.stdout_state):
             # Reset stdout
             sys.stdout.close(was_pipe=prev_pipe)
 
@@ -378,7 +378,7 @@ class StatementContext(object):
                 sys.stderr.redirect(open(params.stderr_path, 'w'))
             except OSError as e:
                 raise IoRedirectionError(params.stderr_path, str(e))
-        else:
+        elif sys.stderr.has_changed(self.stderr_state):
             # Reset stderr
             sys.stderr.close()
 
@@ -747,4 +747,3 @@ class Expression(object):
             return (None, None)
 
         return (remaining, Expression(operand, operator, value))
-
