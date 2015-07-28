@@ -181,10 +181,6 @@ class DemoShell(Shell):
         # You must call the Shell.__init__() method.
         super(DemoShell, self).__init__()
 
-        # Bootstrap MUST be called. This sets up the wrapped stdout stream and
-        # the custom version of the print() function.
-        self.bootstrap()
-
         try:
             # Attempt to load tips
             self.tip_cmd.load_tips("./demo-tips.txt")
