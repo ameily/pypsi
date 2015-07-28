@@ -68,6 +68,34 @@ class IsolatedShell(object):
         self.shell = shell
         self.atty = atty
 
+    def get_prompt(self):
+        stream = ClosableStream(self.atty)
+        sys.stdout.redirect(stream, width=80)
+        prompt = self.shell.get_current_prompt()
+        sys.stdout.close()
+
+        return prompt
+
+    def on_cmdloop_begin(self):
+        stream = ClosableStream(self.atty)
+        sys.stdout.redirect(stream, width=80)
+        sys.stderr.redirect(stream, width=80)
+
+        result = ShellResult(self.shell.get_current_prompt())
+
+        try:
+            result.rc = self.shell.on_cmdloop_begin()
+        except:
+            result.error = sys.exc_info()
+        else:
+            result.output = stream.getvalue()
+        finally:
+            result.set_post_prompt(self.shell.get_current_prompt())
+            sys.stdout.close()
+            sys.stderr.close()
+
+        return result
+
     def execute(self, command):
         stream = ClosableStream(self.atty)
         sys.stdout.redirect(stream, width=80)
