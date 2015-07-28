@@ -58,6 +58,8 @@ class AnsiCode(object):
         return "\x01" + self.code + "\x02" + (self.s or '')
 
     def __str__(self):
+        if self.s:
+            return self.code + self.s
         return self.code
 
     def __call__(self, s, postfix='\x1b[0m'):
@@ -328,3 +330,18 @@ class AnsiStream(object):
             kwargs[name] = code.prompt() if atty else ''
 
         return tmpl.format(**kwargs)
+
+    def render(self, parts, prompt=False):
+        r = []
+        for part in parts:
+            if isinstance(part, AnsiCode):
+                if self.isatty():
+                    if prompt:
+                        r.append(part.prompt)
+                    else:
+                        r.append(str(part))
+                elif part.s:
+                    r.append(part.s)
+            else:
+                r.append(str(part))
+        return ''.join(r)
