@@ -33,7 +33,7 @@ from pypsi.cmdline import StatementParser, StatementSyntaxError, StatementContex
 from pypsi.namespace import Namespace
 from pypsi.cmdline import StringToken, OperatorToken, WhitespaceToken
 from pypsi.completers import path_completer
-from pypsi.stream import AnsiStream, AnsiCodes, pypsi_print
+from pypsi.stream import AnsiStream, AnsiCodes, pypsi_print, AnsiCode
 import readline
 import sys
 
@@ -83,7 +83,7 @@ class Shell(object):
         import builtins
         if not isinstance(sys.stdout, AnsiStream):
             sys.stdout = AnsiStream(sys.stdout, width=self.width)
-        
+
         if not isinstance(sys.stderr, AnsiStream):
             sys.stderr = AnsiStream(sys.stderr, width=self.width)
 
@@ -143,7 +143,15 @@ class Shell(object):
         return 0
 
     def get_current_prompt(self):
-        return self.preprocess_single(self.prompt, 'prompt')
+        if callable(self.prompt):
+            prompt = self.prompt()
+        else:
+            prompt = self.prompt
+
+        if isinstance(prompt, (list, tuple)):
+            prompt = sys.stdout.render(prompt)
+
+        return self.preprocess_single(prompt, 'prompt')
 
     def set_readline_completer(self):
         if readline.get_completer() != self.complete:
@@ -299,7 +307,7 @@ class Shell(object):
             return ret
         return ''
 
-    def get_completions(self, line, prefix):        
+    def get_completions(self, line, prefix):
         tokens = self.parser.tokenize(line)
         cmd_name = None
         loc = None
@@ -349,7 +357,7 @@ class Shell(object):
                 ret = cmd.complete(self, args, prefix)
         return ret
 
-    def complete(self, text, state):        
+    def complete(self, text, state):
         if state == 0:
             self.completion_matches = []
             begidx = readline.get_begidx()
