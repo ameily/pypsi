@@ -148,9 +148,6 @@ class Shell(object):
         else:
             prompt = self.prompt
 
-        if isinstance(prompt, (list, tuple)):
-            prompt = sys.stdout.render(prompt)
-
         return self.preprocess_single(prompt, 'prompt')
 
     def set_readline_completer(self):
