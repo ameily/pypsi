@@ -41,7 +41,7 @@ class AnsiCode(object):
     A single ansi escape code.
     '''
 
-    def __init__(self, code, s=None):
+    def __init__(self, code, s=None, end_code=None):
         '''
         :param str code: the ansi escape code, usually begins with '\\x1b['
         :param str s: the body of the code, only useful if wrapping a string in
@@ -49,18 +49,19 @@ class AnsiCode(object):
         '''
         self.code = code
         self.s = s
+        self.end_code = end_code
 
     def prompt(self):
         '''
         Wrap non-print-able characters in readline non visible markers. This is
         required if the string is going to be passed into :meth:`input`.
         '''
-        return "\x01" + self.code + "\x02" + (self.s or '')
+        #return "\x01" + self.code + "\x02" + (self.s or '')
+        end = "\x01{}\x02".format(self.end_code) if self.end_code else ''
+        return "\x01{code}\x02{s}{end}".format(code=self.code, s=self.s or '', end=end)
 
     def __str__(self):
-        if self.s:
-            return self.code + self.s
-        return self.code
+        return self.code + (self.s or '') + (self.end_code or '')
 
     def __call__(self, s, postfix='\x1b[0m'):
         '''
@@ -71,7 +72,7 @@ class AnsiCode(object):
         :param str postfix: the postfix string to (default is the ansi reset
             code)
         '''
-        return AnsiCode(self.code, s + (postfix or ''))
+        return AnsiCode(self.code, s, postfix)
 
 
 class AnsiCodesSingleton(object):
