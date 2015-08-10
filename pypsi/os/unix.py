@@ -33,20 +33,80 @@ Unix (Cygwin, Linux, etc) specific functions
 '''
 
 import os
+import sys
 
+__all__ = [
+    'find_bins_in_path',
+    'is_path_prefix',
+    'path_completer'
+]
+
+
+def find_bins_in_path():
+    bins = set()
+    paths = [x for x in os.environ['PATH'].split(':') if x.strip()]
+    paths.append('./')
+    for path in paths:
+        path = path or './'
+        for entry in os.listdir(path):
+            p = os.path.join(path, entry)
+            if os.path.isfile(p) and os.access(p, os.X_OK):
+                bins.add(entry)
+    return bins
+
+
+
+def is_path_prefix(t):
+    for prefix in ('./', '../', '/'):
+        if t.startswith(prefix):
+            return True
+    return False
+
+
+def path_completer(path):
+    if not (path.startswith('/') or path.startswith('./') or path.startswith('../')):
+        path = './' + path
+
+    if path.endswith('/'):
+        root = path[:-1] or '/'
+        prefix = ''
+    else:
+        root = os.path.dirname(path)
+        prefix = os.path.basename(path)
+
+    if not os.path.isdir(root):
+        return []
+
+    files = []
+    dirs = []
+    for entry in os.listdir(root):
+        full = os.path.join(root, entry)
+        if not prefix or entry.startswith(prefix):
+            if os.path.isdir(full):
+                dirs.append(entry + '/')
+            else:
+                files.append(entry)
+    files = sorted(files)
+    dirs = sorted(dirs)
+    #return ['Root:' + root, 'Pref:' + prefix]
+    #return ['Dirs:' + str(len(dirs)), 'files:' + str(len(files))]
+    return dirs + files
+
+
+'''
 def unix_path_completer(shell, args, prefix):
     root = None
     if args:
         root = args[-1]
         if root:
-            if not root.startswith(os.path.sep) and not root.startswith('.' + os.path.sep):
-                root = '.' + os.path.sep + root
+            if not (root.startswith('/') or root.startswith('./') or root.startswith('../')):
+                root = './' + root
         else:
             root = '.' + os.path.sep
     else:
         root = '.' + os.path.sep
 
-    if root.endswith(prefix) and prefix:
+    if prefix and root.endswith(prefix):
         root = root[:0 - len(prefix)]
 
     if not os.path.exists(root):
@@ -68,3 +128,4 @@ def unix_path_completer(shell, args, prefix):
     else:
         return []
 
+'''

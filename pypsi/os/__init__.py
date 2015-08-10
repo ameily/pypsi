@@ -27,3 +27,18 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+
+import sys
+
+
+if sys.platform == 'win32':
+    from pypsi.os.win32 import *
+elif sys.platform == 'cygwin' or sys.platform.startswith('linux'):
+    from pypsi.os.unix import *
+
+
+__all__ = [
+    'find_bins_in_path',
+    'is_path_prefix',
+    'path_completer'
+]

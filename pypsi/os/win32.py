@@ -33,43 +33,74 @@ Windows specific functions
 '''
 
 import os
+import sys
+
+__all__ = [
+    'find_bins_in_path',
+    'is_path_prefix',
+    'path_completer'
+]
 
 
-def win32_path_completer(shell, args, prefix):
-    root = None
-    if args:
-        root = args[-1]
-        drive, root = os.path.splitdrive(root)
-        if root:
-            if not root.startswith(os.path.sep) and not root.startswith('.' + os.path.sep):
-                root = '.' + os.path.sep + root
-        else:
-            root = '.' + os.path.sep
-        root = os.path.join(drive, root)
+def is_exe(path):
+    (name, ext) = os.path.splitext(path)
+    return (
+        os.isfile(path) and
+        ext.lower() in ('.exe', '.bat')
+    )
+
+
+def is_path_prefix(prefix):
+    return (
+        any([prefix.startswith(x) for x in ('\\', '.\\', '..\\')]) or (
+            len(prefix) > 2 and prefix[1] == ':' and prefix[2] == '\\'
+        )
+    )
+
+
+def find_bins_in_path():
+    bins = set()
+    paths = [x.strip() for x in os.environ['PATH'].split(';') if x.strip()]
+    paths.append('.\\')
+    for path in paths:
+        path = path or '.\\'
+        for entry in os.listdir(path):
+            p = os.path.join(path, entry)
+            if os.path.isfile(p):
+                name, ext = os.path.splitext(entry)
+                if ext.lower() in ('.exe', '.bat'):
+                    bins.add(name)
+    return bins
+
+
+def path_completer(path):
+    path = path.replace('/', '\\')
+
+    if not is_path_prefix(path):
+        path = '.\\' + path
+
+    if path.endswith('\\'):
+        root = path[:-1] or '\\'
+        prefix = ''
     else:
-        root = '.' + os.path.sep
+        root = os.path.dirname(path)
+        prefix = os.path.basename(path)
 
-    if root.endswith(prefix) and prefix:
-        root = root[:0 - len(prefix)]
-
-    #return ['prefix:'+prefix, 'root:'+root]
-
-    if not os.path.exists(root):
+    if not os.path.isdir(root):
         return []
 
-    if os.path.isdir(root):
-        files = []
-        dirs = []
-        prefix_lower = prefix.lower()
-        for entry in os.listdir(root):
-            full = os.path.join(root, entry)
-            if entry.lower().startswith(prefix_lower):
-                if os.path.isdir(full):
-                    dirs.append(entry + os.path.sep)
-                else:
-                    files.append(entry)
-        files = sorted(files)
-        dirs = sorted(dirs)
-        return dirs + files
-    else:
-        return []
+    files = []
+    dirs = []
+    for entry in os.listdir(root):
+        full = os.path.join(root, entry)
+        if not prefix or entry.startswith(prefix):
+            if os.path.isdir(full):
+                dirs.append(entry + '\\')
+            else:
+                files.append(entry)
+    files = sorted(files)
+    dirs = sorted(dirs)
+    #return ['Root:' + root, 'Pref:' + prefix]
+    #return ['Dirs:' + str(len(dirs)), 'files:' + str(len(files))]
+    return dirs + files
+    
