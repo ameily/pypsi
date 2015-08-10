@@ -121,6 +121,76 @@ class ThreadLocalStream(object):
             del self._proxies[ident]
 
 
+        def ansi_format(self, tmpl, **kwargs):
+            '''
+            Format a string that contains ansi code terms. This function allows
+            the following string to be the color red:
+
+            ``sys.stdout.ansi_format("{red}Hello, {name}{reset}", name="Adam")``
+
+            The :data:`pypsi.format.AnsiCodesSingleton.codes` dict contains all
+            valid ansi escape code terms. If the current stream does not support
+            ansi escape codes, they are dropped from the template prior to
+            printing.
+
+            :param str tmpl: the string template
+            '''
+
+            atty = self.isatty()
+            for (name, value) in kwargs.items():
+                if isinstance(value, AnsiCode):
+                    kwargs[name] = str(value) if atty else ''
+
+            for (name, code) in AnsiCodes.codes.items():
+                kwargs[name] = code.code if atty else ''
+
+            return tmpl.format(**kwargs)
+
+        def ansi_format_prompt(self, tmpl, **kwargs):
+            '''
+            Format a string that contains ansi code terms. This function allows
+            performs the same formatting as :meth:`ansi_format`, except this is
+            intended for formatting strings in prompt by calling
+            :meth:`pypsi.stream.AnsiCode.prompt` for each code.
+            '''
+
+            atty = self.isatty()
+            for (name, value) in kwargs.items():
+                if isinstance(value, AnsiCode):
+                    kwargs[name] = value.prompt() if atty else ''
+
+            for (name, code) in AnsiCodes.codes.items():
+                kwargs[name] = code.prompt() if atty else ''
+
+            return tmpl.format(**kwargs)
+
+        def render(self, parts, prompt=False):
+            '''
+            Render a list of objects as  single string. This method is the
+            string version of the :meth:`print` method. Also, this method will
+            honor the current thread's :meth:`isatty` when rendering ANSI escape
+            codes.
+
+            :param list parts: list of object to render.
+            :param bool prompt: whether to render
+                :class:`~pypsi.stream.AnsiCode` objects as prompts or not.
+            :returns str: the rendered string.
+            '''
+            r = []
+            for part in parts:
+                if isinstance(part, AnsiCode):
+                    if self.isatty():
+                        if prompt:
+                            r.append(part.prompt())
+                        else:
+                            r.append(str(part))
+                    elif part.s:
+                        r.append(part.s)
+                else:
+                    r.append(str(part))
+            return ''.join(r)
+
+
 
 class InvocationThread(threading.Thread):
     '''
