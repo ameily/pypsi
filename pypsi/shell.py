@@ -29,13 +29,17 @@
 #
 
 from pypsi.base import Plugin, Command
-from pypsi.cmdline import StatementParser, StatementSyntaxError, StatementContext, IoRedirectionError
+from pypsi.cmdline import StatementParser, StatementSyntaxError, \
+                          IORedirectionError, CommandNotFoundError
 from pypsi.namespace import Namespace
 from pypsi.cmdline import StringToken, OperatorToken, WhitespaceToken
 from pypsi.completers import path_completer
-from pypsi.stream import AnsiStream, AnsiCodes, pypsi_print, AnsiCode
+from pypsi.os import is_path_prefix
+from pypsi.stream import AnsiCodes, pypsi_print, AnsiCode
+from pypsi.pipes import ThreadLocalStream, InvocationThread
 import readline
 import sys
+import os
 
 
 class Shell(object):
@@ -81,11 +85,14 @@ class Shell(object):
 
     def bootstrap(self):
         import builtins
-        if not isinstance(sys.stdout, AnsiStream):
-            sys.stdout = AnsiStream(sys.stdout, width=self.width)
+        if not isinstance(sys.stdout, ThreadLocalStream):
+            sys.stdout = ThreadLocalStream(sys.stdout, width=self.width)
 
-        if not isinstance(sys.stderr, AnsiStream):
-            sys.stderr = AnsiStream(sys.stderr, width=self.width)
+        if not isinstance(sys.stderr, ThreadLocalStream):
+            sys.stderr = ThreadLocalStream(sys.stderr, width=self.width)
+
+        if not isinstance(sys.stdin, ThreadLocalStream):
+            sys.stdin = ThreadLocalStream(sys.stdin)
 
         if builtins.print != pypsi_print:
             builtins.print = pypsi_print
@@ -206,9 +213,20 @@ class Shell(object):
             file=sys.stderr, sep=''
         )
 
-    def execute(self, raw, ctx=None):
-        if not ctx:
-            ctx = StatementContext()
+    def mkpipe(self):
+        r, w = os.pipe()
+        return (
+            os.fdopen(r, 'r'),
+            os.fdopen(w, 'w')
+        )
+
+    def execute(self, raw):
+        '''
+        Parse and execute a statement.
+
+        :param str raw: the raw command line to parse.
+        :returns int: the return code of the statement.
+        '''
 
         tokens = self.preprocess(raw, 'input')
         if not tokens:
@@ -217,63 +235,139 @@ class Shell(object):
         statement = None
 
         try:
-            statement = self.parser.build(tokens, ctx)
+            statement = self.parser.build(tokens)
         except StatementSyntaxError as e:
-            print(self.shell_name, ": ", str(e), sep='', file=sys.stderr)
+            self.error(str(e))
             return 1
 
         rc = None
-        if statement:
-            (params, op) = statement.next()
-            while params:
-                cmd = None
-                if params.name in self.commands:
-                    cmd = self.commands[params.name]
-                elif self.fallback_cmd:
-                    cmd = self.fallback_cmd.fallback(self, params.name, params.args, statement.ctx)
 
-                if not cmd:
-                    statement.ctx.reset_io()
-                    print(self.shell_name, ": ", params.name, ": command not found", file=sys.stderr)
-                    return 1
+        if not statement:
+            # The line was empty, a comment, or just contained whitespace.
+            return rc
 
-                # Verify that setup_io did not return an error.
+        # Setup the invocations
+        for invoke in statement:
+            try:
+                # Open any and all I/O redirections and resolve the pypsi comand.
+                invoke.setup(self)
+            except Exception as e:
+                for sub in statement:
+                    sub.close_streams()
+
+                if isinstance(e, (IORedirectionError, CommandNotFoundError)):
+                    # pypsi can handle I/O redirection and command not found
+                    # errors, these are not fatal.
+                    self.error(str(e))
+                else:
+                    # Unhandled fatal exception, re-raise it
+                    raise
+
+        # Current pipe being built
+        pipe = []
+
+        # Process the statement
+        for invoke in statement:
+            if invoke.chain_pipe():
+                # We are in a pipe
+                pipe.append(invoke)
+            else:
+                # We are not in a pipe
+
+                if pipe:
+                    # We have a pipe built that needs to be executed.
+                    # Create the invocation threads for the pipe.
+                    threads, stdin = self.create_pipe_threads(pipe)
+                    # Reset the building pipe
+                    pipe = []
+                    # Set the current invocation's stdin to the last
+                    # invocation's stdout.
+                    invoke.stdin = stdin
+                    print(">>", invoke.name, "--", str(invoke.stdin), ":", str(invoke.stdout))
+                else:
+                    # We were not in a pipe
+                    threads = []
+
+                # Start all the pipe threads, if we are processing a pipe
+                for t in threads:
+                    t.start()
+
+                # Execute the invocation in the current thread.
                 try:
-                    if statement.ctx.setup_io(cmd, params, op) == -1:
-                        statement.ctx.reset_io()
-                        print(self.shell_name, ": IO error", file=sys.stderr)
-                        return 1
-                except IoRedirectionError as e:
-                    statement.ctx.reset_io()
-                    print(self.shell_name, ': ', e.path, ': ', e.message, sep='', file=sys.stderr)
-                    return -1
+                    rc = invoke(self)
+                except Exception as e:
+                    # Unhandled exception, stop all threads if any are running.
+                    for t in threads:
+                        t.stop()
 
-                rc = self.run_cmd(cmd, params, statement.ctx)
-                if op == '||':
-                    if rc == 0:
-                        statement.ctx.reset_io()
-                        return 0
-                elif op == '&&' or op == '|':
-                    if rc != 0:
-                        statement.ctx.reset_io()
-                        return rc
+                    # Wait for threads to terminate.
+                    try:
+                        for t in threads:
+                            t.join()
+                    except:
+                        # Something went wrong or a KeyboardInterrupt was
+                        # issued. Stop waiting for threads to terminate.
+                        pass
 
-                (params, op) = statement.next()
+                    # Print thread-specific unhandled exceptions.
+                    for t in threads:
+                        if t.exc_info:
+                            if t.exc_info[0] == OSError:
+                                msg = t.exc_info[1].strerror
+                            else:
+                                msg = str(t.exc_info[1])
 
-        statement.ctx.reset_io()
+                            print(
+                                AnsiCodes.red, t.invoke.name, ": ", msg,
+                                AnsiCodes.reset, sep=''
+                            )
+
+                    if isinstance(e, KeyboardInterrupt):
+                        # Ctrl+c was entered
+                        print()
+                        rc = -1
+                    elif isinstance(e, SystemExit):
+                        # The command is requesting to exit the shell.
+                        rc = e.code
+                        print("exiting....")
+                        self.running = False
+                    elif isinstance(e, RuntimeError):
+                        # The command was aborted by a generic exception.
+                        self.error("command aborted: "+str(e))
+                        rc = -1
+                    else:
+                        # Unhandled fatal exception, re-raise it
+                        raise
+
+                self.errno = rc
+
+                # Check if the statement's next invocation be executed.
+                if not invoke.should_continue(rc):
+                    break
 
         return rc
 
-    def run_cmd(self, cmd, params, ctx):
-        try:
-            self.errno = cmd.run(self, params.args, ctx)
-        except RuntimeError as e:
-            self.error("command aborted: "+str(e))
-            self.errno = -1
-        except KeyboardInterrupt:
-            print()
-            self.errno = -1
-        return self.errno
+    def create_pipe_threads(self, pipe):
+        '''
+        Given a pipe (list of :class:`~pypsi.cmdline.CommandInvocation` objects)
+        create a thread to execute for each invocation.
+
+        :returns tuple: a tuple containing the list of threads
+        (:class:`~pypsi.pipes.CommandThread`) and the last invocation's
+        stdout stream.
+        '''
+
+        threads = []
+        stdin = None
+        for invoke in pipe:
+            next_stdin, stdout = self.mkpipe()
+
+            t = InvocationThread(self, invoke, stdin=stdin, stdout=stdout)
+            threads.append(t)
+
+            stdin = next_stdin
+
+        return threads, stdin
 
     def preprocess(self, raw, origin):
         for pp in self.preprocessors:
@@ -306,7 +400,7 @@ class Shell(object):
 
     def get_completions(self, line, prefix):
         tokens = self.parser.tokenize(line)
-        cmd_name = None
+        cmd_name = ""
         loc = None
         args = []
         next_arg = True
@@ -340,9 +434,13 @@ class Shell(object):
             prev = token
 
         if loc == 'path':
-            ret = path_completer(self, args, prefix)
+            ret = path_completer(''.join(args))
         elif not cmd_name or loc == 'name':
-            ret = [cmd for cmd in self.commands if cmd.startswith(prefix)]
+            if is_path_prefix(cmd_name):
+                ret = path_completer(cmd_name)
+            else:
+                #ret = [cmd for cmd in self.commands if cmd.startswith(prefix)]
+                ret = self.get_command_name_completions(cmd_name)
         else:
             if cmd_name not in self.commands:
                 ret = []
@@ -353,6 +451,9 @@ class Shell(object):
                 cmd = self.commands[cmd_name]
                 ret = cmd.complete(self, args, prefix)
         return ret
+
+    def get_command_name_completions(self, prefix):
+        return [cmd for cmd in self.commands if cmd.startswith(prefix)]
 
     def complete(self, text, state):
         if state == 0:
