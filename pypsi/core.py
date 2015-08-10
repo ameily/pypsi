@@ -35,7 +35,8 @@ Base classes for developing pluggable commands and plugins.
 
 import argparse
 import sys
-from pypsi.stream import AnsiCodes
+from pypsi.stream import AnsiCodes, AnsiCode
+from pypsi.format import get_lines, wrap_line
 
 
 class Plugin(object):
@@ -280,3 +281,70 @@ class PypsiArgParser(argparse.ArgumentParser):
         print(AnsiCodes.red, self.prog, ": error: ", message, AnsiCodes.reset, sep='', file=sys.stderr)
         self.print_usage()
         self.exit(1)
+
+
+
+def pypsi_print(*args, sep=' ', end='\n', file=None, flush=True, width=None, wrap=True):
+    '''
+    Wraps the functionality of the Python builtin `print` function. The
+    :meth:`pypsi.shell.Shell.bootstrap` overrides the Python :meth:`print`
+    function with :meth:`pypsi_print`.
+
+    :param str sep: string to print between arguments
+    :param str end: string to print at the end of the output
+    :param file file: output stream, if this is :const:`None`, the default is
+        :data:`sys.stdout`
+    :param bool flush: whether to flush the output stream
+    :param int width: override the stream's width
+    :param bool wrap: whether to word wrap the output
+    '''
+
+    file = file or sys.stdout
+    last = len(args) - 1
+
+    if wrap and hasattr(file, 'width') and file.width:
+        width = width or file.width
+        parts = []
+        for arg in args:
+            if isinstance(arg, str):
+                parts.append(arg)
+            elif arg is None:
+                parts.append('')
+            elif isinstance(arg, AnsiCode):
+                if file.isatty():
+                    parts.append(str(arg))
+            else:
+                parts.append(str(arg))
+
+        txt = sep.join(parts)
+        lineno = 0
+        for (line, endl) in get_lines(txt):
+            #file.write("Line: "+line+' ['+str(endl)+']\n')
+            if line:
+                first = True
+                wrapno = 0
+                for wrapped in wrap_line(line, width):
+                    if not wrapped:
+                        continue
+                    #file.write("Wrapped: '" + wrapped+"'\n")
+                    wrapno += 1
+                    if not first:
+                        file.write('\n')
+                    else:
+                        first = False
+                    file.write(wrapped)
+
+            if not line or endl:
+                #file.write("NO Line\n")
+                file.write('\n')
+    else:
+        last = len(args) - 1
+        for (i, arg) in enumerate(args):
+            file.write(str(arg))
+            if sep and i != last:
+                file.write(sep)
+
+    if end:
+        file.write(end)
+    if flush:
+        file.flush()
