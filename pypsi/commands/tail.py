@@ -65,7 +65,7 @@ class TailCommand(Command):
             brief=brief, **kwargs
         )
 
-    def run(self, shell, args, ctx):
+    def run(self, shell, args):
         try:
             ns = self.parser.parse_args(args)
         except CommandShortCircuit as e:
@@ -89,7 +89,7 @@ class TailCommand(Command):
         return 0
 
     def complete(self, shell, args, prefix):
-        return path_completer(shell, args, prefix)
+        return path_completer(args[-1])
 
     def tail(self, fname, lines=10, block_size=1024):
         data = []
@@ -117,7 +117,7 @@ class TailCommand(Command):
                 num_lines = data[0].count('\n')
                 bytes_left -= block_size
                 blocks -= 1
-                
+
             return ''.join(data).splitlines()[-lines:]
 
 
@@ -137,5 +137,5 @@ class TailCommand(Command):
             except (KeyboardInterrupt):
                 print()
                 return 0
-                
+
         return 0

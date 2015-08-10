@@ -30,6 +30,8 @@
 
 from pypsi.base import Command, PypsiArgParser
 import subprocess
+import errno
+import sys
 
 SystemUsage = """usage: {name} COMMAND
 
@@ -55,50 +57,36 @@ class SystemCommand(Command):
         )
         self.use_shell = use_shell
 
-    def run(self, shell, args, ctx):
+    def run(self, shell, args):
         rc = None
-        proc = None
+
         try:
-            stdout = None
-            pipe_stdout = True
-            if shell.real_stdout == ctx.stdout.stream:
-                stdout = ctx.stdout.stream
-                pipe_stdout = False
-            else:
-                stdout = subprocess.PIPE
-
-            if shell.real_stdin == ctx.stdin:
-                proc = subprocess.Popen(args, stdout=stdout, stderr=ctx.stderr.stream, shell=self.use_shell)
-            else:
-                proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=stdout, stderr=ctx.stderr.stream, shell=self.use_shell)
-                buff = ctx.stdin.read()
-                if isinstance(buff, str):
-                    buff = buff.encode('utf-8')
-
-                proc.stdin.write(buff)
-                proc.stdin.close()
+            proc = subprocess.Popen(
+                args, stdout=sys.stdout._get_target_stream(),
+                stdin=sys.stdin._get_target_stream(),
+                stderr=sys.stderr._get_target_stream(),
+                shell=self.use_shell
+            )
         except OSError as e:
-            if e.errno == 2:
-                self.error(shell, "executable not found")
+            if e.errno == errno.ENOENT:
+                self.error(shell, args[0], ": command not found")
             else:
-                self.error(shell, str(e))
+                self.error(shell, args[0], ": ", e.strerror)
             return -e.errno
 
         try:
-            if pipe_stdout:
-                encoding = ctx.stdout.encoding or shell.real_stdout.encoding or 'utf-8'
-                for line in proc.stdout:
-                    ctx.stdout.write(line.decode(encoding))
-            rc = proc.wait()            
+            rc = proc.wait()
         except KeyboardInterrupt:
             proc.kill()
             proc.communicate()
             rc = proc.wait()
-        return rc if rc <= 0 else -1
 
-    def fallback(self, shell, name, args, ctx):
+        return rc
+
+    def fallback(self, shell, name, args):
         '''
         Pass the command to the parent shell.
         '''
         args.insert(0, name)
-        return self
+        #return self
+        return self.run(shell, args)

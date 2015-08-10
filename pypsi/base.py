@@ -200,13 +200,12 @@ class Command(object):
         msg = "{}: {}".format(self.name, ''.join([ str(a) for a in args]))
         print(AnsiCodes.red, msg, AnsiCodes.reset, file=sys.stderr, sep='')
 
-    def run(self, shell, args, ctx):
+    def run(self, shell, args):
         '''
         Execute the command. All commands need to implement this method.
 
         :param pypsi.shell.Shell shell: the active shell
         :param list args: list of string arguments
-        :param pypsi.cmdline.StatementContext: the current statement context
         :returns int: 0 on success, less than 0 on error, and greater than 0 on
             invalid usage
         '''

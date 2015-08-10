@@ -70,17 +70,21 @@ class IncludeCommand(Command):
         self.stack = []
 
     def complete(self, shell, args, prefix):
-        return path_completer(shell, args, prefix)
+        if len(args) > 1:
+            path = args[-1] + prefix
+        else:
+            path = prefix
+        return path_completer(args[-1])
 
-    def run(self, shell, args, ctx):
+    def run(self, shell, args):
         try:
             ns = self.parser.parse_args(args)
         except CommandShortCircuit as e:
             return e.code
 
-        return self.include_file(shell, ns.path, ctx)
+        return self.include_file(shell, ns.path)
 
-    def include_file(self, shell, path, ctx):
+    def include_file(self, shell, path):
         fp = None
         ifile = IncludeFile(path)
 
@@ -105,10 +109,10 @@ class IncludeCommand(Command):
             return -1
 
         #orig_prefix = shell.error.prefix
-        next = ctx.fork()
+        #next = ctx.fork()
         for line in fp:
             #shell.error.prefix = templ.format(file=ifile.name, line=ifile.line)
-            shell.execute(line.strip(), next)
+            shell.execute(line.strip())
             ifile.line += 1
 
         #if top:

@@ -43,7 +43,7 @@ class ExitCommand(Command):
             prog=name,
             description=brief
         )
-        
+
         self.parser.add_argument(
             'code', metavar='CODE', action='store', default=0, type=int,
             nargs='?', help='exit code to return to parent process'
@@ -54,7 +54,7 @@ class ExitCommand(Command):
             brief=brief, **kwargs
         )
 
-    def run(self, shell, args, ctx):
+    def run(self, shell, args):
         try:
             ns = self.parser.parse_args(args)
         except CommandShortCircuit as e:

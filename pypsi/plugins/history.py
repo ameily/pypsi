@@ -60,7 +60,7 @@ class HistoryCommand(Command):
 
         if len(args) == 2:
             if args[0] == 'save' or args[0] == 'load':
-                return path_completer(shell, args, prefix)
+                return path_completer(args[-1])
         return []
 
     def setup_parser(self, brief):
@@ -95,7 +95,7 @@ class HistoryCommand(Command):
         )
 
 
-    def run(self, shell, args, ctx):
+    def run(self, shell, args):
         try:
             ns = self.parser.parse_args(args) #(shell, args)
         except CommandShortCircuit as e:
@@ -175,10 +175,10 @@ class History(object):
     '''
     Wraps the :mod:`readline` module. Provides the following abilities:
 
-    - Accessing and manipulating history items via :meth:`__getitem__`, 
+    - Accessing and manipulating history items via :meth:`__getitem__`,
       :meth:`__setitem__`, :meth:`__delitem__`, and :meth:`__iter__`. Indexes
       must be :class:`int` and negative indexes are handled and automatically
-      normalized before passing them to :mod:`readline`. :meth:`__getitem__` 
+      normalized before passing them to :mod:`readline`. :meth:`__getitem__`
       also supports slicing, which also normalizes negative indexes.
     - Appending new history items via :meth:`append`.
     - Clearing all history items via :meth:`clear`.

@@ -83,7 +83,7 @@ class HelpCommand(Command):
         completions = [x.id for x in shell.ctx.topics if x.id.startswith(prefix) or not prefix]
         completions.extend([x for x in shell.commands if x.startswith(prefix) or not prefix])
         completions = sorted(completions)
-        
+
         return completions
 
     def reload(self, shell):
@@ -103,7 +103,7 @@ class HelpCommand(Command):
             else:
                 shell.ctx.uncat_topic.commands.append(cmd)
         shell.ctx.topics_dirty = False
-        
+
         for topic in shell.ctx.topics:
             if topic.commands:
                 topic.commands = sorted(topic.commands, key=lambda x: x.name)
@@ -200,7 +200,7 @@ class HelpCommand(Command):
             self.print_topic_commands(shell, topic, "Commands")
         return 0
 
-    def run(self, shell, args, ctx):
+    def run(self, shell, args):
         if shell.ctx.topics_dirty:
             self.reload(shell)
 

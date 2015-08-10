@@ -49,7 +49,7 @@ class AliasCommand(Command):
         self.parser.add_argument('-d', '--delete', help='delete alias', nargs=1,
                                  metavar='ALIAS')
 
-    def run(self, shell, args, ctx):
+    def run(self, shell, args):
         try:
             ns = self.parser.parse_args(args)
         except CommandShortCircuit as e:

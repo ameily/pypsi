@@ -68,7 +68,7 @@ class ChdirCommand(Command):
         shell.ctx.chdir_last_dir = prev
         return 0
 
-    def run(self, shell, args, ctx):
+    def run(self, shell, args):
         try:
             ns = self.parser.parse_args(args)
         except CommandShortCircuit as e:
@@ -81,4 +81,3 @@ class ChdirCommand(Command):
             return self.chdir(shell, os.path.expanduser(ns.path))
 
         return self.chdir(shell, ns.path)
-

@@ -78,7 +78,7 @@ class TipCommand(Command):
         self.motd = fp.read().rstrip()
         fp.close()
 
-    def run(self, shell, args, ctx):
+    def run(self, shell, args):
         try:
             ns = self.parser.parse_args(args)
         except CommandShortCircuit as e:
@@ -98,7 +98,7 @@ class TipCommand(Command):
             return -1
 
         i = self.rand.randrange(len(self.tips)) #int(self.rand.random() * len(self.tips)
-        
+
         if header:
             title = "Tip #{}\n".format(i+1)
             title += '-' * len(title)

@@ -63,7 +63,7 @@ class XArgsCommand(Command):
             brief=brief, **kwargs
         )
 
-    def run(self, shell, args, ctx):
+    def run(self, shell, args):
         try:
             ns = self.parser.parse_args(args)
         except CommandShortCircuit as e:
@@ -77,9 +77,8 @@ class XArgsCommand(Command):
             '"{}"'.format(c.replace('"', '\\"')) for c in ns.command
         ])
 
-        child = ctx.fork()
         for line in sys.stdin:
             cmd = base.replace(ns.token, line.strip())
-            shell.execute(cmd, child)
+            shell.execute(cmd)
 
         return 0

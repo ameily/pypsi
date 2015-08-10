@@ -103,7 +103,7 @@ class VariableCommand(Command):
             brief=brief, **kwargs
         )
 
-    def run(self, shell, args, ctx):
+    def run(self, shell, args):
         try:
             ns = self.parser.parse_args(args)
         except CommandShortCircuit as e:

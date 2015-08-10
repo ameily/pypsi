@@ -61,13 +61,12 @@ class Macro(Command):
         super(Macro, self).__init__(**kwargs)
         self.lines = lines
 
-    def run(self, shell, args, ctx):
+    def run(self, shell, args):
         rc = None
         self.add_var_args(shell, args)
 
-        next = ctx.fork()
         for line in self.lines:
-            rc = shell.execute(line, next)
+            rc = shell.execute(line)
 
         self.remove_var_args(shell)
         return rc
@@ -100,7 +99,7 @@ class MacroCommand(BlockCommand):
     command statements. Macros are comparable to Bash functions. Once a macro
     has been recorded, a new command is registered in the shell as an instance
     of a :class:`Macro`.
-    
+
     This command requires the :class:`pypsi.plugins.block.BlockPlugin` plugin.
     '''
 
@@ -132,16 +131,16 @@ class MacroCommand(BlockCommand):
 
     def setup(self, shell):
         rc = 0
-        
+
         if 'macros' not in shell.ctx:
             shell.ctx.macros = {}
 
         for name in self.base_macros:
             rc = self.add_macro(shell, name, shell.ctx.macros[name])
-                
+
         return rc
 
-    def run(self, shell, args, ctx):
+    def run(self, shell, args):
         try:
             ns = self.parser.parse_args(args)
         except CommandShortCircuit as e:
@@ -187,7 +186,7 @@ class MacroCommand(BlockCommand):
             '''
             print(title_str("Registered Macros", shell.width))
             chunk_size = 3
-            
+
             tbl = Table(
                 columns=(Column(''), Column(''),Column('', Column.Grow)),
                 spacing=4,
@@ -199,7 +198,7 @@ class MacroCommand(BlockCommand):
                 chunk = macro_names[i:i+chunk_size]
                 tbl.extend(chunk)
             tbl.write(sys.stdout)
-            
+
             '''
             Old not left justified table
             '''

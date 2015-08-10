@@ -55,7 +55,7 @@ class CommandFunction(Command):
         self.cmd_args = cmd_args
         super(CommandFunction, self).__init__(**kwargs)
 
-    def run(self, shell, args, ctx):
+    def run(self, shell, args):
         if self.cmd_args == CmdArgsString:
             args = ' '.join(args)
         return self.func(args)
@@ -115,4 +115,3 @@ class CmdPlugin(Plugin):
                 #    completer = getattr(shell, 'complete_'+cmd)
                 shell.register(CommandFunction(func, cmd_args=self.cmd_args, name=cmd, usage=usage))
         return 0
-

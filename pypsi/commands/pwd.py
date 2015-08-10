@@ -42,6 +42,6 @@ class PwdCommand(Command):
                  brief='print current working directory', **kwargs):
         super(PwdCommand, self).__init__(name=name, topic=topic, brief=brief, **kwargs)
 
-    def run(self, shell, args, ctx):
+    def run(self, shell, args):
         print(os.getcwd())
         return 0
