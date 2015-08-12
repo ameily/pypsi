@@ -1,9 +1,9 @@
-pypsi.stream - File streams
-===========================
+pypsi.ansi - ANSI Escape Code Support
+=====================================
 
 .. toctree::
     :numbered:
 
 
-.. automodule:: pypsi.stream
+.. automodule:: pypsi.ansi
     :members:

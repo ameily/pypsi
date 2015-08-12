@@ -1,36 +1,23 @@
 #
-# Copyright (c) 2014, Adam Meily
-# All rights reserved.
+# Copyright (c) 2015, Adam Meily <meily.adam@gmail.com>
+# Pypsi - https://github.com/ameily/pypsi
 #
-# Redistribution and use in source and binary forms, with or without modification,
-# are permitted provided that the following conditions are met:
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
 #
-# * Redistributions of source code must retain the above copyright notice, this
-#   list of conditions and the following disclaimer.
-#
-# * Redistributions in binary form must reproduce the above copyright notice, this
-#   list of conditions and the following disclaimer in the documentation and/or
-#   other materials provided with the distribution.
-#
-# * Neither the name of the {organization} nor the names of its
-#   contributors may be used to endorse or promote products derived from
-#   this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-# ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-from pypsi.base import Command, PypsiArgParser, CommandShortCircuit
-from pypsi.format import Table, Column, FixedColumnTable, title_str
-from pypsi.stream import AnsiCodes
+from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
+from pypsi.format import Table, Column, title_str
+from pypsi.ansi import AnsiCodes
 import sys
 
 
@@ -71,17 +58,23 @@ class HelpCommand(Command):
 
     def setup(self, shell):
         shell.ctx.topics = list(self.topics or [])
-        shell.ctx.uncat_topic = Topic('uncat', 'Uncategorized Commands & Topics')
+        shell.ctx.uncat_topic = Topic('uncat',
+                                      'Uncategorized Commands & Topics')
         shell.ctx.topic_lookup = {t.id: t for t in shell.ctx.topics}
         shell.ctx.topics_dirty = True
 
     def complete(self, shell, args, prefix):
-        #pre = args[-1] if args else prefix
         if shell.ctx.topics_dirty:
             self.reload(shell)
 
-        completions = [x.id for x in shell.ctx.topics if x.id.startswith(prefix) or not prefix]
-        completions.extend([x for x in shell.commands if x.startswith(prefix) or not prefix])
+        completions = [
+            x.id for x in shell.ctx.topics
+            if x.id.startswith(prefix) or not prefix
+        ]
+
+        completions.extend([
+            x for x in shell.commands if x.startswith(prefix) or not prefix
+        ])
         completions = sorted(completions)
 
         return completions
@@ -113,7 +106,8 @@ class HelpCommand(Command):
         shell.ctx.topic_lookup[topic.id] = topic
         shell.ctx.topics.append(topic)
 
-    def print_topic_commands(self, shell, topic, title=None, name_col_width=20):
+    def print_topic_commands(self, shell, topic, title=None,
+                             name_col_width=20):
         print(
             AnsiCodes.yellow,
             title_str(title or topic.name or topic.id, shell.width),
@@ -126,14 +120,10 @@ class HelpCommand(Command):
             spacing=4,
             header=False,
             width=shell.width
-        #).extend(
-        #    *[
-        #        (' Name', 'Description'),
-        #        (' ----', '-----------')
-        #    ]
-        ).extend(
-            *[(' '+c.name.ljust(name_col_width - 1), c.brief or '') for c in topic.commands]
-        ).write(sys.stdout)
+        ).extend(*[
+            (' ' + c.name.ljust(name_col_width - 1), c.brief or '')
+            for c in topic.commands
+        ]).write(sys.stdout)
         print(AnsiCodes.reset, end='')
 
     def print_topics(self, shell):
@@ -151,11 +141,13 @@ class HelpCommand(Command):
                 addl.append(topic)
 
             if topic.commands:
-                self.print_topic_commands(shell, topic, name_col_width=max_name_width)
+                self.print_topic_commands(shell, topic,
+                                          name_col_width=max_name_width)
                 print()
 
         if shell.ctx.uncat_topic.commands:
-            self.print_topic_commands(shell, shell.ctx.uncat_topic, name_col_width=max_name_width)
+            self.print_topic_commands(shell, shell.ctx.uncat_topic,
+                                      name_col_width=max_name_width)
             print()
 
         if addl:
@@ -170,9 +162,10 @@ class HelpCommand(Command):
                 spacing=4,
                 header=False,
                 width=shell.width
-            ).extend(
-                *[(' '+topic.id.ljust(max_name_width - 1), topic.name or '') for topic in addl]
-            ).write(sys.stdout)
+            ).extend(*[
+                (' ' + topic.id.ljust(max_name_width - 1), topic.name or '')
+                for topic in addl
+            ]).write(sys.stdout)
             print(AnsiCodes.reset)
 
     def print_topic(self, shell, id):

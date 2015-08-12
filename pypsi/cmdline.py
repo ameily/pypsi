@@ -2,30 +2,31 @@
 # Copyright (c) 2014, Adam Meily
 # All rights reserved.
 #
-# Redistribution and use in source and binary forms, with or without modification,
-# are permitted provided that the following conditions are met:
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
 #
 # * Redistributions of source code must retain the above copyright notice, this
 #   list of conditions and the following disclaimer.
 #
-# * Redistributions in binary form must reproduce the above copyright notice, this
-#   list of conditions and the following disclaimer in the documentation and/or
-#   other materials provided with the distribution.
+# * Redistributions in binary form must reproduce the above copyright notice,
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
 #
 # * Neither the name of the {organization} nor the names of its
 #   contributors may be used to endorse or promote products derived from
 #   this software without specific prior written permission.
 #
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-# ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
 #
 
 '''
@@ -33,18 +34,17 @@ Classes used for parsing user input.
 '''
 
 import sys
-import os
 from pypsi.utils import safe_open
 
-
+#: The token accepts more characters.
 TokenContinue = 0
-'''The token accepts more characters.'''
 
+#: The token does not accept the current chracter.
 TokenEnd = 1
-'''The token does not accept the current character.'''
 
+#: The token is finished and the current chracter should not be processed
+#: again.
 TokenTerm = 2
-'''The token is finished and the current character should not be processed again.'''
 
 
 class Token(object):
@@ -74,7 +74,7 @@ class WhitespaceToken(Token):
         :param str c: the current character
         :returns int: TokenEnd or TokenContinue
         '''
-        if c in (' ', '\t','\xa0'):
+        if c in (' ', '\t', '\xa0'):
             return TokenContinue
         return TokenEnd
 
@@ -141,7 +141,7 @@ class StringToken(Token):
         else:
             if c == '\\':
                 self.escape = True
-            elif c in (' ', '\t', ';', '|', '&', '>', '<','\xa0'):
+            elif c in (' ', '\t', ';', '|', '&', '>', '<', '\xa0'):
                 ret = TokenEnd
             elif c in ('"', "'"):
                 ret = TokenEnd
@@ -162,18 +162,17 @@ class StringToken(Token):
             text=self.text
         )
 
+
 class OperatorToken(Token):
     '''
-    An operator token. An operator can consist of one or more repetitions of the
-    same operator character. For example, the string ">>" would be parsed as one
-    `OperatorToken`, whereas the string "<>" would be parsed as two separate
-    `OperatorToken` objects.
+    An operator token. An operator can consist of one or more repetitions of
+    the same operator character. For example, the string ">>" would be parsed
+    as one `OperatorToken`, whereas the string "<>" would be parsed as two
+    separate `OperatorToken` objects.
     '''
 
+    #: Valid operator characters
     Operators = '<>|&;'
-    '''
-    Valid operator characters.
-    '''
 
     def __init__(self, index, operator):
         '''
@@ -215,8 +214,12 @@ class IORedirectionError(Exception):
 
 
 class CommandNotFoundError(Exception):
+    '''
+    The specified command does not exist.
+    '''
 
     def __init__(self, name):
+        #: the command name
         self.name = name
 
     def __str__(self):
@@ -224,22 +227,43 @@ class CommandNotFoundError(Exception):
 
 
 class Statement(object):
+    '''
+    A parsed statement containing a list of :class:`CommandInvocation`
+    instances.
+    '''
 
     def __init__(self, invokes=None):
+        '''
+        :param list[CommandInvocation] invokes: list of command invocations
+        '''
         self.invokes = invokes or []
 
     def append(self, invoke):
+        '''
+        Append a new command invocation.
+
+        :param CommandInvocation invoke: parsed command invocation
+        '''
         self.invokes.append(invoke)
 
     def __iter__(self):
+        '''
+        :returns: an iterator for the :class:`CommandInvocation` instances
+        '''
         return iter(self.invokes)
 
     def __nonzero__(self):
+        '''
+        :returns bool: :const:`True` if there is at least 1 parsed command
+            invocation, :const:`False` otherwise
+        '''
         return len(self.invokes) > 0
 
     def __len__(self):
+        '''
+        :returns int: the number of command invocations
+        '''
         return len(self.invokes)
-
 
 
 class CommandInvocation(object):
@@ -261,7 +285,7 @@ class CommandInvocation(object):
         self.stdin = stdin
         #: The chain operator, if any is specified: &&, ||, |, ;.
         self.chain = chain
-        #: The resolved pypsi command (:class:`~pypsi.base.Command`)
+        #: The resolved pypsi command (:class:`~pypsi.core.Command`)
         self.cmd = None
         #: The fallback command to use if :attr:`cmd` is :const:`None`.
         self.fallback_cmd = None
@@ -331,8 +355,8 @@ class CommandInvocation(object):
 
         :param str path: file path
         :param str mode: file open mode
-        :param bool safe: whether to use :meth:`pypsi.util.safe_open` instead of
-            the standard :meth:`open` method.
+        :param bool safe: whether to use :meth:`pypsi.util.safe_open` instead
+            of the standard :meth:`open` method.
 
         :raises IORedirectionError: stream could not be opened
         '''
@@ -352,18 +376,8 @@ class CommandInvocation(object):
         Close all streams that were opened.
         '''
 
-        #raise Exception("WTF")
-
-        print("close_streams()", file=sys.stderr)
-
         for fp in (self.stdout, self.stderr, self.stdin):
-            if fp:
-                print("| fp is true:", hasattr(fp, 'close'))
-            else:
-                print("| fp is false:", str(fp))
-
             if fp and hasattr(fp, 'close') and not fp.closed:
-                print("close(", str(fp), ")", file=sys.stderr)
                 fp.close()
 
     def setup_io(self, stdout=None, stderr=None, stdin=None):
@@ -371,11 +385,9 @@ class CommandInvocation(object):
         Setup stdout, stderr, and stdin by proxying the thread local streams.
         '''
 
-        print("setup_io()", file=sys.stderr)
-
         self.stdout = stdout or self.stdout
         self.stderr = stderr or self.stderr
-        self.stdin  = stdin or self.stdin
+        self.stdin = stdin or self.stdin
 
         if self.stdout:
             sys.stdout._proxy(self.stdout)
@@ -437,7 +449,6 @@ class CommandInvocation(object):
         self.setup_io()
         try:
             if self.fallback_cmd:
-                print("Fallack:", self.name, ":", ' '.join(self.args), file=sys.stderr)
                 rc = self.fallback_cmd.fallback(shell, self.name, self.args)
             else:
                 rc = self.cmd.run(shell, self.args)
@@ -517,7 +528,7 @@ class StatementParser(object):
             else:
                 pass
         else:
-            if c in (' ', '\t','\xa0'):
+            if c in (' ', '\t', '\xa0'):
                 self.token = WhitespaceToken(index)
             elif c in ('>', '<', '|', '&', ';'):
                 self.token = OperatorToken(index, c)
@@ -552,7 +563,8 @@ class StatementParser(object):
         :param list tokens: :class:`Token` objects to remove escape sequences
         '''
         for token in tokens:
-            if not isinstance(token, StringToken) or ('\\' not in token.text or token.quote):
+            if not isinstance(token, StringToken) or (
+                    '\\' not in token.text or token.quote):
                 continue
 
             text = ''
@@ -584,7 +596,6 @@ class StatementParser(object):
         for token in tokens:
             if isinstance(token, StringToken):
                 if isinstance(prev, StringToken):
-                    #prev.text += token.text
                     prev.combine_token(token)
                     token = prev
                 else:
@@ -615,7 +626,8 @@ class StatementParser(object):
 
         for token in tokens:
             if cmd:
-                if isinstance(prev, OperatorToken) and prev.operator in ('>', '<', '>>'):
+                if isinstance(prev, OperatorToken) and (
+                        prev.operator in ('>', '<', '>>')):
                     if isinstance(token, StringToken):
                         if prev.operator in ('>', '>>'):
                             cmd.stdout = token.text
@@ -655,7 +667,10 @@ class StatementParser(object):
                                 index=token.index
                             )
 
-                        cmd.stdout = (cmd.stdout, 'w' if token.operator == '>' else 'a')
+                        cmd.stdout = (
+                            cmd.stdout,
+                            'w' if token.operator == '>' else 'a'
+                        )
                         done = False
                     elif token.operator == '<':
                         if cmd.stdin or (len(statement) > 1 and
@@ -672,7 +687,7 @@ class StatementParser(object):
                         done = False
                     else:
                         raise StatementSyntaxError(
-                            message="unknown operator: {}".format(token.operator),
+                            message="unknown operator: " + token.operator,
                             index=token.index
                         )
 
@@ -689,7 +704,8 @@ class StatementParser(object):
                     )
             prev = token
 
-        if isinstance(prev, StringToken) or (isinstance(prev, OperatorToken) and prev.operator == ';'):
+        if isinstance(prev, StringToken) or (
+                isinstance(prev, OperatorToken) and prev.operator == ';'):
             pass
         elif prev:
             raise StatementSyntaxError(
@@ -735,10 +751,10 @@ class Expression(object):
         Create an Expression from a list of strings.
 
         :param list args: arguments
-        :returns: a tuple of ``(remaining, expression)``, where ``remaining`` is
-            the list of remaining string arguments of ``args`` after parsing has
-            completed, and ``expression`` in the parsed :class:`Expression`, or
-            :const:`None` if the expression is invalid.
+        :returns: a tuple of ``(remaining, expression)``, where ``remaining``
+            is the list of remaining string arguments of ``args`` after parsing
+            has completed, and ``expression`` in the parsed
+            :class:`Expression`, or :const:`None` if the expression is invalid.
         '''
         state = 'operand'
         operand = operator = value = None

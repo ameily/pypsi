@@ -1,34 +1,21 @@
 #
-# Copyright (c) 2014, Adam Meily
-# All rights reserved.
+# Copyright (c) 2015, Adam Meily <meily.adam@gmail.com>
+# Pypsi - https://github.com/ameily/pypsi
 #
-# Redistribution and use in source and binary forms, with or without modification,
-# are permitted provided that the following conditions are met:
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
 #
-# * Redistributions of source code must retain the above copyright notice, this
-#   list of conditions and the following disclaimer.
-#
-# * Redistributions in binary form must reproduce the above copyright notice, this
-#   list of conditions and the following disclaimer in the documentation and/or
-#   other materials provided with the distribution.
-#
-# * Neither the name of the {organization} nor the names of its
-#   contributors may be used to endorse or promote products derived from
-#   this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-# ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-from pypsi.base import Command, PypsiArgParser, CommandShortCircuit
+from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
 from pypsi.completers import path_completer
 import time
 import os
@@ -41,7 +28,8 @@ class TailCommand(Command):
     Displays the last N lines of a file to the screen.
     '''
 
-    def __init__(self, name='tail', topic='shell', brief='display the last lines of a file', **kwargs):
+    def __init__(self, name='tail', topic='shell',
+                 brief='display the last lines of a file', **kwargs):
         self.parser = PypsiArgParser(
             prog=name,
             description=brief,
@@ -53,11 +41,13 @@ class TailCommand(Command):
         )
 
         self.parser.add_argument(
-            '-n', '--lines', metavar="N", type=int, default=10, help="number of lines to display"
+            '-n', '--lines', metavar="N", type=int, default=10,
+            help="number of lines to display"
         )
 
         self.parser.add_argument(
-            '-f', '--follow', help="continue to output as file grows", action='store_true'
+            '-f', '--follow', help="continue to output as file grows",
+            action='store_true'
         )
 
         super(TailCommand, self).__init__(
@@ -95,11 +85,10 @@ class TailCommand(Command):
         data = []
         blocks = -1
         num_lines = 0
-        where = 0
 
         with open(fname) as fp:
             # seek to the end and get the number of bytes in the file
-            fp.seek(0,2)
+            fp.seek(0, 2)
             num_bytes = fp.tell()
             bytes_left = num_bytes
 
@@ -111,7 +100,7 @@ class TailCommand(Command):
                     data.insert(0, fp.read(block_size))
                 else:
                     # jump back to the beginning
-                    fp.seek(0,0)
+                    fp.seek(0, 0)
                     # read data
                     data.insert(0, fp.read(num_bytes))
                 num_lines = data[0].count('\n')
@@ -120,11 +109,10 @@ class TailCommand(Command):
 
             return ''.join(data).splitlines()[-lines:]
 
-
     def follow_file(self, fname):
         with open(fname) as fp:
             # jump to the end of the file
-            fp.seek(0,2)
+            fp.seek(0, 2)
             try:
                 while 1:
                     where = fp.tell()

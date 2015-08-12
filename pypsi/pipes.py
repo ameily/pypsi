@@ -2,43 +2,45 @@
 # Copyright (c) 2014, Adam Meily
 # All rights reserved.
 #
-# Redistribution and use in source and binary forms, with or without modification,
-# are permitted provided that the following conditions are met:
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
 #
 # * Redistributions of source code must retain the above copyright notice, this
 #   list of conditions and the following disclaimer.
 #
-# * Redistributions in binary form must reproduce the above copyright notice, this
-#   list of conditions and the following disclaimer in the documentation and/or
-#   other materials provided with the distribution.
+# * Redistributions in binary form must reproduce the above copyright notice,
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
 #
 # * Neither the name of the {organization} nor the names of its
 #   contributors may be used to endorse or promote products derived from
 #   this software without specific prior written permission.
 #
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-# ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
 #
 
 
 import threading
 import sys
+from pypsi.ansi import AnsiCode, AnsiCodes
 
 
 class ThreadLocalStream(object):
     '''
-    A stream wrapper that is thread-local. This class enables thread-based pipes
-    by wrapping :attr:`sys.stdout`, :attr:`sys.stderr`, and :attr:`sys.stdin`
-    and making access to them thread-local. This allows each thread to,
-    potentially, each thread to write to a different stream.
+    A stream wrapper that is thread-local. This class enables thread-based
+    pipes by wrapping :attr:`sys.stdout`, :attr:`sys.stderr`, and
+    :attr:`sys.stdin` and making access to them thread-local. This allows each
+    thread to, potentially, each thread to write to a different stream.
     '''
 
     def __init__(self, target, width=None, isatty=None):
@@ -47,8 +49,8 @@ class ThreadLocalStream(object):
             :attr:`sys.stdout`, :attr:`sys.stderr`, and :attr:`sys.stdin`).
         :param int width: the width of the stream in characters, this attribute
             determines if word wrapping is enabled and how wide the lines are.
-        :param bool isatty: whether the underlying stream is a tty stream, which
-            supports ANSI escape cdes.
+        :param bool isatty: whether the underlying stream is a tty stream,
+            which supports ANSI escape cdes.
         '''
 
         #: A tuple of: (target, width, isatty)
@@ -62,7 +64,8 @@ class ThreadLocalStream(object):
         :returns tuple: (target, width, isatty).
         '''
 
-        return self._proxies.get(threading.current_thread().ident, self._target)
+        return self._proxies.get(threading.current_thread().ident,
+                                 self._target)
 
     def _get_target_stream(self):
         '''
@@ -94,7 +97,7 @@ class ThreadLocalStream(object):
         attrs = ('width', 'isatty', '_proxy', '_unproxy', '_get_target',
                  '_get_target_stream', '_proxies', '_target')
 
-        return True if name in attrs else hasattr(self._get_target_stream(), name)
+        return name in attrs or hasattr(self._get_target_stream(), name)
 
     def _proxy(self, target, width=None, isatty=None):
         '''
@@ -105,7 +108,8 @@ class ThreadLocalStream(object):
         :param bool isatty: whether the target stream is a tty stream.
         '''
 
-        self._proxies[threading.current_thread().ident] = (target, width, isatty)
+        self._proxies[threading.current_thread().ident] = (target, width,
+                                                           isatty)
 
     def _unproxy(self, ident=None):
         '''
@@ -120,76 +124,74 @@ class ThreadLocalStream(object):
         if ident in self._proxies:
             del self._proxies[ident]
 
+    def ansi_format(self, tmpl, **kwargs):
+        '''
+        Format a string that contains ansi code terms. This function allows
+        the following string to be the color red:
 
-        def ansi_format(self, tmpl, **kwargs):
-            '''
-            Format a string that contains ansi code terms. This function allows
-            the following string to be the color red:
+        ``sys.stdout.ansi_format("{red}Hello, {name}{reset}", name="Adam")``
 
-            ``sys.stdout.ansi_format("{red}Hello, {name}{reset}", name="Adam")``
+        The :data:`pypsi.ansi.AnsiCodesSingleton.codes` dict contains all
+        valid ansi escape code terms. If the current stream does not support
+        ansi escape codes, they are dropped from the template prior to
+        printing.
 
-            The :data:`pypsi.format.AnsiCodesSingleton.codes` dict contains all
-            valid ansi escape code terms. If the current stream does not support
-            ansi escape codes, they are dropped from the template prior to
-            printing.
+        :param str tmpl: the string template
+        '''
 
-            :param str tmpl: the string template
-            '''
+        atty = self.isatty()
+        for (name, value) in kwargs.items():
+            if isinstance(value, AnsiCode):
+                kwargs[name] = str(value) if atty else ''
 
-            atty = self.isatty()
-            for (name, value) in kwargs.items():
-                if isinstance(value, AnsiCode):
-                    kwargs[name] = str(value) if atty else ''
+        for (name, code) in AnsiCodes.codes.items():
+            kwargs[name] = code.code if atty else ''
 
-            for (name, code) in AnsiCodes.codes.items():
-                kwargs[name] = code.code if atty else ''
+        return tmpl.format(**kwargs)
 
-            return tmpl.format(**kwargs)
+    def ansi_format_prompt(self, tmpl, **kwargs):
+        '''
+        Format a string that contains ansi code terms. This function allows
+        performs the same formatting as :meth:`ansi_format`, except this is
+        intended for formatting strings in prompt by calling
+        :meth:`pypsi.ansi.AnsiCode.prompt` for each code.
+        '''
 
-        def ansi_format_prompt(self, tmpl, **kwargs):
-            '''
-            Format a string that contains ansi code terms. This function allows
-            performs the same formatting as :meth:`ansi_format`, except this is
-            intended for formatting strings in prompt by calling
-            :meth:`pypsi.stream.AnsiCode.prompt` for each code.
-            '''
+        atty = self.isatty()
+        for (name, value) in kwargs.items():
+            if isinstance(value, AnsiCode):
+                kwargs[name] = value.prompt() if atty else ''
 
-            atty = self.isatty()
-            for (name, value) in kwargs.items():
-                if isinstance(value, AnsiCode):
-                    kwargs[name] = value.prompt() if atty else ''
+        for (name, code) in AnsiCodes.codes.items():
+            kwargs[name] = code.prompt() if atty else ''
 
-            for (name, code) in AnsiCodes.codes.items():
-                kwargs[name] = code.prompt() if atty else ''
+        return tmpl.format(**kwargs)
 
-            return tmpl.format(**kwargs)
+    def render(self, parts, prompt=False):
+        '''
+        Render a list of objects as  single string. This method is the
+        string version of the :meth:`print` method. Also, this method will
+        honor the current thread's :meth:`isatty` when rendering ANSI escape
+        codes.
 
-        def render(self, parts, prompt=False):
-            '''
-            Render a list of objects as  single string. This method is the
-            string version of the :meth:`print` method. Also, this method will
-            honor the current thread's :meth:`isatty` when rendering ANSI escape
-            codes.
-
-            :param list parts: list of object to render.
-            :param bool prompt: whether to render
-                :class:`~pypsi.stream.AnsiCode` objects as prompts or not.
-            :returns str: the rendered string.
-            '''
-            r = []
-            for part in parts:
-                if isinstance(part, AnsiCode):
-                    if self.isatty():
-                        if prompt:
-                            r.append(part.prompt())
-                        else:
-                            r.append(str(part))
-                    elif part.s:
-                        r.append(part.s)
-                else:
-                    r.append(str(part))
-            return ''.join(r)
-
+        :param list parts: list of object to render.
+        :param bool prompt: whether to render
+            :class:`~pypsi.ansi.AnsiCode` objects as prompts or not.
+        :returns str: the rendered string.
+        '''
+        r = []
+        for part in parts:
+            if isinstance(part, AnsiCode):
+                if self.isatty():
+                    if prompt:
+                        r.append(part.prompt())
+                    else:
+                        r.append(str(part))
+                elif part.s:
+                    r.append(part.s)
+            else:
+                r.append(str(part))
+        return ''.join(r)
 
 
 class InvocationThread(threading.Thread):
@@ -212,7 +214,8 @@ class InvocationThread(threading.Thread):
         self.shell = shell
         #: The :class:`~pypsi.cmdline.CommandInvocation` to execute.
         self.invoke = invoke
-        #: Exception info, as returned by :meth:`sys.exc_info` if an exception occurred.
+        #: Exception info, as returned by :meth:`sys.exc_info` if an exception
+        #: occurred.
         self.exc_info = None
         #: The invocation return code.
         self.rc = None

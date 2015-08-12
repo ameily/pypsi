@@ -1,34 +1,34 @@
 #
-# .opyright (c) 2014, Adam Meily
+# Copyright (c) 2014, Adam Meily
 # All rights reserved.
 #
-# Redistribution and use in source and binary forms, with or without modification,
-# are permitted provided that the following conditions are met:
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
 #
 # * Redistributions of source code must retain the above copyright notice, this
 #   list of conditions and the following disclaimer.
 #
-# * Redistributions in binary form must reproduce the above copyright notice, this
-#   list of conditions and the following disclaimer in the documentation and/or
-#   other materials provided with the distribution.
+# * Redistributions in binary form must reproduce the above copyright notice,
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
 #
 # * Neither the name of the {organization} nor the names of its
 #   contributors may be used to endorse or promote products derived from
 #   this software without specific prior written permission.
 #
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-# ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
 #
 
-import sys
 
 '''
 Stream classes for writing to files.
@@ -55,9 +55,9 @@ class AnsiCode(object):
         Wrap non-print-able characters in readline non visible markers. This is
         required if the string is going to be passed into :meth:`input`.
         '''
-        #return "\x01" + self.code + "\x02" + (self.s or '')
         end = "\x01{}\x02".format(self.end_code) if self.end_code else ''
-        return "\x01{code}\x02{s}{end}".format(code=self.code, s=self.s or '', end=end)
+        return "\x01{code}\x02{s}{end}".format(code=self.code, s=self.s or '',
+                                               end=end)
 
     def __str__(self):
         return self.code + (self.s or '') + (self.end_code or '')
@@ -124,3 +124,67 @@ class AnsiCodesSingleton(object):
 #: Global instance for all supported ansi codes (instance of
 #: :class:`AnsiCodesSingleton`)
 AnsiCodes = AnsiCodesSingleton()
+
+
+def ansi_len(value):
+    '''
+    Get the length of the provided `str`, not counting any ansi codes.
+
+    :param str value: the input string
+    '''
+    count = 0
+    esc_code = False
+    for c in value:
+        if c == '\x1b':
+            esc_code = True
+        elif esc_code:
+            if c in 'ABCDEFGHJKSTfmnsulh':
+                esc_code = False
+        else:
+            count += 1
+    return count
+
+
+def ansi_center(s, width):
+    '''
+    Center the provided string for a given width.
+
+    :param str s: the input string
+    :param int width: the desired field width
+    '''
+    count = ansi_len(s)
+    if count >= width:
+        return s
+    diff = (width - count) // 2
+    space = (' '*diff)
+    return space + s + space
+
+
+def ansi_ljust(s, width):
+    '''
+    Left justify an input string, ensuring that it contains width charaters.
+
+    :param str s: the input string
+    :param int width: the desired output width
+    :returns str: the output string
+    '''
+    count = ansi_len(s)
+    if count >= width:
+        return s
+    diff = width - count
+    return s + (' ' * diff)
+
+
+def ansi_rjust(s, width):
+    '''
+    Right justify the input string.
+
+    :param str s: the input string
+    :param int width: the desired width
+    :returns str: the output string
+    '''
+    count = ansi_len(s)
+    if count >= width:
+        return s
+    diff = width - count
+    return (' '*diff) + s

@@ -2,40 +2,41 @@
 # Copyright (c) 2014, Adam Meily
 # All rights reserved.
 #
-# Redistribution and use in source and binary forms, with or without modification,
-# are permitted provided that the following conditions are met:
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
 #
 # * Redistributions of source code must retain the above copyright notice, this
 #   list of conditions and the following disclaimer.
 #
-# * Redistributions in binary form must reproduce the above copyright notice, this
-#   list of conditions and the following disclaimer in the documentation and/or
-#   other materials provided with the distribution.
+# * Redistributions in binary form must reproduce the above copyright notice,
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
 #
 # * Neither the name of the {organization} nor the names of its
 #   contributors may be used to endorse or promote products derived from
 #   this software without specific prior written permission.
 #
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-# ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
 #
 
-from pypsi.base import Plugin, Command
-from pypsi.cmdline import StatementParser, StatementSyntaxError, \
-                          IORedirectionError, CommandNotFoundError
+from pypsi.cmdline import (StatementParser, StatementSyntaxError,
+                           IORedirectionError, CommandNotFoundError)
 from pypsi.namespace import Namespace
 from pypsi.cmdline import StringToken, OperatorToken, WhitespaceToken
 from pypsi.completers import path_completer
 from pypsi.os import is_path_prefix
-from pypsi.stream import AnsiCodes, pypsi_print, AnsiCode
+from pypsi.ansi import AnsiCodes
+from pypsi.core import pypsi_print, Plugin, Command
 from pypsi.pipes import ThreadLocalStream, InvocationThread
 import readline
 import sys
@@ -44,17 +45,18 @@ import os
 
 class Shell(object):
     '''
-    The command line interface that the user interacts with. All shell's need to
-    inherit this base class.
+    The command line interface that the user interacts with. All shell's need
+    to inherit this base class.
     '''
 
     def __init__(self, shell_name='pypsi', width=79, exit_rc=-1024, ctx=None):
         '''
-        Subclasses need to call the Shell constructor to properly initialize it.
+        Subclasses need to call the Shell constructor to properly initialize
+        it.
 
         :param str shell_name: the name of the shell; used in error messages
-        :param int exit_rc: the exit return code that is returned from a command
-            when the shell needs to end execution
+        :param int exit_rc: the exit return code that is returned from a
+            command when the shell needs to end execution
         :param pypsi.namespace.Namespace ctx: the base context
         '''
         self.real_stdout = sys.stdout
@@ -110,7 +112,8 @@ class Shell(object):
 
     def register(self, obj):
         '''
-        Register a :class:`~pypsi.base.Command` or a :class:`~pypsi.base.Plugin`.
+        Register a :class:`~pypsi.core.Command` or a
+        :class:`~pypsi.core.Plugin`.
         '''
 
         if isinstance(obj, Command):
@@ -120,10 +123,12 @@ class Shell(object):
             self.plugins.append(obj)
             if obj.preprocess is not None:
                 self.preprocessors.append(obj)
-                self.preprocessors = sorted(self.preprocessors, key=lambda x: x.preprocess)
+                self.preprocessors = sorted(self.preprocessors,
+                                            key=lambda x: x.preprocess)
             if obj.postprocess is not None:
                 self.postprocessors.append(obj)
-                self.postprocessors = sorted(self.postprocessors, key=lambda x: x.postprocess)
+                self.postprocessors = sorted(self.postprocessors,
+                                             key=lambda x: x.postprocess)
 
         obj.setup(self)
         return 0
@@ -249,7 +254,8 @@ class Shell(object):
         # Setup the invocations
         for invoke in statement:
             try:
-                # Open any and all I/O redirections and resolve the pypsi comand.
+                # Open any and all I/O redirections and resolve the pypsi
+                # comand.
                 invoke.setup(self)
             except Exception as e:
                 for sub in statement:
@@ -283,7 +289,6 @@ class Shell(object):
                     # Set the current invocation's stdin to the last
                     # invocation's stdout.
                     invoke.stdin = stdin
-                    print(">>", invoke.name, "--", str(invoke.stdin), ":", str(invoke.stdout))
                 else:
                     # We were not in a pipe
                     threads = []
@@ -349,12 +354,12 @@ class Shell(object):
 
     def create_pipe_threads(self, pipe):
         '''
-        Given a pipe (list of :class:`~pypsi.cmdline.CommandInvocation` objects)
-        create a thread to execute for each invocation.
+        Given a pipe (list of :class:`~pypsi.cmdline.CommandInvocation`
+        objects) create a thread to execute for each invocation.
 
         :returns tuple: a tuple containing the list of threads
-        (:class:`~pypsi.pipes.CommandThread`) and the last invocation's
-        stdout stream.
+            (:class:`~pypsi.pipes.CommandThread`) and the last invocation's
+            stdout stream.
         '''
 
         threads = []
@@ -404,7 +409,6 @@ class Shell(object):
         loc = None
         args = []
         next_arg = True
-        prev = None
         ret = []
         for token in tokens:
             if isinstance(token, StringToken):
@@ -431,7 +435,6 @@ class Shell(object):
                 if loc == 'name':
                     loc = None
                 next_arg = True
-            prev = token
 
         if loc == 'path':
             ret = path_completer(''.join(args))
@@ -439,7 +442,6 @@ class Shell(object):
             if is_path_prefix(cmd_name):
                 ret = path_completer(cmd_name)
             else:
-                #ret = [cmd for cmd in self.commands if cmd.startswith(prefix)]
                 ret = self.get_command_name_completions(cmd_name)
         else:
             if cmd_name not in self.commands:

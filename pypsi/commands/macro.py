@@ -1,36 +1,23 @@
 #
-# Copyright (c) 2014, Adam Meily
-# All rights reserved.
+# Copyright (c) 2015, Adam Meily <meily.adam@gmail.com>
+# Pypsi - https://github.com/ameily/pypsi
 #
-# Redistribution and use in source and binary forms, with or without modification,
-# are permitted provided that the following conditions are met:
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
 #
-# * Redistributions of source code must retain the above copyright notice, this
-#   list of conditions and the following disclaimer.
-#
-# * Redistributions in binary form must reproduce the above copyright notice, this
-#   list of conditions and the following disclaimer in the documentation and/or
-#   other materials provided with the distribution.
-#
-# * Neither the name of the {organization} nor the names of its
-#   contributors may be used to endorse or promote products derived from
-#   this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-# ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
 from pypsi.plugins.block import BlockCommand
-from pypsi.base import Command, PypsiArgParser, CommandShortCircuit
-from pypsi.format import Table, Column, FixedColumnTable, title_str
+from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
+from pypsi.format import Table, Column, title_str
 import sys
 
 
@@ -103,7 +90,8 @@ class MacroCommand(BlockCommand):
     This command requires the :class:`pypsi.plugins.block.BlockPlugin` plugin.
     '''
 
-    def __init__(self, name='macro', topic='shell', brief="manage registered macros", macros=None, **kwargs):
+    def __init__(self, name='macro', topic='shell',
+                 brief="manage registered macros", macros=None, **kwargs):
         self.parser = PypsiArgParser(
             prog=name,
             description=brief,
@@ -151,7 +139,8 @@ class MacroCommand(BlockCommand):
             if ns.delete:
                 if ns.name in shell.ctx.macros:
                     del shell.ctx.macros[ns.name]
-                    #It gets registered as a command too. See line 202 in this file and register() in shell.py
+                    # It gets registered as a command too. See line 202 in this
+                    # file and register() in shell.py
                     del shell.commands[ns.name]
                 else:
                     self.error(shell, "unknown macro ", ns.name)
@@ -166,17 +155,23 @@ class MacroCommand(BlockCommand):
                     self.error(shell, "unknown macro ", ns.name)
                     rc = -1
             elif ns.list:
-                self.usage_error(shell, "list option does not take an argument")
+                self.usage_error(shell,
+                                 "list option does not take an argument")
             else:
-                if ns.name in shell.commands.keys() and ns.name not in shell.ctx.macros:
-                    self.error(shell, "A macro cannot have the same name as an existing command.")
+                if (ns.name in shell.commands.keys()
+                        and ns.name not in shell.ctx.macros):
+                    self.error(
+                        shell, "A macro cannot have the same name as an ",
+                        "existing command."
+                    )
                     return -1
 
                 self.macro_name = ns.name
                 self.begin_block(shell)
                 if sys.stdin.isatty():
-                    print("Beginning macro, use the '", shell.ctx.block.end_cmd,
-                          "' command to save.", sep='')
+                    print("Beginning macro, use the '",
+                          shell.ctx.block.end_cmd, "' command to save.",
+                          sep='')
 
                 shell.ctx.macro_orig_eof_is_sigint = shell.eof_is_sigint
                 shell.eof_is_sigint = True
@@ -188,27 +183,17 @@ class MacroCommand(BlockCommand):
             chunk_size = 3
 
             tbl = Table(
-                columns=(Column(''), Column(''),Column('', Column.Grow)),
+                columns=(Column(''), Column(''), Column('', Column.Grow)),
                 spacing=4,
                 header=False,
                 width=shell.width
             )
+
             macro_names = list(shell.ctx.macros.keys())
-            for i in range(0,len(macro_names),chunk_size):
+            for i in range(0, len(macro_names), chunk_size):
                 chunk = macro_names[i:i+chunk_size]
                 tbl.extend(chunk)
             tbl.write(sys.stdout)
-
-            '''
-            Old not left justified table
-            '''
-            '''
-            tbl = FixedColumnTable(widths=[shell.width//3]*3)
-            print(title_str("Registered Macros", shell.width))
-            for name in shell.ctx.macros:
-                tbl.add_cell(sys.stdout, name)
-            tbl.flush(sys.stdout)
-            '''
         else:
             self.usage_error(shell, "missing required argument: NAME")
             rc = 1

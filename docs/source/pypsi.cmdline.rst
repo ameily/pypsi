@@ -15,7 +15,7 @@ Commands and expressions
 .. autoclass:: Expression
     :members:
 
-.. autoclass:: CommandParams
+.. autoclass:: CommandInvocation
     :members:
 
 
@@ -53,9 +53,6 @@ Classes
 Statements
 ----------
 
-.. autoclass:: StatementContext
-    :members:
-
 .. autoclass:: StatementParser
     :members:
 
@@ -66,4 +63,7 @@ Exceptions
 ^^^^^^^^^^
 
 .. autoclass:: StatementSyntaxError
+    :members:
+
+.. autoclass:: CommandNotFoundError
     :members:

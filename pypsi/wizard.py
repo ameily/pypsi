@@ -2,30 +2,31 @@
 # Copyright (c) 2014, Adam Meily
 # All rights reserved.
 #
-# Redistribution and use in source and binary forms, with or without modification,
-# are permitted provided that the following conditions are met:
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
 #
 # * Redistributions of source code must retain the above copyright notice, this
 #   list of conditions and the following disclaimer.
 #
-# * Redistributions in binary form must reproduce the above copyright notice, this
-#   list of conditions and the following disclaimer in the documentation and/or
-#   other materials provided with the distribution.
+# * Redistributions in binary form must reproduce the above copyright notice,
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
 #
 # * Neither the name of the {organization} nor the names of its
 #   contributors may be used to endorse or promote products derived from
 #   this software without specific prior written permission.
 #
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-# ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
 #
 
 '''
@@ -36,14 +37,19 @@ import os
 import readline
 import re
 from pypsi.cmdline import StatementParser, StringToken
-from pypsi.stream import AnsiCodes
+from pypsi.ansi import AnsiCodes
 from pypsi.format import title_str
 from pypsi.namespace import Namespace
 
 
 HOSTNAME_RE = re.compile(r'^[a-zA-Z0-9.\-]+$')
-IPV4_RE = re.compile(r'^[1-9](?:[0-9]{0,2})\.(?:[0-9]{1,3})\.(?:[0-9]{1,3})\.(?:[0-9]{1,3})(?:/\d{1,2})?$')
-MODULE_NAME_RE = re.compile(r'^(?:[a-zA-Z_][a-zA-Z0-9_]*)(?:\.[a-zA-Z_][a-zA-Z0-9_]*)*')
+IPV4_RE = re.compile(
+    r'^[1-9](?:[0-9]{0,2})\.(?:[0-9]{1,3})\.(?:[0-9]{1,3})\.(?:[0-9]{1,3})'
+    r'(?:/\d{1,2})?$'
+)
+MODULE_NAME_RE = re.compile(
+    r'^(?:[a-zA-Z_][a-zA-Z0-9_]*)(?:\.[a-zA-Z_][a-zA-Z0-9_]*)*'
+)
 PACKAGE_NAME_RE = re.compile(r'^[a-zA-Z_][a-zA-Z0-9_]+$')
 
 
@@ -57,7 +63,6 @@ def required_validator(ns, value):
     '''
     if value is None:
         raise ValueError("Value is required")
-
 
     if not isinstance(value, str):
         return value
@@ -120,7 +125,8 @@ def directory_validator(ns, value):
 
 def hostname_or_ip_validator(ns, value):
     '''
-    Network hostname or IPv4 address validator. Raises ValueError on validation error.
+    Network hostname or IPv4 address validator. Raises ValueError on validation
+    error.
 
     :param pypsi.namespace.Namespace ns: active namespace
     :param value: input value
@@ -189,6 +195,7 @@ def package_name_validator(type_str):
         return value
     return validator
 
+
 def choice_validator(choices):
     '''
     String choice validator. Raises ValueError if input isn't a valid choice.
@@ -211,6 +218,7 @@ def choice_validator(choices):
         return value
     return validator
 
+
 def boolean_validator(ns, value):
     '''
     Boolean validator. Raises ValueError if input isn't a boolean string.
@@ -229,6 +237,7 @@ def boolean_validator(ns, value):
             return False
     raise ValueError("Value is not true or false")
 
+
 def lowercase_validator(ns, value):
     '''
     Converts input string to lowercase.
@@ -241,18 +250,19 @@ def lowercase_validator(ns, value):
     return value.lower() if value else ''
 
 
-
 class WizardStep(object):
     '''
     A single input step in a prompt wizard.
     '''
 
-    def __init__(self, id, name, help, default=None, completer=None, validators=None):
+    def __init__(self, id, name, help, default=None, completer=None,
+                 validators=None):
         '''
         :param str id: the step io, used for referencing the step's value
         :param str name: the name to display for input to the user
         :param str help: the help message to display to the user
-        :param str default: the default value if the user immediately hits "Return"
+        :param str default: the default value if the user immediately hits
+            "Return"
         :param completer: a completion function
         :param validators: a single or a list of validators
         '''
@@ -294,15 +304,15 @@ class WizardStep(object):
 
     def complete(self, wizard, args, prefix):
         '''
-        Get the list of possible completions for input. This will call the local
-        completer function (``self.completer`` with the arguments:
+        Get the list of possible completions for input. This will call the
+        local completer function (``self.completer`` with the arguments:
         (``wizard``, ``args``, ``prefix``).
 
          - wizard (:class:`PromptWizard`) - the active wizard
          - args (``list``) - the list of input arguments
          - prefix (``str``) - the input prefix
 
-        This function mirrors the command :meth:`~pypsi.base.Command.complete`
+        This function mirrors the command :meth:`~pypsi.core.Command.complete`
         function.
         '''
 
@@ -356,15 +366,14 @@ class PromptWizard(object):
 
         if print_header:
             print(
-                title_str("Entering " + self.name + " Wizard", width=shell.width, box=True, align='center'),
+                title_str("Entering " + self.name + " Wizard",
+                          width=shell.width, box=True, align='center'),
                 '\n',
                 self.description, '\n\n',
                 "To exit, enter either Ctrl+C, Ctrl+D, or 'quit'. For help "
-                "about the current step, enter 'help' or '?'.",
-                sep=''
+                "about the current step, enter 'help' or '?'.", sep=''
             )
 
-        running = True
         for step in self.steps:
             self.active_step = step
             valid = False
@@ -382,12 +391,14 @@ class PromptWizard(object):
                     raw = input(prompt)
                 except (KeyboardInterrupt, EOFError):
                     print()
-                    print(AnsiCodes.red, "Wizard canceled", AnsiCodes.reset, sep='')
+                    print(AnsiCodes.red, "Wizard canceled", AnsiCodes.reset,
+                          sep='')
                     readline.set_completer(self.old_completer)
                     return None
 
                 if raw.lower() == 'quit':
-                    print(AnsiCodes.red, "Exiting wizard", AnsiCodes.reset, sep='')
+                    print(AnsiCodes.red, "Exiting wizard", AnsiCodes.reset,
+                          sep='')
                     readline.set_completer(self.old_completer)
                     return None
                 elif raw.lower() in ('?', 'help'):
@@ -399,8 +410,10 @@ class PromptWizard(object):
                     try:
                         value = step.validate(self.values, raw)
                     except ValueError as e:
-                        print(AnsiCodes.red, "Error: ", str(e), AnsiCodes.reset, sep='')
-                        print(AnsiCodes.yellow, step.name, ": ", step.help, AnsiCodes.reset, sep='')
+                        print(AnsiCodes.red, "Error: ", str(e),
+                              AnsiCodes.reset, sep='')
+                        print(AnsiCodes.yellow, step.name, ": ", step.help,
+                              AnsiCodes.reset, sep='')
                     else:
                         self.values[step.id] = value
                         valid = True
@@ -424,6 +437,8 @@ class PromptWizard(object):
             tokens = self.parser.condense(tokens)
             args = [t.text for t in tokens if isinstance(t, StringToken)]
             self.completions = self.active_step.complete(self, args, prefix)
-        return self.completions[state] if state < len(self.completions) else None
 
-
+        if state < len(self.completions):
+            return self.completions[state]
+        else:
+            return None
