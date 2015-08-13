@@ -44,14 +44,14 @@ if platform.system() == 'Windows':
 setup(
     name='pypsi',
     version=pypsi.__release__,
-    license='BSD 3-Clause',
+    license='BSD ISC',
     description='Python Pluggable Shell Interface',
     long_description=read("README.rst"),
     author='Adam Meily',
     author_email='meily.adam@gmail.com',
     url='https://github.com/ameily/pypsi',
     download_url='https://pypi.python.org/pypi/pypsi',
-    packages=['pypsi', 'pypsi.commands', 'pypsi.plugins'],
+    packages=['pypsi', 'pypsi.commands', 'pypsi.plugins', 'pypsi.os'],
     install_requires=install_requires,
     keywords=[
         'cli', 'command line', 'command line interface', 'shell', 'terminal',
@@ -71,4 +71,3 @@ setup(
         'Topic :: Terminals'
     ]
 )
-
