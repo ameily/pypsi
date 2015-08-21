@@ -20,6 +20,8 @@ Windows specific functions
 '''
 
 import os
+import sys
+
 
 __all__ = [
     'find_bins_in_path',
@@ -87,3 +89,35 @@ def path_completer(path):
     files = sorted(files)
     dirs = sorted(dirs)
     return dirs + files
+
+
+if sys.platform == 'win32':
+    #
+    # HACK
+    #
+    # There is a race condition when calling Popen from multiple threads on
+    # Windows. The problem is that Popen makes handles inheritable prior to
+    # calling CreateProcess, which if Popen is being called simultaneously,
+    # will cause undesired handles to leak into subprocesses. When dealing with
+    # pipes, like Pypsi does, this is very problematic because processes
+    # reading from stdin will not terminate since their stdin handle is still
+    # open.
+    #
+    # The solution is to put a lock around calls to Popen. This way, creating
+    # processes are essentially atomic and handles will not leak.
+    #
+    # More information can be found here: http://bugs.python.org/issue24909
+    #
+
+    import threading
+    import subprocess
+
+    win32_popen_lock = threading.Lock()
+    popen = subprocess.Popen
+
+    def PopenWithLock(*args, **kwargs):
+        with win32_popen_lock:
+            child = popen(*args, **kwargs)
+        return child
+
+    subprocess.Popen = PopenWithLock
