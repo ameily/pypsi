@@ -24,8 +24,7 @@ import codecs
 import io
 
 
-def safe_open(file, mode='r', chunk_size=4096, ascii_is_utf8=True,
-              errors='ignore'):
+def safe_open(file, mode='r', chunk_size=4096, ascii_is_utf8=True, **kwargs):
     '''
     Detect a file's encoding, skip any Byte Order Marks that the are located
     at the beginning of the file, and returns the opened file stream. The
@@ -56,8 +55,8 @@ def safe_open(file, mode='r', chunk_size=4096, ascii_is_utf8=True,
             header = fp.read(chunk_size)
     else:
         # read the header and move back to the beginning of the file
-        header = fp.read(chunk_size)
-        fp.seek(0)
+        header = file.read(chunk_size)
+        file.seek(0)
 
     if not header:
         return open(file, mode) if is_path else file
@@ -70,9 +69,9 @@ def safe_open(file, mode='r', chunk_size=4096, ascii_is_utf8=True,
         enc = 'utf-8'
 
     if is_path:
-        fp = codecs.open(file, mode, encoding=enc, errors=errors)
+        fp = codecs.open(file, mode, encoding=enc, **kwargs)
     else:
-        fp = io.TextIOWrapper(file, mode, encoding=enc, errors=errors)
+        fp = io.TextIOWrapper(file, encoding=enc, **kwargs)
 
     for bom in (codecs.BOM_UTF32_BE, codecs.BOM_UTF32_LE, codecs.BOM_UTF8,
                 codecs.BOM_UTF16_BE, codecs.BOM_UTF16_LE):
