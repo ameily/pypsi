@@ -7,7 +7,7 @@ Command API
 -----------
 
 All Pypsi commands will inherit from the base command class:
-:class:`pypsi.base.Command`. Each command has several attributes that determines
+:class:`pypsi.core.Command`. Each command has several attributes that determines
 how the command is added to the shell. These are:
 
  * ``name`` - the command name that the user will type. Commands may contain
@@ -24,7 +24,7 @@ attribtues in their constructor so that a shell may customize the command when
 loading. However, this is not a requirement. All builtin commands
 accept all of the attribute in their constructor.
 
-The command hook :meth:`~pypsi.base.Command.setup` is called once the command
+The command hook :meth:`~pypsi.core.Command.setup` is called once the command
 has been created and added to the shell. The setup hook is where setup and
 initialization code will reside. Commands should not hold any configuration or
 state information in the command itself. However, use the
@@ -37,27 +37,27 @@ information in the shell's context is done for two reasons:
  * Multiple instances of a shell can contain share the same command instance.
 
 When a command is executed by the user, the command's
-:meth:`~pypsi.base.Command.run` function is called.
+:meth:`~pypsi.core.Command.run` function is called.
 
 Accepting Arguments
 ~~~~~~~~~~~~~~~~~~~
 
 All of Pypsi's bultin commands use a wrapped version of Python's :mod:`argparse`
-module for argument parsing. The class :class:`~pypsi.base.PypsiArgParser`
+module for argument parsing. The class :class:`~pypsi.core.PypsiArgParser`
 wraps :class:`~argparse.ArgumentParser` to change the parser's behavior when the
 user passes invalid arguments or asks for help. By default, the base
 ArgumentParser will exit the entire program, which isn't ideal for Pypsi.
 
-The only difference between the Pypsi :class:`pypsi.base.PypsiArgParser` and
+The only difference between the Pypsi :class:`pypsi.core.PypsiArgParser` and
 :mod:`argparse.ArgumentParser` is that the former will raise a
-:class:`pypsi.base.CommandShortCircuit` exception when the arguments aren't
+:class:`pypsi.core.CommandShortCircuit` exception when the arguments aren't
 valid or the user requests help (via ``-h`` or ``--help``.)
 
 Printing
 ~~~~~~~~
 
 Pypsi wraps the :meth:`print` function with its own
-:meth:`~pypsi.stream.pypsi_print` function, which handles automatic word
+:meth:`~pypsi.ansi.pypsi_print` function, which handles automatic word
 wrapping and smart coloring.
 
 Colors
@@ -66,10 +66,10 @@ Colors
 Pypsi supplies color constants that can be printed to the screen. Colors will
 only print if the output stream is a terminal (ie. the stream's ``isatty()``
 returns :const:`True`.) This means that commands don't need to handle printing
-colors and not printing colors, the :meth:`~pypsi.stream.pypsi_print` function
+colors and not printing colors, the :meth:`~pypsi.core.pypsi_print` function
 handles it.
 
-Color codes are held in the :const:`~pypsi.stream.AnsiCodes` object. Using this
+Color codes are held in the :const:`~pypsi.ansi.AnsiCodes` object. Using this
 constant is straight forward. In this example, the text "Hello, World!" is
 printed in red and then in green::
 
@@ -82,7 +82,7 @@ user.
 Errors
 """"""
 
-To ensure uniform error messages, the :meth:`~pypsi.base.Command.error` function
+To ensure uniform error messages, the :meth:`~pypsi.core.Command.error` function
 is provided to correctly format error messages. With color enabled, this will
 print in red: ``<command_name>: error: <error_message>``.
 
@@ -94,7 +94,7 @@ This example is the source code of the
 into it to the screen::
 
     # Pypsi imports
-    from pypsi.base import Command, PypsiArgParser, CommandShortCircuit
+    from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
     import argparse
 
     # Custom usage message
@@ -145,7 +145,7 @@ The echo command only accepts a single argument: ``-n|--nolf``. The command
 itself mirrors a simple Python command line application. This means that porting
 existing applications to Pypsi commands is extremely easy. Also, notice the
 ``try...except...`` around ``parser.parse_args``. This is catching the
-:class:`~pypsi.base.CommandShortCircuit` exception, which in this case will be
+:class:`~pypsi.core.CommandShortCircuit` exception, which in this case will be
 thrown if the user enters any of the following:
 
  * ``-h``, ``--help`` - print usage information

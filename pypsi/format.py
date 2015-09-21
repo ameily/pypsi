@@ -1,98 +1,27 @@
 #
-# Copyright (c) 2014, Adam Meily
-# All rights reserved.
+# Copyright (c) 2015, Adam Meily <meily.adam@gmail.com>
+# Pypsi - https://github.com/ameily/pypsi
 #
-# Redistribution and use in source and binary forms, with or without modification,
-# are permitted provided that the following conditions are met:
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
 #
-# * Redistributions of source code must retain the above copyright notice, this
-#   list of conditions and the following disclaimer.
-#
-# * Redistributions in binary form must reproduce the above copyright notice, this
-#   list of conditions and the following disclaimer in the documentation and/or
-#   other materials provided with the distribution.
-#
-# * Neither the name of the {organization} nor the names of its
-#   contributors may be used to endorse or promote products derived from
-#   this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-# ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
 '''
-Provides functions and classes for dealing with command line input, output, and
-ansi codes.
+Provides functions and classes for dealing with command line input and output.
 '''
 
 
-def ansi_len(value):
-    '''
-    Get the length of the provided `str`, not counting any ansi codes.
+from pypsi.ansi import ansi_ljust, ansi_rjust, ansi_center, ansi_len
 
-    :param str value: the input string
-    '''
-    count = 0
-    esc_code = False
-    for c in value:
-        if c == '\x1b':
-            esc_code = True
-        elif esc_code:
-            if c in 'ABCDEFGHJKSTfmnsulh':
-                esc_code = False
-        else:
-            count += 1
-    return count
-
-def ansi_center(s, width):
-    '''
-    Center the provided string for a given width.
-
-    :param str s: the input string
-    :param int width: the desired field width
-    '''
-    count = ansi_len(s)
-    if count >= width:
-        return s
-    diff = (width - count) // 2
-    space = (' '*diff)
-    return space + s + space
-
-def ansi_ljust(s, width):
-    '''
-    Left justify an input string, ensuring that it contains width charaters.
-
-    :param str s: the input string
-    :param int width: the desired output width
-    :returns str: the output string
-    '''
-    count = ansi_len(s)
-    if count >= width:
-        return s
-    diff = width - count
-    return s + (' ' * diff)
-
-def ansi_rjust(s, width):
-    '''
-    Right justify the input string.
-
-    :param str s: the input string
-    :param int width: the desired width
-    :returns str: the output string
-    '''
-    count = ansi_len(s)
-    if count >= width:
-        return s
-    diff = width - count
-    return (' '*diff) + s
 
 def get_lines(txt):
     '''
@@ -180,14 +109,16 @@ def highlight(target, term, color='1;32'):
 
     s = target.lower()
     t = term.lower()
-    #print("term:", term)
+
     start = 0
 
     end = s.find(t)
     ret = ''
     while end >= 0:
         ret += target[start:end]
-        ret += '\x1b[{color}m{term}\x1b[0m'.format(color=color, term=target[end:end+len(term)])
+        ret += '\x1b[{color}m{term}\x1b[0m'.format(
+            color=color, term=target[end:end+len(term)]
+        )
         start = end + len(term)
         end = s.find(t, start)
 
@@ -218,7 +149,18 @@ def file_size_str(value):
 
 
 def obj_str(obj, max_children=3, stream=None):
-    ## TODO, remove stream
+    '''
+    Pretty format an object with colored type information. Examples:
+
+    - `list`: ``list( item1, item2, item3, ...)``
+    - `bool`: ``bool( True )``
+    - `None`: ``<null>``
+
+    :param object obj: object to format
+    :param int max_children: maximum number of children to print for lists
+    :param file stream: target stream, used to determine if color will be used.
+    :returns str: the formatted object
+    '''
     tmpl = "{blue}{type}({reset} {value} {blue}){reset}"
     format_value = None
     if stream:
@@ -240,19 +182,22 @@ def obj_str(obj, max_children=3, stream=None):
 
         return format_value(
             "list",
-            ', '.join([obj_str(child, max_children=max_children, stream=stream) for child in obj])
+            ', '.join([
+                obj_str(child, max_children=max_children, stream=stream)
+                for child in obj
+            ])
         )
-    elif obj == None:
-        return stream.ansi_format("{blue}<null>{reset}") if stream else "<null>"
+    elif obj is None:
+        if stream:
+            return stream.ansi_format("{blue}<null>{reset}")
+        else:
+            return "<null>"
     elif isinstance(obj, str):
         return obj
     return str(obj)
 
 
 def title_str(title, width=80, align='left', hr='=', box=False):
-    '''
-
-    '''
     lines = []
     if box:
         border = '+' + ('-'*(width-2)) + '+'
@@ -276,7 +221,6 @@ def title_str(title, width=80, align='left', hr='=', box=False):
             lines.append(ansi_rjust(title, width))
         lines.append(hr * width)
     return '\n'.join(lines)
-
 
 
 class Table(object):
@@ -316,8 +260,8 @@ class Table(object):
 
     def extend(self, *args):
         '''
-        Add multiple rows to the table, each argument should be a list of column
-        values.
+        Add multiple rows to the table, each argument should be a list of
+        column values.
         '''
         for row in args:
             self.append(*row)
@@ -342,8 +286,9 @@ class Table(object):
                 if(ansi_len(value) <= col.width):
                     fp.write(ansi_ljust(value, col.width))
                 else:
-                    wrapped_line = [line for line in wrap_line(value, col.width)]
-                    #word_wrap(value, col.width).split('\n')
+                    wrapped_line = [
+                        line for line in wrap_line(value, col.width)
+                    ]
                     if len(wrapped_line) > 1:
                         overflow[column_idx] = ' '.join(wrapped_line[1:])
                     fp.write(wrapped_line[0])
@@ -355,7 +300,7 @@ class Table(object):
             if ''.join(overflow):
                 write_overflow(overflow)
 
-        total = sum([ col.width for col in self.columns ])
+        total = sum([col.width for col in self.columns])
 
         # Resize columns if last too wide
         # TODO: Smarter column resizing, maybe pick widest column
@@ -364,7 +309,10 @@ class Table(object):
 
         for col in self.columns:
             if col.mode == Column.Grow:
-                remaining = self.width - ((len(self.columns)-1)*self.spacing) - total
+                remaining = (
+                    self.width - ((len(self.columns) - 1) * self.spacing)
+                    - total
+                )
                 col.width += remaining
 
         if self.header:
@@ -383,8 +331,6 @@ class Table(object):
             write_overflow(row)
 
         return 0
-
-
 
 
 class Column(object):
@@ -423,20 +369,19 @@ class FixedColumnTable(object):
         '''
         Print a single row.
 
-        :param file fp: the output file stream (usually sys.stdout or sys.stderr)
+        :param file fp: the output file stream (usually sys.stdout or
+            sys.stderr)
         :param list args: the column values for the row
         '''
         for (width, value) in zip(self.widths, args):
             fp.write(ansi_ljust(value, width))
-            #diff = width - len(value)
-            #if diff > 0:
-            #    fp.write(' ' * diff)
+
         fp.write('\n')
 
     def add_cell(self, fp, col):
         '''
-        Add a single cell to the table. The current row is printed if the column
-        completes the row.
+        Add a single cell to the table. The current row is printed if the
+        column completes the row.
         '''
         self.buffer.append(col)
         if len(self.buffer) == len(self.widths):

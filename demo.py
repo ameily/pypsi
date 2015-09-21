@@ -1,32 +1,20 @@
 #
-# Copyright (c) 2014, Adam Meily
-# All rights reserved.
+# Copyright (c) 2015, Adam Meily <meily.adam@gmail.com>
+# Pypsi - https://github.com/ameily/pypsi
 #
-# Redistribution and use in source and binary forms, with or without modification,
-# are permitted provided that the following conditions are met:
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
 #
-# * Redistributions of source code must retain the above copyright notice, this
-#   list of conditions and the following disclaimer.
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
-# * Redistributions in binary form must reproduce the above copyright notice, this
-#   list of conditions and the following disclaimer in the documentation and/or
-#   other materials provided with the distribution.
-#
-# * Neither the name of the {organization} nor the names of its
-#   contributors may be used to endorse or promote products derived from
-#   this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-# ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
+
 
 '''
 This is an example Pypsi shell using several key features of the Pypsi API and
@@ -36,7 +24,7 @@ easily modified.
 '''
 
 from pypsi.shell import Shell
-from pypsi.base import Command
+from pypsi.core import Command
 from pypsi.plugins.cmd import CmdPlugin
 from pypsi.plugins.block import BlockPlugin
 from pypsi.plugins.hexcode import HexCodePlugin
@@ -62,8 +50,11 @@ from pypsi.format import Table, Column, title_str
 from pypsi.completers import path_completer
 
 
-from pypsi.stream import AnsiCodes
+from pypsi.ansi import AnsiCodes
 from pypsi import topics
+
+from pypsi.os import find_bins_in_path
+
 import sys
 
 ShellTopic = """These commands are built into the Pypsi shell (all glory and honor to the pypsi shell).
@@ -81,7 +72,7 @@ class WizardCommand(Command):
     def __init__(self, name='wizard', **kwargs):
         super(WizardCommand, self).__init__(name=name, **kwargs)
 
-    def run(self, shell, args, ctx):
+    def run(self, shell, args):
         ns = ConfigWizard.run(shell)
         if ns:
             print()
@@ -161,7 +152,9 @@ class DemoShell(Shell):
     block_plugin = BlockPlugin()
     hexcode_plugin = HexCodePlugin()
     macro_cmd = MacroCommand()
-    system_cmd = SystemCommand()
+
+    # Drop commands to cmd.exe if the platform is Windows
+    system_cmd = SystemCommand(use_shell=(sys.platform == 'win32'))
     ml_plugin = MultilinePlugin()
     xargs_cmd = XArgsCommand()
     exit_cmd = ExitCommand()
@@ -204,6 +197,8 @@ class DemoShell(Shell):
         # Add the I/O redirection topic
         self.help_cmd.add_topic(self, topics.IoRedirection)
 
+        self._sys_bins = None
+
     def on_cmdloop_begin(self):
         print(AnsiCodes.clear_screen)
         if self.tip_cmd.motd:
@@ -238,6 +233,15 @@ class DemoShell(Shell):
     def do_cmdout(self, args):
         print("do_cmdout(", args, ")")
         return 0
+
+    def get_command_name_completions(self, prefix):
+        if not self._sys_bins:
+            self._sys_bins = find_bins_in_path()
+
+        return sorted(
+            [name for name in self.commands if name.startswith(prefix)] +
+            [name for name in self._sys_bins if name.startswith(prefix)]
+        )
 
 
 if __name__ == '__main__':

@@ -1,37 +1,23 @@
 #
-# Copyright (c) 2014, Adam Meily
-# All rights reserved.
+# Copyright (c) 2015, Adam Meily <meily.adam@gmail.com>
+# Pypsi - https://github.com/ameily/pypsi
 #
-# Redistribution and use in source and binary forms, with or without modification,
-# are permitted provided that the following conditions are met:
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
 #
-# * Redistributions of source code must retain the above copyright notice, this
-#   list of conditions and the following disclaimer.
-#
-# * Redistributions in binary form must reproduce the above copyright notice, this
-#   list of conditions and the following disclaimer in the documentation and/or
-#   other materials provided with the distribution.
-#
-# * Neither the name of the {organization} nor the names of its
-#   contributors may be used to endorse or promote products derived from
-#   this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-# ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-from pypsi.base import Command, Plugin, PypsiArgParser, CommandShortCircuit
+from pypsi.core import Command, Plugin, PypsiArgParser, CommandShortCircuit
 from pypsi.utils import safe_open
 from pypsi.completers import path_completer
-import argparse
 import readline
 import os
 
@@ -47,7 +33,8 @@ class HistoryCommand(Command):
     Interact with and manage the shell's history.
     '''
 
-    def __init__(self, name='history', brief='manage shell history', topic='shell', **kwargs):
+    def __init__(self, name='history', brief='manage shell history',
+                 topic='shell', **kwargs):
         self.setup_parser(brief)
         super(HistoryCommand, self).__init__(
             name=name, usage=self.parser.format_help(), topic=topic,
@@ -56,11 +43,12 @@ class HistoryCommand(Command):
 
     def complete(self, shell, args, prefix):
         if len(args) == 1:
-            return [x for x in ('clear', 'delete', 'list', 'load', 'save') if x.startswith(prefix)]
+            return [x for x in ('clear', 'delete', 'list', 'load', 'save')
+                    if x.startswith(prefix)]
 
         if len(args) == 2:
             if args[0] == 'save' or args[0] == 'load':
-                return path_completer(shell, args, prefix)
+                return path_completer(args[-1])
         return []
 
     def setup_parser(self, brief):
@@ -70,16 +58,20 @@ class HistoryCommand(Command):
             usage=CmdUsage
         )
 
-        subcmd = self.parser.add_subparsers(prog='history', dest='subcmd', metavar='subcmd')
+        subcmd = self.parser.add_subparsers(prog='history', dest='subcmd',
+                                            metavar='subcmd')
         subcmd.required = True
 
         ls = subcmd.add_parser('list', help='list history events')
         ls.add_argument(
-            'count', metavar='N', type=int, help='number of events to display', nargs='?'
+            'count', metavar='N', type=int, help='number of events to display',
+            nargs='?'
         )
 
         subcmd.add_parser('clear', help='remove all history events')
-        delete = subcmd.add_parser('delete', help='delete single history event')
+        delete = subcmd.add_parser(
+            'delete', help='delete single history event'
+        )
         delete.add_argument(
             'index', metavar='N', type=int, help='remove item at index N',
         )
@@ -91,13 +83,13 @@ class HistoryCommand(Command):
 
         load = subcmd.add_parser('load', help='load history from a file')
         load.add_argument(
-            'path', metavar='PATH', help='load history from file located at PATH'
+            'path', metavar='PATH',
+            help='load history from file located at PATH'
         )
 
-
-    def run(self, shell, args, ctx):
+    def run(self, shell, args):
         try:
-            ns = self.parser.parse_args(args) #(shell, args)
+            ns = self.parser.parse_args(args)
         except CommandShortCircuit as e:
             return e.code
 
@@ -146,7 +138,9 @@ class HistoryCommand(Command):
                            os.strerror(e.errno), '\n')
                 rc = -1
             except UnicodeEncodeError:
-                self.error(shell, "error: file contains invalide unicode characters\n")
+                self.error(
+                    shell, "error: file contains invalid unicode characters\n"
+                )
 
         return rc
 
@@ -162,9 +156,9 @@ class HistoryPlugin(Plugin):
 
     def setup(self, shell):
         '''
-        Adds a reference to the current :class:`History` in the shell's context.
-        The history can be accessed by retrieving the ``shell.ctx.history``
-        attribute.
+        Adds a reference to the current :class:`History` in the shell's
+        context. The history can be accessed by retrieving the
+        ``shell.ctx.history`` attribute.
         '''
         shell.register(self.history_cmd)
         if 'history' not in shell.ctx:
@@ -175,10 +169,10 @@ class History(object):
     '''
     Wraps the :mod:`readline` module. Provides the following abilities:
 
-    - Accessing and manipulating history items via :meth:`__getitem__`, 
+    - Accessing and manipulating history items via :meth:`__getitem__`,
       :meth:`__setitem__`, :meth:`__delitem__`, and :meth:`__iter__`. Indexes
       must be :class:`int` and negative indexes are handled and automatically
-      normalized before passing them to :mod:`readline`. :meth:`__getitem__` 
+      normalized before passing them to :mod:`readline`. :meth:`__getitem__`
       also supports slicing, which also normalizes negative indexes.
     - Appending new history items via :meth:`append`.
     - Clearing all history items via :meth:`clear`.
@@ -207,9 +201,12 @@ class History(object):
             if not self.__len__():
                 return []
             start = self.normalize_index(index.start or 0)
-            stop = self.normalize_index((index.stop or self.__len__())-1)
+            stop = self.normalize_index((index.stop or self.__len__()) - 1)
             step = index.step or 1
-            return [readline.get_history_item(i) for i in range(start, stop+1, step)]
+            return [
+                readline.get_history_item(i)
+                for i in range(start, stop+1, step)
+            ]
         else:
             index = self.normalize_index(index)
             return readline.get_history_item(index)
@@ -254,8 +251,8 @@ class History(object):
         Provides a Bash ``![prefix]``-esque interface.
 
         :param str prefix: the prefix to search for
-        :returns str: the event, if found, :const:`None` if no matching event is
-            found
+        :returns str: the event, if found, :const:`None` if no matching event
+            is found
         '''
         for i in range(self.__len__(), 0, -1):
             event = readline.get_history_item(i)

@@ -73,20 +73,20 @@ Variables
     pypsi)> echo My name is $name, and I belong to House $house
 
     My name is Paul, and I belong to House Atredis
-    
+
     pypsi)> var -l
-    
+
     name     Paul
     house    Atredis
-    
+
     pypsi)> var -d name
-    
+
     pypsi)> echo $name
 
     pypsi)> var name = "Paul $house"
-    
+
     pypsi)> echo $name
-    
+
     Paul Atredis
 
 I/O redirection
@@ -95,20 +95,20 @@ I/O redirection
 ::
 
     pypsi)> echo Hello
-    
+
     Hello
-    
+
     pypsi)> echo Hello > output.txt
-    
+
     pypsi)> echo Goodbye
-    
+
     pypsi)> xargs -I{} "echo line: {}" < output.txt
-    
+
     line: Hello
     line: Goodbye
-    
+
     pypsi)> cat output.txt | grep ll
-    
+
     Hello
 
 System commands
@@ -120,17 +120,17 @@ Allows execution of external applications. Command mimics Python's
 ::
 
     pypsi)> ls
-    
+
     pypsi: ls: command not found
-    
+
     pypsi)> system ls
-    
+
     include/
     src/
     README.md
-    
+
     pypsi)> system ls | system grep md
-    
+
     README.md
 
 Fallback command
@@ -144,7 +144,7 @@ any OS installed executables. In this example, the fallback command is
 ::
 
     pypsi)> ls
-    
+
     include/
     src/
     README.md
@@ -155,18 +155,18 @@ Command chaining
 ::
 
     pypsi)> echo Hello && echo --bad-arg && echo goodbye
-    
+
     Hello
     echo: unrecgonized arguments: --bad-arg
-    
+
     pypsi)> echo Hello ; echo --bad-arg ; echo goodbye
-    
+
     Hello
     echo: unrecgonized arguments: --bad-arg
     goodbye
-    
+
     pypsi)> echo --bad-arg || echo first failed
-    
+
     echo: unrecgonized arguments: --bad-arg
     first failed
 
@@ -177,14 +177,14 @@ Multiline commands
 
     pypsi)> echo Hello, \
     > Dave
-    
+
     Hello, Dave
-    
+
     pypsi)> echo This \
     > is \
     > pypsi \
     > and it rocks
-    
+
     This is pypsi and it rocks
 
 Macros
@@ -199,9 +199,9 @@ new commands in the shell.
     > echo Hello, $1
     > echo Goodbye from macro $0
     > end
-    
+
     pypsi)> hello Adam
-    
+
     Hello, Adam
     Goodbye from macro hello
 
@@ -222,42 +222,42 @@ configuration of components that require a substantial amount of input.
 
     To exit, enter either Ctrl+C, Ctrl+D, or 'quit'. For help about the current
     step, enter 'help' or '?'.
-    
+
     IP Address: <enter>
-    
+
     Error: Value is required
     Local IP Address or Host name
-    
+
     IP Address: 192.168.0.10
-    
+
     TCP Port [1337]: <enter>
-    
+
     File path: /var/lo<tab>
-    
-    local/  lock/   log/    
-    
+
+    local/  lock/   log/
+
     File path: /var/log/<tab>
-    
+
     Xorg.1.log        btmp              faillog           upstart/
     Xorg.1.log.old    dist-upgrade/     fontconfig.log    wtmp
-    alternatives.log  distccd.log       fsck/             
-    apt/              dmesg             lastlog           
-    bootstrap.log     dpkg.log          mongodb/          
-    
+    alternatives.log  distccd.log       fsck/
+    apt/              dmesg             lastlog
+    bootstrap.log     dpkg.log          mongodb/
+
     File path: /var/log/dpkg.log
-    
+
     Shell mode [local]: asdf
-    
+
     Error: Invalid choice
-    
+
     Mode of the shell
-    
+
     Shell mode [local]: remote
 
-    Config ID    Config Value                                                       
+    Config ID    Config Value
     ================================================================================
-    ip_addr      172.16.11.204                                                      
-    port         1337                                                               
+    ip_addr      172.16.11.204
+    port         1337
     path         /var/log/dpkg.log
     mode         remote
 
@@ -285,4 +285,4 @@ ease.
 License
 -------
 
-``pypsi`` is released under the BSD 3-Clause license.
+``pypsi`` is released under the ISC premissive license.
