@@ -152,7 +152,9 @@ class DemoShell(Shell):
     block_plugin = BlockPlugin()
     hexcode_plugin = HexCodePlugin()
     macro_cmd = MacroCommand()
-    system_cmd = SystemCommand()
+
+    # Drop commands to cmd.exe if the platform is Windows
+    system_cmd = SystemCommand(use_shell=(sys.platform == 'win32'))
     ml_plugin = MultilinePlugin()
     xargs_cmd = XArgsCommand()
     exit_cmd = ExitCommand()
