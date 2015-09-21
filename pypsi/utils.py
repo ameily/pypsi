@@ -24,81 +24,60 @@ import codecs
 import io
 
 
-def safe_open(path, mode='r', chunk_size=4096, ascii_is_utf8=True,
+def safe_open(file, mode='r', chunk_size=4096, ascii_is_utf8=True,
               errors='ignore'):
     '''
-    Retrieves a file's encoding and returns the opened file. If the opened file
-    begins with a BOM (Byte Order Mark), it is read before the file object is
-    returned. This allows callers to not have to handle BOMs of files.
+    Detect a file's encoding, skip any Byte Order Marks that the are located
+    at the beginning of the file, and returns the opened file stream. The
+    `file` argument can be either a string containing a path to the file or
+    an already open binary file-like object.
 
-    :param str path: file path to open
+    :param str file: path to the file or a binary file-like object
     :param str mode: the mode to open the file (see :func:`open`)
     :param int chunk_size: number of bytes to read to determine encoding
-    :param bool ascii_is_utf8: whether to force UTF-8 encoding if the file is \
-        dected as ASCII
-    :param str errors: determines how errors are handled and is passed to \
-        the call to :func:`open`.
-    :returns file: the opened file object
+    :param bool ascii_is_utf8:
+        whether to force UTF-8 encoding if the file is dected as ASCII
+    :param str errors:
+        determines how errors are handled and is passed to the call to
+        :func:`open`.
+    :returns file: the opened file stream
     '''
 
+    is_path = isinstance(file, str)
+    header = None
+
     if 'b' in mode:
-        return open(path, mode)
+        # open the file as binary
+        return open(file, mode) if is_path else file
 
-    first = None
-    with open(path, 'rb') as fp:
-        bin = first = fp.read(chunk_size)
-        result = chardet.detect(bin)
+    if is_path:
+        # open the file on disk and read the first chunk
+        with open(file, 'rb') as fp:
+            header = fp.read(chunk_size)
+    else:
+        # read the header and move back to the beginning of the file
+        header = fp.read(chunk_size)
+        fp.seek(0)
 
-    if not first:
-        return open(path, mode)
+    if not header:
+        return open(file, mode) if is_path else file
 
+    result = chardet.detect(header)
     enc = result['encoding']
     if ascii_is_utf8 and enc == 'ascii':
+        # the encoding has been detected as ASCII, check if we should open the
+        # fileas UTF-8
         enc = 'utf-8'
 
-    fp = codecs.open(path, mode, encoding=enc, errors=errors)
+    if is_path:
+        fp = codecs.open(file, mode, encoding=enc, errors=errors)
+    else:
+        fp = io.TextIOWrapper(file, mode, encoding=enc, errors=errors)
+
     for bom in (codecs.BOM_UTF32_BE, codecs.BOM_UTF32_LE, codecs.BOM_UTF8,
                 codecs.BOM_UTF16_BE, codecs.BOM_UTF16_LE):
-        if first.startswith(bom):
+        if header.startswith(bom):
             fp.seek(len(bom))
             break
 
     return fp
-
-
-def safe_open_fp(fp, mode='r', chunk_size=4096, ascii_is_utf8=True,
-                 errors='ignore'):
-    '''
-    Retrieves a file's encoding from an open file. If the file
-    begins with a BOM (Byte Order Mark), it is read before the file object is
-    returned. This allows callers to not have to handle BOMs of files.
-
-    :param str fp: opened file to determine encoding
-    :param int chunk_size: number of bytes to read to determine encoding
-    :param bool ascii_is_utf8: whether to force UTF-8 encoding if the file is \
-        dected as ASCII
-    :param str errors: determines how errors are handled and is passed to \
-        the call to :func:`open`.
-    :returns file: the opened file object
-    '''
-
-    first = None
-    bin = first = fp.read(chunk_size)
-    fp.seek(0)
-    result = chardet.detect(bin)
-    if not first:
-        return fp
-
-    enc = result['encoding']
-    if ascii_is_utf8 and enc == 'ascii':
-        enc = 'utf-8'
-
-    buffer = io.BufferedReader(fp)
-    new_fp = io.TextIOWrapper(buffer, encoding=enc, errors=errors)
-    for bom in (codecs.BOM_UTF32_BE, codecs.BOM_UTF32_LE, codecs.BOM_UTF8,
-                codecs.BOM_UTF16_BE, codecs.BOM_UTF16_LE):
-        if first.startswith(bom):
-            new_fp.seek(len(bom))
-            break
-
-    return new_fp
