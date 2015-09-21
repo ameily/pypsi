@@ -15,5 +15,5 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-__version__ = "1.2.1"
-__release__ = "1.2.1"
+__version__ = "1.3.0"
+__release__ = "1.3.0"
