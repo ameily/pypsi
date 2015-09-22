@@ -1,52 +1,38 @@
 #
-# Copyright (c) 2014, Adam Meily
-# All rights reserved.
+# Copyright (c) 2015, Adam Meily <meily.adam@gmail.com>
+# Pypsi - https://github.com/ameily/pypsi
 #
-# Redistribution and use in source and binary forms, with or without modification,
-# are permitted provided that the following conditions are met:
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
 #
-# * Redistributions of source code must retain the above copyright notice, this
-#   list of conditions and the following disclaimer.
-#
-# * Redistributions in binary form must reproduce the above copyright notice, this
-#   list of conditions and the following disclaimer in the documentation and/or
-#   other materials provided with the distribution.
-#
-# * Neither the name of the {organization} nor the names of its
-#   contributors may be used to endorse or promote products derived from
-#   this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-# ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
 import argparse
-from pypsi.base import Plugin, Command, PypsiArgParser, CommandShortCircuit
-from pypsi.namespace import Namespace, ScopedNamespace
-from pypsi.cmdline import Token, StringToken, WhitespaceToken, TokenContinue, TokenEnd, Expression
+from pypsi.core import Plugin, Command, PypsiArgParser, CommandShortCircuit
+from pypsi.namespace import ScopedNamespace
+from pypsi.cmdline import (Token, StringToken, TokenContinue, TokenEnd,
+                           Expression)
 from pypsi.format import Table, Column, obj_str
 import os
 import sys
 from datetime import datetime
-
-from io import StringIO
 
 
 class ManagedVariable(object):
     '''
     Represents a variable that is managed by the shell. Managed variables have
     get and set hooks that allow for input validation or read-only enforcement.
-    Each variable needs a ``getter``, which is called to retrieve the value, and
-    possibly a ``setter``, which is called to set the value. If the setter is
-    :const:`None`, the variable is read-only. The setter must accept two
+    Each variable needs a ``getter``, which is called to retrieve the value,
+    and possibly a ``setter``, which is called to set the value. If the setter
+    is :const:`None`, the variable is read-only. The setter must accept two
     arguments when it is called: the active :class:`~pypsi.shell.Shell`
     instance, and the :class:`str` value.
     '''
@@ -55,8 +41,8 @@ class ManagedVariable(object):
         '''
         :param callable getter: the callable to call when retrieving the
             variable's value (must return a value)
-        :param callable setter: the callable to call when setting the variable's
-            value
+        :param callable setter: the callable to call when setting the
+            variable's value
         '''
         self.getter = getter
         self.setter = setter
@@ -81,7 +67,8 @@ class VariableCommand(Command):
    or: var -l
    or: var -d name"""
 
-    def __init__(self, name='var', brief='manage local variables', topic='shell', **kwargs):
+    def __init__(self, name='var', brief='manage local variables',
+                 topic='shell', **kwargs):
         self.parser = PypsiArgParser(
             prog=name,
             description=brief,
@@ -95,7 +82,8 @@ class VariableCommand(Command):
             '-d', '--delete', help='delete variable', metavar='VARIABLE'
         )
         self.parser.add_argument(
-            'exp', metavar='EXPRESSION', help='expression defining variable, in the form of NAME = [VALUE]',
+            'exp', metavar='EXPRESSION',
+            help='expression defining variable, in the form of NAME = [VALUE]',
             nargs=argparse.REMAINDER
         )
         super(VariableCommand, self).__init__(
@@ -103,7 +91,7 @@ class VariableCommand(Command):
             brief=brief, **kwargs
         )
 
-    def run(self, shell, args, ctx):
+    def run(self, shell, args):
         try:
             ns = self.parser.parse_args(args)
         except CommandShortCircuit as e:
@@ -130,7 +118,8 @@ class VariableCommand(Command):
             if ns.delete in shell.ctx.vars:
                 s = shell.ctx.vars[ns.delete]
                 if isinstance(s, ManagedVariable):
-                    self.error(shell, "variable is managed and cannot be deleted")
+                    self.error(shell,
+                               "variable is managed and cannot be deleted")
                     rc = -1
                 else:
                     del shell.ctx.vars[ns.delete]
@@ -165,15 +154,16 @@ class VariableCommand(Command):
                 return 1
         else:
             self.usage_error(shell, "missing required EXPRESSION")
-            rc =1
+            rc = 1
 
         return rc
 
 
-
 class VariableToken(Token):
 
-    VarChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_'
+    VarChars = ('abcdefghijklmnopqrstuvwxyz'
+                'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+                '0123456789_')
 
     def __init__(self, prefix, index, var=''):
         super(VariableToken, self).__init__(index)
@@ -242,20 +232,42 @@ def safe_date_format(format, dt):
         return "<invalid date time format>"
 
 
+def var_date_getter(shell):
+    return safe_date_format(shell.ctx.vars.datefmt or "%x", datetime.now())
+
+
+def var_time_getter(shell):
+    return safe_date_format(shell.ctx.vars.timefmt or "%X", datetime.now())
+
+
+def var_datetime_getter(shell):
+    return safe_date_format(shell.ctx.vars.datetimefmt or "%c", datetime.now())
+
+
+def var_errno_getter(shell):
+    return str(shell.errno)
+
+
+def var_prompt_getter(shell):
+    return shell.get_current_prompt()
+
+
 class VariablePlugin(Plugin):
     '''
     Provides variable management and substitution in user input.
     '''
 
-    def __init__(self, var_cmd='var', prefix='$', locals=None, env=True, topic='shell',
-                 case_sensitive=True, preprocess=10, postprocess=90, **kwargs):
+    def __init__(self, var_cmd='var', prefix='$', locals=None, env=True,
+                 topic='shell', case_sensitive=True, preprocess=10,
+                 postprocess=90, **kwargs):
         '''
         :param str var_cmd: the name of the variable command
         :param str prefix: the prefix that all variables need to start with
         :param dict locals: the base variables to register initially
         :param bool case_sensitive: whether variable names are case sensitive
         '''
-        super(VariablePlugin, self).__init__(preprocess=preprocess, postprocess=postprocess, **kwargs)
+        super(VariablePlugin, self).__init__(preprocess=preprocess,
+                                             postprocess=postprocess, **kwargs)
         self.var_cmd = VariableCommand(name=var_cmd, topic=topic)
         self.prefix = prefix
 
@@ -263,8 +275,6 @@ class VariablePlugin(Plugin):
         self.case_sensitive = case_sensitive
         if locals:
             self.base.update(locals)
-        #cls = Namespace if case_sensitive and False else CaseInsensitiveNamespace
-        #self.namespace = cls(**os.environ)
 
     def setup(self, shell):
         '''
@@ -277,11 +287,12 @@ class VariablePlugin(Plugin):
             for k in self.base:
                 shell.ctx.vars[k] = self.base[k]
 
-            shell.ctx.vars.date = ManagedVariable(lambda shell: safe_date_format(shell.ctx.vars.datefmt or "%x", datetime.now()))
-            shell.ctx.vars.time = ManagedVariable(lambda shell: safe_date_format(shell.ctx.vars.timefmt or "%X", datetime.now()))
-            shell.ctx.vars.datetime = ManagedVariable(lambda shell: safe_date_format(shell.ctx.vars.datetimefmt or "%c", datetime.now()))
-            shell.ctx.vars.prompt = ManagedVariable(lambda shell: shell.get_current_prompt(), self.set_prompt)
-            shell.ctx.vars.errno = ManagedVariable(lambda shell: str(shell.errno))
+            shell.ctx.vars.date = ManagedVariable(var_date_getter)
+            shell.ctx.vars.time = ManagedVariable(var_time_getter)
+            shell.ctx.vars.datetime = ManagedVariable(var_datetime_getter)
+            shell.ctx.vars.prompt = ManagedVariable(var_prompt_getter,
+                                                    self.set_prompt)
+            shell.ctx.vars.errno = ManagedVariable(var_errno_getter)
         return 0
 
     def set_prompt(self, shell, value):
@@ -301,7 +312,8 @@ class VariablePlugin(Plugin):
     def on_tokenize(self, shell, tokens, origin):
         ret = []
         for token in tokens:
-            if not isinstance(token, StringToken) or self.prefix not in token.text:
+            if (not isinstance(token, StringToken)
+                    or self.prefix not in token.text):
                 ret.append(token)
                 continue
 

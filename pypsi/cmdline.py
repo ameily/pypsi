@@ -1,49 +1,37 @@
 #
-# Copyright (c) 2014, Adam Meily
-# All rights reserved.
+# Copyright (c) 2015, Adam Meily <meily.adam@gmail.com>
+# Pypsi - https://github.com/ameily/pypsi
 #
-# Redistribution and use in source and binary forms, with or without modification,
-# are permitted provided that the following conditions are met:
+# Permission to use, copy, modify, and/or distribute this software for any
+# purpose with or without fee is hereby granted, provided that the above
+# copyright notice and this permission notice appear in all copies.
 #
-# * Redistributions of source code must retain the above copyright notice, this
-#   list of conditions and the following disclaimer.
+# THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+# WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+# MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+# ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+# WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+# OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
-# * Redistributions in binary form must reproduce the above copyright notice, this
-#   list of conditions and the following disclaimer in the documentation and/or
-#   other materials provided with the distribution.
-#
-# * Neither the name of the {organization} nor the names of its
-#   contributors may be used to endorse or promote products derived from
-#   this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-# ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
+
 
 '''
 Classes used for parsing user input.
 '''
 
 import sys
-from io import StringIO
+from pypsi.utils import safe_open
 
-
+#: The token accepts more characters.
 TokenContinue = 0
-'''The token accepts more characters.'''
 
+#: The token does not accept the current chracter.
 TokenEnd = 1
-'''The token does not accept the current character.'''
 
+#: The token is finished and the current chracter should not be processed
+#: again.
 TokenTerm = 2
-'''The token is finished and the current character should not be processed again.'''
 
 
 class Token(object):
@@ -73,7 +61,7 @@ class WhitespaceToken(Token):
         :param str c: the current character
         :returns int: TokenEnd or TokenContinue
         '''
-        if c in (' ', '\t','\xa0'):
+        if c in (' ', '\t', '\xa0'):
             return TokenContinue
         return TokenEnd
 
@@ -140,7 +128,7 @@ class StringToken(Token):
         else:
             if c == '\\':
                 self.escape = True
-            elif c in (' ', '\t', ';', '|', '&', '>', '<','\xa0'):
+            elif c in (' ', '\t', ';', '|', '&', '>', '<', '\xa0'):
                 ret = TokenEnd
             elif c in ('"', "'"):
                 ret = TokenEnd
@@ -161,18 +149,17 @@ class StringToken(Token):
             text=self.text
         )
 
+
 class OperatorToken(Token):
     '''
-    An operator token. An operator can consist of one or more repetitions of the
-    same operator character. For example, the string ">>" would be parsed as one
-    `OperatorToken`, whereas the string "<>" would be parsed as two separate
-    `OperatorToken` objects.
+    An operator token. An operator can consist of one or more repetitions of
+    the same operator character. For example, the string ">>" would be parsed
+    as one `OperatorToken`, whereas the string "<>" would be parsed as two
+    separate `OperatorToken` objects.
     '''
 
+    #: Valid operator characters
     Operators = '<>|&;'
-    '''
-    Valid operator characters.
-    '''
 
     def __init__(self, index, operator):
         '''
@@ -203,223 +190,269 @@ class OperatorToken(Token):
         return True
 
 
-class Statement(object):
-    '''
-    A parsed statement to be executed. A statement may contain the following:
-
-    - Commands and arguments
-    - I/O redirections
-    - Command chaining
-
-    Command chaining describes how multiple commands are executed sequentially.
-    The chain operators can be one of the following:
-
-    - **|** (pipe) - pass previous `stdout` to current `stdin` and stop the
-      statement execution if a command fails
-    - **||** (or) - only run the subsequent commands if the current command
-      fails
-    - **&&** (and) - only run subsequent commands if the current command
-      succeeds
-    - **;** (chain) - execute subsequent commands regardless of result
-
-    Commands are considered to succeed if they return 0 and fail if they don't.
-    See :meth:`pypsi.base.Command.run` for a more detailed description of
-    command return codes.
-    '''
-
-    def __init__(self, ctx):
-        '''
-        :param StatementContext ctx: the current statement context
-        '''
-        #:current :class:`StatementContext` for this statement
-        self.ctx = ctx
-
-        #:`list` of :class:`CommandParams` describing the commands
-        self.cmds = []
-
-        #:`list` of chaining operators, `str`
-        self.ops = []
-        self.index = -1
-
-    def __len__(self):
-        '''
-        :returns int: the number of commands in this statement
-        '''
-        return len(self.cmds)
-
-    def __iter__(self):
-        '''
-        :returns iter: an iterator for :attr:`cmds`
-        '''
-        return iter(self.cmds)
-
-    @property
-    def cmd(self):
-        '''
-        (:class:`CommandParams`) the current command
-        '''
-        return self.cmds[self.index] if self.index < len(self.cmds) else None
-
-    @property
-    def op(self):
-        '''
-        (:class:`str`) the current chaining operator
-        '''
-        return self.ops[self.index] if self.index < len(self.ops) else None
-
-    def next(self):
-        '''
-        Begin processing of the next command.
-
-        :returns tuple: a `tuple` of :class:`CommandParams` and operator (`str`)
-            defining the next command, and `(None, None)` if there are no more
-            commands to execute
-        '''
-        self.index += 1
-        return (
-            self.cmds[self.index] if self.index < len(self.cmds) else None,
-            self.ops[self.index] if self.index < len(self.ops) else None
-        )
-
-
-class IoRedirectionError(Exception):
+class IORedirectionError(Exception):
 
     def __init__(self, path, message):
         self.path = path
         self.message = message
 
+    def __str__(self):
+        return "{}: {}".format(self.path, self.message)
 
-class StatementContext(object):
+
+class CommandNotFoundError(Exception):
     '''
-    Holds information about the current context of a statement. This class wraps
-    the handling of I/O redirection and piping by setting the system streams
-    to their appropriate values for a given command, and resetting them once the
-    statement has finished executing.
-    '''
-
-    def __init__(self):
-        self.prev = None
-        self.pipe = None
-        self.width = None
-
-        self.stdout_state = sys.stdout.get_state()
-        self.stderr_state = sys.stderr.get_state()
-
-        #: the :data:`sys.stdin` when the statement context was created
-        self.backup_stdin = sys.stdin
-
-        #:(:class:`file`) the current `stdout` file object
-        self.stdout = sys.stdout
-
-        #:(:class:`file`) the current `stderr` file object
-        self.stderr = sys.stderr
-
-        #:(:class:`file`) the current `stdin` file objects
-        self.stdin = sys.stdin
-
-    def fork(self):
-        '''
-        Fork the context. This allows the new :class:`StatementContext` to run
-        child commands under this context.
-
-        :returns: (:class:`StatementContext`) the forked context
-        '''
-        ctx = StatementContext()
-        ctx.stdin = ctx.backup_stdin = self.stdin
-        #ctx.stdout = ctx.backup_stdout = self.stdout
-        #ctx.stderr = ctx.backup_stderr = self.stderr
-        ctx.prev = None
-        ctx.pipe = self.pipe
-        return ctx
-
-    def setup_io(self, cmd, params, op):
-        '''
-        Setup the system streams to the correct file streams for the provided
-        command parameters.
-
-        :param pypsi.base.Command cmd: the current command
-        :param CommandParams params: the command parameters
-        :param str op: the current chaining operator
-        :returns: 0 on success, -1 on error
-        '''
-        prev_pipe = self.prev and self.prev[1] == '|'
-        if params.stdin_path:
-            # Setup stdin if redirecting from a file
-            try:
-                sys.stdin = self.stdin = open(params.stdin_path, 'r')
-            except OSError as e:
-                raise IoRedirectionError(params.stdin_path, str(e))
-        elif prev_pipe:
-            # Previous command's stdout needs to be piped to current command's
-            # stdin
-            sys.stdout.flush()
-            sys.stdout.seek(0)
-            self.stdin = sys.stdin = self.stdout.stream
-        else:
-            # Reset stdin
-            self.stdin = sys.stdin = self.backup_stdin
-
-        if params.stdout_path:
-            # Setup stdout if redirecting to a file
-            try:
-                sys.stdout.redirect(open(params.stdout_path, params.stdout_mode))
-            except OSError as e:
-                raise IoRedirectionError(params.stdout_path, str(e))
-        elif op == '|':
-            # Next command is a pipe, redirect stdout to a buffer
-            sys.stdout.redirect(StringIO())
-        elif sys.stdout.has_changed(self.stdout_state):
-            # Reset stdout
-            sys.stdout.close(was_pipe=prev_pipe)
-
-        if params.stderr_path:
-            # Setup stderr if redirecting to a file
-            try:
-                sys.stderr.redirect(open(params.stderr_path, 'w'))
-            except OSError as e:
-                raise IoRedirectionError(params.stderr_path, str(e))
-        elif sys.stderr.has_changed(self.stderr_state):
-            # Reset stderr
-            sys.stderr.close()
-
-        self.prev = (cmd, op)
-
-        return 0
-
-    def reset_io(self):
-        '''
-        Resets the system streams to their original values. This should be
-        called after a statement has finished executing.
-        '''
-        sys.stdout.reset(self.stdout_state)
-        sys.stderr.reset(self.stderr_state)
-
-        if self.stdin != self.backup_stdin:
-            self.stdin.close()
-            sys.stdin = self.stdin = self.backup_stdin
-
-        return 0
-
-
-class CommandParams(object):
-    '''
-    Wrapper around a called command's parameters and information.
+    The specified command does not exist.
     '''
 
-    def __init__(self, name, args=None, stdout_path=None, stdout_mode='w',
-                 stderr_path=None, stdin_path=None):
-        #:(:class:`str`) name of the command
+    def __init__(self, name):
+        #: the command name
         self.name = name
-        #:(:class:`list`) list of `str` arguments passed in by the user
+
+    def __str__(self):
+        return self.name + ": command not found"
+
+
+class Statement(object):
+    '''
+    A parsed statement containing a list of :class:`CommandInvocation`
+    instances.
+    '''
+
+    def __init__(self, invokes=None):
+        '''
+        :param list[CommandInvocation] invokes: list of command invocations
+        '''
+        self.invokes = invokes or []
+
+    def append(self, invoke):
+        '''
+        Append a new command invocation.
+
+        :param CommandInvocation invoke: parsed command invocation
+        '''
+        self.invokes.append(invoke)
+
+    def __iter__(self):
+        '''
+        :returns: an iterator for the :class:`CommandInvocation` instances
+        '''
+        return iter(self.invokes)
+
+    def __nonzero__(self):
+        '''
+        :returns bool: :const:`True` if there is at least 1 parsed command
+            invocation, :const:`False` otherwise
+        '''
+        return len(self.invokes) > 0
+
+    def __len__(self):
+        '''
+        :returns int: the number of command invocations
+        '''
+        return len(self.invokes)
+
+
+class CommandInvocation(object):
+    '''
+    An invocation of a command.
+    '''
+
+    def __init__(self, name, args=None, stdout=None, stderr=None, stdin=None,
+                 chain=None):
+        #: Command name
+        self.name = name
+        #: List of command arguments
         self.args = args or []
-        #:(:class:`str`) path to `stdout` if redirecting to a file
-        self.stdout_path = stdout_path
-        #:(:class:`str`) mode to pass to `open()` when opening the `stdout` redirection file
-        self.stdout_mode = stdout_mode
-        #:(:class:`str`) path to `stderr` if redirecting to a file
-        self.stderr_path = stderr_path
-        #:(:class:`str`) path to `stdin` if redirecting from a file
-        self.stdin_path = stdin_path
+        #: stdout redirection
+        self.stdout = stdout
+        #: stderr redirection
+        self.stderr = stderr
+        #: stderr redirection
+        self.stdin = stdin
+        #: The chain operator, if any is specified: &&, ||, |, ;.
+        self.chain = chain
+        #: The resolved pypsi command (:class:`~pypsi.core.Command`)
+        self.cmd = None
+        #: The fallback command to use if :attr:`cmd` is :const:`None`.
+        self.fallback_cmd = None
+
+    def setup(self, shell):
+        '''
+        Retrieve the Pypsi command to execute and setup the streams for stdout,
+        stderr, and stdin depending on whether I/O redirection is being
+        performed.
+
+        :raises CommandNotFoundError: command specified does not exist
+        :raises IORedirectionError: I/O redirection error occurred
+        '''
+
+        if self.name in shell.commands:
+            self.cmd = shell.commands[self.name]
+        elif shell.fallback_cmd:
+            self.fallback_cmd = shell.fallback_cmd
+        else:
+            raise CommandNotFoundError(self.name)
+
+        try:
+            self.stdout = self.get_output(self.stdout)
+            self.stderr = self.get_output(self.stdout)
+            self.stdin = self.get_input(self.stdin)
+        except:
+            self.close_streams()
+            raise
+
+    def get_output(self, output):
+        '''
+        Open an output stream, if specified.
+
+        :returns file: the stream opened for writting if specified, otherwise
+            const:`None`.
+        '''
+
+        if isinstance(output, tuple):
+            # output is a tuple of (path, mode)
+            path, mode = tuple
+            ret = self.get_stream(path, mode)
+        elif isinstance(output, str):
+            # output is a path
+            ret = self.get_stream(output, 'w')
+        else:
+            # output is either None or an existing open stream
+            ret = output
+        return ret
+
+    def get_input(self, stream):
+        '''
+        Open an input stream, if specified.
+
+        :returns file: the stream opened for reading if specified, otherwise
+            :const:`None`.
+        '''
+
+        if isinstance(stream, str):
+            ret = self.get_stream(stream, 'r', safe=True)
+        else:
+            ret = stream
+        return ret
+
+    def get_stream(self, path, mode, safe=False):
+        '''
+        Open a file path.
+
+        :param str path: file path
+        :param str mode: file open mode
+        :param bool safe: whether to use :meth:`pypsi.util.safe_open` instead
+            of the standard :meth:`open` method.
+
+        :raises IORedirectionError: stream could not be opened
+        '''
+
+        func = safe_open if safe else open
+        try:
+            fp = func(path, mode=mode)
+        except OSError as e:
+            raise IORedirectionError(path, e.strerror)
+        except Exception as e:
+            raise IORedirectionError(path, str(e))
+        else:
+            return fp
+
+    def close_streams(self):
+        '''
+        Close all streams that were opened.
+        '''
+
+        for fp in (self.stdout, self.stderr, self.stdin):
+            if fp and hasattr(fp, 'close') and not fp.closed:
+                fp.close()
+
+    def setup_io(self):
+        '''
+        Setup stdout, stderr, and stdin by proxying the thread local streams.
+        '''
+
+        if self.stdout:
+            sys.stdout._proxy(self.stdout)
+        if self.stderr:
+            sys.stderr._proxy(self.stderr)
+        if self.stdin:
+            sys.stdin._proxy(self.stdin)
+
+    def cleanup_io(self):
+        '''
+        Close proxied streams and unproxy them.
+        '''
+
+        self.close_streams()
+
+        if self.stdout:
+            sys.stdout._unproxy()
+        if self.stderr:
+            sys.stderr._unproxy()
+        if self.stdin:
+            sys.stdin._unproxy()
+
+    def chain_and(self):
+        '''
+        :returns: :const:`True` if the chain operator is AND (&&)
+        '''
+
+        return self.chain == '&&'
+
+    def chain_or(self):
+        '''
+        :returns: :const:`True` if the chain operator is OR (||)
+        '''
+
+        return self.chain == '||'
+
+    def chain_uncond(self):
+        '''
+        :returns: :const:`True` if the chain operator is UNCONDITIONAL (;)
+        '''
+
+        return self.chain == ';'
+
+    def chain_pipe(self):
+        '''
+        :returns: :const:`True` if the chain operator is PIPE (|)
+        '''
+
+        return self.chain == '|'
+
+    def __call__(self, shell):
+        '''
+        Invoke the command by proxying streams, running the command, and
+        cleaning the resetting streams.
+
+        :returns: the commnd's return code.
+        '''
+
+        self.setup_io()
+        try:
+            if self.fallback_cmd:
+                rc = self.fallback_cmd.fallback(shell, self.name, self.args)
+            else:
+                rc = self.cmd.run(shell, self.args)
+        finally:
+            self.cleanup_io()
+        return rc
+
+    def should_continue(self, prev_rc):
+        '''
+        :returns: whether this invocation is chained and, using the previous
+        invocation's return code, determine if the next command in the chain
+        should be executed.
+        '''
+
+        return (
+            not self.chain or (
+                self.chain_uncond() or
+                (self.chain_or() and prev_rc is not 0) or
+                (self.chain_and() and prev_rc is 0)
+            )
+        )
 
 
 class StatementSyntaxError(Exception):
@@ -451,6 +484,7 @@ class StatementParser(object):
         '''
         Reset parsing state.
         '''
+
         self.tokens = []
         self.token = None
 
@@ -461,6 +495,7 @@ class StatementParser(object):
         :param int index: current character index
         :param str c: current character
         '''
+
         if self.token:
             action = self.token.add_char(c)
             if action == TokenEnd:
@@ -473,7 +508,7 @@ class StatementParser(object):
             else:
                 pass
         else:
-            if c in (' ', '\t','\xa0'):
+            if c in (' ', '\t', '\xa0'):
                 self.token = WhitespaceToken(index)
             elif c in ('>', '<', '|', '&', ';'):
                 self.token = OperatorToken(index, c)
@@ -508,7 +543,8 @@ class StatementParser(object):
         :param list tokens: :class:`Token` objects to remove escape sequences
         '''
         for token in tokens:
-            if not isinstance(token, StringToken) or ('\\' not in token.text or token.quote):
+            if not isinstance(token, StringToken) or (
+                    '\\' not in token.text or token.quote):
                 continue
 
             text = ''
@@ -540,7 +576,6 @@ class StatementParser(object):
         for token in tokens:
             if isinstance(token, StringToken):
                 if isinstance(prev, StringToken):
-                    #prev.text += token.text
                     prev.combine_token(token)
                     token = prev
                 else:
@@ -551,7 +586,7 @@ class StatementParser(object):
 
         return condensed
 
-    def build(self, tokens, ctx):
+    def build(self, tokens):
         '''
         Create a :class:`Statement` object from tokenized input and statement
         context. This method will first remove all remaining escape sequences
@@ -559,12 +594,11 @@ class StatementParser(object):
 
         :param list tokens: list of :class:`Token` objects to process as a
             statement
-        :param pypsi.cmdline.StatementContext ctx: the current statement context to use
         :raises: :class:`StatementSyntaxError` on error
         :returns: (:class:`Statement`) the parsed statement
         '''
 
-        statement = Statement(ctx)
+        statement = Statement()
         cmd = None
         prev = None
         self.clean_escapes(tokens)
@@ -572,12 +606,13 @@ class StatementParser(object):
 
         for token in tokens:
             if cmd:
-                if isinstance(prev, OperatorToken) and prev.operator in ('>', '<', '>>'):
+                if isinstance(prev, OperatorToken) and (
+                        prev.operator in ('>', '<', '>>')):
                     if isinstance(token, StringToken):
                         if prev.operator in ('>', '>>'):
-                            cmd.stdout_path = token.text
+                            cmd.stdout = token.text
                         elif prev.operator == '<':
-                            cmd.stdin_path = token.text
+                            cmd.stdin = token.text
                     else:
                         raise StatementSyntaxError(
                             message="unexpected token: {}".format(str(token)),
@@ -588,55 +623,60 @@ class StatementParser(object):
                 elif isinstance(token, OperatorToken):
                     done = True
                     if token.operator == '||':
-                        statement.ops.append('||')
+                        cmd.chain = '||'
                     elif token.operator == '&&':
-                        statement.ops.append('&&')
+                        cmd.chain = '&&'
                     elif token.operator == ';':
-                        statement.ops.append(';')
+                        cmd.chain = ';'
                     elif token.operator == '|':
-                        if cmd.stdout_path:
+                        if cmd.stdout:
+                            msg = ("unexpected token: {}: duplicate output "
+                                   "redirection is invalid").format(str(token))
                             raise StatementSyntaxError(
-                                message="unexpected token: {}".format(str(token)),
+                                message=msg,
                                 index=token.index
                             )
 
-                        statement.ops.append('|')
+                        cmd.chain = '|'
                     elif token.operator in ('>', '>>'):
-                        if cmd.stdout_path:
+                        if cmd.stdout:
+                            msg = ("unexpected token: {}: duplicate output "
+                                   "redirection is invalid").format(str(token))
                             raise StatementSyntaxError(
-                                message="unexpected token: {}".format(str(token)),
+                                message=msg,
                                 index=token.index
                             )
 
-                        cmd.stdout_mode = 'w' if token.operator == '>' else 'a'
+                        cmd.stdout = (
+                            cmd.stdout,
+                            'w' if token.operator == '>' else 'a'
+                        )
                         done = False
                     elif token.operator == '<':
-                        if cmd.stdin_path:
+                        if cmd.stdin or (len(statement) > 1 and
+                                         statement[-1].chain == '|'):
+                            # The previous command in was a pipe, so input
+                            # redirection is not supported.
+                            msg = ("unexpected token: {} duplicate input "
+                                   "redirection is invalid").format(str(token))
                             raise StatementSyntaxError(
-                                message="unexpected token: {}".format(str(token)),
+                                message=msg,
                                 index=token.index
                             )
 
-                        if statement.ops and statement.ops[-1] == '|':
-                            raise StatementSyntaxError(
-                                message="unexpected token: {}".format(str(token)),
-                                index=token.index
-                            )
-
-                        cmd.stdin_path = ''
                         done = False
                     else:
                         raise StatementSyntaxError(
-                            message="unknown operator: {}".format(token.operator),
+                            message="unknown operator: " + token.operator,
                             index=token.index
                         )
 
                     if done:
-                        statement.cmds.append(cmd)
+                        statement.append(cmd)
                         cmd = None
             else:
                 if isinstance(token, StringToken):
-                    cmd = CommandParams(token.text)
+                    cmd = CommandInvocation(token.text)
                 elif not isinstance(token, WhitespaceToken):
                     raise StatementSyntaxError(
                         message="unexpected token: {}".format(str(token)),
@@ -644,7 +684,8 @@ class StatementParser(object):
                     )
             prev = token
 
-        if isinstance(prev, StringToken) or (isinstance(prev, OperatorToken) and prev.operator == ';'):
+        if isinstance(prev, StringToken) or (
+                isinstance(prev, OperatorToken) and prev.operator == ';'):
             pass
         elif prev:
             raise StatementSyntaxError(
@@ -653,7 +694,7 @@ class StatementParser(object):
             )
 
         if cmd:
-            statement.cmds.append(cmd)
+            statement.append(cmd)
 
         return statement
 
@@ -690,10 +731,10 @@ class Expression(object):
         Create an Expression from a list of strings.
 
         :param list args: arguments
-        :returns: a tuple of ``(remaining, expression)``, where ``remaining`` is
-            the list of remaining string arguments of ``args`` after parsing has
-            completed, and ``expression`` in the parsed :class:`Expression`, or
-            :const:`None` if the expression is invalid.
+        :returns: a tuple of ``(remaining, expression)``, where ``remaining``
+            is the list of remaining string arguments of ``args`` after parsing
+            has completed, and ``expression`` in the parsed
+            :class:`Expression`, or :const:`None` if the expression is invalid.
         '''
         state = 'operand'
         operand = operator = value = None
