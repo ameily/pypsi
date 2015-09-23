@@ -5,6 +5,10 @@ python:
 # command to install dependencies
 install:
   - "python setup.py develop"
-  - "pip install flake8"
+  - "pip install flake8 nose coveralls"
 # command to run tests
-script: "flake8 pypsi"
+script:
+  - "flake8 pypsi"
+  - "nosetests --with-coverage --cover-package=pypsi --cover-inclusive"
+after_success:
+  coveralls
