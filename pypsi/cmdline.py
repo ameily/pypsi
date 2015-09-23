@@ -354,7 +354,7 @@ class CommandInvocation(object):
 
         if isinstance(output, tuple):
             # output is a tuple of (path, mode)
-            path, mode = tuple
+            path, mode = output
             ret = self.get_stream(path, mode)
         elif isinstance(output, str):
             # output is a path
@@ -653,7 +653,10 @@ class StatementParser(object):
                         prev.operator in ('>', '<', '>>')):
                     if isinstance(token, StringToken):
                         if prev.operator in ('>', '>>'):
-                            cmd.stdout = token.text
+                            cmd.stdout = (
+                                token.text,
+                                'w' if prev.operator == '>' else 'a'
+                            )
                         elif prev.operator == '<':
                             cmd.stdin = token.text
                     else:
@@ -664,13 +667,10 @@ class StatementParser(object):
                 elif isinstance(token, StringToken):
                     cmd.args.append(token.text)
                 elif isinstance(token, OperatorToken):
-                    done = True
-                    if token.operator == '||':
-                        cmd.chain = '||'
-                    elif token.operator == '&&':
-                        cmd.chain = '&&'
-                    elif token.operator == ';':
-                        cmd.chain = ';'
+                    done = False
+                    if token.operator in ('||', '&&', ';'):
+                        cmd.chain = token.operator
+                        done = True
                     elif token.operator == '|':
                         if cmd.stdout:
                             msg = ("unexpected token: {}: duplicate output "
@@ -681,6 +681,7 @@ class StatementParser(object):
                             )
 
                         cmd.chain = '|'
+                        done = True
                     elif token.operator in ('>', '>>'):
                         if cmd.stdout:
                             msg = ("unexpected token: {}: duplicate output "
@@ -689,12 +690,6 @@ class StatementParser(object):
                                 message=msg,
                                 index=token.index
                             )
-
-                        cmd.stdout = (
-                            cmd.stdout,
-                            'w' if token.operator == '>' else 'a'
-                        )
-                        done = False
                     elif token.operator == '<':
                         if cmd.stdin or (len(statement) > 1 and
                                          statement[-1].chain == '|'):
@@ -706,8 +701,6 @@ class StatementParser(object):
                                 message=msg,
                                 index=token.index
                             )
-
-                        done = False
                     else:
                         raise StatementSyntaxError(
                             message="unknown operator: " + token.operator,
