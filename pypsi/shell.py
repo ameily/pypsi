@@ -200,7 +200,7 @@ class Shell(object):
 
     def error(self, msg):
         print(
-            AnsiCodes.red, self.shell_name, msg, ": ", msg, AnsiCodes.reset,
+            AnsiCodes.red, self.shell_name, ": ", msg, AnsiCodes.reset,
             file=sys.stderr, sep=''
         )
 
