@@ -2,6 +2,7 @@ language: python
 python:
   - "3.3"
   - "3.4"
+sudo: false
 # command to install dependencies
 install:
   - "python setup.py develop"
