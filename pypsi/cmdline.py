@@ -215,6 +215,7 @@ class OperatorToken(Token):
             self.operator == other.operator
         )
 
+
 class IORedirectionError(Exception):
 
     def __init__(self, path, message):
