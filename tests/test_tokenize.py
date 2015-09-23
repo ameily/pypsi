@@ -12,7 +12,7 @@ class TestCmdlineTokenize(object):
         self.parser = StatementParser()
 
     def test_simple(self):
-        tokens = self.parser.tokenize("echo hello")
+        tokens = self.parser.tokenize("echo \thello")
         assert_equal(tokens, [
             StringToken(0, "echo"),
             WhitespaceToken(1),
@@ -207,5 +207,25 @@ class TestCmdlineTokenize(object):
                 StringToken(0, 'echo'),
                 OperatorToken(1, op),
                 StringToken(2, "postfix")
+            ]
+        )
+
+    def test_qutoted_escape_normal_char(self):
+        assert_equal(
+            self.parser.tokenize("echo '\\c'"), [
+                StringToken(0, "echo"),
+                WhitespaceToken(1),
+                StringToken(2, "\\c", quote="'")
+            ]
+        )
+    def test_trailing_escape(self):
+        t = StringToken(2, "")
+        t.text = "\\"
+
+        assert_equal(
+            self.parser.tokenize("echo \\"), [
+                StringToken(0, "echo"),
+                WhitespaceToken(1),
+                t
             ]
         )
