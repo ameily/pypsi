@@ -27,7 +27,7 @@ from pypsi.utils import safe_open
 __all__ = (
     'Token', 'StringToken', 'OperatorToken', 'WhitespaceToken',
     'IORedirectionError', 'StatementParser', 'StatementSyntaxError',
-    'CommandNotFoundError', 'CommandInvocation', 'Expression'
+    'CommandNotFoundError', 'CommandInvocation', 'Expression', 'Statement'
 )
 
 
@@ -278,6 +278,9 @@ class Statement(object):
         '''
         return len(self.invokes)
 
+    def __eq__(self, other):
+        return isinstance(other, Statement) and self.invokes == other.invokes
+
 
 class CommandInvocation(object):
     '''
@@ -302,6 +305,19 @@ class CommandInvocation(object):
         self.cmd = None
         #: The fallback command to use if :attr:`cmd` is :const:`None`.
         self.fallback_cmd = None
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, CommandInvocation) and
+            self.name == other.name and
+            self.args == other.args and
+            self.stdout == other.stdout and
+            self.stderr == other.stderr and
+            self.stdin == other.stdin and
+            self.chain == other.chain and
+            self.cmd == other.cmd and
+            self.fallback_cmd == other.fallback_cmd
+        )
 
     def setup(self, shell):
         '''
