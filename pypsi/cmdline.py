@@ -558,6 +558,7 @@ class StatementParser(object):
             if isinstance(self.token, StringToken):
                 if self.token.escape:
                     self.token.text += '\\'
+                    self.token.escape = False
             self.tokens.append(self.token)
 
         return self.tokens
