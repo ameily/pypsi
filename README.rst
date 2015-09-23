@@ -1,6 +1,12 @@
 Pypsi - Python Pluggable Shell Interface
 ========================================
 
+.. image:: https://coveralls.io/repos/ameily/pypsi/badge.svg?branch=master&service=github
+  :target: https://coveralls.io/github/ameily/pypsi?branch=master
+
+.. image:: https://travis-ci.org/ameily/pypsi.svg?branch=master
+  :target: https://travis-ci.org/ameily/pypsi
+
 Develop extensible and powerful command line interface shells with minimal code. Want to jump straight into the API? Take a look at :doc:`pypsi.tutorial`.
 
 Python Pluggable Shell Interface, or pypsi, is a framework for developing

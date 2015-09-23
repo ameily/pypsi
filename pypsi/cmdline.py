@@ -23,6 +23,14 @@ Classes used for parsing user input.
 import sys
 from pypsi.utils import safe_open
 
+
+__all__ = (
+    'Token', 'StringToken', 'OperatorToken', 'WhitespaceToken',
+    'IORedirectionError', 'StatementParser', 'StatementSyntaxError',
+    'CommandNotFoundError', 'CommandInvocation', 'Expression'
+)
+
+
 #: The token accepts more characters.
 TokenContinue = 0
 
@@ -68,6 +76,9 @@ class WhitespaceToken(Token):
     def __str__(self):
         return "WhitespaceToken()"
 
+    def __eq__(self, other):
+        return isinstance(other, WhitespaceToken)
+
 
 class StringToken(Token):
     '''
@@ -112,7 +123,7 @@ class StringToken(Token):
                 else:
                     self.text += '\\'
                     self.text += c
-            elif c in (' ', '\t') or c in OperatorToken.Operators:
+            elif c in (' ', '\t', "'", "\"") or c in OperatorToken.Operators:
                 self.text += c
             else:
                 self.text += '\\'
@@ -149,6 +160,15 @@ class StringToken(Token):
             text=self.text
         )
 
+    def __eq__(self, other):
+        return (
+            isinstance(other, StringToken) and
+            self.quote == other.quote and
+            self.text == other.text and
+            self.open_quote == other.open_quote and
+            self.escape == other.escape
+        )
+
 
 class OperatorToken(Token):
     '''
@@ -175,7 +195,7 @@ class OperatorToken(Token):
         :param str c: the current character
         :returns int: TokenEnd or TokenContinue
         '''
-        if c == self.operator:
+        if c == self.operator[0]:
             self.operator += c
             return TokenContinue
         return TokenEnd
@@ -188,6 +208,12 @@ class OperatorToken(Token):
             if c in ('>', '<'):
                 return False
         return True
+
+    def __eq__(self, other):
+        return (
+            isinstance(other, OperatorToken) and
+            self.operator == other.operator
+        )
 
 
 class IORedirectionError(Exception):
@@ -532,6 +558,7 @@ class StatementParser(object):
             if isinstance(self.token, StringToken):
                 if self.token.escape:
                     self.token.text += '\\'
+                    self.token.escape = False
             self.tokens.append(self.token)
 
         return self.tokens
