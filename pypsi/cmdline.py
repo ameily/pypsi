@@ -335,7 +335,6 @@ class CommandInvocation(object):
 
         return s
 
-
     def setup(self, shell):
         '''
         Retrieve the Pypsi command to execute and setup the streams for stdout,
