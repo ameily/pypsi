@@ -319,6 +319,23 @@ class CommandInvocation(object):
             self.fallback_cmd == other.fallback_cmd
         )
 
+    def __str__(self):
+        s = "{name} {args}".format(self.name, ' '.join(self.args))
+        if self.stdout:
+            if isinstance(self.stdout, tuple) and self.stdout[1] == 'a':
+                s += " >> " + self.stdout[0]
+            else:
+                s += " > " + self.stdout
+
+        if self.stdin:
+            s += " < " + self.stdin
+
+        if self.chain:
+            s += " " + self.chain
+
+        return s
+
+
     def setup(self, shell):
         '''
         Retrieve the Pypsi command to execute and setup the streams for stdout,
@@ -761,6 +778,14 @@ class Expression(object):
     def __str__(self):
         return "{} {} {}".format(self.operand, self.operator, self.value)
 
+    def __eq__(self, other):
+        return (
+            isinstance(other, Expression) and
+            self.operand == other.operand and
+            self.operator == other.operator and
+            self.value == other.value
+        )
+
     @classmethod
     def parse(cls, args):
         '''
@@ -809,11 +834,7 @@ class Expression(object):
                     if c in Expression.Whitespace and not value:
                         pass
                     else:
-                        if value is None:
-                            done = True
-                            value = c
-                        else:
-                            value += c
+                        value += c
             remaining.pop(0)
             if done:
                 break
