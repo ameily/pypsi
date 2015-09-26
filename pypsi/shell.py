@@ -45,9 +45,11 @@ class Shell(object):
             command when the shell needs to end execution
         :param pypsi.namespace.Namespace ctx: the base context
         '''
-        self.real_stdout = sys.stdout
-        self.real_stdin = sys.stdin
-        self.real_stderr = sys.stderr
+        self.backup_stdout = None
+        self.backup_stdin = None
+        self.backup_stderr = None
+        self.backup_print = None
+
         self.width = width
         self.shell_name = shell_name
         self.exit_rc = exit_rc
@@ -74,16 +76,34 @@ class Shell(object):
     def bootstrap(self):
         import builtins
         if not isinstance(sys.stdout, ThreadLocalStream):
+            self.backup_stdout = sys.stdout
             sys.stdout = ThreadLocalStream(sys.stdout, width=self.width)
 
         if not isinstance(sys.stderr, ThreadLocalStream):
+            self.backup_stderr = sys.stderr
             sys.stderr = ThreadLocalStream(sys.stderr, width=self.width)
 
         if not isinstance(sys.stdin, ThreadLocalStream):
+            self.backup_stdin = sys.stdin
             sys.stdin = ThreadLocalStream(sys.stdin)
 
         if builtins.print != pypsi_print:
+            self.backup_print = print
             builtins.print = pypsi_print
+
+    def restore(self):
+        if self.backup_stdout:
+            sys.stdout = self.backup_stdout
+
+        if self.backup_stderr:
+            sys.stderr = self.backup_stderr
+
+        if self.backup_stdin:
+            sys.stdin = self.backup_stdin
+
+        if self.backup_print:
+            import builtins
+            builtins.print = self.backup_print
 
     def register_base_plugins(self):
         '''
