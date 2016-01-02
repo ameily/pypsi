@@ -22,7 +22,7 @@ import sys
 
 if sys.platform == 'win32':
     from pypsi.os.win32 import *
-elif sys.platform == 'cygwin' or sys.platform.startswith('linux'):
+elif sys.platform in ['cygwin', 'darwin'] or sys.platform.startswith('linux'):
     from pypsi.os.unix import *
 
 
