@@ -20,6 +20,17 @@ import threading
 import sys
 from pypsi.ansi import AnsiCode, AnsiCodes
 
+#: OS-dependent ANSI code compatibility wrapper
+make_ansi_stream = None
+
+if sys.platform == 'win32':
+    from pypsi.os.win32 import Win32AnsiStream
+    make_ansi_stream = Win32AnsiStream
+else:
+    # The stream is already ANSI compatibility, do nothing
+    make_ansi_stream = lambda stream: stream
+
+
 
 class ThreadLocalStream(object):
     '''
@@ -94,8 +105,9 @@ class ThreadLocalStream(object):
         :param bool isatty: whether the target stream is a tty stream.
         '''
 
-        self._proxies[threading.current_thread().ident] = (target, width,
-                                                           isatty)
+        self._proxies[threading.current_thread().ident] = (
+            make_ansi_stream(target), width, isatty
+        )
 
     def _unproxy(self, ident=None):
         '''

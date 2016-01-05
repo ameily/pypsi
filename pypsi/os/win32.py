@@ -21,12 +21,14 @@ Windows specific functions
 
 import os
 import sys
+import re
 
 
 __all__ = [
     'find_bins_in_path',
     'is_path_prefix',
-    'path_completer'
+    'path_completer',
+    'Win32AnsiStream'
 ]
 
 
@@ -121,3 +123,56 @@ if sys.platform == 'win32':
         return child
 
     subprocess.Popen = PopenWithLock
+
+
+
+ANSI_CODE_MAP = {
+    '0;30m': 0x0,             #black
+    '0;31m': 0x4,             #red
+    '0;32m': 0x2,             #green
+    '0;33m': 0x4+0x2,         #brown?
+    '0;34m': 0x1,             #blue
+    '0;35m': 0x1+0x4,         #purple
+    '0;36m': 0x2+0x4,         #cyan
+    '0;37m': 0x1+0x2+0x4,     #grey
+    '1;30m': 0x1+0x2+0x4,     #dark gray
+    '1;31m': 0x4+0x8,         #red
+    '1;32m': 0x2+0x8,         #light green
+    '1;33m': 0x4+0x2+0x8,     #yellow
+    '1;34m': 0x1+0x8,         #light blue
+    '1;35m': 0x1+0x4+0x8,     #light purple
+    '1;36m': 0x1+0x2+0x8,     #light cyan
+    '1;37m': 0x1+0x2+0x4+0x8, #white
+    '0m': None
+}
+
+ANSI_CODE_RE = re.compile('\x1b\\[([0-9;]+[HJm])')
+
+
+class Win32AnsiStream(object):
+
+    def __init__(self, stream):
+        self.stream = stream
+        self._win32_initial_attrs = None
+
+    def write(self, data):
+        print(repr(data), file=sys.stderr)
+        start = 0
+        in_code = False
+        for chunk in ANSI_CODE_RE.split(data):
+            if chunk:
+                if in_code:
+                    code = ANSI_CODE_MAP.get(chunk)
+                    if code:
+                        self.stream.write('<' + hex(code) + '>')
+                    elif chunk == '0m':
+                        # reset
+                        pass
+                else:
+                    self.stream.write(chunk)
+            in_code = not in_code
+
+        return len(data)
+
+    def __getattr__(self, attr):
+        return getattr(self.stream, attr)
