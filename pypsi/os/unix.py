@@ -24,8 +24,12 @@ import os
 __all__ = [
     'find_bins_in_path',
     'is_path_prefix',
-    'path_completer'
+    'path_completer',
+    'make_ansi_stream'
 ]
+
+
+make_ansi_stream = lambda stream: stream
 
 
 def find_bins_in_path():
