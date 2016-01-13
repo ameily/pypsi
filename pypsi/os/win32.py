@@ -23,7 +23,6 @@ import os
 import sys
 import re
 import ctypes
-import msvcrt
 
 
 __all__ = [
@@ -202,8 +201,11 @@ class Win32AnsiStream(object):
     '''
 
     def __init__(self, stream):
+        import msvcrt
+
         self.stream = stream
         self._win32_flush_pending = False
+
         try:
             self._win32_handle = msvcrt.get_osfhandle(stream.fileno())
         except:
