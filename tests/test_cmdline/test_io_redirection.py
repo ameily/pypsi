@@ -99,3 +99,4 @@ class TestIoRedirection(object):
         os.chmod(path, stat.S_IREAD)
         ci = CommandInvocation(name='echo')
         assert_raises(IORedirectionError, ci.get_output, path)
+        os.chmod(path, stat.S_IREAD | stat.S_IWRITE)
