@@ -162,12 +162,12 @@ def obj_str(obj, max_children=3, stream=None):
     :returns str: the formatted object
     '''
     tmpl = "{blue}{type}({reset} {value} {blue}){reset}"
-    format_value = None
     if stream:
-        format_value = lambda t, v: stream.ansi_format(tmpl, type=t, value=v)
+        def format_value(type, value):
+            return stream.ansi_format(tmpl, type=type, value=value)
     else:
-        tmpl = "{type}( {value} )"
-        format_value = lambda t, v: tmpl.format(type=t, value=v)
+        def format_value(type, value):
+            return "{type}( {value} )".format(type=type, value=value)
 
     if isinstance(obj, bool):
         return format_value("bool", obj)
@@ -310,8 +310,8 @@ class Table(object):
         for col in self.columns:
             if col.mode == Column.Grow:
                 remaining = (
-                    self.width - ((len(self.columns) - 1) * self.spacing)
-                    - total
+                    self.width - ((len(self.columns) - 1) * self.spacing) -
+                    total
                 )
                 col.width += remaining
 

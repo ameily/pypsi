@@ -44,9 +44,9 @@ class CommentPlugin(Plugin):
     def on_tokenize(self, shell, tokens, origin):
         index = 0
         for token in tokens:
-            if (isinstance(token, StringToken)
-                    and token.text.startswith(self.prefix)
-                    and not token.quote):
+            if (isinstance(token, StringToken) and
+                    token.text.startswith(self.prefix) and
+                    not token.quote):
                 break
             index += 1
 

@@ -29,7 +29,12 @@ __all__ = [
 ]
 
 
-make_ansi_stream = lambda stream: stream
+def make_ansi_stream(stream):
+    '''
+    Create an ANSI-code compatible file stream. Unix file streams support ANSI
+    escape codes, so we don't need to do anything special.
+    '''
+    return stream
 
 
 def find_bins_in_path():
@@ -53,8 +58,8 @@ def is_path_prefix(t):
 
 
 def path_completer(path):
-    if not (path.startswith('/') or path.startswith('./')
-            or path.startswith('../')):
+    if not (path.startswith('/') or path.startswith('./') or
+            path.startswith('../')):
         path = './' + path
 
     if path.endswith('/'):

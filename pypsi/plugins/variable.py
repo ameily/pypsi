@@ -312,8 +312,8 @@ class VariablePlugin(Plugin):
     def on_tokenize(self, shell, tokens, origin):
         ret = []
         for token in tokens:
-            if (not isinstance(token, StringToken)
-                    or self.prefix not in token.text):
+            if (not isinstance(token, StringToken) or
+                    self.prefix not in token.text):
                 ret.append(token)
                 continue
 

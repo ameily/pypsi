@@ -88,8 +88,8 @@ class AliasPlugin(Plugin):
         for token in tokens:
             next = token
             if cmd:
-                if (isinstance(token, OperatorToken)
-                        and token.is_chain_operator()):
+                if (isinstance(token, OperatorToken) and
+                        token.is_chain_operator()):
                     cmd = None
             else:
                 if isinstance(token, StringToken):

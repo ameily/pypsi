@@ -158,8 +158,8 @@ class MacroCommand(BlockCommand):
                 self.usage_error(shell,
                                  "list option does not take an argument")
             else:
-                if (ns.name in shell.commands.keys()
-                        and ns.name not in shell.ctx.macros):
+                if (ns.name in shell.commands.keys() and
+                        ns.name not in shell.ctx.macros):
                     self.error(
                         shell, "A macro cannot have the same name as an ",
                         "existing command."
