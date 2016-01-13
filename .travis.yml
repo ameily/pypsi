@@ -6,10 +6,10 @@ sudo: false
 # command to install dependencies
 install:
   - "python setup.py develop"
-  - "pip install flake8 nose coveralls"
+  - "pip install flake8 nose coveralls nose-exclude"
 # command to run tests
 script:
   - "flake8 pypsi"
-  - "nosetests --with-coverage --cover-package=pypsi --cover-inclusive"
+  - "nosetests --exclude-dir=pypsi/os --with-coverage --cover-package=pypsi --cover-inclusive"
 after_success:
   coveralls
