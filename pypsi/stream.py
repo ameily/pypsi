@@ -49,9 +49,9 @@ class AnsiCode(object):
         :param str s: the body of the code, only useful if wrapping a string in
             this code
         '''
-        self.code = code
-        self.s = s
-        self.end_code = end_code
+        self.code = str(code) if code is not None else ''
+        self.s = str(s) if s is not None else ''
+        self.end_code = str(end_code) if end_code is not None else ''
 
     def prompt(self):
         '''
@@ -158,7 +158,7 @@ def pypsi_print(*args, sep=' ', end='\n', file=None, flush=True, width=None, wra
                 if file.isatty():
                     parts.append(str(arg))
                 elif arg.s:
-                    parts.append(str(arg.s))
+                    parts.append(arg.s)
             else:
                 parts.append(str(arg))
 
@@ -190,7 +190,7 @@ def pypsi_print(*args, sep=' ', end='\n', file=None, flush=True, width=None, wra
                 if file.isatty():
                     file.write(str(arg))
                 elif arg.s:
-                    file.write(str(arg.s))
+                    file.write(arg.s)
             else:
                 file.write(str(arg))
 
