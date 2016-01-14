@@ -30,6 +30,8 @@
 
 import sys
 from pypsi.format import get_lines, wrap_line
+from pypsi.os import make_ansi_stream
+
 
 '''
 Stream classes for writing to files.
@@ -155,6 +157,8 @@ def pypsi_print(*args, sep=' ', end='\n', file=None, flush=True, width=None, wra
             elif isinstance(arg, AnsiCode):
                 if file.isatty():
                     parts.append(str(arg))
+                elif arg.s:
+                    parts.append(str(arg.s))
             else:
                 parts.append(str(arg))
 
@@ -182,7 +186,14 @@ def pypsi_print(*args, sep=' ', end='\n', file=None, flush=True, width=None, wra
     else:
         last = len(args) - 1
         for (i, arg) in enumerate(args):
-            file.write(str(arg))
+            if isinstance(arg, AnsiCode):
+                if file.isatty():
+                    file.write(str(arg))
+                elif arg.s:
+                    file.write(str(arg.s))
+            else:
+                file.write(str(arg))
+
             if sep and i != last:
                 file.write(sep)
 
@@ -222,7 +233,7 @@ class AnsiStream(object):
         :param int width: the streams width, which is used by
             :meth:`pypsi_print` and :meth:`pypsi.format.wrap_line`
         '''
-        self.stream = stream
+        self.stream = make_ansi_stream(stream)
         self.ansi_mode = ansi_mode
         self.redirects = []
         self.width = width
@@ -239,7 +250,7 @@ class AnsiStream(object):
             should take place)
         '''
         self.redirects.append((self.stream, self.width))
-        self.stream = stream
+        self.stream = make_ansi_stream(stream)
         self.width = width
 
     def reset(self, state=None):

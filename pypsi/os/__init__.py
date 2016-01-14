@@ -27,3 +27,13 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+
+# flake8: noqa
+
+import sys
+
+
+if sys.platform == 'win32':
+    from pypsi.os.win32 import make_ansi_stream
+elif sys.platform == 'cygwin' or sys.platform.startswith('linux'):
+    from pypsi.os.unix import make_ansi_stream

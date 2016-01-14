@@ -68,3 +68,10 @@ def unix_path_completer(shell, args, prefix):
     else:
         return []
 
+
+def make_ansi_stream(stream):
+    '''
+    Create an ANSI-code compatible file stream. Unix file streams support ANSI
+    escape codes, so we don't need to do anything special.
+    '''
+    return stream

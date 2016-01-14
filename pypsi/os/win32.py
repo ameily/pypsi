@@ -33,6 +33,9 @@ Windows specific functions
 '''
 
 import os
+import ctypes
+import re
+import msvcrt
 
 
 def win32_path_completer(shell, args, prefix):
@@ -73,3 +76,134 @@ def win32_path_completer(shell, args, prefix):
         return dirs + files
     else:
         return []
+
+
+#: Map of ANSI escape color code to Windows Console text attribute
+ANSI_CODE_MAP = {
+    '0;30m': 0x0,              # black
+    '0;31m': 0x4,              # red
+    '0;32m': 0x2,              # green
+    '0;33m': 0x4+0x2,          # brown?
+    '0;34m': 0x1,              # blue
+    '0;35m': 0x1+0x4,          # purple
+    '0;36m': 0x2+0x4,          # cyan
+    '0;37m': 0x1+0x2+0x4,      # grey
+    '1;30m': 0x1+0x2+0x4,      # dark gray
+    '1;31m': 0x4+0x8,          # red
+    '1;32m': 0x2+0x8,          # light green
+    '1;33m': 0x4+0x2+0x8,      # yellow
+    '1;34m': 0x1+0x8,          # light blue
+    '1;35m': 0x1+0x4+0x8,      # light purple
+    '1;36m': 0x1+0x2+0x8,      # light cyan
+    '1;37m': 0x1+0x2+0x4+0x8,  # white
+    '0m': None
+}
+
+ANSI_CODE_RE = re.compile('\x1b\\[([0-9;]+[HJm])')
+
+##############################################################################
+#
+# The following ctypes definitions and Windows DLL function were pulled from
+# https://www.burgaud.com/bring-colors-to-the-windows-console-with-python/
+
+SetConsoleTextAttribute = ctypes.windll.kernel32.SetConsoleTextAttribute
+GetConsoleScreenBufferInfo = ctypes.windll.kernel32.GetConsoleScreenBufferInfo
+
+SHORT = ctypes.c_short
+WORD = ctypes.c_ushort
+
+
+class COORD(ctypes.Structure):
+    """struct in wincon.h."""
+    _fields_ = [
+        ("X", SHORT),
+        ("Y", SHORT)
+    ]
+
+
+class SMALL_RECT(ctypes.Structure):
+    """struct in wincon.h."""
+    _fields_ = [
+        ("Left", SHORT),
+        ("Top", SHORT),
+        ("Right", SHORT),
+        ("Bottom", SHORT)
+    ]
+
+
+class CONSOLE_SCREEN_BUFFER_INFO(ctypes.Structure):
+    """struct in wincon.h."""
+    _fields_ = [
+        ("dwSize", COORD),
+        ("dwCursorPosition", COORD),
+        ("wAttributes", WORD),
+        ("srWindow", SMALL_RECT),
+        ("dwMaximumWindowSize", COORD)
+    ]
+
+##############################################################################
+
+
+class Win32AnsiStream(object):
+    '''
+    Windows stream wrapper that translates ANSI escape code to Windows Console
+    API calls. Windows stream are not compatible with ANSI escape codes, so
+    this class is a shim to provide transparent ANSI escape code support for
+    Windows platforms.
+    '''
+
+    def __init__(self, stream):
+        self.stream = stream
+        self._win32_flush_pending = False
+
+        try:
+            self._win32_handle = msvcrt.get_osfhandle(stream.fileno())
+        except:
+            # stream is not a real File (ie. StringIO).
+            self._win32_handle = None
+            self._win32_console_initial_attrs = None
+        else:
+            csbi = CONSOLE_SCREEN_BUFFER_INFO()
+            GetConsoleScreenBufferInfo(self._win32_handle, ctypes.byref(csbi))
+            self._win32_console_initial_attrs = csbi.wAttributes
+
+    def _win32_set_console_attrs(self, attrs):
+        SetConsoleTextAttribute(self._win32_handle, attrs)
+
+    def write(self, data):
+        if not self._win32_handle:
+            return self.stream.write(data)
+
+        in_code = False
+        for chunk in ANSI_CODE_RE.split(data):
+            if chunk:
+                if in_code:
+                    attrs = ANSI_CODE_MAP.get(chunk)
+                    if attrs is None and chunk == '0m':
+                        attrs = self._win32_console_initial_attrs
+
+                    if attrs is not None:
+                        if self._win32_flush_pending:
+                            self.stream.flush()
+                        self._win32_set_console_attrs(attrs)
+                else:
+                    self.stream.write(chunk)
+                    self._win32_flush_pending = True
+            in_code = not in_code
+        return len(data)
+
+    def flush(self):
+        self.stream.flush()
+        self._win32_flush_pending = False
+
+    def __getattr__(self, attr):
+        return getattr(self.stream, attr)
+
+
+def make_ansi_stream(stream):
+    '''
+    Used by the Pypsi pipe line to create ANSI escape code compatible streams.
+    '''
+    if isinstance(stream, Win32AnsiStream):
+        return stream
+    return Win32AnsiStream(stream)
