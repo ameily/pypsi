@@ -34,6 +34,7 @@ from pypsi.namespace import Namespace
 from pypsi.cmdline import StringToken, OperatorToken, WhitespaceToken
 from pypsi.completers import path_completer
 from pypsi.stream import AnsiStream, AnsiCodes, pypsi_print, AnsiCode
+from pypsi.os import make_ansi_stream
 import readline
 import sys
 
@@ -82,10 +83,14 @@ class Shell(object):
     def bootstrap(self):
         import builtins
         if not isinstance(sys.stdout, AnsiStream):
-            sys.stdout = AnsiStream(sys.stdout, width=self.width)
+            sys.stdout = make_ansi_stream(
+                AnsiStream(sys.stdout, width=self.width)
+            )
 
         if not isinstance(sys.stderr, AnsiStream):
-            sys.stderr = AnsiStream(sys.stderr, width=self.width)
+            sys.stderr = make_ansi_stream(
+                AnsiStream(sys.stderr, width=self.width)
+            )
 
         if builtins.print != pypsi_print:
             builtins.print = pypsi_print
