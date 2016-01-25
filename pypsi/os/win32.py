@@ -179,7 +179,7 @@ class Win32AnsiStream(object):
         in_code = False
         for chunk in ANSI_CODE_RE.split(data):
             if chunk:
-                if in_code:
+                if in_code and self.stream.isatty():
                     attrs = ANSI_CODE_MAP.get(chunk)
                     if attrs is None and chunk == '0m':
                         attrs = self._win32_console_initial_attrs
@@ -193,7 +193,7 @@ class Win32AnsiStream(object):
                         self._win32_set_console_attrs(
                             (self._win32_current_attrs & 0xfffffff0) | attrs
                         )
-                else:
+                elif not in_code:
                     self.stream.write(chunk)
                     self._win32_flush_pending = True
             in_code = not in_code
