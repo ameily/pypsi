@@ -38,7 +38,7 @@ __all__ = [
 def is_exe(path):
     (name, ext) = os.path.splitext(path)
     return (
-        os.isfile(path) and
+        os.path.isfile(path) and
         ext.lower() in ('.exe', '.bat')
     )
 

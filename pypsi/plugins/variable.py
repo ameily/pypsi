@@ -183,7 +183,7 @@ class VariableToken(Token):
 def get_subtokens(token, prefix):
     escape = False
     index = token.index
-    subt = ''
+    subt = None
     var = None
     for c in token.text:
         if escape:
