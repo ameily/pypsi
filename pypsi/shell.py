@@ -450,6 +450,40 @@ class Shell(object):
             return ret
         return ''
 
+    def _clean_completions(self, completions, quotation):
+        escape_char = self.features.escape_char
+
+        if len(completions) == 1:
+            if escape_char:
+                if quotation:
+                    # We are quotes. Escape items with the same quotations and the
+                    # escape character itself
+                    completions = [
+                        escape_string(entry, escape_char, quotation)
+                            for entry in completions
+                    ]
+                else:
+                    # We are not in quotes. Escape whitespace and the escape
+                    # character
+                    completions = [
+                        escape_string(entry, escape_char) for entry in completions
+                    ]
+
+            # Entries that end in a null byte, \0, need to close the current
+            # quotation or add whitespace so that further tab completions don't
+            # return the same result.
+            completions = [
+                entry[:-1] + (quotation or ' ') if entry.endswith('\0') else entry
+                    for entry in completions
+            ]
+
+        fp = open('completions.txt', 'w')
+        print("Quote: '", quotation, "'", sep='', file=fp)
+        print("\n".join(completions), file=fp)
+        fp.close()
+
+        return completions
+
     def get_completions(self, line, prefix):
         try:
             parser = StatementParser(TabCompletionFeatures(self.features))
@@ -466,10 +500,10 @@ class Shell(object):
             args = []
             next_arg = True
             ret = []
-            in_quote = False
+            in_quote = None
             for token in tokens:
                 if isinstance(token, StringToken):
-                    in_quote = token.open_quote
+                    in_quote = token.quote if token.open_quote else None
                     if not cmd_name:
                         cmd_name = token.text
                         loc = 'name'
@@ -482,7 +516,7 @@ class Shell(object):
                         else:
                             args[-1] += token.text
                 elif isinstance(token, OperatorToken):
-                    in_quote = False
+                    in_quote = None
                     if token.operator in ('|', ';', '&&', '||'):
                         cmd_name = None
                         args = []
@@ -491,7 +525,7 @@ class Shell(object):
                         loc = 'path'
                         args = []
                 elif isinstance(token, WhitespaceToken):
-                    in_quote = False
+                    in_quote = None
                     if loc == 'name':
                         loc = None
                     next_arg = True
@@ -513,12 +547,7 @@ class Shell(object):
                     cmd = self.commands[cmd_name]
                     ret = cmd.complete(self, args, prefix)
 
-            if not in_quote and len(ret) == 1 and ret[0].startswith(prefix):
-                # We are not in quotes so we need to double-escape escape
-                # characters. For example, if tab complete returns a result
-                # "\A-Folder" and the escape character is "\", escape the kescape
-                # character so the result is "\\A-Folder".
-                ret = [escape_string(s, self.features.escape_char) for s in ret]
+            ret = self._clean_completions(ret, in_quote)
 
             with open('ans.txt', 'w') as fp:
                 for i in ret:
