@@ -16,14 +16,18 @@
 #
 
 from pypsi.cmdline import (StatementParser, StatementSyntaxError,
-                           IORedirectionError, CommandNotFoundError)
+                           IORedirectionError, CommandNotFoundError,
+                           StringToken, OperatorToken, WhitespaceToken,
+                           UnclosedQuotationError, TrailingEscapeError)
+
 from pypsi.namespace import Namespace
-from pypsi.cmdline import StringToken, OperatorToken, WhitespaceToken
 from pypsi.completers import path_completer
 from pypsi.os import is_path_prefix
 from pypsi.ansi import AnsiCodes
+from pypsi.features import BashFeatures
 from pypsi.core import pypsi_print, Plugin, Command
 from pypsi.pipes import ThreadLocalStream, InvocationThread
+from pypsi.utils import escape_string
 import readline
 import sys
 import os
@@ -35,7 +39,8 @@ class Shell(object):
     to inherit this base class.
     '''
 
-    def __init__(self, shell_name='pypsi', width=79, exit_rc=-1024, ctx=None):
+    def __init__(self, shell_name='pypsi', width=79, exit_rc=-1024, ctx=None,
+                 features=None):
         '''
         Subclasses need to call the Shell constructor to properly initialize
         it.
@@ -60,8 +65,8 @@ class Shell(object):
         self.plugins = []
         self.prompt = "{name} )> ".format(name=shell_name)
         self.ctx = ctx or Namespace()
+        self.features = features or BashFeatures()
 
-        self.parser = StatementParser()
         self.default_cmd = None
         self.register_base_plugins()
         self.fallback_cmd = None
@@ -178,6 +183,17 @@ class Shell(object):
         if readline.get_completer() == self.complete:
             readline.set_completer(self._backup_completer)
 
+    def on_input_canceled(self):
+        for pp in self.preprocessors:
+            pp.on_input_canceled(self)
+
+    def on_tokenize(self, tokens, origin):
+        for pp in self.preprocessors:
+            tokens = pp.on_tokenize(self, tokens, origin)
+            if not tokens:
+                break
+        return tokens
+
     def cmdloop(self):
         '''
         Begin the input processing loop where the user will be prompted for
@@ -193,26 +209,35 @@ class Shell(object):
                 try:
                     raw = input(self.get_current_prompt())
                 except EOFError:
-                    if self.eof_is_sigint:
-                        print()
-                        for pp in self.preprocessors:
-                            pp.on_input_canceled(self)
-                    else:
+                    print()
+                    self.on_input_canceled()
+                    if not self.features.eof_is_sigint:
                         self.running = False
                         print("exiting....")
                 except KeyboardInterrupt:
                     print()
-                    for pp in self.preprocessors:
-                        pp.on_input_canceled(self)
+                    self.on_input_canceled()
                 else:
+                    rc = None
                     try:
                         rc = self.execute(raw)
-                        for pp in self.postprocessors:
-                            pp.on_statement_finished(self, rc)
                     except SystemExit as e:
                         rc = e.code
                         print("exiting....")
                         self.running = False
+                    except KeyboardInterrupt:
+                        # Bash returns 130 if a command was interrupted
+                        rc = 130
+                        print()
+                    except EOFError:
+                        # Bash returns 1 for Ctrl+D
+                        rc = 1
+                        print()
+                    finally:
+                        if rc is not None:
+                            self.errno = rc
+                            for pp in self.postprocessors:
+                                pp.on_statement_finished(self, rc)
         finally:
             self.on_cmdloop_end()
             self.reset_readline_completer()
@@ -239,14 +264,37 @@ class Shell(object):
         :returns int: the return code of the statement.
         '''
 
-        tokens = self.preprocess(raw, 'input')
-        if not tokens:
-            return 0
+        parser = StatementParser(self.features)
+        input_complete = False
+        while not input_complete:
+            text = self.preprocess(raw, 'input')
+            if text is None:
+                return None
 
+            try:
+                tokens = parser.tokenize(text)
+            except (UnclosedQuotationError, TrailingEscapeError):
+                input_complete = False
+            else:
+                # Parsing succeeded, break out of the input loop
+                input_complete = True
+
+            if not input_complete:
+                # This is a multiline input
+                try:
+                    raw = input("> ")
+                except (EOFError, KeyboardInterrupt) as e:
+                    self.on_input_canceled()
+                    raise e
+
+        tokens = self.on_tokenize(tokens, 'input')
         statement = None
 
+        if not tokens:
+            return None
+
         try:
-            statement = self.parser.build(tokens)
+            statement = parser.build(tokens)
         except StatementSyntaxError as e:
             self.error(str(e))
             return 1
@@ -385,25 +433,16 @@ class Shell(object):
         for pp in self.preprocessors:
             raw = pp.on_input(self, raw)
             if raw is None:
-                return None
-
-        tokens = self.parser.tokenize(raw)
-        for pp in self.preprocessors:
-            tokens = pp.on_tokenize(self, tokens, origin)
-            if tokens is None:
                 break
 
-        return tokens
+        return raw
 
     def preprocess_single(self, raw, origin):
-        tokens = [StringToken(0, raw, quote='"')]
-        for pp in self.preprocessors:
-            tokens = pp.on_tokenize(self, tokens, origin)
-            if not tokens:
-                break
+        tokens = self.on_tokenize([StringToken(0, raw, quote='"')], origin)
 
         if tokens:
-            self.parser.clean_escapes(tokens)
+            parser = StatementParser(self.features)
+            parser.clean_escapes(tokens)
             ret = ''
             for token in tokens:
                 ret += token.text
@@ -411,14 +450,18 @@ class Shell(object):
         return ''
 
     def get_completions(self, line, prefix):
-        tokens = self.parser.tokenize(line)
+        parser = StatementParser()
+        tokens = parser.tokenize(line)
+
         cmd_name = ""
         loc = None
         args = []
         next_arg = True
         ret = []
+        in_quote = False
         for token in tokens:
             if isinstance(token, StringToken):
+                in_quote = token.open_quote
                 if not cmd_name:
                     cmd_name = token.text
                     loc = 'name'
@@ -431,6 +474,7 @@ class Shell(object):
                     else:
                         args[-1] += token.text
             elif isinstance(token, OperatorToken):
+                in_quote = False
                 if token.operator in ('|', ';', '&&', '||'):
                     cmd_name = None
                     args = []
@@ -439,6 +483,7 @@ class Shell(object):
                     loc = 'path'
                     args = []
             elif isinstance(token, WhitespaceToken):
+                in_quote = False
                 if loc == 'name':
                     loc = None
                 next_arg = True
@@ -459,6 +504,14 @@ class Shell(object):
 
                 cmd = self.commands[cmd_name]
                 ret = cmd.complete(self, args, prefix)
+
+        if not in_quote and len(ret) == 1:
+            # We are not in quotes so we need to double-escape escape
+            # characters. For example, if tab complete returns a result
+            # "\A-Folder" and the escape character is "\", escape the kescape
+            # character so the result is "\\A-Folder".
+            ret = [escape_string(s, self.features.escape_char) for s in ret]
+
         return ret
 
     def get_command_name_completions(self, prefix):

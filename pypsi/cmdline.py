@@ -513,7 +513,7 @@ class CommandInvocation(object):
         )
 
 
-class StatementSyntaxError(Exception):
+class StatementSyntaxError(SyntaxError):
     '''
     Invalid statement syntax was entered.
     '''
@@ -530,19 +530,33 @@ class StatementSyntaxError(Exception):
         return "syntax error at {}: {}".format(self.index, self.message)
 
 
+class UnclosedQuotationError(StatementSyntaxError):
+    '''
+    The final token contains an unclosed quotation.
+    '''
+
+    def __init__(self, index):
+        super(UnclosedQuotationError, self).__init__("unclosed quotation",
+                                                     index)
+
+
+class TrailingEscapeError(StatementSyntaxError):
+    '''
+    The final token ends with an escape character.
+    '''
+
+    def __init__(self, index):
+        super(TrailingEscapeError, self).__init__("trailing escape character",
+                                                  index)
+
+
 class StatementParser(object):
     '''
     Parses raw user input into a :class:`Statement`.
     '''
 
-    def __init__(self):
-        pass
-
-    def reset(self):
-        '''
-        Reset parsing state.
-        '''
-
+    def __init__(self, features=None):
+        self.features = features
         self.tokens = []
         self.token = None
 
@@ -580,7 +594,6 @@ class StatementParser(object):
         :param str line: the line of text to tokenize
         :returns: `list` of :class:`Token` objects
         '''
-        self.reset()
         index = 0
         for c in line:
             self.process(index, c)
@@ -589,8 +602,25 @@ class StatementParser(object):
         if self.token:
             if isinstance(self.token, StringToken):
                 if self.token.escape:
-                    self.token.text += '\\'
-                    self.token.escape = False
+                    if self.features and self.features.multiline:
+                        # The last character in the input was an escape and the
+                        # shell supports multiline input. Switch back to the
+                        # shell to allow further input.
+                        raise TrailingEscapeError(self.token.index)
+                    else:
+                        self.token.text += self.features.escape_char
+                        self.token.escape = False
+                elif self.token.open_quote:
+                    if self.features and self.features.multiline:
+                        # The last token is an unclosed quotation and the shell
+                        # supports multiline line input. Switch back to the
+                        # shell to allow further input.
+                        #
+                        # We add a newline to the last text token since we are
+                        # in a quoted string.
+                        self.token.text += '\n'
+                        raise UnclosedQuotationError(self.token.index)
+
             self.tokens.append(self.token)
 
         return self.tokens
