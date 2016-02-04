@@ -78,7 +78,7 @@ class WhitespaceToken(Token):
             return TokenEnd
 
     def __str__(self):
-        return "WhitespaceToken( {} )".format(self.c)
+        return "WhitespaceToken( {} )".format(self.text)
 
     def __eq__(self, other):
         return isinstance(other, WhitespaceToken)

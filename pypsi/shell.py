@@ -24,7 +24,7 @@ from pypsi.namespace import Namespace
 from pypsi.completers import path_completer
 from pypsi.os import is_path_prefix
 from pypsi.ansi import AnsiCodes
-from pypsi.features import BashFeatures
+from pypsi.features import BashFeatures, TabCompletionFeatures
 from pypsi.core import pypsi_print, Plugin, Command
 from pypsi.pipes import ThreadLocalStream, InvocationThread
 from pypsi.utils import escape_string
@@ -178,6 +178,7 @@ class Shell(object):
             readline.parse_and_bind("tab: complete")
             self._backup_completer = readline.get_completer()
             readline.set_completer(self.complete)
+            #readline.set_completer_delims("")
 
     def reset_readline_completer(self):
         if readline.get_completer() == self.complete:
@@ -450,67 +451,83 @@ class Shell(object):
         return ''
 
     def get_completions(self, line, prefix):
-        parser = StatementParser()
-        tokens = parser.tokenize(line)
+        try:
+            parser = StatementParser(TabCompletionFeatures(self.features))
+            tokens = parser.tokenize(line)
+            parser.clean_escapes(tokens)
 
-        cmd_name = ""
-        loc = None
-        args = []
-        next_arg = True
-        ret = []
-        in_quote = False
-        for token in tokens:
-            if isinstance(token, StringToken):
-                in_quote = token.open_quote
-                if not cmd_name:
-                    cmd_name = token.text
-                    loc = 'name'
-                elif loc == 'name':
-                    cmd_name += token.text
+            with open("tabs.txt", 'w') as fp:
+                print(line, file=fp)
+                print(' || '.join([str(t) for t in tokens]), file=fp)
+                print(prefix, file=fp)
+
+            cmd_name = ""
+            loc = None
+            args = []
+            next_arg = True
+            ret = []
+            in_quote = False
+            for token in tokens:
+                if isinstance(token, StringToken):
+                    in_quote = token.open_quote
+                    if not cmd_name:
+                        cmd_name = token.text
+                        loc = 'name'
+                    elif loc == 'name':
+                        cmd_name += token.text
+                    else:
+                        if next_arg:
+                            args.append(token.text)
+                            next_arg = False
+                        else:
+                            args[-1] += token.text
+                elif isinstance(token, OperatorToken):
+                    in_quote = False
+                    if token.operator in ('|', ';', '&&', '||'):
+                        cmd_name = None
+                        args = []
+                        next_arg = True
+                    elif token.operator in ('>', '<', '>>'):
+                        loc = 'path'
+                        args = []
+                elif isinstance(token, WhitespaceToken):
+                    in_quote = False
+                    if loc == 'name':
+                        loc = None
+                    next_arg = True
+
+            if loc == 'path':
+                ret = path_completer(''.join(args))
+            elif not cmd_name or loc == 'name':
+                if is_path_prefix(cmd_name):
+                    ret = path_completer(cmd_name)
+                else:
+                    ret = self.get_command_name_completions(cmd_name)
+            else:
+                if cmd_name not in self.commands:
+                    ret = []
                 else:
                     if next_arg:
-                        args.append(token.text)
-                        next_arg = False
-                    else:
-                        args[-1] += token.text
-            elif isinstance(token, OperatorToken):
-                in_quote = False
-                if token.operator in ('|', ';', '&&', '||'):
-                    cmd_name = None
-                    args = []
-                    next_arg = True
-                elif token.operator in ('>', '<', '>>'):
-                    loc = 'path'
-                    args = []
-            elif isinstance(token, WhitespaceToken):
-                in_quote = False
-                if loc == 'name':
-                    loc = None
-                next_arg = True
+                        args.append('')
 
-        if loc == 'path':
-            ret = path_completer(''.join(args))
-        elif not cmd_name or loc == 'name':
-            if is_path_prefix(cmd_name):
-                ret = path_completer(cmd_name)
-            else:
-                ret = self.get_command_name_completions(cmd_name)
-        else:
-            if cmd_name not in self.commands:
-                ret = []
-            else:
-                if next_arg:
-                    args.append('')
+                    cmd = self.commands[cmd_name]
+                    ret = cmd.complete(self, args, prefix)
 
-                cmd = self.commands[cmd_name]
-                ret = cmd.complete(self, args, prefix)
+            if not in_quote and len(ret) == 1 and ret[0].startswith(prefix):
+                # We are not in quotes so we need to double-escape escape
+                # characters. For example, if tab complete returns a result
+                # "\A-Folder" and the escape character is "\", escape the kescape
+                # character so the result is "\\A-Folder".
+                ret = [escape_string(s, self.features.escape_char) for s in ret]
 
-        if not in_quote and len(ret) == 1:
-            # We are not in quotes so we need to double-escape escape
-            # characters. For example, if tab complete returns a result
-            # "\A-Folder" and the escape character is "\", escape the kescape
-            # character so the result is "\\A-Folder".
-            ret = [escape_string(s, self.features.escape_char) for s in ret]
+            with open('ans.txt', 'w') as fp:
+                for i in ret:
+                    print(i, file=fp)
+
+        except Exception as e:
+            import traceback
+            with open("bug.txt", 'w') as fp:
+                print(traceback.format_exc(), file=fp)
 
         return ret
 
