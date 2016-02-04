@@ -326,7 +326,7 @@ class PromptWizard(object):
     namespace's ``ip_addr`` attribute.
     '''
 
-    def __init__(self, name, description, steps=None):
+    def __init__(self, name, description, steps=None, features=None):
         '''
         :param str name: the prompt wizard name to display to the user
         :param str description: a short description of what the wizard does
@@ -336,7 +336,7 @@ class PromptWizard(object):
         self.description = description
         self.steps = steps
         self.values = Namespace()
-        self.parser = StatementParser()
+        self.parser = StatementParser(features)
 
     def run(self, shell, print_header=True):
         '''
