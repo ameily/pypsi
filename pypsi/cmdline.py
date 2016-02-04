@@ -47,11 +47,12 @@ class Token(object):
     Base class for all tokens.
     '''
 
-    def __init__(self, index):
+    def __init__(self, index, features=None):
         '''
         :param int index: the starting index of this token
         '''
         self.index = index
+        self.features = None
 
 
 class WhitespaceToken(Token):
@@ -59,8 +60,9 @@ class WhitespaceToken(Token):
     Whitespace token that can contain any number of whitespace characters.
     '''
 
-    def __init__(self, index):
-        super(WhitespaceToken, self).__init__(index)
+    def __init__(self, index, c=' ', features=None):
+        super(WhitespaceToken, self).__init__(index, features)
+        self.text = c
 
     def add_char(self, c):
         '''
@@ -70,11 +72,13 @@ class WhitespaceToken(Token):
         :returns int: TokenEnd or TokenContinue
         '''
         if c in (' ', '\t', '\xa0'):
+            self.text += c
             return TokenContinue
-        return TokenEnd
+        else:
+            return TokenEnd
 
     def __str__(self):
-        return "WhitespaceToken()"
+        return "WhitespaceToken( {} )".format(self.c)
 
     def __eq__(self, other):
         return isinstance(other, WhitespaceToken)
@@ -86,13 +90,14 @@ class StringToken(Token):
     escaped whitespace characters.
     '''
 
-    def __init__(self, index, c, quote=None):
+    def __init__(self, index, c, quote=None, features=None):
         '''
         :param str c: the current string or character
         :param str quote: the surrounding quotes, `None` if there isn't any
         '''
-        super(StringToken, self).__init__(index)
+        super(StringToken, self).__init__(index, features)
         self.quote = quote
+        self._escape_char = features.escape_char if features else ''
         self.escape = False
         self.text = ''
         self.open_quote = False
@@ -100,7 +105,7 @@ class StringToken(Token):
         if c in ('"', "'"):
             self.quote = c
             self.open_quote = True
-        elif c == '\\':
+        elif c == self._escape_char:
             self.escape = True
         else:
             self.text += c
@@ -118,26 +123,26 @@ class StringToken(Token):
             if self.quote:
                 if c == self.quote:
                     self.text += c
-                elif c == '\\':
-                    self.text += '\\'
+                elif c is self._escape_char:
+                    self.text += self._escape_char
                 else:
-                    self.text += '\\'
+                    self.text += self._escape_char
                     self.text += c
             elif c in (' ', '\t', "'", "\"") or c in OperatorToken.Operators:
                 self.text += c
             else:
-                self.text += '\\'
+                self.text += self._escape_char
                 self.text += c
         elif self.quote:
             if c == self.quote:
                 ret = TokenTerm
                 self.open_quote = False
-            elif c == '\\':
+            elif c == self._escape_char:
                 self.escape = True
             else:
                 self.text += c
         else:
-            if c == '\\':
+            if c == self._escape_char:
                 self.escape = True
             elif c in (' ', '\t', ';', '|', '&', '>', '<', '\xa0'):
                 ret = TokenEnd
@@ -585,7 +590,7 @@ class StatementParser(object):
             elif c in ('>', '<', '|', '&', ';'):
                 self.token = OperatorToken(index, c)
             else:
-                self.token = StringToken(index, c)
+                self.token = StringToken(index, c, features=self.features)
 
     def tokenize(self, line):
         '''
@@ -631,9 +636,10 @@ class StatementParser(object):
 
         :param list tokens: :class:`Token` objects to remove escape sequences
         '''
+        escape_char = self.features.escape_char if self.features else ''
         for token in tokens:
             if not isinstance(token, StringToken) or (
-                    '\\' not in token.text or token.quote):
+                    escape_char not in token.text or token.quote):
                 continue
 
             text = ''
@@ -642,7 +648,7 @@ class StatementParser(object):
                 if escape:
                     text += c
                     escape = False
-                elif c == '\\':
+                elif c == escape_char:
                     escape = True
                 else:
                     text += c

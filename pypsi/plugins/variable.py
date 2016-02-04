@@ -180,7 +180,7 @@ class VariableToken(Token):
         return "VariableToken( {} )".format(self.var)
 
 
-def get_subtokens(token, prefix):
+def get_subtokens(token, prefix, features):
     escape = False
     index = token.index
     subt = None
@@ -202,7 +202,8 @@ def get_subtokens(token, prefix):
                     if c == '\\':
                         escape = True
                         c = ''
-                    subt = StringToken(index, c, token.quote)
+                    subt = StringToken(index, c, token.quote,
+                                       features=features)
         elif c == prefix:
             if subt:
                 yield subt
@@ -214,7 +215,7 @@ def get_subtokens(token, prefix):
                 c = ''
 
             if not subt:
-                subt = StringToken(index, c, token.quote)
+                subt = StringToken(index, c, token.quote, features=features)
             else:
                 subt.text += c
         index += 1
@@ -317,7 +318,7 @@ class VariablePlugin(Plugin):
                 ret.append(token)
                 continue
 
-            for subt in get_subtokens(token, self.prefix):
+            for subt in get_subtokens(token, self.prefix, shell.features):
                 if isinstance(subt, StringToken):
                     ret.append(subt)
                     continue

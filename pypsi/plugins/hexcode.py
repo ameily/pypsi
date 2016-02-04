@@ -33,8 +33,9 @@ class HexCodePlugin(Plugin):
         super(HexCodePlugin, self).__init__(preprocess=preprocess, **kwargs)
 
     def on_tokenize(self, shell, tokens, origin):
+        escape_char = shell.features.escape_char
         for token in tokens:
-            if not isinstance(token, StringToken) or '\\' not in token.text:
+            if not isinstance(token, StringToken) or escape_char not in token.text:
                 continue
 
             escape = False
@@ -46,7 +47,7 @@ class HexCodePlugin(Plugin):
                     if c == 'x':
                         hexcode = ''
                     else:
-                        text += '\\' + c
+                        text += escape_char + c
                 elif hexcode is not None:
                     hexcode += c
                     if len(hexcode) == 2:
@@ -57,7 +58,7 @@ class HexCodePlugin(Plugin):
                         except ValueError:
                             text += '\\x' + hexcode
                             hexcode = None
-                elif c == '\\':
+                elif c == escape_char:
                     escape = True
                 else:
                     text += c
@@ -66,7 +67,7 @@ class HexCodePlugin(Plugin):
                 text += '\\x' + hexcode
 
             if escape:
-                text += '\\'
+                text += escape_char
 
             token.text = text
         return tokens
