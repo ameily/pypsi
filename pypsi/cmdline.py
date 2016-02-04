@@ -664,6 +664,11 @@ class StatementParser(object):
         condensed = []
         for token in tokens:
             if isinstance(token, StringToken):
+                if (token.quote and self.features and
+                        self.features.preserve_quotes):
+                    token.text = "{q}{t}{q}".format(q=token.quote,
+                                                    t=token.text)
+
                 if isinstance(prev, StringToken):
                     prev.combine_token(token)
                     token = prev
