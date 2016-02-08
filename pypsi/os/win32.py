@@ -71,7 +71,7 @@ def find_bins_in_path():
     return bins
 
 
-def path_completer(path):
+def path_completer(path, prefix):
     path = path.replace('/', '\\')
 
     if not is_path_prefix(path):
@@ -79,10 +79,10 @@ def path_completer(path):
 
     if path.endswith('\\'):
         root = path[:-1] or '\\'
-        prefix = ''
+        filename = ''
     else:
         root = os.path.dirname(path)
-        prefix = os.path.basename(path)
+        filename = os.path.basename(path)
 
     if not os.path.isdir(root):
         return []
@@ -91,14 +91,19 @@ def path_completer(path):
     dirs = []
     for entry in os.listdir(root):
         full = os.path.join(root, entry)
-        if not prefix or entry.startswith(prefix):
+        if entry.startswith(filename):
             if os.path.isdir(full):
                 dirs.append(entry + '\\')
             else:
                 files.append(entry + '\0')
-    files = sorted(files)
-    dirs = sorted(dirs)
-    return dirs + files
+
+    entries = sorted(dirs) + sorted(files)
+    if prefix != filename:
+        skip = len(filename) - len(prefix)
+        display_prefix = filename[:skip]
+        entries = [x[skip:] for x in entries] #(display_prefix, [x[skip:] for x in entries])
+
+    return entires
 
 
 if sys.platform == 'win32':
