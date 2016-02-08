@@ -27,7 +27,8 @@ from pypsi.utils import safe_open
 __all__ = (
     'Token', 'StringToken', 'OperatorToken', 'WhitespaceToken',
     'IORedirectionError', 'StatementParser', 'StatementSyntaxError',
-    'CommandNotFoundError', 'CommandInvocation', 'Expression', 'Statement'
+    'CommandNotFoundError', 'CommandInvocation', 'Expression', 'Statement',
+    'TrailingEscapeError', 'UnclosedQuotationError'
 )
 
 
