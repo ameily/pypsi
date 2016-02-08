@@ -25,6 +25,7 @@ easily modified.
 
 from pypsi.shell import Shell
 from pypsi.core import Command
+from pypsi.features import BashFeatures
 from pypsi.plugins.cmd import CmdPlugin
 from pypsi.plugins.block import BlockPlugin
 from pypsi.plugins.hexcode import HexCodePlugin
@@ -47,7 +48,7 @@ from pypsi.plugins.comment import CommentPlugin
 
 from pypsi import wizard as wiz
 from pypsi.format import Table, Column, title_str
-from pypsi.completers import path_completer
+from pypsi.completers import shell_path_completer
 
 
 from pypsi.ansi import AnsiCodes
@@ -128,7 +129,7 @@ ConfigWizard = wiz.PromptWizard(
             help='File path to log file',
             validators=wiz.file_validator,
             # Tab complete based on path
-            completer=path_completer
+            completer=shell_path_completer
         ),
         wiz.WizardStep(
             id='mode',
@@ -172,7 +173,7 @@ class DemoShell(Shell):
 
     def __init__(self):
         # You must call the Shell.__init__() method.
-        super(DemoShell, self).__init__()
+        super(DemoShell, self).__init__(features=BashFeatures())
 
         try:
             # Attempt to load tips
