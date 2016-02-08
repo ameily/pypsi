@@ -91,3 +91,21 @@ def escape_string(s, escape_char, chars=' \n\t\xa0'):
         else:
             ret += c
     return ret
+
+
+def get_string_lcd(entries):
+    if len(entries) > 1:
+        lcd = entries[0]
+        for entry in entries[1:]:
+            if len(entry) < len(lcd):
+                lcd = lcd[:len(entry)]
+
+            if not lcd or not entry.startswith(lcd):
+                lcd = ''
+                break
+    elif entries:
+        lcd = entries[0]
+    else:
+        lcd = ''
+
+    return lcd
