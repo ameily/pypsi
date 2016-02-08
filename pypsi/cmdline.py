@@ -160,8 +160,9 @@ class StringToken(Token):
         self.quote = token.quote
 
     def __str__(self):
-        return "String( {quote}{text}{quote} )".format(
-            quote=self.quote or '',
+        return "String( {lquote}{text}{rquote} )".format(
+            lquote=self.quote or '',
+            rquote='' if self.open_quote else (self.quote or ''),
             text=self.text
         )
 
