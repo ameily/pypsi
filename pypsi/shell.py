@@ -27,7 +27,7 @@ from pypsi.ansi import AnsiCodes
 from pypsi.features import BashFeatures, TabCompletionFeatures
 from pypsi.core import pypsi_print, Plugin, Command
 from pypsi.pipes import ThreadLocalStream, InvocationThread
-from pypsi.utils import escape_string
+from pypsi.utils import escape_string, get_string_lcd
 import readline
 import sys
 import os
@@ -73,6 +73,9 @@ class Shell(object):
 
         self.eof_is_sigint = False
         self._backup_completer = readline.get_completer()
+        self._completion_matches = []
+        self._completion_display_prefix = ''
+        self.error_message = ''
 
         self.bootstrap()
 
@@ -239,6 +242,9 @@ class Shell(object):
                             self.errno = rc
                             for pp in self.postprocessors:
                                 pp.on_statement_finished(self, rc)
+                        if self.error_message:
+                            self.error(self.error_message)
+                            self.error_message = ''
         finally:
             self.on_cmdloop_end()
             self.reset_readline_completer()
@@ -450,131 +456,134 @@ class Shell(object):
             return ret
         return ''
 
-    def _clean_completions(self, completions, quotation):
+    def _clean_completions(self, completions, quote):
+        '''
+        Properly escape unquoted-characters and handle the completion
+        termination character by either closing the quote or append a space to
+        the completion result.
+        '''
         escape_char = self.features.escape_char
+        lcd = get_string_lcd(completions)
+
+        if escape_char:
+            if quote:
+                escaped_lcd = escape_string(lcd, escape_char, quote)
+            else:
+                escaped_lcd = escape_string(lcd, escape_char)
+
+            if escaped_lcd:
+                completions = [x.replace(lcd, escaped_lcd, 1) for x in completions]
 
         if len(completions) == 1:
-            if escape_char:
-                if quotation:
-                    # We are quotes. Escape items with the same quotations and the
-                    # escape character itself
-                    completions = [
-                        escape_string(entry, escape_char, quotation)
-                            for entry in completions
-                    ]
-                else:
-                    # We are not in quotes. Escape whitespace and the escape
-                    # character
-                    completions = [
-                        escape_string(entry, escape_char) for entry in completions
-                    ]
-
             # Entries that end in a null byte, \0, need to close the current
             # quotation or add whitespace so that further tab completions don't
             # return the same result.
-            completions = [
-                entry[:-1] + (quotation or ' ') if entry.endswith('\0') else entry
-                    for entry in completions
-            ]
+            term = (quote + ' ') if quote else ' '
+        else:
+            term = ''
 
-        fp = open('completions.txt', 'w')
-        print("Quote: '", quotation, "'", sep='', file=fp)
-        print("\n".join(completions), file=fp)
-        fp.close()
+        completions = [c.replace('\0', term) for c in completions]
 
         return completions
 
+    def condense(self, tokens):
+        '''
+        Combine consecutive StringTokens and drop WhitespaceTokens.
+        '''
+        results = []
+        prev = None
+        for token in tokens:
+            if isinstance(token, StringToken):
+                if prev:
+                    prev.text += token.text
+                    prev.open_quote = token.open_quote
+                    prev.quote = token.quote
+                else:
+                    results.append(token)
+                    prev = token
+            elif isinstance(token, WhitespaceToken):
+                prev = None
+            elif isinstance(token, OperatorToken):
+                prev = None
+                results.append(token)
+        return results
+
     def get_completions(self, line, prefix):
-        try:
-            parser = StatementParser(TabCompletionFeatures(self.features))
-            tokens = parser.tokenize(line)
-            parser.clean_escapes(tokens)
+        '''
+        Given a
+        '''
+        parser = StatementParser(TabCompletionFeatures(self.features))
+        tokens = self.condense(parser.tokenize(line))
 
-            with open("tabs.txt", 'w') as fp:
-                print(line, file=fp)
-                print(' || '.join([str(t) for t in tokens]), file=fp)
-                print(prefix, file=fp)
-
-            cmd_name = ""
-            loc = None
-            args = []
-            next_arg = True
-            ret = []
-            in_quote = None
-            for token in tokens:
-                if isinstance(token, StringToken):
-                    in_quote = token.quote if token.open_quote else None
-                    if not cmd_name:
-                        cmd_name = token.text
-                        loc = 'name'
-                    elif loc == 'name':
-                        cmd_name += token.text
-                    else:
-                        if next_arg:
-                            args.append(token.text)
-                            next_arg = False
-                        else:
-                            args[-1] += token.text
-                elif isinstance(token, OperatorToken):
-                    in_quote = None
-                    if token.operator in ('|', ';', '&&', '||'):
-                        cmd_name = None
-                        args = []
-                        next_arg = True
-                    elif token.operator in ('>', '<', '>>'):
-                        loc = 'path'
-                        args = []
-                elif isinstance(token, WhitespaceToken):
-                    in_quote = None
-                    if loc == 'name':
-                        loc = None
-                    next_arg = True
-
-            if loc == 'path':
-                ret = path_completer(''.join(args))
-            elif not cmd_name or loc == 'name':
-                if is_path_prefix(cmd_name):
-                    ret = path_completer(cmd_name)
+        # Command name
+        cmd_name = ""
+        loc = 'name'
+        # Command arguments
+        args = []
+        ret = []
+        last_token = None
+        for token in tokens:
+            last_token = token
+            if isinstance(token, StringToken):
+                if not cmd_name:
+                    cmd_name = token.text
+                    loc = 'args'
                 else:
-                    ret = self.get_command_name_completions(cmd_name)
+                    args.append(token.text)
+            elif isinstance(token, OperatorToken):
+                if token.operator in ('|', ';', '&&', '||'):
+                    loc = 'name'
+                    cmd_name = None
+                    args = []
+                elif token.operator in ('>', '<', '>>'):
+                    loc = 'path'
+                    args = []
+
+        if loc == 'name':
+            if is_path_prefix(cmd_name):
+                ret = path_completer(cmd_name, prefix)
             else:
-                if cmd_name not in self.commands:
-                    ret = []
-                else:
-                    if next_arg:
-                        args.append('')
+                ret = [cmd for cmd in self.commands if cmd.startswith(cmd_name or '')]
+        elif loc == 'args':
+            if cmd_name not in self.commands:
+                ret = []
+            else:
+                #args.append('')
+                # TODO is this necessary?
+                cmd = self.commands[cmd_name]
+                ret = cmd.complete(self, args, prefix)
+        else:
+            # Tab complete on the path
+            if isinstance(last_token, StringToken):
+                ret = path_completer(last_token.text, prefix)
+            else:
+                ret = path_completer('./', prefix)
 
-                    cmd = self.commands[cmd_name]
-                    ret = cmd.complete(self, args, prefix)
-
-            ret = self._clean_completions(ret, in_quote)
-
-            with open('ans.txt', 'w') as fp:
-                for i in ret:
-                    print(i, file=fp)
-
-        except Exception as e:
-            import traceback
-            with open("bug.txt", 'w') as fp:
-                print(traceback.format_exc(), file=fp)
+        quote = (last_token.quote if isinstance(last_token, StringToken) and
+                 last_token.open_quote else '')
+        ret = self._clean_completions(ret, quote)
 
         return ret
 
-    def get_command_name_completions(self, prefix):
-        return [cmd for cmd in self.commands if cmd.startswith(prefix)]
-
     def complete(self, text, state):
+        '''
+        Perform tab completion with readline.
+        '''
         if state == 0:
-            self.completion_matches = []
+            self.matches = []
             begidx = readline.get_begidx()
             endidx = readline.get_endidx()
             line = readline.get_line_buffer()
             prefix = line[begidx:endidx] if line else ''
             line = line[:endidx]
-            self.completion_matches = self.get_completions(line, prefix)
+            try:
+                self.matches = self.get_completions(line, prefix)
+            except:
+                import traceback
+                self.error_message = traceback.format_exc()
 
-        if state < len(self.completion_matches):
-            return self.completion_matches[state]
+        if state < len(self.matches):
+            return self.matches[state]
         return None
 
     def print_completion_matches(self, substitution, matches, max_len):
