@@ -20,6 +20,7 @@ Unix (Cygwin, Linux, etc) specific functions
 '''
 
 import os
+#from pypsi.core import TabCompletionResults
 
 __all__ = [
     'find_bins_in_path',
@@ -43,10 +44,13 @@ def find_bins_in_path():
     paths.append('./')
     for path in paths:
         path = path or './'
-        for entry in os.listdir(path):
-            p = os.path.join(path, entry)
-            if os.path.isfile(p) and os.access(p, os.X_OK):
-                bins.add(entry)
+        try:
+            for entry in os.listdir(path):
+                p = os.path.join(path, entry)
+                if os.path.isfile(p) and os.access(p, os.X_OK):
+                    bins.add(entry)
+        except:
+            pass
     return bins
 
 
@@ -57,17 +61,17 @@ def is_path_prefix(t):
     return False
 
 
-def path_completer(path):
+def path_completer(path, prefix):
     if not (path.startswith('/') or path.startswith('./') or
             path.startswith('../')):
         path = './' + path
 
     if path.endswith('/'):
         root = path[:-1] or '/'
-        prefix = ''
+        filename = ''
     else:
         root = os.path.dirname(path)
-        prefix = os.path.basename(path)
+        filename = os.path.basename(path)
 
     if not os.path.isdir(root):
         return []
@@ -76,11 +80,18 @@ def path_completer(path):
     dirs = []
     for entry in os.listdir(root):
         full = os.path.join(root, entry)
-        if not prefix or entry.startswith(prefix):
+        if not filename or entry.startswith(filename):
             if os.path.isdir(full):
                 dirs.append(entry + '/')
             else:
-                files.append(entry)
+                files.append(entry + '\0')
     files = sorted(files)
     dirs = sorted(dirs)
-    return dirs + files
+
+    entries = dirs + files
+    if filename != prefix:
+        skip = len(filename) - len(prefix)
+        display_prefix = filename[:skip]
+        entries = [x[skip:] for x in entries] #(display_prefix, [x[skip:] for x in entries])
+
+    return entries
