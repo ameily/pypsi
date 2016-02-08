@@ -16,7 +16,7 @@
 #
 
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
-from pypsi.completers import path_completer
+from pypsi.completers import shell_path_completer
 import time
 import os
 
@@ -79,7 +79,7 @@ class TailCommand(Command):
         return 0
 
     def complete(self, shell, args, prefix):
-        return path_completer(args[-1])
+        return shell_path_completer(shell, args, prefix)
 
     def tail(self, fname, lines=10, block_size=1024):
         data = []

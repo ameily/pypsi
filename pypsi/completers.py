@@ -22,6 +22,10 @@ Builtin tab completion functions.
 from pypsi.os import path_completer  # noqa
 
 
+def shell_path_completer(shell, args, prefix):
+    return path_completer(args[-1] if args else '', prefix)
+
+
 def choice_completer(choices, case_sensitive=False):
     '''
     Tab complete from a list of choices.

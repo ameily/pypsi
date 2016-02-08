@@ -17,7 +17,7 @@
 
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
 from pypsi.utils import safe_open
-from pypsi.completers import path_completer
+from pypsi.completers import shell_path_completer
 import os
 
 
@@ -53,7 +53,7 @@ class IncludeCommand(Command):
         self.stack = []
 
     def complete(self, shell, args, prefix):
-        return path_completer(args[-1])
+        return shell_path_completer(shell, args, prefix)
 
     def run(self, shell, args):
         try:
