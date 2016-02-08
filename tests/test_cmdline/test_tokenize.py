@@ -1,5 +1,6 @@
 
 from pypsi.cmdline import *
+from pypsi.features import BashFeatures
 from nose.tools import *
 
 
@@ -9,7 +10,7 @@ OPERATORS = ('>', '<', '>>', '&', '&&', '|', '||', ';')
 class TestCmdlineTokenize(object):
 
     def setUp(self):
-        self.parser = StatementParser()
+        self.parser = StatementParser(BashFeatures())
 
     def test_simple(self):
         tokens = self.parser.tokenize("echo \thello")
@@ -117,10 +118,12 @@ class TestCmdlineTokenize(object):
         )
 
     def test_quoted_escaped_bslash(self):
-        t = StringToken(2, "", quote="'")
+        t = StringToken(2, "", quote="'", features=self.parser.features)
         t.text = "\\"
+        tokens = self.parser.tokenize("echo '\\\\'")
+        #self.parser.clean_escapes(tokens)
         assert_equal(
-            self.parser.tokenize("echo '\\\\'"), [
+            tokens, [
                 StringToken(0, "echo"),
                 WhitespaceToken(1),
                 t
@@ -218,9 +221,10 @@ class TestCmdlineTokenize(object):
                 StringToken(2, "\\c", quote="'")
             ]
         )
+
     def test_trailing_escape(self):
-        t = StringToken(2, "")
-        t.text = "\\"
+        self.parser.features.multiline = False
+        t = StringToken(2, "\\")
 
         assert_equal(
             self.parser.tokenize("echo \\"), [
@@ -228,4 +232,14 @@ class TestCmdlineTokenize(object):
                 WhitespaceToken(1),
                 t
             ]
+        )
+
+    def test_trailing_escape_multiline(self):
+        t = StringToken(2, "")
+        t.text = "\\"
+
+        assert_raises(
+            TrailingEscapeError,
+            self.parser.tokenize,
+            "echo \\"
         )
