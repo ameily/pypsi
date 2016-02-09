@@ -66,7 +66,7 @@ def path_completer(path, prefix):
         path = './' + path
 
     if path.endswith('/'):
-        root = path[:-1] or '/'
+        root = path
         filename = ''
     else:
         root = os.path.dirname(path)
