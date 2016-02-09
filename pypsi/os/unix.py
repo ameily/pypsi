@@ -20,7 +20,6 @@ Unix (Cygwin, Linux, etc) specific functions
 '''
 
 import os
-#from pypsi.core import TabCompletionResults
 
 __all__ = [
     'find_bins_in_path',
@@ -91,7 +90,6 @@ def path_completer(path, prefix):
     entries = dirs + files
     if filename != prefix:
         skip = len(filename) - len(prefix)
-        display_prefix = filename[:skip]
-        entries = [x[skip:] for x in entries] #(display_prefix, [x[skip:] for x in entries])
+        entries = [x[skip:] for x in entries]
 
     return entries

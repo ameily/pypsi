@@ -35,7 +35,8 @@ class HexCodePlugin(Plugin):
     def on_tokenize(self, shell, tokens, origin):
         escape_char = shell.features.escape_char
         for token in tokens:
-            if not isinstance(token, StringToken) or escape_char not in token.text:
+            if (not isinstance(token, StringToken) or
+                    escape_char not in token.text):
                 continue
 
             escape = False
@@ -56,7 +57,7 @@ class HexCodePlugin(Plugin):
                             text += chr(hexcode)
                             hexcode = None
                         except ValueError:
-                            text += '\\x' + hexcode
+                            text += escape_char + 'x' + hexcode
                             hexcode = None
                 elif c == escape_char:
                     escape = True
@@ -64,7 +65,7 @@ class HexCodePlugin(Plugin):
                     text += c
 
             if hexcode:
-                text += '\\x' + hexcode
+                text += escape_char + 'x' + hexcode
 
             if escape:
                 text += escape_char

@@ -16,7 +16,6 @@
 #
 
 
-
 class PypsiFeatures(object):
     '''
     Intrinsic features that control low-level functionality.

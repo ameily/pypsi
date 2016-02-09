@@ -100,10 +100,9 @@ def path_completer(path, prefix):
     entries = sorted(dirs) + sorted(files)
     if prefix != filename:
         skip = len(filename) - len(prefix)
-        display_prefix = filename[:skip]
-        entries = [x[skip:] for x in entries] #(display_prefix, [x[skip:] for x in entries])
+        entries = [x[skip:] for x in entries]
 
-    return entires
+    return entries
 
 
 if sys.platform == 'win32':

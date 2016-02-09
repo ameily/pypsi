@@ -181,7 +181,6 @@ class Shell(object):
             readline.parse_and_bind("tab: complete")
             self._backup_completer = readline.get_completer()
             readline.set_completer(self.complete)
-            #readline.set_completer_delims("")
 
     def reset_readline_completer(self):
         if readline.get_completer() == self.complete:
@@ -472,7 +471,8 @@ class Shell(object):
                 escaped_lcd = escape_string(lcd, escape_char)
 
             if escaped_lcd:
-                completions = [x.replace(lcd, escaped_lcd, 1) for x in completions]
+                completions = [x.replace(lcd, escaped_lcd, 1)
+                               for x in completions]
 
         if len(completions) == 1:
             # Entries that end in a null byte, \0, need to close the current
@@ -543,13 +543,13 @@ class Shell(object):
             if is_path_prefix(cmd_name):
                 ret = path_completer(cmd_name, prefix)
             else:
-                ret = [cmd for cmd in self.commands if cmd.startswith(cmd_name or '')]
+                ret = [cmd for cmd in self.commands
+                       if cmd.startswith(cmd_name or '')]
         elif loc == 'args':
             if cmd_name not in self.commands:
                 ret = []
             else:
-                #args.append('')
-                # TODO is this necessary?
+                # TODO is this necessary?: args.append('')
                 cmd = self.commands[cmd_name]
                 ret = cmd.complete(self, args, prefix)
         else:
