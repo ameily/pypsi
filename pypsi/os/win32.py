@@ -46,7 +46,7 @@ def is_exe(path):
 def is_path_prefix(prefix):
     return (
         any([prefix.startswith(x) for x in ('\\', '.\\', '..\\')]) or (
-            len(prefix) > 2 and prefix[1] == ':' and prefix[2] == '\\'
+            len(prefix) > 2 and prefix[1] == ':' # and prefix[2] == '\\'
         )
     )
 
@@ -71,14 +71,31 @@ def find_bins_in_path():
     return bins
 
 
-def path_completer(path, prefix):
-    path = path.replace('/', '\\')
+def normalize_path(path):
+    drive, pathname = os.path.splitdrive(path)
+    if not drive:
+        if not pathname:
+            ret = '.\\'
+        else:
+            if pathname.startswith(".\\") or pathname.startswith("..\\"):
+                ret = pathname
+            elif pathname.startswith("\\"):
+                ret = pathname
+            else:
+                ret = ".\\" + pathname
+    else:
+        if not pathname:
+            ret = os.path.join(drive, "\\")
+        else:
+            ret = os.path.join(drive, "\\", pathname)
+    return ret.lower()
 
-    if not is_path_prefix(path):
-        path = '.\\' + path
+
+def path_completer(path, prefix):
+    path = normalize_path(path.replace('/', '\\'))
 
     if path.endswith('\\'):
-        root = path[:-1] or '\\'
+        root = path
         filename = ''
     else:
         root = os.path.dirname(path)
@@ -91,7 +108,7 @@ def path_completer(path, prefix):
     dirs = []
     for entry in os.listdir(root):
         full = os.path.join(root, entry)
-        if entry.startswith(filename):
+        if entry.lower().startswith(filename):
             if os.path.isdir(full):
                 dirs.append(entry + '\\')
             else:
