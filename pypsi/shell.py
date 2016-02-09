@@ -180,6 +180,10 @@ class Shell(object):
         if readline.get_completer() != self.complete:
             readline.parse_and_bind("tab: complete")
             self._backup_completer = readline.get_completer()
+            delims = readline.get_completer_delims()
+            if ':' not in delims:
+                readline.set_completer_delims(delims + ':')
+
             readline.set_completer(self.complete)
 
     def reset_readline_completer(self):
