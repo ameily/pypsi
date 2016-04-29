@@ -25,6 +25,7 @@ from pypsi.ansi import AnsiCodes
 from pypsi.core import pypsi_print, Plugin, Command
 from pypsi.pipes import ThreadLocalStream, InvocationThread
 import readline
+import time
 import sys
 import os
 
@@ -191,15 +192,17 @@ class Shell(object):
         try:
             while self.running:
                 try:
-                    raw = input(self.get_current_prompt())
-                except EOFError:
-                    if self.eof_is_sigint:
-                        print()
-                        for pp in self.preprocessors:
-                            pp.on_input_canceled(self)
-                    else:
-                        self.running = False
-                        print("exiting....")
+                    try:
+                        raw = input(self.get_current_prompt())
+                    except EOFError:
+                        time.sleep(0.25)
+                        if self.eof_is_sigint:
+                            print()
+                            for pp in self.preprocessors:
+                                pp.on_input_canceled(self)
+                        else:
+                            self.running = False
+                            print("exiting....")
                 except KeyboardInterrupt:
                     print()
                     for pp in self.preprocessors:
