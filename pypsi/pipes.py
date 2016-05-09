@@ -22,15 +22,24 @@ from pypsi.ansi import AnsiCode, AnsiCodes
 from pypsi.os import make_ansi_stream
 
 
+
+
+
 class ThreadLocalStream(object):
     '''
     A stream wrapper that is thread-local. This class enables thread-based
     pipes by wrapping :attr:`sys.stdout`, :attr:`sys.stderr`, and
     :attr:`sys.stdin` and making access to them thread-local. This allows each
     thread to, potentially, each thread to write to a different stream.
+
+    A single stream, such as stdout, is wrapped in Pypsi as such:
+
+    stdout -> thread local stream -> os-specific ansi stream
     '''
 
-    def __init__(self, target, width=None, isatty=None):
+    DefaultAnsiStreamKwargs = dict()
+
+    def __init__(self, target, **kwargs):
         '''
         :param file target: the original target stream (typically either
             :attr:`sys.stdout`, :attr:`sys.stderr`, and :attr:`sys.stdin`).
@@ -40,8 +49,12 @@ class ThreadLocalStream(object):
             which supports ANSI escape cdes.
         '''
 
-        #: A tuple of: (target, width, isatty)
-        self._target = (make_ansi_stream(target), width, isatty)
+        if ThreadLocalStream.DefaultAnsiStreamKwargs:
+            kw = dict(ThreadLocalStream.DefaultAnsiStreamKwargs)
+            kw.update(kwargs)
+            kwargs = kw
+
+        self._target = make_ansi_stream(target, **kwargs)
         self._proxies = {}
 
     def _get_target(self):
@@ -54,39 +67,14 @@ class ThreadLocalStream(object):
         return self._proxies.get(threading.current_thread().ident,
                                  self._target)
 
-    def _get_target_stream(self):
-        '''
-        :returns file: the target stream for the current thread.
-        '''
-
-        return self._get_target()[0]
-
-    @property
-    def width(self):
-        '''
-        :returns int: current thread's stream width, in characters.
-        '''
-        return self._get_target()[1]
-
-    def isatty(self):
-        '''
-        :returns bool: whether the underlying stream for the current thread is
-            a tty stream and support ANSI escape codes.
-        '''
-
-        s = self._get_target()
-        return s[2] if s[2] is not None else s[0].isatty()
-
     def __getattr__(self, name):
-        return getattr(self._get_target()[0], name)
+        return getattr(self._get_target(), name)
 
     def __hasattr__(self, name):
-        attrs = ('width', 'isatty', '_proxy', '_unproxy', '_get_target',
-                 '_get_target_stream', '_proxies', '_target')
+        attrs = ('_proxy', '_unproxy', '_get_target', '_proxies', '_target')
+        return name in attrs or hasattr(self._get_target(), name)
 
-        return name in attrs or hasattr(self._get_target_stream(), name)
-
-    def _proxy(self, target, width=None, isatty=None):
+    def _proxy(self, target, **kwargs):
         '''
         Set a thread-local stream.
 
@@ -95,8 +83,8 @@ class ThreadLocalStream(object):
         :param bool isatty: whether the target stream is a tty stream.
         '''
 
-        self._proxies[threading.current_thread().ident] = (
-            make_ansi_stream(target), width, isatty
+        self._proxies[threading.current_thread().ident] = make_ansi_stream(
+            target, **kwargs
         )
 
     def _unproxy(self, ident=None):
@@ -127,7 +115,7 @@ class ThreadLocalStream(object):
         :param str tmpl: the string template
         '''
 
-        atty = self.isatty()
+        atty = self._get_target().isatty()
         for (name, value) in kwargs.items():
             if isinstance(value, AnsiCode):
                 kwargs[name] = str(value) if atty else ''
@@ -145,7 +133,7 @@ class ThreadLocalStream(object):
         :meth:`pypsi.ansi.AnsiCode.prompt` for each code.
         '''
 
-        atty = self.isatty()
+        atty = self._get_target().isatty()
         for (name, value) in kwargs.items():
             if isinstance(value, AnsiCode):
                 kwargs[name] = value.prompt() if atty else ''
@@ -168,9 +156,10 @@ class ThreadLocalStream(object):
         :returns str: the rendered string.
         '''
         r = []
+        target = self._get_target()
         for part in parts:
             if isinstance(part, AnsiCode):
-                if self.isatty():
+                if target.isatty():
                     if prompt:
                         r.append(part.prompt())
                     else:

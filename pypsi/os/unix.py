@@ -25,8 +25,29 @@ __all__ = [
     'find_bins_in_path',
     'is_path_prefix',
     'path_completer',
-    'make_ansi_stream'
+    'make_ansi_stream',
+    'UnixAnsiStream'
 ]
+
+class UnixAnsiStream(object):
+
+    def __init__(self, stream, width=None, isatty=None):
+        self._stream = stream
+        self.width = width
+        self._isatty = isatty
+
+    def isatty(self):
+        return self._stream.isatty() if self._isatty is None else self._isatty
+
+    def __getattr__(self, attr):
+        return getattr(self._stream, attr)
+
+    def __eq__(self, other):
+        if isinstance(other, UnixAnsiStream):
+            return self._stream == other.stream
+        else:
+            return self._stream == other
+
 
 
 def make_ansi_stream(stream):
@@ -34,7 +55,7 @@ def make_ansi_stream(stream):
     Create an ANSI-code compatible file stream. Unix file streams support ANSI
     escape codes, so we don't need to do anything special.
     '''
-    return stream
+    return stream if isinstance(stream, UnixAnsiStream) else UnixAnsiStream(stream, **kwargs)
 
 
 def find_bins_in_path():

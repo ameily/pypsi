@@ -50,9 +50,9 @@ class SystemCommand(Command):
 
         try:
             proc = subprocess.Popen(
-                args, stdout=sys.stdout._get_target_stream(),
-                stdin=sys.stdin._get_target_stream(),
-                stderr=sys.stderr._get_target_stream(),
+                args, stdout=sys.stdout._get_target(),
+                stdin=sys.stdin._get_target(),
+                stderr=sys.stderr._get_target(),
                 shell=self.use_shell
             )
         except OSError as e:
