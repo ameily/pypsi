@@ -220,7 +220,7 @@ class Win32AnsiStream(object):
             self._win32_current_attrs = self._win32_console_initial_attrs
 
     def isatty(self):
-        return self.stream.isatty() if self._isatty is None else self._isatty()
+        return self.stream.isatty() if self._isatty is None else self._isatty
 
     def _win32_set_console_attrs(self, attrs):
         SetConsoleTextAttribute(self._win32_handle, attrs)

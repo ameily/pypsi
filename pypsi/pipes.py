@@ -22,9 +22,6 @@ from pypsi.ansi import AnsiCode, AnsiCodes
 from pypsi.os import make_ansi_stream
 
 
-
-
-
 class ThreadLocalStream(object):
     '''
     A stream wrapper that is thread-local. This class enables thread-based
