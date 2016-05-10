@@ -47,11 +47,12 @@ class Token(object):
     Base class for all tokens.
     '''
 
-    def __init__(self, index):
+    def __init__(self, index, features=None):
         '''
         :param int index: the starting index of this token
         '''
         self.index = index
+        self.features = None
 
 
 class WhitespaceToken(Token):
@@ -59,8 +60,9 @@ class WhitespaceToken(Token):
     Whitespace token that can contain any number of whitespace characters.
     '''
 
-    def __init__(self, index):
-        super(WhitespaceToken, self).__init__(index)
+    def __init__(self, index, c=' ', features=None):
+        super(WhitespaceToken, self).__init__(index, features)
+        self.text = c
 
     def add_char(self, c):
         '''
@@ -70,11 +72,13 @@ class WhitespaceToken(Token):
         :returns int: TokenEnd or TokenContinue
         '''
         if c in (' ', '\t', '\xa0'):
+            self.text += c
             return TokenContinue
-        return TokenEnd
+        else:
+            return TokenEnd
 
     def __str__(self):
-        return "WhitespaceToken()"
+        return "WhitespaceToken( {} )".format(self.text)
 
     def __eq__(self, other):
         return isinstance(other, WhitespaceToken)
@@ -86,13 +90,14 @@ class StringToken(Token):
     escaped whitespace characters.
     '''
 
-    def __init__(self, index, c, quote=None):
+    def __init__(self, index, c, quote=None, features=None):
         '''
         :param str c: the current string or character
         :param str quote: the surrounding quotes, `None` if there isn't any
         '''
-        super(StringToken, self).__init__(index)
+        super(StringToken, self).__init__(index, features)
         self.quote = quote
+        self._escape_char = features.escape_char if features else ''
         self.escape = False
         self.text = ''
         self.open_quote = False
@@ -100,7 +105,7 @@ class StringToken(Token):
         if c in ('"', "'"):
             self.quote = c
             self.open_quote = True
-        elif c == '\\':
+        elif c == self._escape_char:
             self.escape = True
         else:
             self.text += c
@@ -118,26 +123,26 @@ class StringToken(Token):
             if self.quote:
                 if c == self.quote:
                     self.text += c
-                elif c == '\\':
-                    self.text += '\\'
+                elif c is self._escape_char:
+                    self.text += self._escape_char
                 else:
-                    self.text += '\\'
+                    self.text += self._escape_char
                     self.text += c
             elif c in (' ', '\t', "'", "\"") or c in OperatorToken.Operators:
                 self.text += c
             else:
-                self.text += '\\'
+                self.text += self._escape_char
                 self.text += c
         elif self.quote:
             if c == self.quote:
                 ret = TokenTerm
                 self.open_quote = False
-            elif c == '\\':
+            elif c == self._escape_char:
                 self.escape = True
             else:
                 self.text += c
         else:
-            if c == '\\':
+            if c == self._escape_char:
                 self.escape = True
             elif c in (' ', '\t', ';', '|', '&', '>', '<', '\xa0'):
                 ret = TokenEnd
@@ -513,7 +518,7 @@ class CommandInvocation(object):
         )
 
 
-class StatementSyntaxError(Exception):
+class StatementSyntaxError(SyntaxError):
     '''
     Invalid statement syntax was entered.
     '''
@@ -530,19 +535,33 @@ class StatementSyntaxError(Exception):
         return "syntax error at {}: {}".format(self.index, self.message)
 
 
+class UnclosedQuotationError(StatementSyntaxError):
+    '''
+    The final token contains an unclosed quotation.
+    '''
+
+    def __init__(self, index):
+        super(UnclosedQuotationError, self).__init__("unclosed quotation",
+                                                     index)
+
+
+class TrailingEscapeError(StatementSyntaxError):
+    '''
+    The final token ends with an escape character.
+    '''
+
+    def __init__(self, index):
+        super(TrailingEscapeError, self).__init__("trailing escape character",
+                                                  index)
+
+
 class StatementParser(object):
     '''
     Parses raw user input into a :class:`Statement`.
     '''
 
-    def __init__(self):
-        pass
-
-    def reset(self):
-        '''
-        Reset parsing state.
-        '''
-
+    def __init__(self, features=None):
+        self.features = features
         self.tokens = []
         self.token = None
 
@@ -571,7 +590,7 @@ class StatementParser(object):
             elif c in ('>', '<', '|', '&', ';'):
                 self.token = OperatorToken(index, c)
             else:
-                self.token = StringToken(index, c)
+                self.token = StringToken(index, c, features=self.features)
 
     def tokenize(self, line):
         '''
@@ -580,7 +599,6 @@ class StatementParser(object):
         :param str line: the line of text to tokenize
         :returns: `list` of :class:`Token` objects
         '''
-        self.reset()
         index = 0
         for c in line:
             self.process(index, c)
@@ -589,8 +607,25 @@ class StatementParser(object):
         if self.token:
             if isinstance(self.token, StringToken):
                 if self.token.escape:
-                    self.token.text += '\\'
-                    self.token.escape = False
+                    if self.features and self.features.multiline:
+                        # The last character in the input was an escape and the
+                        # shell supports multiline input. Switch back to the
+                        # shell to allow further input.
+                        raise TrailingEscapeError(self.token.index)
+                    else:
+                        self.token.text += self.features.escape_char
+                        self.token.escape = False
+                elif self.token.open_quote:
+                    if self.features and self.features.multiline:
+                        # The last token is an unclosed quotation and the shell
+                        # supports multiline line input. Switch back to the
+                        # shell to allow further input.
+                        #
+                        # We add a newline to the last text token since we are
+                        # in a quoted string.
+                        self.token.text += '\n'
+                        raise UnclosedQuotationError(self.token.index)
+
             self.tokens.append(self.token)
 
         return self.tokens
@@ -601,9 +636,10 @@ class StatementParser(object):
 
         :param list tokens: :class:`Token` objects to remove escape sequences
         '''
+        escape_char = self.features.escape_char if self.features else ''
         for token in tokens:
             if not isinstance(token, StringToken) or (
-                    '\\' not in token.text or token.quote):
+                    escape_char not in token.text or token.quote):
                 continue
 
             text = ''
@@ -612,7 +648,7 @@ class StatementParser(object):
                 if escape:
                     text += c
                     escape = False
-                elif c == '\\':
+                elif c == escape_char:
                     escape = True
                 else:
                     text += c
@@ -634,6 +670,11 @@ class StatementParser(object):
         condensed = []
         for token in tokens:
             if isinstance(token, StringToken):
+                if (token.quote and self.features and
+                        self.features.preserve_quotes):
+                    token.text = "{q}{t}{q}".format(q=token.quote,
+                                                    t=token.text)
+
                 if isinstance(prev, StringToken):
                     prev.combine_token(token)
                     token = prev

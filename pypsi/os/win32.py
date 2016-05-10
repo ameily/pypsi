@@ -57,12 +57,17 @@ def find_bins_in_path():
     paths.append('.\\')
     for path in paths:
         path = path or '.\\'
-        for entry in os.listdir(path):
-            p = os.path.join(path, entry)
-            if os.path.isfile(p):
-                name, ext = os.path.splitext(entry)
-                if ext.lower() in ('.exe', '.bat'):
-                    bins.add(name)
+        try:
+            for entry in os.listdir(path):
+                p = os.path.join(path, entry)
+                if os.path.isfile(p):
+                    name, ext = os.path.splitext(entry)
+                    if ext.lower() in ('.exe', '.bat'):
+                        bins.add(name)
+        except:
+            # The path doesn't exist
+            pass
+
     return bins
 
 
@@ -90,7 +95,7 @@ def path_completer(path):
             if os.path.isdir(full):
                 dirs.append(entry + '\\')
             else:
-                files.append(entry)
+                files.append(entry + '\0')
     files = sorted(files)
     dirs = sorted(dirs)
     return dirs + files
