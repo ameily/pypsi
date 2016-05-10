@@ -206,9 +206,11 @@ class Win32AnsiStream(object):
     Windows platforms.
     '''
 
-    def __init__(self, stream):
+    def __init__(self, stream, isatty=None, width=None):
         self.stream = stream
         self._win32_flush_pending = False
+        self._isatty = isatty
+        self.width = width
 
         try:
             self._win32_handle = msvcrt.get_osfhandle(stream.fileno())
@@ -220,9 +222,14 @@ class Win32AnsiStream(object):
             csbi = CONSOLE_SCREEN_BUFFER_INFO()
             GetConsoleScreenBufferInfo(self._win32_handle, ctypes.byref(csbi))
             self._win32_console_initial_attrs = csbi.wAttributes
+            self._win32_current_attrs = self._win32_console_initial_attrs
+
+    def isatty(self):
+        return self.stream.isatty() if self._isatty is None else self._isatty
 
     def _win32_set_console_attrs(self, attrs):
         SetConsoleTextAttribute(self._win32_handle, attrs)
+        self._win32_current_attrs = attrs
 
     def write(self, data):
         if not self._win32_handle:
@@ -231,7 +238,7 @@ class Win32AnsiStream(object):
         in_code = False
         for chunk in ANSI_CODE_RE.split(data):
             if chunk:
-                if in_code:
+                if in_code and self.isatty():
                     attrs = ANSI_CODE_MAP.get(chunk)
                     if attrs is None and chunk == '0m':
                         attrs = self._win32_console_initial_attrs
@@ -239,8 +246,13 @@ class Win32AnsiStream(object):
                     if attrs is not None:
                         if self._win32_flush_pending:
                             self.stream.flush()
-                        self._win32_set_console_attrs(attrs)
-                else:
+                        # TODO we only handle foreground colors currently, so
+                        # we mask the attributes to the bottom 4 bits. We
+                        # should support background colors and other attributes
+                        self._win32_set_console_attrs(
+                            (self._win32_current_attrs & 0xfffffff0) | attrs
+                        )
+                elif not in_code:
                     self.stream.write(chunk)
                     self._win32_flush_pending = True
             in_code = not in_code
@@ -253,11 +265,17 @@ class Win32AnsiStream(object):
     def __getattr__(self, attr):
         return getattr(self.stream, attr)
 
+    def __eq__(self, other):
+        if isinstance(other, Win32AnsiStream):
+            return self.stream == other.stream
+        else:
+            return self.stream == other
 
-def make_ansi_stream(stream):
+
+def make_ansi_stream(stream, **kwargs):
     '''
     Used by the Pypsi pipe line to create ANSI escape code compatible streams.
     '''
     if isinstance(stream, Win32AnsiStream):
         return stream
-    return Win32AnsiStream(stream)
+    return Win32AnsiStream(stream, **kwargs)

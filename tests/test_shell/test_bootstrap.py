@@ -33,7 +33,7 @@ class TestShellBootstrap(object):
 
     def _test_bootstrap_stream_instance(self, attr):
         assert_equal(
-            getattr(sys, attr)._get_target_stream(),
+            getattr(sys, attr)._get_target(),
             getattr(self, 'real_' + attr)
         )
 
