@@ -124,7 +124,7 @@ class StringToken(Token):
                 if c == self.quote:
                     self.text += c
                 elif c is self._escape_char:
-                    self.text += self._escape_char
+                    self.text += self._escape_char + self._escape_char
                 else:
                     self.text += self._escape_char
                     self.text += c
