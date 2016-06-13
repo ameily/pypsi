@@ -27,7 +27,8 @@ from pypsi.utils import safe_open
 __all__ = (
     'Token', 'StringToken', 'OperatorToken', 'WhitespaceToken',
     'IORedirectionError', 'StatementParser', 'StatementSyntaxError',
-    'CommandNotFoundError', 'CommandInvocation', 'Expression', 'Statement'
+    'CommandNotFoundError', 'CommandInvocation', 'Expression', 'Statement',
+    'TrailingEscapeError'
 )
 
 
@@ -105,9 +106,9 @@ class StringToken(Token):
         if c in ('"', "'"):
             self.quote = c
             self.open_quote = True
-        elif c == self._escape_char:
+        elif self._escape_char and c == self._escape_char:
             self.escape = True
-        else:
+        elif c:
             self.text += c
 
     def add_char(self, c):
@@ -160,9 +161,11 @@ class StringToken(Token):
         self.quote = token.quote
 
     def __str__(self):
-        return "String( {quote}{text}{quote} )".format(
+        return "String( {quote}{text}{quote}, {open_quote}, {escape} )".format(
             quote=self.quote or '',
-            text=self.text
+            text=self.text,
+            open_quote=self.open_quote,
+            escape=self.escape
         )
 
     def __eq__(self, other):
@@ -652,6 +655,9 @@ class StatementParser(object):
                     escape = True
                 else:
                     text += c
+
+            if escape:
+                text += escape_char
 
             token.text = text
 
