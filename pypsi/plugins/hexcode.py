@@ -35,8 +35,8 @@ class HexCodePlugin(Plugin):
     def on_tokenize(self, shell, tokens, origin):
         escape_char = shell.features.escape_char
         for token in tokens:
-            if (not isinstance(token, StringToken)
-                    or escape_char not in token.text):
+            if (not isinstance(token, StringToken) or
+                    escape_char not in token.text):
                 continue
 
             escape = False
