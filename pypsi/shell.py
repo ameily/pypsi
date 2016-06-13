@@ -178,7 +178,6 @@ class Shell(object):
             readline.parse_and_bind("tab: complete")
             self._backup_completer = readline.get_completer()
             readline.set_completer(self.complete)
-            #readline.set_completer_delims("")
 
     def reset_readline_completer(self):
         if readline.get_completer() == self.complete:
@@ -456,25 +455,27 @@ class Shell(object):
         if len(completions) == 1:
             if escape_char:
                 if quotation:
-                    # We are quotes. Escape items with the same quotations and the
-                    # escape character itself
+                    # We are quotes. Escape items with the same quotations and
+                    # the escape character itself
                     completions = [
                         escape_string(entry, escape_char, quotation)
-                            for entry in completions
+                        for entry in completions
                     ]
                 else:
                     # We are not in quotes. Escape whitespace and the escape
                     # character
                     completions = [
-                        escape_string(entry, escape_char) for entry in completions
+                        escape_string(entry, escape_char)
+                        for entry in completions
                     ]
 
             # Entries that end in a null byte, \0, need to close the current
             # quotation or add whitespace so that further tab completions don't
             # return the same result.
             completions = [
-                entry[:-1] + (quotation or ' ') if entry.endswith('\0') else entry
-                    for entry in completions
+                entry[:-1] + (quotation or ' ')
+                if entry.endswith('\0') else entry
+                for entry in completions
             ]
 
         fp = open('completions.txt', 'w')
@@ -552,8 +553,7 @@ class Shell(object):
             with open('ans.txt', 'w') as fp:
                 for i in ret:
                     print(i, file=fp)
-
-        except Exception as e:
+        except:
             import traceback
             with open("bug.txt", 'w') as fp:
                 print(traceback.format_exc(), file=fp)
