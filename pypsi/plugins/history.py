@@ -96,7 +96,7 @@ class HistoryCommand(Command):
         rc = 0
         if ns.subcmd == 'list':
             start = 0
-            if ns.count:
+            if ns.count and ns.count > 0:
                 start = len(shell.ctx.history) - ns.count
                 if start < 0:
                     start = 0
