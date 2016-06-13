@@ -1,10 +1,11 @@
 from nose.tools import *
 from pypsi.cmdline import *
+from pypsi.features import BashFeatures
 
 class TestCondense(object):
 
     def setUp(self):
-        self.parser = StatementParser()
+        self.parser = StatementParser(features=BashFeatures())
 
     def test_whitespace(self):
         tokens = [

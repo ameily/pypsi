@@ -1,6 +1,7 @@
 
 from nose.tools import *
 from pypsi.cmdline import *
+from pypsi.features import BashFeatures
 
 def copy_tokens(tokens):
     result = []
@@ -21,7 +22,7 @@ def copy_tokens(tokens):
 class TestCleanEscapes(object):
 
     def setUp(self):
-        self.parser = StatementParser()
+        self.parser = StatementParser(features=BashFeatures())
 
     def test_simple(self):
         t1, t2 = copy_tokens([

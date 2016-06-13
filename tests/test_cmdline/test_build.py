@@ -1,12 +1,13 @@
 
 from pypsi.cmdline import *
+from pypsi.features import BashFeatures
 from nose.tools import *
 
 
 class TestCmdlineBuild(object):
 
     def setUp(self):
-        self.parser = StatementParser()
+        self.parser = StatementParser(features=BashFeatures())
 
     def test_simple(self):
         assert_equal(
