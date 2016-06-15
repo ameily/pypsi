@@ -274,7 +274,7 @@ class PypsiArgParser(argparse.ArgumentParser):
 
 
 def pypsi_print(*args, sep=' ', end='\n', file=None, flush=True, width=None,
-                wrap=True):
+                wrap=True, wrap_prefix=None):
     '''
     Wraps the functionality of the Python builtin `print` function. The
     :meth:`pypsi.shell.Shell.bootstrap` overrides the Python :meth:`print`
@@ -311,7 +311,7 @@ def pypsi_print(*args, sep=' ', end='\n', file=None, flush=True, width=None,
             if line:
                 first = True
                 wrapno = 0
-                for wrapped in wrap_line(line, width):
+                for wrapped in wrap_line(line, width, wrap_prefix=wrap_prefix):
                     if not wrapped:
                         continue
 

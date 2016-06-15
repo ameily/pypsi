@@ -46,7 +46,7 @@ def get_lines(txt):
         yield (txt[start:], False)
 
 
-def wrap_line(txt, width):
+def wrap_line(txt, width, wrap_prefix=None):
     '''
     Word wrap a single line.
 
@@ -57,10 +57,12 @@ def wrap_line(txt, width):
     if width <= 0:
         yield txt
     else:
+        wrap_prefix = wrap_prefix or ''
         start = 0
         count = 0
         i = 0
         total = len(txt)
+        first_line = True
         while i < total:
             esc_code = False
             prev = None
@@ -82,7 +84,11 @@ def wrap_line(txt, width):
             else:
                 prev = prev or i
 
-            yield txt[start:prev]
+            if wrap_prefix and first_line:
+                first_line = False
+                width -= len(wrap_prefix)
+
+            yield wrap_prefix + txt[start:prev]
 
             start = prev
             while start < total and txt[start] in '\t ':
@@ -92,7 +98,10 @@ def wrap_line(txt, width):
             count = 0
 
         if count:
-            yield txt[start:]
+            if not first_line:
+                yield wrap_prefix + txt[start:]
+            else:
+                yield txt[start:]
 
 
 def highlight(target, term, color='1;32'):
