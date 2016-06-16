@@ -87,8 +87,9 @@ def wrap_line(txt, width, wrap_prefix=None):
             if wrap_prefix and first_line:
                 first_line = False
                 width -= len(wrap_prefix)
-
-            yield wrap_prefix + txt[start:prev]
+                yield txt[start:prev]
+            else:
+                yield wrap_prefix + txt[start:prev]
 
             start = prev
             while start < total and txt[start] in '\t ':
