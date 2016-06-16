@@ -491,11 +491,6 @@ class Shell(object):
             tokens = parser.tokenize(line)
             parser.clean_escapes(tokens)
 
-            with open("tabs.txt", 'w') as fp:
-                print(line, file=fp)
-                print(' || '.join([str(t) for t in tokens]), file=fp)
-                print(prefix, file=fp)
-
             cmd_name = ""
             loc = None
             args = []
@@ -549,14 +544,8 @@ class Shell(object):
                     ret = cmd.complete(self, args, prefix)
 
             ret = self._clean_completions(ret, in_quote)
-
-            with open('ans.txt', 'w') as fp:
-                for i in ret:
-                    print(i, file=fp)
         except:
-            import traceback
-            with open("bug.txt", 'w') as fp:
-                print(traceback.format_exc(), file=fp)
+            pass
 
         return ret
 
