@@ -54,7 +54,7 @@ def wrap_line(txt, width, wrap_prefix=None):
     :param int width: the maximum width of a wrapped line
     :returns str: the next wrapped line
     '''
-    if width <= 0:
+    if width is None or width <= 0:
         yield txt
     else:
         wrap_prefix = wrap_prefix or ''
