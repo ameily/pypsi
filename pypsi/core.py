@@ -303,6 +303,8 @@ def pypsi_print(*args, sep=' ', end='\n', file=None, flush=True, width=None,
             elif isinstance(arg, AnsiCode):
                 if file.isatty():
                     parts.append(str(arg))
+                elif arg.s is not None:
+                    parts.append(str(arg.s))
             else:
                 parts.append(str(arg))
 
