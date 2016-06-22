@@ -221,21 +221,23 @@ class Shell(object):
                     rc = None
                     try:
                         rc = self.execute(raw)
+                        rc = rc or 0
                     except SystemExit as e:
                         rc = e.code
                         print("exiting....")
                         self.running = False
                     except KeyboardInterrupt:
                         # Bash returns 130 if a command was interrupted
-                        rc = 130
+                        rc = None
                         print()
                     except EOFError:
                         # Bash returns 1 for Ctrl+D
-                        rc = 1
+                        rc = None
                         print()
                     finally:
                         if rc is not None:
                             self.errno = rc
+
                         for pp in self.postprocessors:
                             pp.on_statement_finished(self, rc)
         finally:
