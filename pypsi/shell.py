@@ -236,8 +236,8 @@ class Shell(object):
                     finally:
                         if rc is not None:
                             self.errno = rc
-                            for pp in self.postprocessors:
-                                pp.on_statement_finished(self, rc)
+                        for pp in self.postprocessors:
+                            pp.on_statement_finished(self, rc)
         finally:
             self.on_cmdloop_end()
             self.reset_readline_completer()
