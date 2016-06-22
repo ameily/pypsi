@@ -24,6 +24,7 @@ import sys
 import re
 import ctypes
 import msvcrt
+import getpass
 
 
 __all__ = [
@@ -279,3 +280,31 @@ def make_ansi_stream(stream, **kwargs):
     if isinstance(stream, Win32AnsiStream):
         return stream
     return Win32AnsiStream(stream, **kwargs)
+
+
+def pypsi_win_getpass(prompt='Password: ', stream=None):
+    import msvcrt
+    import sys
+
+    if not (stream or sys.stdin).isatty():
+        return input(prompt)
+
+    for c in prompt:
+        msvcrt.putwch(c)
+    pw = ""
+    while 1:
+        c = msvcrt.getwch()
+        if c == '\r' or c == '\n':
+            break
+        if c == '\003':
+            raise KeyboardInterrupt
+        if c == '\b':
+            pw = pw[:-1]
+        else:
+            pw = pw + c
+    msvcrt.putwch('\r')
+    msvcrt.putwch('\n')
+    return pw
+
+if getpass.win_getpass is getpass.getpass:
+    getpass.getpass = pypsi_win_getpass
