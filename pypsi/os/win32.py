@@ -233,7 +233,7 @@ class Win32AnsiStream(object):
         self._win32_current_attrs = attrs
 
     def write(self, data):
-        if not self._win32_handle:
+        if not self._win32_handle and self.isatty():
             return self.stream.write(data)
 
         in_code = False
