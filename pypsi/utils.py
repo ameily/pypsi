@@ -82,9 +82,13 @@ def safe_open(file, mode='r', chunk_size=4096, ascii_is_utf8=True, **kwargs):
     return fp
 
 
-def escape_string(s, escape_char, chars=' \n\t\xa0'):
+def escape_string(s, escape_char, chars=' \n\t\xa0', escape_escape_char=True):
     ret = ''
-    escape = chars + escape_char
+    if escape_escape_char:
+        escape = chars + escape_char
+    else:
+        escape = chars
+
     for c in s:
         if c in escape:
             ret += escape_char + c

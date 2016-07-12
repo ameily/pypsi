@@ -460,7 +460,7 @@ class Shell(object):
                     # We are quotes. Escape items with the same quotations and
                     # the escape character itself
                     completions = [
-                        escape_string(entry, escape_char, quotation)
+                        escape_string(entry, escape_char, quotation, False)
                         for entry in completions
                     ]
                 else:
@@ -479,11 +479,6 @@ class Shell(object):
                 if entry.endswith('\0') else entry
                 for entry in completions
             ]
-
-        fp = open('completions.txt', 'w')
-        print("Quote: '", quotation, "'", sep='', file=fp)
-        print("\n".join(completions), file=fp)
-        fp.close()
 
         return completions
 
