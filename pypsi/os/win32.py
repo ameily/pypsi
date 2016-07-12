@@ -83,7 +83,7 @@ def path_completer(path):
         prefix = ''
     else:
         root = os.path.dirname(path)
-        prefix = os.path.basename(path)
+        prefix = os.path.basename(path).lower()
 
     if not os.path.isdir(root):
         return []
@@ -92,7 +92,7 @@ def path_completer(path):
     dirs = []
     for entry in os.listdir(root):
         full = os.path.join(root, entry)
-        if not prefix or entry.startswith(prefix):
+        if not prefix or entry.lower().startswith(prefix):
             if os.path.isdir(full):
                 dirs.append(entry + '\\')
             else:
