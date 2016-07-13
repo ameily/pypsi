@@ -22,6 +22,7 @@ Command line input wizards.
 import os
 import readline
 import re
+from pypsi.os import path_completer
 from pypsi.cmdline import StatementParser, StringToken
 from pypsi.ansi import AnsiCodes
 from pypsi.format import title_str
@@ -37,6 +38,12 @@ MODULE_NAME_RE = re.compile(
     r'^(?:[a-zA-Z_][a-zA-Z0-9_]*)(?:\.[a-zA-Z_][a-zA-Z0-9_]*)*'
 )
 PACKAGE_NAME_RE = re.compile(r'^[a-zA-Z_][a-zA-Z0-9_]+$')
+
+
+def wizard_step_path_completer(shell, args, prefix):
+    return [
+        i.replace('\0', '') for i in path_completer(args[-1] if args else prefix)
+    ]
 
 
 def required_validator(ns, value):
@@ -336,7 +343,7 @@ class PromptWizard(object):
         self.description = description
         self.steps = steps
         self.values = Namespace()
-        self.parser = StatementParser(features)
+        self.features = features
 
     def run(self, shell, print_header=True):
         '''
@@ -413,14 +420,15 @@ class PromptWizard(object):
         '''
 
         if state == 0:
+            parser = StatementParser(self.features)
             begidx = readline.get_begidx()
             endidx = readline.get_endidx()
             line = readline.get_line_buffer()
             prefix = line[begidx:endidx] if line else ''
 
             line = line[:endidx]
-            tokens = self.parser.tokenize(line)
-            tokens = self.parser.condense(tokens)
+            tokens = parser.tokenize(line)
+            tokens = parser.condense(tokens)
             args = [t.text for t in tokens if isinstance(t, StringToken)]
             self.completions = self.active_step.complete(self, args, prefix)
 
