@@ -79,7 +79,10 @@ def path_completer(path):
         path = '.\\' + path
 
     if path.endswith('\\'):
-        root = path[:-1] or '\\'
+        root = path
+        prefix = ''
+    elif path.endswith(':'):
+        root = path + "\\"
         prefix = ''
     else:
         root = os.path.dirname(path)
