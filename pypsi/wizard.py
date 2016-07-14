@@ -42,7 +42,8 @@ PACKAGE_NAME_RE = re.compile(r'^[a-zA-Z_][a-zA-Z0-9_]+$')
 
 def wizard_step_path_completer(shell, args, prefix):
     return [
-        i.replace('\0', '') for i in path_completer(args[-1] if args else prefix)
+        i.replace('\0', '')
+        for i in path_completer(args[-1] if args else prefix)
     ]
 
 
