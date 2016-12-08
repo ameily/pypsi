@@ -607,7 +607,7 @@ class StatementParser(object):
             self.process(index, c)
             index += 1
 
-        if self.token:
+        if self.token and self.features:
             if isinstance(self.token, StringToken):
                 if self.token.escape:
                     if self.features and self.features.multiline:
@@ -615,7 +615,7 @@ class StatementParser(object):
                         # shell supports multiline input. Switch back to the
                         # shell to allow further input.
                         raise TrailingEscapeError(self.token.index)
-                    else:
+                    elif self.features:
                         self.token.text += self.features.escape_char
                         self.token.escape = False
                 elif self.token.open_quote:
@@ -629,6 +629,8 @@ class StatementParser(object):
                         self.token.text += '\n'
                         raise UnclosedQuotationError(self.token.index)
 
+            self.tokens.append(self.token)
+        elif self.token:
             self.tokens.append(self.token)
 
         return self.tokens
