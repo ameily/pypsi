@@ -309,5 +309,6 @@ def pypsi_win_getpass(prompt='Password: ', stream=None):
     msvcrt.putwch('\n')
     return pw
 
+
 if getpass.win_getpass is getpass.getpass:
     getpass.getpass = pypsi_win_getpass

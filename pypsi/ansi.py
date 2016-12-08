@@ -107,6 +107,7 @@ class AnsiCodesSingleton(object):
             underline=self.underline
         )
 
+
 #: Global instance for all supported ansi codes (instance of
 #: :class:`AnsiCodesSingleton`)
 AnsiCodes = AnsiCodesSingleton()
