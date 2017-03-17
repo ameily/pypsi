@@ -250,6 +250,12 @@ class PypsiArgParser(argparse.ArgumentParser):
       error stream
     '''
 
+    def __init__(self, *args, **kwargs):
+        self._pos_callbacks = []
+        self._op_callbacks = {}
+        self._repeating_cb = None
+        super(PypsiArgParser, self).__init__(*args, **kwargs)
+
     def exit(self, status=0, message=None):
         if message:
             print(AnsiCodes.red, message, AnsiCodes.reset, file=sys.stderr,
@@ -265,6 +271,89 @@ class PypsiArgParser(argparse.ArgumentParser):
         f = file or sys.stderr
         print(AnsiCodes.yellow, self.format_help(), AnsiCodes.reset, sep='',
               file=f)
+
+    def get_options(self):
+        '''
+        :return: All optional arguments
+        '''
+        return [key for key in self._op_callbacks]
+
+    def get_option_callback(self, arg):
+        return self._op_callbacks.get(arg, None)
+
+    def has_value(self, arg):
+        '''
+        Check if the optional argument has a value associated with it.
+        :param arg: Optional argument to check
+        :return: True if arg has a value, false otherwise
+        '''
+        val_actions = [argparse._AppendAction, argparse._StoreAction]
+        # Try catch in case arg doesn't exist
+        try:
+            # If a option's action is 'store' or 'append' is stores a value
+            return type(self._option_string_actions[arg]) in val_actions
+        except Exception as e:
+            print(e)
+            return False
+
+    def get_positional_callback(self, pos):
+        '''
+        Get the callback for a positional parameter
+        :param pos: index of the parameter - first param's index = 1
+        :return: The callback if it exists, else None
+        '''
+        try:
+            # To get FIRST callback, return 0th list item
+            return self._pos_callbacks[pos - 1]
+        except IndexError:
+            if self._repeating_cb:
+                return self._repeating_cb
+            return None
+
+    def get_index(self, args):
+        '''
+        Get the positional index of a cursor, based on
+        optional arguments and positional arguments
+        Maybe use this to automatically complete?
+        :param args:
+        :return:
+        '''
+        index = 0
+        for token in args:
+            # if token is an option
+            if token in self._option_string_actions:
+                if self.has_value(token):
+                    # optional param has a value associated with it, so
+                    # reduce index to not count it's value as a positional param
+                    index -= 1
+            else:
+                # if not an optional arg, add to index
+                index += 1
+
+        return index
+
+    def add_argument(self, *args, **kwargs):
+        '''
+        Override add_argument function of argparse.ArgumentParser to
+        handle callback functions.
+        '''
+        cb = kwargs.pop('callback', None)
+        nargs = kwargs.get('nargs', None)
+        chars = self.prefix_chars
+
+        # if no positional args are supplied or only one is supplied and
+        # it doesn't look like an option string, parse a positional
+        # argument
+        if not args or len(args) == 1 and args[0][0] not in chars:
+            if nargs and nargs in ['+', '*']:
+                # currently only takes the last repeating cb specified
+                self._repeating_cb = cb
+            self._pos_callbacks.append(cb)
+        else:
+            # otherwise, we're adding an optional argument
+            for arg in args:
+                self._op_callbacks[arg] = cb
+        return super(PypsiArgParser, self).add_argument(*args, **kwargs)
 
     def error(self, message):
         print(AnsiCodes.red, self.prog, ": error: ", message, AnsiCodes.reset,
