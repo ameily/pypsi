@@ -324,7 +324,7 @@ class PypsiArgParser(argparse.ArgumentParser):
             if token in self._option_string_actions:
                 if self.has_value(token):
                     # optional param has a value associated with it, so
-                    # reduce index to not count it's value as a positional param
+                    # reduce index to not count it's value as a pos param
                     index -= 1
             else:
                 # if not an optional arg, add to index

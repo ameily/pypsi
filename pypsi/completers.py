@@ -26,11 +26,13 @@ def command_completer(command, shell, args, prefix, case_sensitive=False):
     '''
     Completion function that can tab complete options,
     options' values, and positional paramaters.
-    :param command: The action object returned from PypsiArgParser.add_subparsers()
+    :param command: The action object returned from
+                    PypsiArgParser.add_subparsers()
     :param shell:  The current Shell object
     :param args:   The full list of current CLI args
     :param prefix: The partial arg being completed
-    :param case_sensitive: Whether the prefix will be completed in a case sensitive manner
+    :param case_sensitive: Whether the prefix will be completed
+                           in a case sensitive manner
     :return: A list of possible options based on the prefix
     '''
     cmd_parser = None
@@ -44,7 +46,8 @@ def command_completer(command, shell, args, prefix, case_sensitive=False):
         if len(args) == 1:
             # Get all possible subcmd's for the command
             base = [key for key in command.choices]
-            completions.extend([x for x in base if x.startswith(prefix) or not prefix])
+            completions.extend([x for x in base
+                                if x.startswith(prefix) or not prefix])
             return sorted(completions)
         if command.choices:
             # Get the parser for the current subcmd
@@ -83,9 +86,11 @@ def command_completer(command, shell, args, prefix, case_sensitive=False):
             ops = cb(shell, args, prefix)
 
     if case_sensitive:
-        completions.extend([o for o in ops if not prefix or o.startswith(prefix)])
+        completions.extend([o for o in ops
+                            if not prefix or o.startswith(prefix)])
     else:
-        completions.extend([o for o in ops if not prefix or o.lower().startswith(prefix.lower())])
+        completions.extend([o for o in ops if not prefix
+                            or o.lower().startswith(prefix.lower())])
     return sorted(completions)
 
 
