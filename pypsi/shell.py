@@ -258,11 +258,13 @@ class Shell(object):
             os.fdopen(w, 'w')
         )
 
-    def execute(self, raw):
+    def execute(self, raw, input=input):
         '''
         Parse and execute a statement.
 
         :param str raw: the raw command line to parse.
+        :param function input: a function that returns a string,
+                                overrides default input function (stdin). 
         :returns int: the return code of the statement.
         '''
 

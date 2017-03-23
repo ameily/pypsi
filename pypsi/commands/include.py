@@ -27,6 +27,8 @@ class IncludeFile(object):
         self.name = os.path.basename(path)
         self.abspath = os.path.abspath(path)
         self.line = line
+        self.ifile = None
+        self.lines = []
 
 
 class IncludeCommand(Command):
@@ -65,28 +67,51 @@ class IncludeCommand(Command):
 
     def include_file(self, shell, path):
         fp = None
-        ifile = IncludeFile(path)
+        self.ifile = IncludeFile(path)
 
         if self.stack:
             for i in self.stack:
-                if i.abspath == ifile.abspath:
+                if i.abspath == self.ifile.abspath:
                     self.error(shell, "recursive include for file ",
-                               ifile.abspath, '\n')
+                               self.ifile.abspath, '\n')
                     return -1
 
-        self.stack.append(ifile)
+        self.stack.append(self.ifile)
 
         try:
             fp = safe_open(path, 'r')
         except (OSError, IOError) as e:
             self.error(shell, "error opening file ", path, ": ", str(e), '\n')
+            self.stack.pop()
             return -1
 
-        for line in fp:
-            shell.execute(line.strip())
-            ifile.line += 1
+        try:
+            self.lines = [line for line in fp]
+        except UnicodeDecodeError as e:
+            # If line could not be read, file may be binary, so don't execute
+            self.error(shell, 'An error occurred reading the file: ', e)
 
+        try:
+            line = self.get_next_line()
+            while line:
+                shell.execute(line, input=self.get_next_line)
+                line = self.get_next_line()
+        except Exception as e:
+            self.error(shell,
+                       'An error occurred on line ', self.ifile.line, ': ', e)
+
+        # Cleanup
+        self.ifile = None
+        self.lines = []
         self.stack.pop()
         fp.close()
 
         return 0
+
+    def get_next_line(self, *args):
+        line = self.ifile.line - 1
+        self.ifile.line += 1
+        try:
+            return self.lines[line]
+        except:
+            return None
