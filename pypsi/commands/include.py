@@ -90,6 +90,7 @@ class IncludeCommand(Command):
         except UnicodeDecodeError as e:
             # If line could not be read, file may be binary, so don't execute
             self.error(shell, 'An error occurred reading the file: ', e)
+            return -1
 
         try:
             line = self.get_next_line()
@@ -99,6 +100,7 @@ class IncludeCommand(Command):
         except Exception as e:
             self.error(shell,
                        'An error occurred on line ', self.ifile.line, ': ', e)
+            return -1
 
         # Cleanup
         self.ifile = None

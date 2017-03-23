@@ -264,7 +264,7 @@ class Shell(object):
 
         :param str raw: the raw command line to parse.
         :param function input: a function that returns a string,
-                                overrides default input function (stdin). 
+                                overrides default input function (stdin).
         :returns int: the return code of the statement.
         '''
 
