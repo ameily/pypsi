@@ -139,7 +139,8 @@ class Command(object):
     :attr:`sys.stdout` is set to its original stream.
     '''
 
-    def __init__(self, name, usage=None, brief=None, topic=None, pipe='str'):
+    def __init__(self, name, usage=None, brief=None,
+                 topic=None, parser=None, pipe='str'):
         '''
         :param str name: the name of the command which the user will reference
             in the shell
@@ -333,16 +334,17 @@ class PypsiArgParser(argparse.ArgumentParser):
         index = 0
         for token in args:
             if token in self._option_string_actions:
-                # Token is an optional argument ( '-v' / '--verbose' )
+                # Token is an optional argument ( ex, '-v' / '--verbose' )
                 if self.has_value(token):
                     # Optional Argument has a value associated with it, so
                     # reduce index to not count it's value as a pos param
                     index -= 1
-            elif token:
-                # Not an optional argument ( Not '-v' / '--verbose' )
+            else:
+                # Is a positional param or value for an optional argument
                 index += 1
 
-        return index
+        # return zero-based index
+        return index - 1
 
     def add_argument(self, *args, **kwargs):
         '''

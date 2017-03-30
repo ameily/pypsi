@@ -18,6 +18,7 @@
 from pypsi.plugins.block import BlockCommand
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
 from pypsi.format import Table, Column, title_str
+from pypsi.completers import command_completer
 import sys
 
 
@@ -102,10 +103,12 @@ class MacroCommand(BlockCommand):
             '-l', '--list', help='list all macros', action='store_true'
         )
         self.parser.add_argument(
-            '-d', '--delete', help='delete macro', action='store_true'
+            '-d', '--delete', help='delete macro',
+            metavar='NAME', callback=self.complete_macros
         )
         self.parser.add_argument(
-            '-s', '--show', help='print macro body', action='store_true'
+            '-s', '--show', help='print macro body',
+            metavar='NAME', callback=self.complete_macros
         )
         self.parser.add_argument(
             'name', help='macro name', nargs='?', metavar='NAME'
@@ -116,6 +119,18 @@ class MacroCommand(BlockCommand):
             topic=topic, **kwargs
         )
         self.base_macros = macros or {}
+
+    def complete_macros(self, shell, args, prefix):
+        # returns a list of macro names in the current shell
+        return list(shell.ctx.macros.keys())
+
+    def complete(self, shell, args, prefix):
+        # The command_completer function takes in the parser, automatically
+        # completes optional arguments (ex, '-v'/'--verbose') or sub-commands,
+        # and complete any arguments' values by calling a callback function
+        # with the same arguments as complete if the callback was defined
+        # when the parser was created.
+        return command_completer(self.parser, shell, args, prefix)
 
     def setup(self, shell):
         rc = 0
@@ -135,26 +150,43 @@ class MacroCommand(BlockCommand):
             return e.code
 
         rc = 0
-        if ns.name:
-            if ns.delete:
-                if ns.name in shell.ctx.macros:
-                    del shell.ctx.macros[ns.name]
-                    # It gets registered as a command too. See line 202 in this
-                    # file and register() in shell.py
-                    del shell.commands[ns.name]
-                else:
-                    self.error(shell, "unknown macro ", ns.name)
-                    rc = -1
-            elif ns.show:
-                if ns.name in shell.ctx.macros:
-                    print("macro ", ns.name, sep='')
-                    for line in shell.ctx.macros[ns.name]:
-                        print("    ", line, sep='')
-                    print("end")
-                else:
-                    self.error(shell, "unknown macro ", ns.name)
-                    rc = -1
-            elif ns.list:
+        if ns.show:
+            if ns.delete or ns.name:
+                self.usage_error(shell,
+                                 'incompatible arguments: -s/--show and ',
+                                 '-d/--delete' if ns.delete else 'NAME')
+                return -1
+            if ns.list or ns.name:
+                self.usage_error(shell,
+                                 'incompatible arguments: -s/--show and ',
+                                 '-l/--list' if ns.list else 'NAME')
+                return -1
+
+            if ns.show in shell.ctx.macros:
+                print("macro ", ns.show, sep='')
+                for line in shell.ctx.macros[ns.show]:
+                    print("    ", line, sep='')
+                print("end")
+            else:
+                self.error(shell, "unknown macro ", ns.show)
+                rc = -1
+        elif ns.delete:
+            if ns.list or ns.name:
+                self.usage_error(shell,
+                                 'incompatible arguments: -d/--delete and ',
+                                 '-l/--list' if ns.list else 'NAME')
+                return -1
+
+            if ns.delete in shell.ctx.macros:
+                del shell.ctx.macros[ns.delete]
+                # It gets registered as a command too. See line 230 in this
+                # file and register() in shell.py
+                del shell.commands[ns.delete]
+            else:
+                self.error(shell, "unknown macro ", ns.delete)
+                rc = -1
+        elif ns.name:
+            if ns.list:
                 self.usage_error(shell,
                                  "list option does not take an argument")
             else:

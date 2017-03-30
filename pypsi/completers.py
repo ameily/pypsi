@@ -22,12 +22,12 @@ Builtin tab completion functions.
 from pypsi.os import path_completer  # noqa
 
 
-def command_completer(command, shell, args, prefix, case_sensitive=False):
+def command_completer(parser, shell, args, prefix, case_sensitive=False):
     '''
     Completion function that can tab complete options,
     options' values, and positional paramaters.
-    :param parser command: A PypsiArgParser object OR an action object returned
-                           from PypsiArgParser.add_subparsers()
+    :param parser: A PypsiArgParser object OR an action object returned
+                   from PypsiArgParser.add_subparsers()
     :param pypsi.shell.Shell shell:  The current Shell object
     :param list args: The full list of current CLI args
     :param str prefix: The partial arg being completed
@@ -36,14 +36,13 @@ def command_completer(command, shell, args, prefix, case_sensitive=False):
     :return list: A list of possible options based on the prefix
     '''
     cmd_parser = None
-    last_arg = None
     offset = 0
     completions = []
     ops = []
 
-    if hasattr(command, 'choices'):
+    if hasattr(parser, 'choices'):
         # Is a subparser, get all possible subcommands
-        sub_commands = [key for key in command.choices]
+        sub_commands = [key for key in parser.choices]
 
         if len(args) == 1:
             # User is typing sub command
@@ -52,13 +51,15 @@ def command_completer(command, shell, args, prefix, case_sensitive=False):
             return sorted(completions)
 
         # Get the command parser for the current subcommand
-        cmd_parser = command.choices.get(args[0], None)
+        cmd_parser = parser.choices.get(args[0], None)
         offset = 1  # Set an offset so the subcmd is not counted in index
-        last_arg = args[-2]
     else:
         # Is a PyPsiArgumentParser
-        cmd_parser = command
-        last_arg = args[-1]
+        cmd_parser = parser
+
+    # Get the last complete argument - should always be the second to last
+    # ['-s', 'tes<cursor>'] --or-- ['-s', 'test', '<cursor>']
+    last_arg = args[-2] if len(args) >= 2 else ''
 
     if not cmd_parser:
         return []

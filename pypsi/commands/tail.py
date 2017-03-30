@@ -16,7 +16,7 @@
 #
 
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
-from pypsi.completers import path_completer
+from pypsi.completers import path_completer, command_completer
 import time
 import os
 
@@ -36,8 +36,11 @@ class TailCommand(Command):
             usage=TailCmdUsage
         )
 
+        # Add a callback function that will be called when the
+        # argument is tab-completed
         self.parser.add_argument(
-            'input_file', help='file to display', metavar="FILE"
+            'input_file', help='file to display',
+            metavar="FILE", callback=self.complete_path
         )
 
         self.parser.add_argument(
@@ -78,8 +81,16 @@ class TailCommand(Command):
 
         return 0
 
-    def complete(self, shell, args, prefix):
+    def complete_path(self, shell, args, prefix):
         return path_completer(args[-1])
+
+    def complete(self, shell, args, prefix):
+        # The command_completer function takes in the parser, automatically
+        # completes optional arguments (ex, '-v'/'--verbose') or sub-commands,
+        # and complete any arguments' values by calling a callback function
+        # with the same arguments as complete if the callback was defined
+        # when the parser was created.
+        return command_completer(self.parser, shell, args, prefix)
 
     def tail(self, fname, lines=10, block_size=1024):
         data = []

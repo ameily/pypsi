@@ -18,6 +18,7 @@
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
 from pypsi.format import Table, Column, title_str
 from pypsi.ansi import AnsiCodes
+from pypsi.completers import command_completer
 import sys
 
 
@@ -43,9 +44,11 @@ class HelpCommand(Command):
             description=brief
         )
 
+        # Add a callback to self.complete_topics so tab-complete can
+        # return the possible topics you may get help on
         self.parser.add_argument(
             "topic", metavar="TOPIC", help="command or topic to print",
-            nargs='?'
+            nargs='?', callback=self.complete_topics
         )
 
         super(HelpCommand, self).__init__(
@@ -63,21 +66,27 @@ class HelpCommand(Command):
         shell.ctx.topic_lookup = {t.id: t for t in shell.ctx.topics}
         shell.ctx.topics_dirty = True
 
-    def complete(self, shell, args, prefix):
-        if shell.ctx.topics_dirty:
-            self.reload(shell)
-
+    def complete_topics(self, shell, args, prefix):
         completions = [
             x.id for x in shell.ctx.topics
             if x.id.startswith(prefix) or not prefix
-        ]
+            ]
 
         completions.extend([
             x for x in shell.commands if x.startswith(prefix) or not prefix
         ])
-        completions = sorted(completions)
+        return sorted(completions)
 
-        return completions
+    def complete(self, shell, args, prefix):
+        if shell.ctx.topics_dirty:
+            self.reload(shell)
+
+        # The command_completer function takes in the parser, automatically
+        # completes optional arguments (ex, '-v'/'--verbose') or sub-commands,
+        # and complete any arguments' values by calling a callback function
+        # with the same arguments as complete if the callback was defined
+        # when the parser was created.
+        return command_completer(self.parser, shell, args, prefix)
 
     def reload(self, shell):
         shell.ctx.uncat_topic.commands = []
