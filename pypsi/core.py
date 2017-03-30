@@ -248,12 +248,19 @@ class PypsiArgParser(argparse.ArgumentParser):
       arguments
     - Any error messages are intercepted and printed on the active shell's
       error stream
+    - Adds the option to provide callbacks for tab-completing
+      options and parameters
     '''
 
     def __init__(self, *args, **kwargs):
+        #: Store callback functions for positional parameters
         self._pos_callbacks = []
+        #: Store callback functions for optional arguments with values
         self._op_callbacks = {}
+        #: If a positional argument can be specified more than once,
+        #  store it's callback here and return it multiple times
         self._repeating_cb = None
+
         super(PypsiArgParser, self).__init__(*args, **kwargs)
 
     def exit(self, status=0, message=None):
@@ -274,60 +281,65 @@ class PypsiArgParser(argparse.ArgumentParser):
 
     def get_options(self):
         '''
-        :return: All optional arguments
+        :return: All optional arguments (ex, '-v'/'--verbose')
         '''
         return [key for key in self._op_callbacks]
 
-    def get_option_callback(self, arg):
-        return self._op_callbacks.get(arg, None)
+    def get_option_callback(self, option):
+        '''
+        Returns the callback for the specified optional argument,
+        Or None if one was not specified.
+        :param str option: The Option
+        :return function: The callback function or None
+        '''
+        return self._op_callbacks.get(option, None)
 
     def has_value(self, arg):
         '''
         Check if the optional argument has a value associated with it.
-        :param arg: Optional argument to check
+        :param str arg: Optional argument to check
         :return: True if arg has a value, false otherwise
         '''
         val_actions = [argparse._AppendAction, argparse._StoreAction]
-        # Try catch in case arg doesn't exist
-        try:
-            # If a option's action is 'store' or 'append' is stores a value
-            return type(self._option_string_actions[arg]) in val_actions
-        except Exception as e:
-            print(e)
-            return False
+        # _option_string_actions is a dictionary containing all of the optional
+        # arguments and the argparse action they should perform. Currently, the
+        # only two actions that store a value are _AppendAction/_StoreAction.
+        # These represent the value passed to 'action' in add_argument:
+        # parser.add_argument('-l', '--long', action='store')
+        action = self._option_string_actions.get(arg, None)
+        return type(action) in val_actions
 
     def get_positional_callback(self, pos):
         '''
         Get the callback for a positional parameter
-        :param pos: index of the parameter - first param's index = 1
+        :param pos: index of the parameter - first param's index = 0
         :return: The callback if it exists, else None
         '''
         try:
-            # To get FIRST callback, return 0th list item
-            return self._pos_callbacks[pos - 1]
+            return self._pos_callbacks[pos]
         except IndexError:
             if self._repeating_cb:
+                # A positional parameter is set to repeat
                 return self._repeating_cb
             return None
 
-    def get_index(self, args):
+    def get_positional_arg_index(self, args):
         '''
         Get the positional index of a cursor, based on
         optional arguments and positional arguments
-        Maybe use this to automatically complete?
-        :param args:
+        :param list args: List of str arguments from the Command Line
         :return:
         '''
         index = 0
         for token in args:
-            # if token is an option
             if token in self._option_string_actions:
+                # Token is an optional argument ( '-v' / '--verbose' )
                 if self.has_value(token):
-                    # optional param has a value associated with it, so
+                    # Optional Argument has a value associated with it, so
                     # reduce index to not count it's value as a pos param
                     index -= 1
-            else:
-                # if not an optional arg, add to index
+            elif token:
+                # Not an optional argument ( Not '-v' / '--verbose' )
                 index += 1
 
         return index
@@ -336,23 +348,29 @@ class PypsiArgParser(argparse.ArgumentParser):
         '''
         Override add_argument function of argparse.ArgumentParser to
         handle callback functions.
+        :param args:   Positional arguments to pass up to argparse
+        :param function callback: Optional callback function for argument
+        :param kwargs: Keywork arguments to pass up to argparse
+        :return:
         '''
         cb = kwargs.pop('callback', None)
         nargs = kwargs.get('nargs', None)
         chars = self.prefix_chars
 
-        # if no positional args are supplied or only one is supplied and
-        # it doesn't look like an option string, parse a positional
-        # argument
         if not args or len(args) == 1 and args[0][0] not in chars:
+            # If no positional args are supplied or only one is supplied and
+            # it doesn't look like an option string, parse a positional
+            # argument ( from argparse )
             if nargs and nargs in ['+', '*']:
-                # currently only takes the last repeating cb specified
+                # Positional param can repeat
+                # Currently only stores the last repeating callback specified
                 self._repeating_cb = cb
             self._pos_callbacks.append(cb)
         else:
-            # otherwise, we're adding an optional argument
+            # Add an optional argument
             for arg in args:
                 self._op_callbacks[arg] = cb
+        # Call argparse.add_argument()
         return super(PypsiArgParser, self).add_argument(*args, **kwargs)
 
     def error(self, message):
