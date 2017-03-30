@@ -28,7 +28,6 @@ class IncludeFile(object):
         self.abspath = os.path.abspath(path)
         self.line = line
         self.ifile = None
-        self.lines = []
 
 
 class IncludeCommand(Command):
@@ -67,53 +66,30 @@ class IncludeCommand(Command):
 
     def include_file(self, shell, path):
         fp = None
-        self.ifile = IncludeFile(path)
+        ifile = IncludeFile(path)
 
         if self.stack:
             for i in self.stack:
-                if i.abspath == self.ifile.abspath:
+                if i.abspath == ifile.abspath:
                     self.error(shell, "recursive include for file ",
-                               self.ifile.abspath, '\n')
+                               ifile.abspath, '\n')
                     return -1
 
-        self.stack.append(self.ifile)
+        self.stack.append(ifile)
 
         try:
             fp = safe_open(path, 'r')
         except (OSError, IOError) as e:
-            self.error(shell, "error opening file ", path, ": ", str(e), '\n')
-            self.stack.pop()
+            self.error(shell, "error opening file {}: {}".format(path, str(e)))
             return -1
 
         try:
-            self.lines = [line for line in fp]
-        except UnicodeDecodeError as e:
-            # If line could not be read, file may be binary, so don't execute
-            self.error(shell, 'An error occurred reading the file: ', e)
-            return -1
-
-        try:
-            line = self.get_next_line()
-            while line:
-                shell.execute(line, input=self.get_next_line)
-                line = self.get_next_line()
+            # Execute the lines in the file
+            shell.include(fp)
         except Exception as e:
-            self.error(shell,
-                       'An error occurred on line ', self.ifile.line, ': ', e)
-            return -1
+            self.error(shell, "error executing file ", path, ": ", str(e))
 
-        # Cleanup
-        self.ifile = None
-        self.lines = []
         self.stack.pop()
         fp.close()
 
         return 0
-
-    def get_next_line(self, *args):
-        line = self.ifile.line - 1
-        self.ifile.line += 1
-        try:
-            return self.lines[line]
-        except:
-            return None

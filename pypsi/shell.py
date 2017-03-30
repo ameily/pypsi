@@ -194,6 +194,63 @@ class Shell(object):
                 break
         return tokens
 
+    def include(self, file):
+        '''
+        Read commands from a file and execute them line by line
+        :param file file: File object to read commands from
+        :return int: 0 if error free; 1 if an error occurred
+        '''
+        rc = 1
+        eof = False
+
+        # set STDIN to the file
+        stdin = sys.stdin._get_target()
+        sys.stdin._proxy(file)
+
+        try:
+            while self.running and not eof:
+                try:
+                    raw = input().replace('\r', '')
+                except EOFError:
+                    print()
+                    self.on_input_canceled()
+                    eof = True
+                except KeyboardInterrupt:
+                    print()
+                    eof = True
+                    self.on_input_canceled()
+                else:
+                    rc = None
+                    try:
+                        rc = self.execute(raw)
+                        rc = rc or 0
+                    except SystemExit as e:
+                        rc = e.code
+                        eof = True
+                    except KeyboardInterrupt:
+                        # Bash returns 130 if a command was interrupted
+                        rc = None
+                        eof = True
+                        print()
+                    except EOFError:
+                        # Bash returns 1 for Ctrl+D
+                        rc = None
+                        eof = True
+                        print()
+                    finally:
+                        if rc is not None:
+                            self.errno = rc
+
+                        for pp in self.postprocessors:
+                            pp.on_statement_finished(self, rc)
+        except EOFError:
+            rc = 0
+        finally:
+            # Reset stdin to a tty
+            sys.stdin._proxy(stdin)
+        return rc
+
+
     def cmdloop(self):
         '''
         Begin the input processing loop where the user will be prompted for
@@ -258,7 +315,7 @@ class Shell(object):
             os.fdopen(w, 'w')
         )
 
-    def execute(self, raw, input=input):
+    def execute(self, raw):
         '''
         Parse and execute a statement.
 
@@ -286,7 +343,8 @@ class Shell(object):
             if not input_complete:
                 # This is a multiline input
                 try:
-                    raw = input("> ")
+                    # hide prompt if reading from a file
+                    raw = input("> " if sys.stdin.isatty() else '')
                 except (EOFError, KeyboardInterrupt) as e:
                     self.on_input_canceled()
                     raise e
@@ -313,7 +371,7 @@ class Shell(object):
         for invoke in statement:
             try:
                 # Open any and all I/O redirections and resolve the pypsi
-                # comand.
+                # command.
                 invoke.setup(self)
             except Exception as e:
                 for sub in statement:
