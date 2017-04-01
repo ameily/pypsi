@@ -104,11 +104,11 @@ class MacroCommand(BlockCommand):
         )
         self.parser.add_argument(
             '-d', '--delete', help='delete macro',
-            metavar='NAME', callback=self.complete_macros
+            metavar='NAME', completer=self.complete_macros
         )
         self.parser.add_argument(
             '-s', '--show', help='print macro body',
-            metavar='NAME', callback=self.complete_macros
+            metavar='NAME', completer=self.complete_macros
         )
         self.parser.add_argument(
             'name', help='macro name', nargs='?', metavar='NAME'

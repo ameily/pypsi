@@ -40,7 +40,7 @@ class TailCommand(Command):
         # argument is tab-completed
         self.parser.add_argument(
             'input_file', help='file to display',
-            metavar="FILE", callback=self.complete_path
+            metavar="FILE", completer=self.complete_path
         )
 
         self.parser.add_argument(

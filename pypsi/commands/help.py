@@ -48,7 +48,7 @@ class HelpCommand(Command):
         # return the possible topics you may get help on
         self.parser.add_argument(
             "topic", metavar="TOPIC", help="command or topic to print",
-            nargs='?', callback=self.complete_topics
+            nargs='?', completer=self.complete_topics
         )
 
         super(HelpCommand, self).__init__(

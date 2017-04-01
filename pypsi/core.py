@@ -301,14 +301,14 @@ class PypsiArgParser(argparse.ArgumentParser):
         :param str arg: Optional argument to check
         :return: True if arg has a value, false otherwise
         '''
-        val_actions = [argparse._AppendAction, argparse._StoreAction]
         # _option_string_actions is a dictionary containing all of the optional
         # arguments and the argparse action they should perform. Currently, the
         # only two actions that store a value are _AppendAction/_StoreAction.
         # These represent the value passed to 'action' in add_argument:
         # parser.add_argument('-l', '--long', action='store')
         action = self._option_string_actions.get(arg, None)
-        return type(action) in val_actions
+        return isinstance(action,
+                          (argparse._AppendAction, argparse._StoreAction))
 
     def get_positional_callback(self, pos):
         '''
@@ -346,16 +346,16 @@ class PypsiArgParser(argparse.ArgumentParser):
         # return zero-based index
         return index - 1
 
-    def add_argument(self, *args, **kwargs):
+    def add_argument(self, *args, completer=None, **kwargs):
         '''
         Override add_argument function of argparse.ArgumentParser to
         handle callback functions.
         :param args:   Positional arguments to pass up to argparse
-        :param function callback: Optional callback function for argument
+        :param function completer: Optional callback function for argument
         :param kwargs: Keywork arguments to pass up to argparse
         :return:
         '''
-        cb = kwargs.pop('callback', None)
+        cb = kwargs.pop('completer', None)
         nargs = kwargs.get('nargs', None)
         chars = self.prefix_chars
 
@@ -365,7 +365,7 @@ class PypsiArgParser(argparse.ArgumentParser):
             # argument ( from argparse )
             if nargs and nargs in ['+', '*']:
                 # Positional param can repeat
-                # Currently only stores the last repeating callback specified
+                # Currently only stores the last repeating completer specified
                 self._repeating_cb = cb
             self._pos_callbacks.append(cb)
         else:
