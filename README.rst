@@ -234,16 +234,16 @@ the standard arguments to the ``complete`` function, and let PyPsi work it's mag
     --delete --help   --list   --show   -d       -h       -l       -s
 
 For each argument added to a PyPsi Argument parser, a callback function to get
-the possible completions can be specified. The callback function will be called
-from ``command_completer`` anytime tab is pressed while the user is currently
-entering that argument's value. Ex:
+the possible completions can be specified via the `completer` argument.
+The callback function will be called from ``command_completer`` anytime tab is
+pressed while the user is currently entering that argument's value. Ex:
 
 .. code-block:: python
 
     # Snippet from macro.py
     self.parser.add_argument(
          '-s', '--show', help='print macro body',
-         metavar='NAME', callback=self.complete_macros
+         metavar='NAME', completer=self.complete_macros
     )
     ...
     def complete_macros(self, shell, args, prefix):
