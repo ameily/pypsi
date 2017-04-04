@@ -139,7 +139,8 @@ class Command(object):
     :attr:`sys.stdout` is set to its original stream.
     '''
 
-    def __init__(self, name, usage=None, brief=None, topic=None, pipe='str'):
+    def __init__(self, name, usage=None, brief=None,
+                 topic=None, parser=None, pipe='str'):
         '''
         :param str name: the name of the command which the user will reference
             in the shell
@@ -248,7 +249,20 @@ class PypsiArgParser(argparse.ArgumentParser):
       arguments
     - Any error messages are intercepted and printed on the active shell's
       error stream
+    - Adds the option to provide callbacks for tab-completing
+      options and parameters
     '''
+
+    def __init__(self, *args, **kwargs):
+        #: Store callback functions for positional parameters
+        self._pos_completers = []
+        #: Store callback functions for optional arguments with values
+        self._op_completers = {}
+        #: If a positional argument can be specified more than once,
+        #  store it's callback here and return it multiple times
+        self._repeating_cb = None
+
+        super(PypsiArgParser, self).__init__(*args, **kwargs)
 
     def exit(self, status=0, message=None):
         if message:
@@ -265,6 +279,101 @@ class PypsiArgParser(argparse.ArgumentParser):
         f = file or sys.stderr
         print(AnsiCodes.yellow, self.format_help(), AnsiCodes.reset, sep='',
               file=f)
+
+    def get_options(self):
+        '''
+        :return: All optional arguments (ex, '-v'/'--verbose')
+        '''
+        return [key for key in self._op_completers]
+
+    def get_option_completer(self, option):
+        '''
+        Returns the callback for the specified optional argument,
+        Or None if one was not specified.
+        :param str option: The Option
+        :return function: The callback function or None
+        '''
+        return self._op_completers.get(option, None)
+
+    def has_value(self, arg):
+        '''
+        Check if the optional argument has a value associated with it.
+        :param str arg: Optional argument to check
+        :return: True if arg has a value, false otherwise
+        '''
+        # _option_string_actions is a dictionary containing all of the optional
+        # arguments and the argparse action they should perform. Currently, the
+        # only two actions that store a value are _AppendAction/_StoreAction.
+        # These represent the value passed to 'action' in add_argument:
+        # parser.add_argument('-l', '--long', action='store')
+        action = self._option_string_actions.get(arg, None)
+        return isinstance(action,
+                          (argparse._AppendAction, argparse._StoreAction))
+
+    def get_positional_completer(self, pos):
+        '''
+        Get the callback for a positional parameter
+        :param pos: index of the parameter - first param's index = 0
+        :return: The callback if it exists, else None
+        '''
+        try:
+            return self._pos_completers[pos]
+        except IndexError:
+            if self._repeating_cb:
+                # A positional parameter is set to repeat
+                return self._repeating_cb
+            return None
+
+    def get_positional_arg_index(self, args):
+        '''
+        Get the positional index of a cursor, based on
+        optional arguments and positional arguments
+        :param list args: List of str arguments from the Command Line
+        :return:
+        '''
+        index = 0
+        for token in args:
+            if token in self._option_string_actions:
+                # Token is an optional argument ( ex, '-v' / '--verbose' )
+                if self.has_value(token):
+                    # Optional Argument has a value associated with it, so
+                    # reduce index to not count it's value as a pos param
+                    index -= 1
+            else:
+                # Is a positional param or value for an optional argument
+                index += 1
+
+        # return zero-based index
+        return index - 1
+
+    def add_argument(self, *args, completer=None, **kwargs):
+        '''
+        Override add_argument function of argparse.ArgumentParser to
+        handle callback functions.
+        :param args:   Positional arguments to pass up to argparse
+        :param function completer: Optional callback function for argument
+        :param kwargs: Keywork arguments to pass up to argparse
+        :return:
+        '''
+        cb = completer
+        nargs = kwargs.get('nargs', None)
+        chars = self.prefix_chars
+
+        if not args or len(args) == 1 and args[0][0] not in chars:
+            # If no positional args are supplied or only one is supplied and
+            # it doesn't look like an option string, parse a positional
+            # argument ( from argparse )
+            if nargs and nargs in ['+', '*']:
+                # Positional param can repeat
+                # Currently only stores the last repeating completer specified
+                self._repeating_cb = cb
+            self._pos_completers.append(cb)
+        else:
+            # Add an optional argument
+            for arg in args:
+                self._op_completers[arg] = cb
+        # Call argparse.add_argument()
+        return super(PypsiArgParser, self).add_argument(*args, **kwargs)
 
     def error(self, message):
         print(AnsiCodes.red, self.prog, ": error: ", message, AnsiCodes.reset,

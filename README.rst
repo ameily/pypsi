@@ -211,6 +211,53 @@ new commands in the shell.
     Hello, Adam
     Goodbye from macro hello
 
+Tab Complete
+~~~~~~~~~~~~
+
+Tab completion is easier than ever with PyPsi. Using the included ``command_completer()``
+function, arguments and sub-commands are completed automatically when the ``tab``
+key is pressed. To get started, add the use of ``command_completer`` to your
+custom command's complete function:
+
+.. code-block:: python
+
+    def complete(self, shell, args, prefix):
+        from pypsi.completers import command_completer
+        return completions = command_completer(self.parser, shell, args, prefix)
+
+Just pass ``command_completer`` the parser you created for the command, along with
+the standard arguments to the ``complete`` function, and let PyPsi work it's magic!
+
+::
+
+    pypsi)> macro -<tab>
+    --delete --help   --list   --show   -d       -h       -l       -s
+
+For each argument added to a PyPsi Argument parser, a callback function to get
+the possible completions can be specified via the `completer` argument.
+The callback function will be called from ``command_completer`` anytime tab is
+pressed while the user is currently entering that argument's value. Ex:
+
+.. code-block:: python
+
+    # Snippet from macro.py
+    self.parser.add_argument(
+         '-s', '--show', help='print macro body',
+         metavar='NAME', completer=self.complete_macros
+    )
+    ...
+    def complete_macros(self, shell, args, prefix):
+        # returns a list of macro names in the current shell
+        return list(shell.ctx.macros.keys())
+
+::
+
+    pypsi)> macro --show <tab>
+    hello   goodbye
+
+See ``tail.py``, ``help.py``, and ``macro.py`` for examples.
+
+
 Prompt Wizards
 ~~~~~~~~~~~~~~
 
