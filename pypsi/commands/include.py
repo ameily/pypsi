@@ -23,11 +23,9 @@ import os
 
 class IncludeFile(object):
 
-    def __init__(self, path, line=1):
+    def __init__(self, path):
         self.name = os.path.basename(path)
         self.abspath = os.path.abspath(path)
-        self.line = line
-        self.ifile = None
 
 
 class IncludeCommand(Command):

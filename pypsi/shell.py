@@ -209,42 +209,27 @@ class Shell(object):
 
         try:
             while self.running and not eof:
+                raw = input().replace('\r', '')
+                rc = None
                 try:
-                    raw = input().replace('\r', '')
-                except EOFError:
-                    print()
-                    self.on_input_canceled()
+                    rc = self.execute(raw)
+                    rc = rc or 0
+                except SystemExit as e:
+                    rc = e.code
                     eof = True
-                except KeyboardInterrupt:
-                    print()
-                    eof = True
-                    self.on_input_canceled()
-                else:
-                    rc = None
-                    try:
-                        rc = self.execute(raw)
-                        rc = rc or 0
-                    except SystemExit as e:
-                        rc = e.code
-                        eof = True
-                    except KeyboardInterrupt:
-                        # Bash returns 130 if a command was interrupted
-                        rc = None
-                        eof = True
-                        print()
-                    except EOFError:
-                        # Bash returns 1 for Ctrl+D
-                        rc = None
-                        eof = True
-                        print()
-                    finally:
-                        if rc is not None:
-                            self.errno = rc
+                finally:
+                    if rc is not None:
+                        self.errno = rc
 
-                        for pp in self.postprocessors:
-                            pp.on_statement_finished(self, rc)
+                    for pp in self.postprocessors:
+                        pp.on_statement_finished(self, rc)
         except EOFError:
+            print()
+            self.on_input_canceled()
             rc = 0
+        except KeyboardInterrupt:
+            print()
+            self.on_input_canceled()
         finally:
             # Reset stdin to a tty
             sys.stdin._proxy(stdin)
