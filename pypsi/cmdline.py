@@ -508,8 +508,8 @@ class CommandInvocation(object):
     def should_continue(self, prev_rc):
         '''
         :returns: whether this invocation is chained and, using the previous
-        invocation's return code, determine if the next command in the chain
-        should be executed.
+            invocation's return code, determine if the next command in the
+            chain should be executed.
         '''
 
         return (

@@ -12,11 +12,11 @@
 # serve to show the default.
 
 import sys, os
-import sphinx_rtd_theme
+#import sphinx_rtd_theme
 
-html_theme = "sphinx_rtd_theme"
+html_theme = "bizstyle"
 
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+#html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../'))
 

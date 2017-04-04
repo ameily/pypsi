@@ -1,10 +1,6 @@
 pypsi.cmdline - User input processing
 =====================================
 
-.. toctree::
-    :numbered:
-    :maxdepth: 2
-
 .. automodule:: pypsi.cmdline
 
 

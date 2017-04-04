@@ -5,13 +5,6 @@ Pypsi Builtin Commands
 
 Pypsi ships with several commands that would be useful for any shell.
 
-.. toctree::
-    :numbered:
-    :maxdepth: 2
-
-
-
-
 .. autoclass:: pypsi.commands.echo.EchoCommand
     :members:
 

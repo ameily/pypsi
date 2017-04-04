@@ -197,6 +197,7 @@ class Shell(object):
     def include(self, file):
         '''
         Read commands from a file and execute them line by line
+
         :param file file: File object to read commands from
         :return int: 0 if error free; 1 if an error occurred
         '''

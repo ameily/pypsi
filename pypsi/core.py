@@ -387,7 +387,7 @@ def pypsi_print(*args, sep=' ', end='\n', file=None, flush=True, width=None,
     '''
     Wraps the functionality of the Python builtin `print` function. The
     :meth:`pypsi.shell.Shell.bootstrap` overrides the Python :meth:`print`
-    function with :meth:`pypsi_print`.
+    function with ``pypsi_print``.
 
     :param str sep: string to print between arguments
     :param str end: string to print at the end of the output

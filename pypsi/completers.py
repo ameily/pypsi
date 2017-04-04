@@ -26,16 +26,18 @@ def command_completer(parser, shell, args, prefix, case_sensitive=False):
     '''
     Completion function that can tab complete options, options' values,
     and positional parameters. Shell, args, and prefix should be the same
-    params as passed to the pypsi.core.Command.complete() function
-    :param parser: A PypsiArgParser object OR an action object returned
-                   from PypsiArgParser.add_subparsers()
-    :param pypsi.shell.Shell shell:  The current Shell object
+    params as passed to the :meth:`pypsi.core.Command.complete` function
+
+    :param parser: A PypsiArgParser object or an action object returned
+        from :meth:`PypsiArgParser.add_subparsers`
+    :param pypsi.shell.Shell shell: The current Shell object
     :param list args: The full list of current CLI args
     :param str prefix: The partial arg being completed
     :param bool case_sensitive: Whether the prefix will be completed
-                           in a case sensitive manner
+        in a case sensitive manner
     :return list: A list of possible options based on the prefix
     '''
+
     cmd_parser = None
     offset = 0
     completions = []

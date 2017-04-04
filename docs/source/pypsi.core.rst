@@ -1,10 +1,6 @@
 pypsi.core - Core classes for pluggable features
 ================================================
 
-.. toctree::
-    :numbered:
-
-
 .. automodule:: pypsi.core
 
 

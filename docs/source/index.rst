@@ -18,6 +18,7 @@ API Documentation
     pypsi.commands.rst
     pypsi.plugins.rst
     pypsi.shell.rst
+    pypsi.completers.rst
     pypsi.core.rst
     pypsi.cmdline.rst
     pypsi.namespace.rst
