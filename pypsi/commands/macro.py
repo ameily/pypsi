@@ -100,18 +100,19 @@ class MacroCommand(BlockCommand):
         )
 
         self.parser.add_argument(
-            '-l', '--list', help='list all macros', action='store_true'
+            '-l', '--list', help='list all macros', action='store_true', debug=True
         )
         self.parser.add_argument(
             '-d', '--delete', help='delete macro',
-            metavar='NAME', completer=self.complete_macros
+            metavar='NAME', balls='fuck', completer=self.complete_macros, \
+                                                debug=True
         )
         self.parser.add_argument(
             '-s', '--show', help='print macro body',
-            metavar='NAME', completer=self.complete_macros
+            metavar='NAME', completer=self.complete_macros, debug=True
         )
         self.parser.add_argument(
-            'name', help='macro name', nargs='?', metavar='NAME'
+            'name', help='macro name', nargs='?', metavar='NAME', debug=True
         )
 
         super(MacroCommand, self).__init__(
@@ -122,6 +123,7 @@ class MacroCommand(BlockCommand):
 
     def complete_macros(self, shell, args, prefix):
         # returns a list of macro names in the current shell
+        print('complete macros')
         return list(shell.ctx.macros.keys())
 
     def complete(self, shell, args, prefix):

@@ -255,9 +255,9 @@ class PypsiArgParser(argparse.ArgumentParser):
 
     def __init__(self, *args, **kwargs):
         #: Store callback functions for positional parameters
-        self._pos_callbacks = []
+        self._pos_completers = []
         #: Store callback functions for optional arguments with values
-        self._op_callbacks = {}
+        self._op_completers = {}
         #: If a positional argument can be specified more than once,
         #  store it's callback here and return it multiple times
         self._repeating_cb = None
@@ -284,16 +284,17 @@ class PypsiArgParser(argparse.ArgumentParser):
         '''
         :return: All optional arguments (ex, '-v'/'--verbose')
         '''
-        return [key for key in self._op_callbacks]
+        return [key for key in self._op_completers]
 
-    def get_option_callback(self, option):
+    def get_option_completer(self, option):
         '''
         Returns the callback for the specified optional argument,
         Or None if one was not specified.
         :param str option: The Option
         :return function: The callback function or None
         '''
-        return self._op_callbacks.get(option, None)
+        print(self._op_completers)
+        return self._op_completers.get(option, None)
 
     def has_value(self, arg):
         '''
@@ -310,14 +311,14 @@ class PypsiArgParser(argparse.ArgumentParser):
         return isinstance(action,
                           (argparse._AppendAction, argparse._StoreAction))
 
-    def get_positional_callback(self, pos):
+    def get_positional_completer(self, pos):
         '''
         Get the callback for a positional parameter
         :param pos: index of the parameter - first param's index = 0
         :return: The callback if it exists, else None
         '''
         try:
-            return self._pos_callbacks[pos]
+            return self._pos_completers[pos]
         except IndexError:
             if self._repeating_cb:
                 # A positional parameter is set to repeat
@@ -346,7 +347,8 @@ class PypsiArgParser(argparse.ArgumentParser):
         # return zero-based index
         return index - 1
 
-    def add_argument(self, *args, completer=None, **kwargs):
+    def add_argument(self, *args, debug=False, completer=None,
+                     balls='', **kwargs):
         '''
         Override add_argument function of argparse.ArgumentParser to
         handle callback functions.
@@ -355,7 +357,10 @@ class PypsiArgParser(argparse.ArgumentParser):
         :param kwargs: Keywork arguments to pass up to argparse
         :return:
         '''
-        cb = kwargs.pop('completer', None)
+        if debug: print(args, kwargs)
+        # cb = kwargs.pop('completer', None)
+        cb = kwargs.get('completer', None)
+        if debug: print('cb', cb)
         nargs = kwargs.get('nargs', None)
         chars = self.prefix_chars
 
@@ -367,11 +372,13 @@ class PypsiArgParser(argparse.ArgumentParser):
                 # Positional param can repeat
                 # Currently only stores the last repeating completer specified
                 self._repeating_cb = cb
-            self._pos_callbacks.append(cb)
+            if debug: print('pos', args, ':', cb)
+            self._pos_completers.append(cb)
         else:
             # Add an optional argument
+            if debug: print('op', args, ':', cb)
             for arg in args:
-                self._op_callbacks[arg] = cb
+                self._op_completers[arg] = cb
         # Call argparse.add_argument()
         return super(PypsiArgParser, self).add_argument(*args, **kwargs)
 

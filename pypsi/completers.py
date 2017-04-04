@@ -66,15 +66,20 @@ def command_completer(parser, shell, args, prefix, case_sensitive=False):
         return []
 
     # Try to get an option's callback - returns None if no option or cb exists
-    cb = cmd_parser.get_option_callback(last_arg)
+    cb = cmd_parser.get_option_completer(last_arg)
+    print()
+    print('last arg', last_arg)
+    print('cb: ', cb)
 
     if callable(cb) and cmd_parser.has_value(last_arg):
         # If the option has a callback defined and has a value
         ops = cb(shell, args, prefix)
     elif prefix.startswith('-'):
+        print('arg')
         # Complete the optional arguments
         ops = cmd_parser.get_options()
     else:
+        print('pos')
         # Else complete the positional args
 
         # Get the current POSITIONAL index
@@ -86,7 +91,7 @@ def command_completer(parser, shell, args, prefix, case_sensitive=False):
         # Ex: 'cmd subcmd <cursor>' would have two args: ['subcmd', ''] but
         # 'cmd <cursor> would have one arg: ['']
         # Pass the params index here - if you want the first pos param, pass 0
-        cb = cmd_parser.get_positional_callback(index - offset)
+        cb = cmd_parser.get_positional_completer(index - offset)
         if callable(cb):
             ops = cb(shell, args, prefix)
 
@@ -96,6 +101,7 @@ def command_completer(parser, shell, args, prefix, case_sensitive=False):
     else:
         completions.extend([o for o in ops if not prefix
                             or o.lower().startswith(prefix.lower())])
+    completions = ['e', 'p'] if not completions else completions
     return sorted(completions)
 
 
