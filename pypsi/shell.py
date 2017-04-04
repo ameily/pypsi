@@ -235,7 +235,6 @@ class Shell(object):
             sys.stdin._proxy(stdin)
         return rc
 
-
     def cmdloop(self):
         '''
         Begin the input processing loop where the user will be prompted for
