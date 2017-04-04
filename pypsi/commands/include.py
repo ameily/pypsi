@@ -23,10 +23,9 @@ import os
 
 class IncludeFile(object):
 
-    def __init__(self, path, line=1):
+    def __init__(self, path):
         self.name = os.path.basename(path)
         self.abspath = os.path.abspath(path)
-        self.line = line
 
 
 class IncludeCommand(Command):
@@ -79,12 +78,14 @@ class IncludeCommand(Command):
         try:
             fp = safe_open(path, 'r')
         except (OSError, IOError) as e:
-            self.error(shell, "error opening file ", path, ": ", str(e), '\n')
+            self.error(shell, "error opening file {}: {}".format(path, str(e)))
             return -1
 
-        for line in fp:
-            shell.execute(line.strip())
-            ifile.line += 1
+        try:
+            # Execute the lines in the file
+            shell.include(fp)
+        except Exception as e:
+            self.error(shell, "error executing file ", path, ": ", str(e))
 
         self.stack.pop()
         fp.close()

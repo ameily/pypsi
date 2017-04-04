@@ -194,6 +194,47 @@ class Shell(object):
                 break
         return tokens
 
+    def include(self, file):
+        '''
+        Read commands from a file and execute them line by line
+        :param file file: File object to read commands from
+        :return int: 0 if error free; 1 if an error occurred
+        '''
+        rc = 1
+        eof = False
+
+        # set STDIN to the file
+        stdin = sys.stdin._get_target()
+        sys.stdin._proxy(file)
+
+        try:
+            while self.running and not eof:
+                raw = input().replace('\r', '')
+                rc = None
+                try:
+                    rc = self.execute(raw)
+                    rc = rc or 0
+                except SystemExit as e:
+                    rc = e.code
+                    eof = True
+                finally:
+                    if rc is not None:
+                        self.errno = rc
+
+                    for pp in self.postprocessors:
+                        pp.on_statement_finished(self, rc)
+        except EOFError:
+            print()
+            self.on_input_canceled()
+            rc = 0
+        except KeyboardInterrupt:
+            print()
+            self.on_input_canceled()
+        finally:
+            # Reset stdin to a tty
+            sys.stdin._proxy(stdin)
+        return rc
+
     def cmdloop(self):
         '''
         Begin the input processing loop where the user will be prompted for
@@ -263,6 +304,8 @@ class Shell(object):
         Parse and execute a statement.
 
         :param str raw: the raw command line to parse.
+        :param function input: a function that returns a string,
+                                overrides default input function (stdin).
         :returns int: the return code of the statement.
         '''
 
@@ -284,7 +327,8 @@ class Shell(object):
             if not input_complete:
                 # This is a multiline input
                 try:
-                    raw = input("> ")
+                    # hide prompt if reading from a file
+                    raw = input("> " if sys.stdin.isatty() else '')
                 except (EOFError, KeyboardInterrupt) as e:
                     self.on_input_canceled()
                     raise e
@@ -311,7 +355,7 @@ class Shell(object):
         for invoke in statement:
             try:
                 # Open any and all I/O redirections and resolve the pypsi
-                # comand.
+                # command.
                 invoke.setup(self)
             except Exception as e:
                 for sub in statement:
