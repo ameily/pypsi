@@ -24,7 +24,7 @@ from pypsi.os import path_completer  # noqa
 
 def command_completer(parser, shell, args, prefix, case_sensitive=False):
     '''
-    Completion function that can tab complete options, options' values, 
+    Completion function that can tab complete options, options' values,
     and positional parameters. Shell, args, and prefix should be the same
     params as passed to the pypsi.core.Command.complete() function
     :param parser: A PypsiArgParser object OR an action object returned
