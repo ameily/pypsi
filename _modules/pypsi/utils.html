@@ -1,182 +1,89 @@
 
 
-<!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>pypsi.utils &mdash; pypsi 1.2.1 documentation</title>
-  
+<!doctype html>
 
-  
-  
 
-  
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
-
-  
-  
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-
-  
-
-  
-  
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="pypsi 1.2.1 documentation" href="../../index.html"/>
-        <link rel="up" title="Module code" href="../index.html"/> 
-
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-
-</head>
-
-<body class="wy-body-for-nav" role="document">
-
-  <div class="wy-grid-for-nav">
-
+    <title>pypsi.utils &#8212; pypsi 1.4.1 documentation</title>
     
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-nav-search">
-        
-          <a href="../../index.html" class="fa fa-home"> pypsi</a>
-        
-        
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+    <link rel="stylesheet" href="../../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.4.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypsi 1.4.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
 </div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
       </div>
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-        
-          
-          
-              <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/ameily/pypsi">Github</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://pypi.python.org/pypi/pypsi">Releases</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../pypsi.tutorial.html">1. Pypsi Shell and Command Tutorial</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../pypsi.tutorial.html#command-api">1.1. Command API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../pypsi.tutorial.html#shell-api">1.2. Shell API</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../pypsi.commands.html">Pypsi Builtin Commands</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../pypsi.plugins.html">Pypsi Builtin Plugins</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../pypsi.plugins.html#module-pypsi.plugins.block">Block Commands</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../pypsi.plugins.html#escape-sequence-processors">Escape Sequence Processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../pypsi.plugins.html#module-pypsi.plugins.history">Shell History</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../pypsi.plugins.html#module-pypsi.plugins.variable">Variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../pypsi.plugins.html#module-pypsi.plugins.cmd">Cmd</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../pypsi.shell.html">2. pypsi.shell - Pypsi Shell</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../pypsi.base.html">pypsi.base - Base classes for pluggable features</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../pypsi.base.html#command-objects">Command objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../pypsi.base.html#plugin-objects">Plugin objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../pypsi.base.html#argument-parsing">Argument parsing</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../pypsi.cmdline.html">pypsi.cmdline - User input processing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../pypsi.cmdline.html#commands-and-expressions">Commands and expressions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../pypsi.cmdline.html#tokens">Tokens</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../pypsi.cmdline.html#statements">Statements</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../pypsi.namespace.html">pypsi.namespace - Arbitrary attribute storage classes</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../pypsi.format.html">pypsi.format - Stream output formatting</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../pypsi.stream.html">3. pypsi.stream - File streams</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../pypsi.utils.html">pypsi.utils - Utility functions</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../pypsi.wizard.html">pypsi.wizard - Prompt Wizards</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../pypsi.demo.html">4. Pypsi Demo Shell</a></li>
-</ul>
-
-          
-        
-      </div>
-      &nbsp;
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../index.html">pypsi</a>
-      </nav>
-
-
-      
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="breadcrumbs navigation">
-  <ul class="wy-breadcrumbs">
-    <li><a href="../../index.html">Docs</a> &raquo;</li>
-      
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-      
-    <li>pypsi.utils</li>
-      <li class="wy-breadcrumbs-aside">
-        
-      </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main" class="document">
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
             
   <h1>Source code for pypsi.utils</h1><div class="highlight"><pre>
-<span class="c">#</span>
-<span class="c"># Copyright (c) 2014, Adam Meily</span>
-<span class="c"># All rights reserved.</span>
-<span class="c">#</span>
-<span class="c"># Redistribution and use in source and binary forms, with or without modification,</span>
-<span class="c"># are permitted provided that the following conditions are met:</span>
-<span class="c">#</span>
-<span class="c"># * Redistributions of source code must retain the above copyright notice, this</span>
-<span class="c">#   list of conditions and the following disclaimer.</span>
-<span class="c">#</span>
-<span class="c"># * Redistributions in binary form must reproduce the above copyright notice, this</span>
-<span class="c">#   list of conditions and the following disclaimer in the documentation and/or</span>
-<span class="c">#   other materials provided with the distribution.</span>
-<span class="c">#</span>
-<span class="c"># * Neither the name of the {organization} nor the names of its</span>
-<span class="c">#   contributors may be used to endorse or promote products derived from</span>
-<span class="c">#   this software without specific prior written permission.</span>
-<span class="c">#</span>
-<span class="c"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
-<span class="c"># ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
-<span class="c"># WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
-<span class="c"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR</span>
-<span class="c"># ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
-<span class="c"># (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
-<span class="c"># LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON</span>
-<span class="c"># ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
-<span class="c"># (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
-<span class="c"># SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
-<span class="c">#</span>
+<span></span><span class="c1">#</span>
+<span class="c1"># Copyright (c) 2015, Adam Meily &lt;meily.adam@gmail.com&gt;</span>
+<span class="c1"># Pypsi - https://github.com/ameily/pypsi</span>
+<span class="c1">#</span>
+<span class="c1"># Permission to use, copy, modify, and/or distribute this software for any</span>
+<span class="c1"># purpose with or without fee is hereby granted, provided that the above</span>
+<span class="c1"># copyright notice and this permission notice appear in all copies.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED &quot;AS IS&quot; AND THE AUTHOR DISCLAIMS ALL WARRANTIES</span>
+<span class="c1"># WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF</span>
+<span class="c1"># MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR</span>
+<span class="c1"># ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES</span>
+<span class="c1"># WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN</span>
+<span class="c1"># ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF</span>
+<span class="c1"># OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.</span>
+<span class="c1">#</span>
 
 <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">Utility functions and classes.</span>
@@ -184,100 +91,103 @@
 
 <span class="kn">import</span> <span class="nn">chardet</span>
 <span class="kn">import</span> <span class="nn">codecs</span>
+<span class="kn">import</span> <span class="nn">io</span>
 
 
-<div class="viewcode-block" id="safe_open"><a class="viewcode-back" href="../../pypsi.utils.html#pypsi.utils.safe_open">[docs]</a><span class="k">def</span> <span class="nf">safe_open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;r&#39;</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">4096</span><span class="p">,</span> <span class="n">ascii_is_utf8</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s">&#39;ignore&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="safe_open"><a class="viewcode-back" href="../../pypsi.utils.html#pypsi.utils.safe_open">[docs]</a><span class="k">def</span> <span class="nf">safe_open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">4096</span><span class="p">,</span> <span class="n">ascii_is_utf8</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Retrieves a file&#39;s encoding and returns the opened file. If the opened file</span>
-<span class="sd">    begins with a BOM, it is read before the file object is returned. This</span>
-<span class="sd">    allows callers to not have to handle BOMs of files.</span>
+<span class="sd">    Detect a file&#39;s encoding, skip any Byte Order Marks that the are located</span>
+<span class="sd">    at the beginning of the file, and returns the opened file stream. The</span>
+<span class="sd">    `file` argument can be either a string containing a path to the file or</span>
+<span class="sd">    an already open binary file-like object.</span>
 
-<span class="sd">    :param str path: file path to open</span>
+<span class="sd">    :param str file: path to the file or a binary file-like object</span>
 <span class="sd">    :param str mode: the mode to open the file (see :func:`open`)</span>
 <span class="sd">    :param int chunk_size: number of bytes to read to determine encoding</span>
-<span class="sd">    :param bool ascii_is_utf8: whether to force UTF-8 encoding if the file is \</span>
-<span class="sd">        dected as ASCII</span>
-<span class="sd">    :param str errors: determines how errors are handled and is passed to \</span>
-<span class="sd">        the call to :func:`open`.</span>
-<span class="sd">    :returns file: the opened file object</span>
+<span class="sd">    :param bool ascii_is_utf8:</span>
+<span class="sd">        whether to force UTF-8 encoding if the file is dected as ASCII</span>
+<span class="sd">    :param str errors:</span>
+<span class="sd">        determines how errors are handled and is passed to the call to</span>
+<span class="sd">        :func:`open`.</span>
+<span class="sd">    :returns file: the opened file stream</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="n">first</span> <span class="o">=</span> <span class="bp">None</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
-        <span class="nb">bin</span> <span class="o">=</span> <span class="n">first</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">chunk_size</span><span class="p">)</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">chardet</span><span class="o">.</span><span class="n">detect</span><span class="p">(</span><span class="nb">bin</span><span class="p">)</span>
+    <span class="n">is_path</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">first</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s1">&#39;b&#39;</span> <span class="ow">in</span> <span class="n">mode</span><span class="p">:</span>
+        <span class="c1"># open the file as binary</span>
+        <span class="k">return</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_path</span> <span class="k">else</span> <span class="n">file</span>
 
-    <span class="n">enc</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s">&#39;encoding&#39;</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">ascii_is_utf8</span> <span class="ow">and</span> <span class="n">enc</span> <span class="o">==</span> <span class="s">&#39;ascii&#39;</span><span class="p">:</span>
-        <span class="n">enc</span> <span class="o">=</span> <span class="s">&#39;utf-8&#39;</span>
+    <span class="k">if</span> <span class="n">is_path</span><span class="p">:</span>
+        <span class="c1"># open the file on disk and read the first chunk</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">chunk_size</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># read the header and move back to the beginning of the file</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">chunk_size</span><span class="p">)</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
-    <span class="n">fp</span> <span class="o">=</span> <span class="n">codecs</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="n">errors</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">header</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_path</span> <span class="k">else</span> <span class="n">file</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">chardet</span><span class="o">.</span><span class="n">detect</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+    <span class="n">enc</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s1">&#39;encoding&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">ascii_is_utf8</span> <span class="ow">and</span> <span class="n">enc</span> <span class="o">==</span> <span class="s1">&#39;ascii&#39;</span><span class="p">:</span>
+        <span class="c1"># the encoding has been detected as ASCII, check if we should open the</span>
+        <span class="c1"># fileas UTF-8</span>
+        <span class="n">enc</span> <span class="o">=</span> <span class="s1">&#39;utf-8&#39;</span>
+
+    <span class="k">if</span> <span class="n">is_path</span><span class="p">:</span>
+        <span class="n">fp</span> <span class="o">=</span> <span class="n">codecs</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fp</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">TextIOWrapper</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
     <span class="k">for</span> <span class="n">bom</span> <span class="ow">in</span> <span class="p">(</span><span class="n">codecs</span><span class="o">.</span><span class="n">BOM_UTF32_BE</span><span class="p">,</span> <span class="n">codecs</span><span class="o">.</span><span class="n">BOM_UTF32_LE</span><span class="p">,</span> <span class="n">codecs</span><span class="o">.</span><span class="n">BOM_UTF8</span><span class="p">,</span>
                 <span class="n">codecs</span><span class="o">.</span><span class="n">BOM_UTF16_BE</span><span class="p">,</span> <span class="n">codecs</span><span class="o">.</span><span class="n">BOM_UTF16_LE</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">first</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">bom</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">header</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">bom</span><span class="p">):</span>
             <span class="n">fp</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bom</span><span class="p">))</span>
             <span class="k">break</span>
 
     <span class="k">return</span> <span class="n">fp</span></div>
+
+
+<span class="k">def</span> <span class="nf">escape_string</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">escape_char</span><span class="p">,</span> <span class="n">chars</span><span class="o">=</span><span class="s1">&#39; </span><span class="se">\n\t\xa0</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">escape_escape_char</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">escape_escape_char</span><span class="p">:</span>
+        <span class="n">escape</span> <span class="o">=</span> <span class="n">chars</span> <span class="o">+</span> <span class="n">escape_char</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">escape</span> <span class="o">=</span> <span class="n">chars</span>
+
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">escape</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">+=</span> <span class="n">escape_char</span> <span class="o">+</span> <span class="n">c</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">+=</span> <span class="n">c</span>
+    <span class="k">return</span> <span class="n">ret</span>
 </pre></div>
 
           </div>
-          <footer>
-  
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &copy; Copyright 2014, Adam Meily.
-    </p>
-  </div>
-
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
-  
-</footer>
         </div>
       </div>
-
-    </section>
-
-  </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../',
-            VERSION:'1.2.1',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
-      });
-  </script>
-   
-
-</body>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypsi 1.4.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2014, Adam Meily.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.
+    </div>
+  </body>
 </html>

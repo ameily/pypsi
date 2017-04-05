@@ -1,152 +1,109 @@
 
 
-<!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>1. Pypsi Shell and Command Tutorial &mdash; pypsi 1.2.1 documentation</title>
-  
+<!doctype html>
 
-  
-  
 
-  
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
-
-  
-  
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-
-  
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="pypsi 1.2.1 documentation" href="index.html"/>
-        <link rel="next" title="Pypsi Builtin Commands" href="pypsi.commands.html"/>
-        <link rel="prev" title="Pypsi - Python Pluggable Shell Interface" href="index.html"/> 
-
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-
-</head>
-
-<body class="wy-body-for-nav" role="document">
-
-  <div class="wy-grid-for-nav">
-
+    <title>1. Pypsi Shell and Command Tutorial &#8212; pypsi 1.4.1 documentation</title>
     
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-nav-search">
-        
-          <a href="index.html" class="fa fa-home"> pypsi</a>
-        
-        
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.4.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="2. Pypsi Builtin Commands" href="pypsi.commands.html" />
+    <link rel="prev" title="Pypsi - Python Pluggable Shell Interface" href="index.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pypsi.commands.html" title="2. Pypsi Builtin Commands"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Pypsi - Python Pluggable Shell Interface"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pypsi 1.4.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1. Pypsi Shell and Command Tutorial</a><ul>
+<li><a class="reference internal" href="#command-api">1.1. Command API</a><ul>
+<li><a class="reference internal" href="#accepting-arguments">1.1.1. Accepting Arguments</a></li>
+<li><a class="reference internal" href="#printing">1.1.2. Printing</a><ul>
+<li><a class="reference internal" href="#colors">1.1.2.1. Colors</a></li>
+<li><a class="reference internal" href="#errors">1.1.2.2. Errors</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#example">1.1.3. Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#shell-api">1.2. Shell API</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Pypsi - Python Pluggable Shell Interface</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pypsi.commands.html"
+                        title="next chapter">2. Pypsi Builtin Commands</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/pypsi.tutorial.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
 </div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
       </div>
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-        
-          
-          
-              <ul class="current">
-<li class="toctree-l1"><a class="reference external" href="https://github.com/ameily/pypsi">Github</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://pypi.python.org/pypi/pypsi">Releases</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">1. Pypsi Shell and Command Tutorial</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#command-api">1.1. Command API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#shell-api">1.2. Shell API</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.commands.html">Pypsi Builtin Commands</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.plugins.html">Pypsi Builtin Plugins</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.block">Block Commands</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#escape-sequence-processors">Escape Sequence Processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.history">Shell History</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.variable">Variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.cmd">Cmd</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.shell.html">2. pypsi.shell - Pypsi Shell</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.base.html">pypsi.base - Base classes for pluggable features</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#command-objects">Command objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#plugin-objects">Plugin objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#argument-parsing">Argument parsing</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.cmdline.html">pypsi.cmdline - User input processing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#commands-and-expressions">Commands and expressions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#tokens">Tokens</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#statements">Statements</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.namespace.html">pypsi.namespace - Arbitrary attribute storage classes</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.format.html">pypsi.format - Stream output formatting</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.stream.html">3. pypsi.stream - File streams</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.utils.html">pypsi.utils - Utility functions</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.wizard.html">pypsi.wizard - Prompt Wizards</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.demo.html">4. Pypsi Demo Shell</a></li>
-</ul>
-
-          
-        
-      </div>
-      &nbsp;
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">pypsi</a>
-      </nav>
-
-
-      
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="breadcrumbs navigation">
-  <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li>1. Pypsi Shell and Command Tutorial</li>
-      <li class="wy-breadcrumbs-aside">
-        
-          <a href="_sources/pypsi.tutorial.txt" rel="nofollow"> View page source</a>
-        
-      </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main" class="document">
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
             
   <div class="section" id="pypsi-shell-and-command-tutorial">
 <h1>1. Pypsi Shell and Command Tutorial<a class="headerlink" href="#pypsi-shell-and-command-tutorial" title="Permalink to this headline">¶</a></h1>
@@ -154,7 +111,7 @@
 <div class="section" id="command-api">
 <h2>1.1. Command API<a class="headerlink" href="#command-api" title="Permalink to this headline">¶</a></h2>
 <p>All Pypsi commands will inherit from the base command class:
-<a class="reference internal" href="pypsi.base.html#pypsi.base.Command" title="pypsi.base.Command"><code class="xref py py-class docutils literal"><span class="pre">pypsi.base.Command</span></code></a>. Each command has several attributes that determines
+<a class="reference internal" href="pypsi.core.html#pypsi.core.Command" title="pypsi.core.Command"><code class="xref py py-class docutils literal"><span class="pre">pypsi.core.Command</span></code></a>. Each command has several attributes that determines
 how the command is added to the shell. These are:</p>
 <blockquote>
 <div><ul class="simple">
@@ -172,7 +129,7 @@ set to <code class="docutils literal"><span class="pre">&quot;shell&quot;</span>
 attribtues in their constructor so that a shell may customize the command when
 loading. However, this is not a requirement. All builtin commands
 accept all of the attribute in their constructor.</p>
-<p>The command hook <a class="reference internal" href="pypsi.base.html#pypsi.base.Command.setup" title="pypsi.base.Command.setup"><code class="xref py py-meth docutils literal"><span class="pre">setup()</span></code></a> is called once the command
+<p>The command hook <a class="reference internal" href="pypsi.core.html#pypsi.core.Command.setup" title="pypsi.core.Command.setup"><code class="xref py py-meth docutils literal"><span class="pre">setup()</span></code></a> is called once the command
 has been created and added to the shell. The setup hook is where setup and
 initialization code will reside. Commands should not hold any configuration or
 state information in the command itself. However, use the
@@ -187,35 +144,35 @@ sessions.</li>
 </ul>
 </div></blockquote>
 <p>When a command is executed by the user, the command&#8217;s
-<a class="reference internal" href="pypsi.base.html#pypsi.base.Command.run" title="pypsi.base.Command.run"><code class="xref py py-meth docutils literal"><span class="pre">run()</span></code></a> function is called.</p>
+<a class="reference internal" href="pypsi.core.html#pypsi.core.Command.run" title="pypsi.core.Command.run"><code class="xref py py-meth docutils literal"><span class="pre">run()</span></code></a> function is called.</p>
 <div class="section" id="accepting-arguments">
 <h3>1.1.1. Accepting Arguments<a class="headerlink" href="#accepting-arguments" title="Permalink to this headline">¶</a></h3>
 <p>All of Pypsi&#8217;s bultin commands use a wrapped version of Python&#8217;s <a class="reference external" href="http://docs.python.org/3.3/library/argparse.html#module-argparse" title="(in Python v3.4)"><code class="xref py py-mod docutils literal"><span class="pre">argparse</span></code></a>
-module for argument parsing. The class <a class="reference internal" href="pypsi.base.html#pypsi.base.PypsiArgParser" title="pypsi.base.PypsiArgParser"><code class="xref py py-class docutils literal"><span class="pre">PypsiArgParser</span></code></a>
+module for argument parsing. The class <a class="reference internal" href="pypsi.core.html#pypsi.core.PypsiArgParser" title="pypsi.core.PypsiArgParser"><code class="xref py py-class docutils literal"><span class="pre">PypsiArgParser</span></code></a>
 wraps <a class="reference external" href="http://docs.python.org/3.3/library/argparse.html#argparse.ArgumentParser" title="(in Python v3.4)"><code class="xref py py-class docutils literal"><span class="pre">ArgumentParser</span></code></a> to change the parser&#8217;s behavior when the
 user passes invalid arguments or asks for help. By default, the base
 ArgumentParser will exit the entire program, which isn&#8217;t ideal for Pypsi.</p>
-<p>The only difference between the Pypsi <a class="reference internal" href="pypsi.base.html#pypsi.base.PypsiArgParser" title="pypsi.base.PypsiArgParser"><code class="xref py py-class docutils literal"><span class="pre">pypsi.base.PypsiArgParser</span></code></a> and
+<p>The only difference between the Pypsi <a class="reference internal" href="pypsi.core.html#pypsi.core.PypsiArgParser" title="pypsi.core.PypsiArgParser"><code class="xref py py-class docutils literal"><span class="pre">pypsi.core.PypsiArgParser</span></code></a> and
 <code class="xref py py-mod docutils literal"><span class="pre">argparse.ArgumentParser</span></code> is that the former will raise a
-<a class="reference internal" href="pypsi.base.html#pypsi.base.CommandShortCircuit" title="pypsi.base.CommandShortCircuit"><code class="xref py py-class docutils literal"><span class="pre">pypsi.base.CommandShortCircuit</span></code></a> exception when the arguments aren&#8217;t
+<a class="reference internal" href="pypsi.core.html#pypsi.core.CommandShortCircuit" title="pypsi.core.CommandShortCircuit"><code class="xref py py-class docutils literal"><span class="pre">pypsi.core.CommandShortCircuit</span></code></a> exception when the arguments aren&#8217;t
 valid or the user requests help (via <code class="docutils literal"><span class="pre">-h</span></code> or <code class="docutils literal"><span class="pre">--help</span></code>.)</p>
 </div>
 <div class="section" id="printing">
 <h3>1.1.2. Printing<a class="headerlink" href="#printing" title="Permalink to this headline">¶</a></h3>
 <p>Pypsi wraps the <code class="xref py py-meth docutils literal"><span class="pre">print()</span></code> function with its own
-<a class="reference internal" href="pypsi.stream.html#pypsi.stream.pypsi_print" title="pypsi.stream.pypsi_print"><code class="xref py py-meth docutils literal"><span class="pre">pypsi_print()</span></code></a> function, which handles automatic word
+<code class="xref py py-meth docutils literal"><span class="pre">pypsi_print()</span></code> function, which handles automatic word
 wrapping and smart coloring.</p>
 <div class="section" id="colors">
 <h4>1.1.2.1. Colors<a class="headerlink" href="#colors" title="Permalink to this headline">¶</a></h4>
 <p>Pypsi supplies color constants that can be printed to the screen. Colors will
 only print if the output stream is a terminal (ie. the stream&#8217;s <code class="docutils literal"><span class="pre">isatty()</span></code>
 returns <code class="xref py py-const docutils literal"><span class="pre">True</span></code>.) This means that commands don&#8217;t need to handle printing
-colors and not printing colors, the <a class="reference internal" href="pypsi.stream.html#pypsi.stream.pypsi_print" title="pypsi.stream.pypsi_print"><code class="xref py py-meth docutils literal"><span class="pre">pypsi_print()</span></code></a> function
+colors and not printing colors, the <code class="xref py py-meth docutils literal"><span class="pre">pypsi_print()</span></code> function
 handles it.</p>
-<p>Color codes are held in the <a class="reference internal" href="pypsi.stream.html#pypsi.stream.AnsiCodes" title="pypsi.stream.AnsiCodes"><code class="xref py py-const docutils literal"><span class="pre">AnsiCodes</span></code></a> object. Using this
+<p>Color codes are held in the <a class="reference internal" href="pypsi.ansi.html#pypsi.ansi.AnsiCodes" title="pypsi.ansi.AnsiCodes"><code class="xref py py-const docutils literal"><span class="pre">AnsiCodes</span></code></a> object. Using this
 constant is straight forward. In this example, the text &#8220;Hello, World!&#8221; is
 printed in red and then in green:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">print</span><span class="p">(</span><span class="n">AnsiCodes</span><span class="o">.</span><span class="n">red</span><span class="p">,</span> <span class="s">&quot;Hello, &quot;</span><span class="p">,</span> <span class="n">AnsiCodes</span><span class="o">.</span><span class="n">green</span><span class="p">,</span> <span class="s">&quot;World!&quot;</span><span class="p">,</span> <span class="n">AnsiCodes</span><span class="o">.</span><span class="n">reset</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">AnsiCodes</span><span class="o">.</span><span class="n">red</span><span class="p">,</span> <span class="s2">&quot;Hello, &quot;</span><span class="p">,</span> <span class="n">AnsiCodes</span><span class="o">.</span><span class="n">green</span><span class="p">,</span> <span class="s2">&quot;World!&quot;</span><span class="p">,</span> <span class="n">AnsiCodes</span><span class="o">.</span><span class="n">reset</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>It is important to pass in <code class="docutils literal"><span class="pre">sep=''</span></code> when printing colors. Otherwise, the above
@@ -224,7 +181,7 @@ user.</p>
 </div>
 <div class="section" id="errors">
 <h4>1.1.2.2. Errors<a class="headerlink" href="#errors" title="Permalink to this headline">¶</a></h4>
-<p>To ensure uniform error messages, the <a class="reference internal" href="pypsi.base.html#pypsi.base.Command.error" title="pypsi.base.Command.error"><code class="xref py py-meth docutils literal"><span class="pre">error()</span></code></a> function
+<p>To ensure uniform error messages, the <a class="reference internal" href="pypsi.core.html#pypsi.core.Command.error" title="pypsi.core.Command.error"><code class="xref py py-meth docutils literal"><span class="pre">error()</span></code></a> function
 is provided to correctly format error messages. With color enabled, this will
 print in red: <code class="docutils literal"><span class="pre">&lt;command_name&gt;:</span> <span class="pre">error:</span> <span class="pre">&lt;error_message&gt;</span></code>.</p>
 </div>
@@ -234,12 +191,12 @@ print in red: <code class="docutils literal"><span class="pre">&lt;command_name&
 <p>This example is the source code of the
 <a class="reference internal" href="pypsi.commands.html#pypsi.commands.echo.EchoCommand" title="pypsi.commands.echo.EchoCommand"><code class="xref py py-class docutils literal"><span class="pre">EchoCommand</span></code></a>, which prints the arguments passed
 into it to the screen:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c"># Pypsi imports</span>
-<span class="kn">from</span> <span class="nn">pypsi.base</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">PypsiArgParser</span><span class="p">,</span> <span class="n">CommandShortCircuit</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Pypsi imports</span>
+<span class="kn">from</span> <span class="nn">pypsi.core</span> <span class="k">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">PypsiArgParser</span><span class="p">,</span> <span class="n">CommandShortCircuit</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
 
-<span class="c"># Custom usage message</span>
-<span class="n">EchoCmdUsage</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%(prog)s</span><span class="s"> [-n] [-h] message&quot;</span>
+<span class="c1"># Custom usage message</span>
+<span class="n">EchoCmdUsage</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%(prog)s</span><span class="s2"> [-n] [-h] message&quot;</span>
 
 
 <span class="k">class</span> <span class="nc">EchoCommand</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
@@ -247,25 +204,25 @@ into it to the screen:</p>
 <span class="sd">    Prints text to the screen.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;echo&#39;</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="s">&#39;shell&#39;</span><span class="p">,</span> <span class="n">brief</span><span class="o">=</span><span class="s">&#39;print a line of text&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;echo&#39;</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="s1">&#39;shell&#39;</span><span class="p">,</span> <span class="n">brief</span><span class="o">=</span><span class="s1">&#39;print a line of text&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parser</span> <span class="o">=</span> <span class="n">PypsiArgParser</span><span class="p">(</span>
             <span class="n">prog</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="n">brief</span><span class="p">,</span>
             <span class="n">usage</span><span class="o">=</span><span class="n">EchoCmdUsage</span>
         <span class="p">)</span>
 
-        <span class="n">subcmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s">&#39;Stream&#39;</span><span class="p">)</span>
+        <span class="n">subcmd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Stream&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s">&#39;message&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;message to print&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">REMAINDER</span><span class="p">,</span>
-            <span class="n">metavar</span><span class="o">=</span><span class="s">&quot;MESSAGE&quot;</span>
+            <span class="s1">&#39;message&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;message to print&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">REMAINDER</span><span class="p">,</span>
+            <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;MESSAGE&quot;</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s">&#39;-n&#39;</span><span class="p">,</span> <span class="s">&#39;--nolf&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&quot;don&#39;t print newline character&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span>
+            <span class="s1">&#39;-n&#39;</span><span class="p">,</span> <span class="s1">&#39;--nolf&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;don&#39;t print newline character&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span>
         <span class="p">)</span>
 
-        <span class="nb">super</span><span class="p">(</span><span class="n">EchoCommand</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">EchoCommand</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">format_help</span><span class="p">(),</span> <span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">,</span>
             <span class="n">brief</span><span class="o">=</span><span class="n">brief</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span>
@@ -276,9 +233,9 @@ into it to the screen:</p>
         <span class="k">except</span> <span class="n">CommandShortCircuit</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span>
 
-        <span class="n">tail</span> <span class="o">=</span> <span class="s">&#39;&#39;</span> <span class="k">if</span> <span class="n">ns</span><span class="o">.</span><span class="n">nolf</span> <span class="k">else</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
+        <span class="n">tail</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">ns</span><span class="o">.</span><span class="n">nolf</span> <span class="k">else</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
 
-        <span class="k">print</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ns</span><span class="o">.</span><span class="n">message</span><span class="p">),</span> <span class="n">sep</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">tail</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ns</span><span class="o">.</span><span class="n">message</span><span class="p">),</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">tail</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="mi">0</span>
 </pre></div>
@@ -287,7 +244,7 @@ into it to the screen:</p>
 itself mirrors a simple Python command line application. This means that porting
 existing applications to Pypsi commands is extremely easy. Also, notice the
 <code class="docutils literal"><span class="pre">try...except...</span></code> around <code class="docutils literal"><span class="pre">parser.parse_args</span></code>. This is catching the
-<a class="reference internal" href="pypsi.base.html#pypsi.base.CommandShortCircuit" title="pypsi.base.CommandShortCircuit"><code class="xref py py-class docutils literal"><span class="pre">CommandShortCircuit</span></code></a> exception, which in this case will be
+<a class="reference internal" href="pypsi.core.html#pypsi.core.CommandShortCircuit" title="pypsi.core.CommandShortCircuit"><code class="xref py py-class docutils literal"><span class="pre">CommandShortCircuit</span></code></a> exception, which in this case will be
 thrown if the user enters any of the following:</p>
 <blockquote>
 <div><ul class="simple">
@@ -305,14 +262,14 @@ design to ORM libraries such as Django and MongoEngine, where the database table
 <p>All shells much inherit from the base class <a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell" title="pypsi.shell.Shell"><code class="xref py py-class docutils literal"><span class="pre">Shell</span></code></a>. Then,
 add command instances. In this example, a new shell is created, given the name
 &#8220;example&#8221; and the echo command is added, but renamed to <code class="docutils literal"><span class="pre">print</span></code>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="c"># Pypsi Imports</span>
-<span class="kn">from</span> <span class="nn">pypsi.shell</span> <span class="kn">import</span> <span class="n">Shell</span>
-<span class="kn">from</span> <span class="nn">pypsi.commands.echo</span> <span class="kn">import</span> <span class="n">EchoCommand</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Pypsi Imports</span>
+<span class="kn">from</span> <span class="nn">pypsi.shell</span> <span class="k">import</span> <span class="n">Shell</span>
+<span class="kn">from</span> <span class="nn">pypsi.commands.echo</span> <span class="k">import</span> <span class="n">EchoCommand</span>
 
 <span class="k">class</span> <span class="nc">MyShell</span><span class="p">(</span><span class="n">Shell</span><span class="p">):</span>
-    <span class="n">echo_cmd</span> <span class="o">=</span> <span class="n">EchoCommand</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;print&#39;</span><span class="p">)</span>
+    <span class="n">echo_cmd</span> <span class="o">=</span> <span class="n">EchoCommand</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;print&#39;</span><span class="p">)</span>
 
-<span class="n">shell</span> <span class="o">=</span> <span class="n">MyShell</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;example&#39;</span><span class="p">)</span>
+<span class="n">shell</span> <span class="o">=</span> <span class="n">MyShell</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;example&#39;</span><span class="p">)</span>
 <span class="n">shell</span><span class="o">.</span><span class="n">cmdloop</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -333,68 +290,31 @@ the <code class="docutils literal"><span class="pre">print</span></code> command
 
 
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="pypsi.commands.html" class="btn btn-neutral float-right" title="Pypsi Builtin Commands">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="index.html" class="btn btn-neutral" title="Pypsi - Python Pluggable Shell Interface"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
-  
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &copy; Copyright 2014, Adam Meily.
-    </p>
-  </div>
-
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
-  
-</footer>
         </div>
       </div>
-
-    </section>
-
-  </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'1.2.1',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
-      });
-  </script>
-   
-
-</body>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pypsi.commands.html" title="2. Pypsi Builtin Commands"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Pypsi - Python Pluggable Shell Interface"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pypsi 1.4.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2014, Adam Meily.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.
+    </div>
+  </body>
 </html>

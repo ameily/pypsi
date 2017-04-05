@@ -1,11 +1,7 @@
-pypsi.base - Base classes for pluggable features
+pypsi.core - Core classes for pluggable features
 ================================================
 
-.. toctree::
-    :numbered:
-
-
-.. automodule:: pypsi.base
+.. automodule:: pypsi.core
 
 
 Command objects
@@ -30,3 +26,9 @@ Argument parsing
 
 .. autoclass:: CommandShortCircuit
     :members:
+
+
+Enhanced Printing
+-----------------
+
+.. automethod:: pypsi_print

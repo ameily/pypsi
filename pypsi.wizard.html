@@ -1,163 +1,98 @@
 
 
-<!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>pypsi.wizard - Prompt Wizards &mdash; pypsi 1.2.1 documentation</title>
-  
+<!doctype html>
 
-  
-  
 
-  
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
-
-  
-  
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-
-  
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="pypsi 1.2.1 documentation" href="index.html"/>
-        <link rel="next" title="4. Pypsi Demo Shell" href="pypsi.demo.html"/>
-        <link rel="prev" title="pypsi.utils - Utility functions" href="pypsi.utils.html"/> 
-
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-
-</head>
-
-<body class="wy-body-for-nav" role="document">
-
-  <div class="wy-grid-for-nav">
-
+    <title>12. pypsi.wizard - Prompt Wizards &#8212; pypsi 1.4.1 documentation</title>
     
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-nav-search">
-        
-          <a href="index.html" class="fa fa-home"> pypsi</a>
-        
-        
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.4.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="13. Pypsi Demo Shell" href="pypsi.demo.html" />
+    <link rel="prev" title="11. pypsi.utils - Utility functions" href="pypsi.utils.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pypsi.demo.html" title="13. Pypsi Demo Shell"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pypsi.utils.html" title="11. pypsi.utils - Utility functions"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pypsi 1.4.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pypsi.utils.html"
+                        title="previous chapter">11. pypsi.utils - Utility functions</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pypsi.demo.html"
+                        title="next chapter">13. Pypsi Demo Shell</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/pypsi.wizard.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
 </div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
       </div>
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-        
-          
-          
-              <ul class="current">
-<li class="toctree-l1"><a class="reference external" href="https://github.com/ameily/pypsi">Github</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://pypi.python.org/pypi/pypsi">Releases</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.tutorial.html">1. Pypsi Shell and Command Tutorial</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.tutorial.html#command-api">1.1. Command API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.tutorial.html#shell-api">1.2. Shell API</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.commands.html">Pypsi Builtin Commands</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.plugins.html">Pypsi Builtin Plugins</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.block">Block Commands</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#escape-sequence-processors">Escape Sequence Processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.history">Shell History</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.variable">Variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.cmd">Cmd</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.shell.html">2. pypsi.shell - Pypsi Shell</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.base.html">pypsi.base - Base classes for pluggable features</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#command-objects">Command objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#plugin-objects">Plugin objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#argument-parsing">Argument parsing</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.cmdline.html">pypsi.cmdline - User input processing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#commands-and-expressions">Commands and expressions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#tokens">Tokens</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#statements">Statements</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.namespace.html">pypsi.namespace - Arbitrary attribute storage classes</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.format.html">pypsi.format - Stream output formatting</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.stream.html">3. pypsi.stream - File streams</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.utils.html">pypsi.utils - Utility functions</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">pypsi.wizard - Prompt Wizards</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.demo.html">4. Pypsi Demo Shell</a></li>
-</ul>
-
-          
-        
-      </div>
-      &nbsp;
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">pypsi</a>
-      </nav>
-
-
-      
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="breadcrumbs navigation">
-  <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li>pypsi.wizard - Prompt Wizards</li>
-      <li class="wy-breadcrumbs-aside">
-        
-          <a href="_sources/pypsi.wizard.txt" rel="nofollow"> View page source</a>
-        
-      </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main" class="document">
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
             
-  <div class="section" id="pypsi-wizard-prompt-wizards">
-<h1>pypsi.wizard - Prompt Wizards<a class="headerlink" href="#pypsi-wizard-prompt-wizards" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul class="simple">
-</ul>
-</div>
-<span class="target" id="module-pypsi.wizard"></span><p>Command line input wizards.</p>
+  <div class="section" id="module-pypsi.wizard">
+<span id="pypsi-wizard-prompt-wizards"></span><h1>12. pypsi.wizard - Prompt Wizards<a class="headerlink" href="#module-pypsi.wizard" title="Permalink to this headline">¶</a></h1>
+<p>Command line input wizards.</p>
 <dl class="class">
 <dt id="pypsi.wizard.PromptWizard">
-<em class="property">class </em><code class="descclassname">pypsi.wizard.</code><code class="descname">PromptWizard</code><span class="sig-paren">(</span><em>name</em>, <em>description</em>, <em>steps=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/wizard.html#PromptWizard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.wizard.PromptWizard" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">pypsi.wizard.</code><code class="descname">PromptWizard</code><span class="sig-paren">(</span><em>name</em>, <em>description</em>, <em>steps=None</em>, <em>features=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/wizard.html#PromptWizard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.wizard.PromptWizard" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>A user input prompt wizards.</p>
 <p>PromptWizards will walk the user through a series of questions
@@ -223,7 +158,8 @@ the answers on success, <code class="xref py py-const docutils literal"><span cl
 <li><strong>id</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the step io, used for referencing the step&#8217;s value</li>
 <li><strong>name</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the name to display for input to the user</li>
 <li><strong>help</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the help message to display to the user</li>
-<li><strong>default</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the default value if the user immediately hits &#8220;Return&#8221;</li>
+<li><strong>default</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the default value if the user immediately hits
+&#8220;Return&#8221;</li>
 <li><strong>completer</strong> &#8211; a completion function</li>
 <li><strong>validators</strong> &#8211; a single or a list of validators</li>
 </ul>
@@ -234,8 +170,8 @@ the answers on success, <code class="xref py py-const docutils literal"><span cl
 <dl class="method">
 <dt id="pypsi.wizard.WizardStep.complete">
 <code class="descname">complete</code><span class="sig-paren">(</span><em>wizard</em>, <em>args</em>, <em>prefix</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/wizard.html#WizardStep.complete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.wizard.WizardStep.complete" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the list of possible completions for input. This will call the local
-completer function (<code class="docutils literal"><span class="pre">self.completer</span></code> with the arguments:
+<dd><p>Get the list of possible completions for input. This will call the
+local completer function (<code class="docutils literal"><span class="pre">self.completer</span></code> with the arguments:
 (<code class="docutils literal"><span class="pre">wizard</span></code>, <code class="docutils literal"><span class="pre">args</span></code>, <code class="docutils literal"><span class="pre">prefix</span></code>).</p>
 <blockquote>
 <div><ul class="simple">
@@ -244,7 +180,7 @@ completer function (<code class="docutils literal"><span class="pre">self.comple
 <li>prefix (<code class="docutils literal"><span class="pre">str</span></code>) - the input prefix</li>
 </ul>
 </div></blockquote>
-<p>This function mirrors the command <a class="reference internal" href="pypsi.base.html#pypsi.base.Command.complete" title="pypsi.base.Command.complete"><code class="xref py py-meth docutils literal"><span class="pre">complete()</span></code></a>
+<p>This function mirrors the command <a class="reference internal" href="pypsi.core.html#pypsi.core.Command.complete" title="pypsi.core.Command.complete"><code class="xref py py-meth docutils literal"><span class="pre">complete()</span></code></a>
 function.</p>
 </dd></dl>
 
@@ -363,7 +299,8 @@ validators. If a validation error occurs, raise a ValueError exception.</p>
 <dl class="function">
 <dt id="pypsi.wizard.hostname_or_ip_validator">
 <code class="descclassname">pypsi.wizard.</code><code class="descname">hostname_or_ip_validator</code><span class="sig-paren">(</span><em>ns</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/wizard.html#hostname_or_ip_validator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.wizard.hostname_or_ip_validator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Network hostname or IPv4 address validator. Raises ValueError on validation error.</p>
+<dd><p>Network hostname or IPv4 address validator. Raises ValueError on validation
+error.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -482,68 +419,31 @@ errors.</td>
 
 
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="pypsi.demo.html" class="btn btn-neutral float-right" title="4. Pypsi Demo Shell">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="pypsi.utils.html" class="btn btn-neutral" title="pypsi.utils - Utility functions"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
-  
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &copy; Copyright 2014, Adam Meily.
-    </p>
-  </div>
-
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
-  
-</footer>
         </div>
       </div>
-
-    </section>
-
-  </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'1.2.1',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
-      });
-  </script>
-   
-
-</body>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pypsi.demo.html" title="13. Pypsi Demo Shell"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pypsi.utils.html" title="11. pypsi.utils - Utility functions"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pypsi 1.4.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2014, Adam Meily.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.
+    </div>
+  </body>
 </html>

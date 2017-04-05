@@ -4,10 +4,6 @@ Pypsi Builtin Plugins
 
 Pypsi ships with several useful plugins that enhance the shell.
 
-.. toctree::
-    :numbered:
-    :maxdepth: 2
-
 .. automodule:: pypsi.plugins
 
 

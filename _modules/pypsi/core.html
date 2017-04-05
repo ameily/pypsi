@@ -1,0 +1,544 @@
+
+
+<!doctype html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pypsi.core &#8212; pypsi 1.4.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.4.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypsi 1.4.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pypsi.core</h1><div class="highlight"><pre>
+<span></span><span class="c1">#</span>
+<span class="c1"># Copyright (c) 2015, Adam Meily &lt;meily.adam@gmail.com&gt;</span>
+<span class="c1"># Pypsi - https://github.com/ameily/pypsi</span>
+<span class="c1">#</span>
+<span class="c1"># Permission to use, copy, modify, and/or distribute this software for any</span>
+<span class="c1"># purpose with or without fee is hereby granted, provided that the above</span>
+<span class="c1"># copyright notice and this permission notice appear in all copies.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED &quot;AS IS&quot; AND THE AUTHOR DISCLAIMS ALL WARRANTIES</span>
+<span class="c1"># WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF</span>
+<span class="c1"># MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR</span>
+<span class="c1"># ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES</span>
+<span class="c1"># WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN</span>
+<span class="c1"># ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF</span>
+<span class="c1"># OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.</span>
+<span class="c1">#</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Base classes for developing pluggable commands and plugins.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">pypsi.ansi</span> <span class="k">import</span> <span class="n">AnsiCodes</span><span class="p">,</span> <span class="n">AnsiCode</span>
+<span class="kn">from</span> <span class="nn">pypsi.format</span> <span class="k">import</span> <span class="n">get_lines</span><span class="p">,</span> <span class="n">wrap_line</span>
+
+
+<div class="viewcode-block" id="Plugin"><a class="viewcode-back" href="../../pypsi.core.html#pypsi.core.Plugin">[docs]</a><span class="k">class</span> <span class="nc">Plugin</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A plugin is an object that is able to modify a</span>
+<span class="sd">    :py:class:`pypsi.shell.Shell` object&#39;s behavior. Whereas a command can be</span>
+<span class="sd">    execute from user input, the `Plugin` class does not contain a `run()`</span>
+<span class="sd">    function.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">preprocess</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">postprocess</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Constructor can take two parameters: `preprocess` and `postprocess`</span>
+<span class="sd">        These values determine where the plugin resides inside of the</span>
+<span class="sd">        preprocess and postprocess list. This list, inside of</span>
+<span class="sd">        :class:`pypsi.shell.Shell`, is iterated sequentially, from most</span>
+<span class="sd">        priority to least. So, the highest priority value is 0, which means it</span>
+<span class="sd">        will be the first plugin to run, and the lowest value is 100, which</span>
+<span class="sd">        means it will be the last plugin to run. If either value is `None`, the</span>
+<span class="sd">        plugin is not added to the processing list. For example, if this plugin</span>
+<span class="sd">        only provides a preprocessing functionality, then postprocess should be</span>
+<span class="sd">        set to :const:`None`.</span>
+
+<span class="sd">        :param int preprocess: the preprocess priority</span>
+<span class="sd">        :param int postprocess: the postprocess priority</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preprocess</span> <span class="o">=</span> <span class="n">preprocess</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">postprocess</span> <span class="o">=</span> <span class="n">postprocess</span>
+
+<div class="viewcode-block" id="Plugin.setup"><a class="viewcode-back" href="../../pypsi.core.html#pypsi.core.Plugin.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Called after the plugin has been registered to the active shell.</span>
+
+<span class="sd">        :param pypsi.shell.Shell shell: the active shell</span>
+<span class="sd">        :returns int: 0 on success, -1 on failure</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="Plugin.on_input"><a class="viewcode-back" href="../../pypsi.core.html#pypsi.core.Plugin.on_input">[docs]</a>    <span class="k">def</span> <span class="nf">on_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Called after input from the user has been received. The return value is</span>
+<span class="sd">        the preprocessed line. This means that modifying the line argument will</span>
+<span class="sd">        not populate back. If this function does no preprocessing, return line</span>
+<span class="sd">        unmodified.</span>
+
+<span class="sd">        :param pypsi.shell.Shell shell: the active shell</span>
+<span class="sd">        :param str line: the current input statement string</span>
+<span class="sd">        :returns str: the preprocessed line</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">line</span></div>
+
+<div class="viewcode-block" id="Plugin.on_tokenize"><a class="viewcode-back" href="../../pypsi.core.html#pypsi.core.Plugin.on_tokenize">[docs]</a>    <span class="k">def</span> <span class="nf">on_tokenize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">tokens</span><span class="p">,</span> <span class="n">origin</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Called after an input string has been tokenized. If this function</span>
+<span class="sd">        performs no preprocessing, return the tokens unmodified.</span>
+
+<span class="sd">        :param pypsi.shell.Shell shell: the active shell</span>
+<span class="sd">        :param list tokens: the list of :class:`pypsi.cmdline.Token` objects</span>
+<span class="sd">        :param str origin: the origin of the input, can be either &#39;input&#39; if</span>
+<span class="sd">            received from a call to `input()` or &#39;prompt&#39; if the input is the</span>
+<span class="sd">            prompt to display to the user</span>
+<span class="sd">        :returns list: the list of preprocessed :class:`pypsi.cmdline.Token`</span>
+<span class="sd">            objects</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="n">tokens</span></div>
+
+<div class="viewcode-block" id="Plugin.on_input_canceled"><a class="viewcode-back" href="../../pypsi.core.html#pypsi.core.Plugin.on_input_canceled">[docs]</a>    <span class="k">def</span> <span class="nf">on_input_canceled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Called when the user can canceled entering a statement via SIGINT</span>
+<span class="sd">        (Ctrl+C).</span>
+
+<span class="sd">        :param pypsi.shell.Shell shell: the active shell</span>
+<span class="sd">        :returns int: 0 on success, -1 on error</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="Plugin.on_statement_finished"><a class="viewcode-back" href="../../pypsi.core.html#pypsi.core.Plugin.on_statement_finished">[docs]</a>    <span class="k">def</span> <span class="nf">on_statement_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">rc</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Called when a statement has been completely executed.</span>
+
+<span class="sd">        :param pypsi.shell.Shell shell: the active shell</span>
+<span class="sd">        :returns int: 0 on success, -1 on error</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="mi">0</span></div></div>
+
+
+<div class="viewcode-block" id="Command"><a class="viewcode-back" href="../../pypsi.core.html#pypsi.core.Command">[docs]</a><span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A pluggable command that users can execute. All commands need to derive</span>
+<span class="sd">    from this class. When a command is executed by a user, the command&#39;s</span>
+<span class="sd">    :meth:`run` method will be called. The return value of the :meth:`run`</span>
+<span class="sd">    method is used when processing forthcoming commands in the active</span>
+<span class="sd">    statement. The return value must be an :class:`int` and follows the Unix</span>
+<span class="sd">    standard: 0 on success, less than 0 on error, and greater than 0 given</span>
+<span class="sd">    invalid input or incorrect usage.</span>
+
+<span class="sd">    Each command has a topic associated with it. This topic can be referenced</span>
+<span class="sd">    by commands such as :class:`pypsi.commands.help.HelpCommand` to categorize</span>
+<span class="sd">    commands in help messages.</span>
+
+<span class="sd">    A command can be used as a fallback handler by implementing the</span>
+<span class="sd">    :meth:`fallback` method. This is similar to the :meth:`run` method, except</span>
+<span class="sd">    that is accepts one more argument: the command name to execute that wasn&#39;t</span>
+<span class="sd">    found by the shell. The return value of :meth:`fallback` holds the same</span>
+<span class="sd">    purpose as the return value of :meth:`run`.</span>
+
+<span class="sd">    By the time :meth:`run` is called, the system streams have been updated to</span>
+<span class="sd">    point to the current file streams issued in the statement. For example, if</span>
+<span class="sd">    the statement redirects standard out (:attr:`sys.stdout`) to a file, the</span>
+<span class="sd">    destination file is automatically opened and :attr:`sys.stdout` is</span>
+<span class="sd">    redirected to the opened file stream. Once the command has complete</span>
+<span class="sd">    execution, the redirected stream is automatically closed and</span>
+<span class="sd">    :attr:`sys.stdout` is set to its original stream.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">brief</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">topic</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parser</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pipe</span><span class="o">=</span><span class="s1">&#39;str&#39;</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :param str name: the name of the command which the user will reference</span>
+<span class="sd">            in the shell</span>
+<span class="sd">        :param str usage: the usage message to be displayed to the user</span>
+<span class="sd">        :param str brief: a brief description of the command</span>
+<span class="sd">        :param str topic: the topic that this command belongs to</span>
+<span class="sd">        :param str pipe: the type of data that will be read from and written to</span>
+<span class="sd">            any pipes</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">usage</span> <span class="o">=</span> <span class="n">usage</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">brief</span> <span class="o">=</span> <span class="n">brief</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">topic</span> <span class="o">=</span> <span class="n">topic</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pipe</span> <span class="o">=</span> <span class="n">pipe</span> <span class="ow">or</span> <span class="s1">&#39;str&#39;</span>
+
+<div class="viewcode-block" id="Command.complete"><a class="viewcode-back" href="../../pypsi.core.html#pypsi.core.Command.complete">[docs]</a>    <span class="k">def</span> <span class="nf">complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Called when the user attempts a tab-completion action for this command.</span>
+
+<span class="sd">        :param pypsi.shell.Shell shell: the active shell</span>
+<span class="sd">        :param list args: the list of arguments, the last one containing the</span>
+<span class="sd">            cursor position</span>
+<span class="sd">        :param str prefix: the prefix that all items returned must start with</span>
+<span class="sd">        :returns list: the list of strings that could complete the current</span>
+<span class="sd">            action</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="Command.usage_error"><a class="viewcode-back" href="../../pypsi.core.html#pypsi.core.Command.usage_error">[docs]</a>    <span class="k">def</span> <span class="nf">usage_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Display an error message that indicates incorrect usage of this</span>
+<span class="sd">        command. After the error is displayed, the usage is printed.</span>
+
+<span class="sd">        :param pypsi.shell.Shell shell: the active shell</span>
+<span class="sd">        :param args: list of strings that are the error message</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">AnsiCodes</span><span class="o">.</span><span class="n">yellow</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">usage</span><span class="p">,</span> <span class="n">AnsiCodes</span><span class="o">.</span><span class="n">reset</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Command.error"><a class="viewcode-back" href="../../pypsi.core.html#pypsi.core.Command.error">[docs]</a>    <span class="k">def</span> <span class="nf">error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Display an error message to the user.</span>
+
+<span class="sd">        :param pypsi.shell.Shell shell: the active shell</span>
+<span class="sd">        :param args: the error message to display</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">AnsiCodes</span><span class="o">.</span><span class="n">red</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">AnsiCodes</span><span class="o">.</span><span class="n">reset</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Command.run"><a class="viewcode-back" href="../../pypsi.core.html#pypsi.core.Command.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Execute the command. All commands need to implement this method.</span>
+
+<span class="sd">        :param pypsi.shell.Shell shell: the active shell</span>
+<span class="sd">        :param list args: list of string arguments</span>
+<span class="sd">        :returns int: 0 on success, less than 0 on error, and greater than 0 on</span>
+<span class="sd">            invalid usage</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Command.setup"><a class="viewcode-back" href="../../pypsi.core.html#pypsi.core.Command.setup">[docs]</a>    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Called when the plugin has been registered to the active shell.</span>
+
+<span class="sd">        :param pypsi.shell.Shell shell: the active shell</span>
+<span class="sd">        :returns int: 0 on success, -1 on error</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="Command.fallback"><a class="viewcode-back" href="../../pypsi.core.html#pypsi.core.Command.fallback">[docs]</a>    <span class="k">def</span> <span class="nf">fallback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Called when this command was set as the fallback command. The only</span>
+<span class="sd">        difference between this and :meth:`run` is that this method accepts the</span>
+<span class="sd">        command name that was entered by the user.</span>
+
+<span class="sd">        :param pypsi.shell.Shell shell: the active shell</span>
+<span class="sd">        :param str name: the name of the command to run</span>
+<span class="sd">        :param list args: arguments</span>
+<span class="sd">        :returns int: 0 on success, less than 0 on error, and greater than 0 on</span>
+<span class="sd">            invalid usage</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="kc">None</span></div></div>
+
+
+<div class="viewcode-block" id="CommandShortCircuit"><a class="viewcode-back" href="../../pypsi.core.html#pypsi.core.CommandShortCircuit">[docs]</a><span class="k">class</span> <span class="nc">CommandShortCircuit</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Exception raised when the user enter invalid arguments or requests usage</span>
+<span class="sd">    information via the -h and --help flags.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :param int code: the code the command should return</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">CommandShortCircuit</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="n">code</span></div>
+
+
+<div class="viewcode-block" id="PypsiArgParser"><a class="viewcode-back" href="../../pypsi.core.html#pypsi.core.PypsiArgParser">[docs]</a><span class="k">class</span> <span class="nc">PypsiArgParser</span><span class="p">(</span><span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Customized :class:`argparse.ArgumentParser` for use in pypsi. This class</span>
+<span class="sd">    slightly modifies the base ArgumentParser so that the following occurs:</span>
+
+<span class="sd">    - The whole program does not exit on printing the help message or bad</span>
+<span class="sd">      arguments</span>
+<span class="sd">    - Any error messages are intercepted and printed on the active shell&#39;s</span>
+<span class="sd">      error stream</span>
+<span class="sd">    - Adds the option to provide callbacks for tab-completing</span>
+<span class="sd">      options and parameters</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1">#: Store callback functions for positional parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pos_completers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1">#: Store callback functions for optional arguments with values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_op_completers</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1">#: If a positional argument can be specified more than once,</span>
+        <span class="c1">#  store it&#39;s callback here and return it multiple times</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_repeating_cb</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">PypsiArgParser</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">message</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">AnsiCodes</span><span class="o">.</span><span class="n">red</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">AnsiCodes</span><span class="o">.</span><span class="n">reset</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span>
+                  <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">CommandShortCircuit</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">print_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">file</span> <span class="ow">or</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">AnsiCodes</span><span class="o">.</span><span class="n">yellow</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_usage</span><span class="p">(),</span> <span class="n">AnsiCodes</span><span class="o">.</span><span class="n">reset</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+              <span class="n">file</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">print_help</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">file</span> <span class="ow">or</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">AnsiCodes</span><span class="o">.</span><span class="n">yellow</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_help</span><span class="p">(),</span> <span class="n">AnsiCodes</span><span class="o">.</span><span class="n">reset</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+              <span class="n">file</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PypsiArgParser.get_options"><a class="viewcode-back" href="../../pypsi.core.html#pypsi.core.PypsiArgParser.get_options">[docs]</a>    <span class="k">def</span> <span class="nf">get_options</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :return: All optional arguments (ex, &#39;-v&#39;/&#39;--verbose&#39;)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_op_completers</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="PypsiArgParser.get_option_completer"><a class="viewcode-back" href="../../pypsi.core.html#pypsi.core.PypsiArgParser.get_option_completer">[docs]</a>    <span class="k">def</span> <span class="nf">get_option_completer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the callback for the specified optional argument,</span>
+<span class="sd">        Or None if one was not specified.</span>
+<span class="sd">        :param str option: The Option</span>
+<span class="sd">        :return function: The callback function or None</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_op_completers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PypsiArgParser.has_value"><a class="viewcode-back" href="../../pypsi.core.html#pypsi.core.PypsiArgParser.has_value">[docs]</a>    <span class="k">def</span> <span class="nf">has_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Check if the optional argument has a value associated with it.</span>
+<span class="sd">        :param str arg: Optional argument to check</span>
+<span class="sd">        :return: True if arg has a value, false otherwise</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># _option_string_actions is a dictionary containing all of the optional</span>
+        <span class="c1"># arguments and the argparse action they should perform. Currently, the</span>
+        <span class="c1"># only two actions that store a value are _AppendAction/_StoreAction.</span>
+        <span class="c1"># These represent the value passed to &#39;action&#39; in add_argument:</span>
+        <span class="c1"># parser.add_argument(&#39;-l&#39;, &#39;--long&#39;, action=&#39;store&#39;)</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_option_string_actions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">action</span><span class="p">,</span>
+                          <span class="p">(</span><span class="n">argparse</span><span class="o">.</span><span class="n">_AppendAction</span><span class="p">,</span> <span class="n">argparse</span><span class="o">.</span><span class="n">_StoreAction</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="PypsiArgParser.get_positional_completer"><a class="viewcode-back" href="../../pypsi.core.html#pypsi.core.PypsiArgParser.get_positional_completer">[docs]</a>    <span class="k">def</span> <span class="nf">get_positional_completer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get the callback for a positional parameter</span>
+<span class="sd">        :param pos: index of the parameter - first param&#39;s index = 0</span>
+<span class="sd">        :return: The callback if it exists, else None</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pos_completers</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repeating_cb</span><span class="p">:</span>
+                <span class="c1"># A positional parameter is set to repeat</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_repeating_cb</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="PypsiArgParser.get_positional_arg_index"><a class="viewcode-back" href="../../pypsi.core.html#pypsi.core.PypsiArgParser.get_positional_arg_index">[docs]</a>    <span class="k">def</span> <span class="nf">get_positional_arg_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get the positional index of a cursor, based on</span>
+<span class="sd">        optional arguments and positional arguments</span>
+<span class="sd">        :param list args: List of str arguments from the Command Line</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_option_string_actions</span><span class="p">:</span>
+                <span class="c1"># Token is an optional argument ( ex, &#39;-v&#39; / &#39;--verbose&#39; )</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_value</span><span class="p">(</span><span class="n">token</span><span class="p">):</span>
+                    <span class="c1"># Optional Argument has a value associated with it, so</span>
+                    <span class="c1"># reduce index to not count it&#39;s value as a pos param</span>
+                    <span class="n">index</span> <span class="o">-=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Is a positional param or value for an optional argument</span>
+                <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># return zero-based index</span>
+        <span class="k">return</span> <span class="n">index</span> <span class="o">-</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="PypsiArgParser.add_argument"><a class="viewcode-back" href="../../pypsi.core.html#pypsi.core.PypsiArgParser.add_argument">[docs]</a>    <span class="k">def</span> <span class="nf">add_argument</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">completer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Override add_argument function of argparse.ArgumentParser to</span>
+<span class="sd">        handle callback functions.</span>
+<span class="sd">        :param args:   Positional arguments to pass up to argparse</span>
+<span class="sd">        :param function completer: Optional callback function for argument</span>
+<span class="sd">        :param kwargs: Keywork arguments to pass up to argparse</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">cb</span> <span class="o">=</span> <span class="n">completer</span>
+        <span class="n">nargs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;nargs&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">chars</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix_chars</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">chars</span><span class="p">:</span>
+            <span class="c1"># If no positional args are supplied or only one is supplied and</span>
+            <span class="c1"># it doesn&#39;t look like an option string, parse a positional</span>
+            <span class="c1"># argument ( from argparse )</span>
+            <span class="k">if</span> <span class="n">nargs</span> <span class="ow">and</span> <span class="n">nargs</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;+&#39;</span><span class="p">,</span> <span class="s1">&#39;*&#39;</span><span class="p">]:</span>
+                <span class="c1"># Positional param can repeat</span>
+                <span class="c1"># Currently only stores the last repeating completer specified</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_repeating_cb</span> <span class="o">=</span> <span class="n">cb</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pos_completers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cb</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Add an optional argument</span>
+            <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_op_completers</span><span class="p">[</span><span class="n">arg</span><span class="p">]</span> <span class="o">=</span> <span class="n">cb</span>
+        <span class="c1"># Call argparse.add_argument()</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">PypsiArgParser</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">AnsiCodes</span><span class="o">.</span><span class="n">red</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prog</span><span class="p">,</span> <span class="s2">&quot;: error: &quot;</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">AnsiCodes</span><span class="o">.</span><span class="n">reset</span><span class="p">,</span>
+              <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print_usage</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">pypsi_print</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">wrap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">wrap_prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Wraps the functionality of the Python builtin `print` function. The</span>
+<span class="sd">    :meth:`pypsi.shell.Shell.bootstrap` overrides the Python :meth:`print`</span>
+<span class="sd">    function with ``pypsi_print``.</span>
+
+<span class="sd">    :param str sep: string to print between arguments</span>
+<span class="sd">    :param str end: string to print at the end of the output</span>
+<span class="sd">    :param file file: output stream, if this is :const:`None`, the default is</span>
+<span class="sd">        :data:`sys.stdout`</span>
+<span class="sd">    :param bool flush: whether to flush the output stream</span>
+<span class="sd">    :param int width: override the stream&#39;s width</span>
+<span class="sd">    :param bool wrap: whether to word wrap the output</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">file</span> <span class="o">=</span> <span class="n">file</span> <span class="ow">or</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
+    <span class="n">last</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="n">wrap</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">file</span><span class="o">.</span><span class="n">width</span><span class="p">:</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="n">width</span> <span class="ow">or</span> <span class="n">file</span><span class="o">.</span><span class="n">width</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">arg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">AnsiCode</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">file</span><span class="o">.</span><span class="n">isatty</span><span class="p">():</span>
+                    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">arg</span><span class="p">))</span>
+                <span class="k">elif</span> <span class="n">arg</span><span class="o">.</span><span class="n">s</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">s</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">arg</span><span class="p">))</span>
+
+        <span class="n">txt</span> <span class="o">=</span> <span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">endl</span><span class="p">)</span> <span class="ow">in</span> <span class="n">get_lines</span><span class="p">(</span><span class="n">txt</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">line</span><span class="p">:</span>
+                <span class="n">first</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">wrapno</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">wrapped</span> <span class="ow">in</span> <span class="n">wrap_line</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">wrap_prefix</span><span class="o">=</span><span class="n">wrap_prefix</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">wrapped</span><span class="p">:</span>
+                        <span class="k">continue</span>
+
+                    <span class="n">wrapno</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">first</span><span class="p">:</span>
+                        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">first</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">wrapped</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span> <span class="ow">or</span> <span class="n">endl</span><span class="p">:</span>
+                <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">last</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">arg</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">sep</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">last</span><span class="p">:</span>
+                <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sep</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">end</span><span class="p">:</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">flush</span><span class="p">:</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypsi 1.4.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2014, Adam Meily.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.
+    </div>
+  </body>
+</html>

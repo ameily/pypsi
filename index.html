@@ -1,155 +1,115 @@
 
 
-<!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>Pypsi - Python Pluggable Shell Interface &mdash; pypsi 1.2.1 documentation</title>
-  
+<!doctype html>
 
-  
-  
 
-  
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
-
-  
-  
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-
-  
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="pypsi 1.2.1 documentation" href="#"/>
-        <link rel="next" title="1. Pypsi Shell and Command Tutorial" href="pypsi.tutorial.html"/> 
-
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-
-</head>
-
-<body class="wy-body-for-nav" role="document">
-
-  <div class="wy-grid-for-nav">
-
+    <title>Pypsi - Python Pluggable Shell Interface &#8212; pypsi 1.4.1 documentation</title>
     
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-nav-search">
-        
-          <a href="#" class="fa fa-home"> pypsi</a>
-        
-        
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.4.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="1. Pypsi Shell and Command Tutorial" href="pypsi.tutorial.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pypsi.tutorial.html" title="1. Pypsi Shell and Command Tutorial"
+             accesskey="N">next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">pypsi 1.4.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Pypsi - Python Pluggable Shell Interface</a><ul>
+<li><a class="reference internal" href="#releases">Releases</a></li>
+<li><a class="reference internal" href="#features">Features</a></li>
+<li><a class="reference internal" href="#demo">Demo</a><ul>
+<li><a class="reference internal" href="#variables">Variables</a></li>
+<li><a class="reference internal" href="#i-o-redirection">I/O redirection</a></li>
+<li><a class="reference internal" href="#system-commands">System commands</a></li>
+<li><a class="reference internal" href="#fallback-command">Fallback command</a></li>
+<li><a class="reference internal" href="#command-chaining">Command chaining</a></li>
+<li><a class="reference internal" href="#multiline-commands">Multiline commands</a></li>
+<li><a class="reference internal" href="#macros">Macros</a></li>
+<li><a class="reference internal" href="#tab-complete">Tab Complete</a></li>
+<li><a class="reference internal" href="#prompt-wizards">Prompt Wizards</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#background">Background</a></li>
+<li><a class="reference internal" href="#license">License</a></li>
+<li><a class="reference internal" href="#api-documentation">API Documentation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pypsi.tutorial.html"
+                        title="next chapter">1. Pypsi Shell and Command Tutorial</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
 </div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
       </div>
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-        
-          
-          
-              <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/ameily/pypsi">Github</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://pypi.python.org/pypi/pypsi">Releases</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.tutorial.html">1. Pypsi Shell and Command Tutorial</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.tutorial.html#command-api">1.1. Command API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.tutorial.html#shell-api">1.2. Shell API</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.commands.html">Pypsi Builtin Commands</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.plugins.html">Pypsi Builtin Plugins</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.block">Block Commands</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#escape-sequence-processors">Escape Sequence Processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.history">Shell History</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.variable">Variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.cmd">Cmd</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.shell.html">2. pypsi.shell - Pypsi Shell</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.base.html">pypsi.base - Base classes for pluggable features</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#command-objects">Command objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#plugin-objects">Plugin objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#argument-parsing">Argument parsing</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.cmdline.html">pypsi.cmdline - User input processing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#commands-and-expressions">Commands and expressions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#tokens">Tokens</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#statements">Statements</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.namespace.html">pypsi.namespace - Arbitrary attribute storage classes</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.format.html">pypsi.format - Stream output formatting</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.stream.html">3. pypsi.stream - File streams</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.utils.html">pypsi.utils - Utility functions</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.wizard.html">pypsi.wizard - Prompt Wizards</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.demo.html">4. Pypsi Demo Shell</a></li>
-</ul>
-
-          
-        
-      </div>
-      &nbsp;
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="#">pypsi</a>
-      </nav>
-
-
-      
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="breadcrumbs navigation">
-  <ul class="wy-breadcrumbs">
-    <li><a href="#">Docs</a> &raquo;</li>
-      
-    <li>Pypsi - Python Pluggable Shell Interface</li>
-      <li class="wy-breadcrumbs-aside">
-        
-          <a href="_sources/index.txt" rel="nofollow"> View page source</a>
-        
-      </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main" class="document">
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
             
   <div class="section" id="pypsi-python-pluggable-shell-interface">
 <h1>Pypsi - Python Pluggable Shell Interface<a class="headerlink" href="#pypsi-python-pluggable-shell-interface" title="Permalink to this headline">¶</a></h1>
-<p>Develop extensible and powerful command line interface shells with minimal code. Want to jump straight into the API? Take a look at <a class="reference internal" href="pypsi.tutorial.html"><em>Pypsi Shell and Command Tutorial</em></a>.</p>
+<a class="reference external image-reference" href="https://coveralls.io/github/ameily/pypsi?branch=master"><img alt="https://coveralls.io/repos/ameily/pypsi/badge.svg?branch=master&amp;service=github" src="https://coveralls.io/repos/ameily/pypsi/badge.svg?branch=master&amp;service=github" /></a>
+<a class="reference external image-reference" href="https://travis-ci.org/ameily/pypsi"><img alt="https://travis-ci.org/ameily/pypsi.svg?branch=master" src="https://travis-ci.org/ameily/pypsi.svg?branch=master" /></a>
+<p>Develop extensible and powerful command line interface shells with minimal code. Want to jump straight into the API? Take a look at <a class="reference internal" href="pypsi.tutorial.html"><span class="doc">Pypsi Shell and Command Tutorial</span></a>.</p>
 <p>Python Pluggable Shell Interface, or pypsi, is a framework for developing
 command line based shell interfaces, akin to bash or csh. It is intended to be
 a replacement for the builtin Python <code class="docutils literal"><span class="pre">cmd</span></code> module.</p>
@@ -168,7 +128,7 @@ that make distribution, sharing, and modification easy.</p>
 <p>The pypsi source code is hosted at <a class="reference external" href="https://github.com/ameily/pypsi">GitHub</a>
 and releases are stored at <a class="reference external" href="https://pypi.python.org/pypi/pypsi">PyPI</a>. The
 latest version can also be install via pip:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ pip install pypsi
+<div class="highlight-default"><div class="highlight"><pre><span></span>$ pip install pypsi
 </pre></div>
 </div>
 <p>Documentation can be found on <a class="reference external" href="http://ameily.github.io/pypsi">GitHub Pages</a>.</p>
@@ -202,7 +162,7 @@ or plugin. The <code class="docutils literal"><span class="pre">demo.py</span></
 design. Use it as a starting point for your first shell.</p>
 <div class="section" id="variables">
 <h3>Variables<a class="headerlink" href="#variables" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python"><div class="highlight"><pre>pypsi)&gt; var name = &quot;Paul&quot;
+<div class="highlight-default"><div class="highlight"><pre><span></span>pypsi)&gt; var name = &quot;Paul&quot;
 
 pypsi)&gt; var house = &quot;Atredis&quot;
 
@@ -229,22 +189,22 @@ Paul Atredis
 </div>
 <div class="section" id="i-o-redirection">
 <h3>I/O redirection<a class="headerlink" href="#i-o-redirection" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python"><div class="highlight"><pre>pypsi)&gt; echo Hello
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pypsi</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">echo</span> <span class="n">Hello</span>
 
-Hello
+<span class="n">Hello</span>
 
-pypsi)&gt; echo Hello &gt; output.txt
+<span class="n">pypsi</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">echo</span> <span class="n">Hello</span> <span class="o">&gt;</span> <span class="n">output</span><span class="o">.</span><span class="n">txt</span>
 
-pypsi)&gt; echo Goodbye
+<span class="n">pypsi</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">echo</span> <span class="n">Goodbye</span>
 
-pypsi)&gt; xargs -I{} &quot;echo line: {}&quot; &lt; output.txt
+<span class="n">pypsi</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">xargs</span> <span class="o">-</span><span class="n">I</span><span class="p">{}</span> <span class="s2">&quot;echo line: </span><span class="si">{}</span><span class="s2">&quot;</span> <span class="o">&lt;</span> <span class="n">output</span><span class="o">.</span><span class="n">txt</span>
 
-line: Hello
-line: Goodbye
+<span class="n">line</span><span class="p">:</span> <span class="n">Hello</span>
+<span class="n">line</span><span class="p">:</span> <span class="n">Goodbye</span>
 
-pypsi)&gt; cat output.txt | grep ll
+<span class="n">pypsi</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">cat</span> <span class="n">output</span><span class="o">.</span><span class="n">txt</span> <span class="o">|</span> <span class="n">grep</span> <span class="n">ll</span>
 
-Hello
+<span class="n">Hello</span>
 </pre></div>
 </div>
 </div>
@@ -252,19 +212,19 @@ Hello
 <h3>System commands<a class="headerlink" href="#system-commands" title="Permalink to this headline">¶</a></h3>
 <p>Allows execution of external applications. Command mimics Python&#8217;s
 <code class="docutils literal"><span class="pre">os.system()</span></code> function.</p>
-<div class="highlight-python"><div class="highlight"><pre>pypsi)&gt; ls
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pypsi</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">ls</span>
 
-pypsi: ls: command not found
+<span class="n">pypsi</span><span class="p">:</span> <span class="n">ls</span><span class="p">:</span> <span class="n">command</span> <span class="ow">not</span> <span class="n">found</span>
 
-pypsi)&gt; system ls
+<span class="n">pypsi</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">system</span> <span class="n">ls</span>
 
-include/
-src/
-README.md
+<span class="n">include</span><span class="o">/</span>
+<span class="n">src</span><span class="o">/</span>
+<span class="n">README</span><span class="o">.</span><span class="n">md</span>
 
-pypsi)&gt; system ls | system grep md
+<span class="n">pypsi</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">system</span> <span class="n">ls</span> <span class="o">|</span> <span class="n">system</span> <span class="n">grep</span> <span class="n">md</span>
 
-README.md
+<span class="n">README</span><span class="o">.</span><span class="n">md</span>
 </pre></div>
 </div>
 </div>
@@ -274,47 +234,47 @@ README.md
 the current shell. This is very useful, for example, if you want to fallback on
 any OS installed executables. In this example, the fallback command is
 <code class="docutils literal"><span class="pre">system</span></code>.</p>
-<div class="highlight-python"><div class="highlight"><pre>pypsi)&gt; ls
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pypsi</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">ls</span>
 
-include/
-src/
-README.md
+<span class="n">include</span><span class="o">/</span>
+<span class="n">src</span><span class="o">/</span>
+<span class="n">README</span><span class="o">.</span><span class="n">md</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="command-chaining">
 <h3>Command chaining<a class="headerlink" href="#command-chaining" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python"><div class="highlight"><pre>pypsi)&gt; echo Hello &amp;&amp; echo --bad-arg &amp;&amp; echo goodbye
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pypsi</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">echo</span> <span class="n">Hello</span> <span class="o">&amp;&amp;</span> <span class="n">echo</span> <span class="o">--</span><span class="n">bad</span><span class="o">-</span><span class="n">arg</span> <span class="o">&amp;&amp;</span> <span class="n">echo</span> <span class="n">goodbye</span>
 
-Hello
-echo: unrecgonized arguments: --bad-arg
+<span class="n">Hello</span>
+<span class="n">echo</span><span class="p">:</span> <span class="n">unrecgonized</span> <span class="n">arguments</span><span class="p">:</span> <span class="o">--</span><span class="n">bad</span><span class="o">-</span><span class="n">arg</span>
 
-pypsi)&gt; echo Hello ; echo --bad-arg ; echo goodbye
+<span class="n">pypsi</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">echo</span> <span class="n">Hello</span> <span class="p">;</span> <span class="n">echo</span> <span class="o">--</span><span class="n">bad</span><span class="o">-</span><span class="n">arg</span> <span class="p">;</span> <span class="n">echo</span> <span class="n">goodbye</span>
 
-Hello
-echo: unrecgonized arguments: --bad-arg
-goodbye
+<span class="n">Hello</span>
+<span class="n">echo</span><span class="p">:</span> <span class="n">unrecgonized</span> <span class="n">arguments</span><span class="p">:</span> <span class="o">--</span><span class="n">bad</span><span class="o">-</span><span class="n">arg</span>
+<span class="n">goodbye</span>
 
-pypsi)&gt; echo --bad-arg || echo first failed
+<span class="n">pypsi</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">echo</span> <span class="o">--</span><span class="n">bad</span><span class="o">-</span><span class="n">arg</span> <span class="o">||</span> <span class="n">echo</span> <span class="n">first</span> <span class="n">failed</span>
 
-echo: unrecgonized arguments: --bad-arg
-first failed
+<span class="n">echo</span><span class="p">:</span> <span class="n">unrecgonized</span> <span class="n">arguments</span><span class="p">:</span> <span class="o">--</span><span class="n">bad</span><span class="o">-</span><span class="n">arg</span>
+<span class="n">first</span> <span class="n">failed</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="multiline-commands">
 <h3>Multiline commands<a class="headerlink" href="#multiline-commands" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python"><div class="highlight"><pre>pypsi)&gt; echo Hello, \
-&gt; Dave
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pypsi</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">echo</span> <span class="n">Hello</span><span class="p">,</span> \
+<span class="o">&gt;</span> <span class="n">Dave</span>
 
-Hello, Dave
+<span class="n">Hello</span><span class="p">,</span> <span class="n">Dave</span>
 
-pypsi)&gt; echo This \
-&gt; is \
-&gt; pypsi \
-&gt; and it rocks
+<span class="n">pypsi</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">echo</span> <span class="n">This</span> \
+<span class="o">&gt;</span> <span class="ow">is</span> \
+<span class="o">&gt;</span> <span class="n">pypsi</span> \
+<span class="o">&gt;</span> <span class="ow">and</span> <span class="n">it</span> <span class="n">rocks</span>
 
-This is pypsi and it rocks
+<span class="n">This</span> <span class="ow">is</span> <span class="n">pypsi</span> <span class="ow">and</span> <span class="n">it</span> <span class="n">rocks</span>
 </pre></div>
 </div>
 </div>
@@ -322,7 +282,7 @@ This is pypsi and it rocks
 <h3>Macros<a class="headerlink" href="#macros" title="Permalink to this headline">¶</a></h3>
 <p>Macros are analogous to functions in bash. They provide the ability to create
 new commands in the shell.</p>
-<div class="highlight-python"><div class="highlight"><pre>pypsi)&gt; macro hello
+<div class="highlight-default"><div class="highlight"><pre><span></span>pypsi)&gt; macro hello
 &gt; echo Hello, $1
 &gt; echo Goodbye from macro $0
 &gt; end
@@ -334,57 +294,95 @@ Goodbye from macro hello
 </pre></div>
 </div>
 </div>
+<div class="section" id="tab-complete">
+<h3>Tab Complete<a class="headerlink" href="#tab-complete" title="Permalink to this headline">¶</a></h3>
+<p>Tab completion is easier than ever with PyPsi. Using the included <code class="docutils literal"><span class="pre">command_completer()</span></code>
+function, arguments and sub-commands are completed automatically when the <code class="docutils literal"><span class="pre">tab</span></code>
+key is pressed. To get started, add the use of <code class="docutils literal"><span class="pre">command_completer</span></code> to your
+custom command&#8217;s complete function:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">pypsi.completers</span> <span class="kn">import</span> <span class="n">command_completer</span>
+    <span class="k">return</span> <span class="n">completions</span> <span class="o">=</span> <span class="n">command_completer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Just pass <code class="docutils literal"><span class="pre">command_completer</span></code> the parser you created for the command, along with
+the standard arguments to the <code class="docutils literal"><span class="pre">complete</span></code> function, and let PyPsi work it&#8217;s magic!</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pypsi</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">macro</span> <span class="o">-&lt;</span><span class="n">tab</span><span class="o">&gt;</span>
+<span class="o">--</span><span class="n">delete</span> <span class="o">--</span><span class="n">help</span>   <span class="o">--</span><span class="nb">list</span>   <span class="o">--</span><span class="n">show</span>   <span class="o">-</span><span class="n">d</span>       <span class="o">-</span><span class="n">h</span>       <span class="o">-</span><span class="n">l</span>       <span class="o">-</span><span class="n">s</span>
+</pre></div>
+</div>
+<p>For each argument added to a PyPsi Argument parser, a callback function to get
+the possible completions can be specified via the <cite>completer</cite> argument.
+The callback function will be called from <code class="docutils literal"><span class="pre">command_completer</span></code> anytime tab is
+pressed while the user is currently entering that argument&#8217;s value. Ex:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># Snippet from macro.py</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+     <span class="s1">&#39;-s&#39;</span><span class="p">,</span> <span class="s1">&#39;--show&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;print macro body&#39;</span><span class="p">,</span>
+     <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;NAME&#39;</span><span class="p">,</span> <span class="n">completer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">complete_macros</span>
+<span class="p">)</span>
+<span class="o">...</span>
+<span class="k">def</span> <span class="nf">complete_macros</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
+    <span class="c1"># returns a list of macro names in the current shell</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">macros</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pypsi</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">macro</span> <span class="o">--</span><span class="n">show</span> <span class="o">&lt;</span><span class="n">tab</span><span class="o">&gt;</span>
+<span class="n">hello</span>   <span class="n">goodbye</span>
+</pre></div>
+</div>
+<p>See <code class="docutils literal"><span class="pre">tail.py</span></code>, <code class="docutils literal"><span class="pre">help.py</span></code>, and <code class="docutils literal"><span class="pre">macro.py</span></code> for examples.</p>
+</div>
 <div class="section" id="prompt-wizards">
 <h3>Prompt Wizards<a class="headerlink" href="#prompt-wizards" title="Permalink to this headline">¶</a></h3>
 <p>Prompt wizards ask the user a series of questions and request input. Input is
 tab completed, validated, and returned. The wizard can be used for easy
 configuration of components that require a substantial amount of input.</p>
-<div class="highlight-python"><div class="highlight"><pre>pypsi)&gt; wizard
-+-----------------------------------------------------------------------------+
-|                    Entering Example Configuration Wizard                    |
-+-----------------------------------------------------------------------------+
-Shows various examples of wizard steps
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pypsi</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">wizard</span>
+<span class="o">+-----------------------------------------------------------------------------+</span>
+<span class="o">|</span>                    <span class="n">Entering</span> <span class="n">Example</span> <span class="n">Configuration</span> <span class="n">Wizard</span>                    <span class="o">|</span>
+<span class="o">+-----------------------------------------------------------------------------+</span>
+<span class="n">Shows</span> <span class="n">various</span> <span class="n">examples</span> <span class="n">of</span> <span class="n">wizard</span> <span class="n">steps</span>
 
-To exit, enter either Ctrl+C, Ctrl+D, or &#39;quit&#39;. For help about the current
-step, enter &#39;help&#39; or &#39;?&#39;.
+<span class="n">To</span> <span class="n">exit</span><span class="p">,</span> <span class="n">enter</span> <span class="n">either</span> <span class="n">Ctrl</span><span class="o">+</span><span class="n">C</span><span class="p">,</span> <span class="n">Ctrl</span><span class="o">+</span><span class="n">D</span><span class="p">,</span> <span class="ow">or</span> <span class="s1">&#39;quit&#39;</span><span class="o">.</span> <span class="n">For</span> <span class="n">help</span> <span class="n">about</span> <span class="n">the</span> <span class="n">current</span>
+<span class="n">step</span><span class="p">,</span> <span class="n">enter</span> <span class="s1">&#39;help&#39;</span> <span class="ow">or</span> <span class="s1">&#39;?&#39;</span><span class="o">.</span>
 
-IP Address: &lt;enter&gt;
+<span class="n">IP</span> <span class="n">Address</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">enter</span><span class="o">&gt;</span>
 
-Error: Value is required
-Local IP Address or Host name
+<span class="n">Error</span><span class="p">:</span> <span class="n">Value</span> <span class="ow">is</span> <span class="n">required</span>
+<span class="n">Local</span> <span class="n">IP</span> <span class="n">Address</span> <span class="ow">or</span> <span class="n">Host</span> <span class="n">name</span>
 
-IP Address: 192.168.0.10
+<span class="n">IP</span> <span class="n">Address</span><span class="p">:</span> <span class="mf">192.168</span><span class="o">.</span><span class="mf">0.10</span>
 
-TCP Port [1337]: &lt;enter&gt;
+<span class="n">TCP</span> <span class="n">Port</span> <span class="p">[</span><span class="mi">1337</span><span class="p">]:</span> <span class="o">&lt;</span><span class="n">enter</span><span class="o">&gt;</span>
 
-File path: /var/lo&lt;tab&gt;
+<span class="n">File</span> <span class="n">path</span><span class="p">:</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lo</span><span class="o">&lt;</span><span class="n">tab</span><span class="o">&gt;</span>
 
-local/  lock/   log/
+<span class="n">local</span><span class="o">/</span>  <span class="n">lock</span><span class="o">/</span>   <span class="n">log</span><span class="o">/</span>
 
-File path: /var/log/&lt;tab&gt;
+<span class="n">File</span> <span class="n">path</span><span class="p">:</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/&lt;</span><span class="n">tab</span><span class="o">&gt;</span>
 
-Xorg.1.log        btmp              faillog           upstart/
-Xorg.1.log.old    dist-upgrade/     fontconfig.log    wtmp
-alternatives.log  distccd.log       fsck/
-apt/              dmesg             lastlog
-bootstrap.log     dpkg.log          mongodb/
+<span class="n">Xorg</span><span class="o">.</span><span class="mf">1.</span><span class="n">log</span>        <span class="n">btmp</span>              <span class="n">faillog</span>           <span class="n">upstart</span><span class="o">/</span>
+<span class="n">Xorg</span><span class="o">.</span><span class="mf">1.</span><span class="n">log</span><span class="o">.</span><span class="n">old</span>    <span class="n">dist</span><span class="o">-</span><span class="n">upgrade</span><span class="o">/</span>     <span class="n">fontconfig</span><span class="o">.</span><span class="n">log</span>    <span class="n">wtmp</span>
+<span class="n">alternatives</span><span class="o">.</span><span class="n">log</span>  <span class="n">distccd</span><span class="o">.</span><span class="n">log</span>       <span class="n">fsck</span><span class="o">/</span>
+<span class="n">apt</span><span class="o">/</span>              <span class="n">dmesg</span>             <span class="n">lastlog</span>
+<span class="n">bootstrap</span><span class="o">.</span><span class="n">log</span>     <span class="n">dpkg</span><span class="o">.</span><span class="n">log</span>          <span class="n">mongodb</span><span class="o">/</span>
 
-File path: /var/log/dpkg.log
+<span class="n">File</span> <span class="n">path</span><span class="p">:</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">dpkg</span><span class="o">.</span><span class="n">log</span>
 
-Shell mode [local]: asdf
+<span class="n">Shell</span> <span class="n">mode</span> <span class="p">[</span><span class="n">local</span><span class="p">]:</span> <span class="n">asdf</span>
 
-Error: Invalid choice
+<span class="n">Error</span><span class="p">:</span> <span class="n">Invalid</span> <span class="n">choice</span>
 
-Mode of the shell
+<span class="n">Mode</span> <span class="n">of</span> <span class="n">the</span> <span class="n">shell</span>
 
-Shell mode [local]: remote
+<span class="n">Shell</span> <span class="n">mode</span> <span class="p">[</span><span class="n">local</span><span class="p">]:</span> <span class="n">remote</span>
 
-Config ID    Config Value
-================================================================================
-ip_addr      172.16.11.204
-port         1337
-path         /var/log/dpkg.log
-mode         remote
+<span class="n">Config</span> <span class="n">ID</span>    <span class="n">Config</span> <span class="n">Value</span>
+<span class="o">================================================================================</span>
+<span class="n">ip_addr</span>      <span class="mf">172.16</span><span class="o">.</span><span class="mf">11.204</span>
+<span class="n">port</span>         <span class="mi">1337</span>
+<span class="n">path</span>         <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">dpkg</span><span class="o">.</span><span class="n">log</span>
+<span class="n">mode</span>         <span class="n">remote</span>
 </pre></div>
 </div>
 </div>
@@ -409,7 +407,7 @@ ease.</p>
 </div>
 <div class="section" id="license">
 <h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal"><span class="pre">pypsi</span></code> is released under the BSD 3-Clause license.</p>
+<p><code class="docutils literal"><span class="pre">pypsi</span></code> is released under the ISC premissive license.</p>
 </div>
 <div class="section" id="api-documentation">
 <h2>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h2>
@@ -431,55 +429,43 @@ ease.</p>
 <li class="toctree-l2"><a class="reference internal" href="pypsi.tutorial.html#shell-api">1.2. Shell API</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.commands.html">Pypsi Builtin Commands</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="pypsi.commands.html">2. Pypsi Builtin Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.plugins.html">3. Pypsi Builtin Plugins</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.block">3.1. Block Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#escape-sequence-processors">3.2. Escape Sequence Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.history">3.3. Shell History</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.variable">3.4. Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.cmd">3.5. Cmd</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.plugins.html">Pypsi Builtin Plugins</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.block">Block Commands</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#escape-sequence-processors">Escape Sequence Processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.history">Shell History</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.variable">Variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.cmd">Cmd</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.shell.html">4. pypsi.shell - Pypsi Shell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.completers.html">5. pypsi.completers - Core tab completion functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.core.html">6. pypsi.core - Core classes for pluggable features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.core.html#command-objects">6.1. Command objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.core.html#plugin-objects">6.2. Plugin objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.core.html#argument-parsing">6.3. Argument parsing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.core.html#enhanced-printing">6.4. Enhanced Printing</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.shell.html">2. pypsi.shell - Pypsi Shell</a><ul class="simple">
+<li class="toctree-l1"><a class="reference internal" href="pypsi.cmdline.html">7. pypsi.cmdline - User input processing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#commands-and-expressions">7.1. Commands and expressions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#tokens">7.2. Tokens</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pypsi.cmdline.html#constants">7.2.1. Constants</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pypsi.cmdline.html#classes">7.2.2. Classes</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.base.html">pypsi.base - Base classes for pluggable features</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#command-objects">Command objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#plugin-objects">Plugin objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#argument-parsing">Argument parsing</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.cmdline.html">pypsi.cmdline - User input processing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#commands-and-expressions">Commands and expressions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#tokens">Tokens</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pypsi.cmdline.html#constants">Constants</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pypsi.cmdline.html#classes">Classes</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#statements">Statements</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pypsi.cmdline.html#exceptions">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#statements">7.3. Statements</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pypsi.cmdline.html#exceptions">7.3.1. Exceptions</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.namespace.html">pypsi.namespace - Arbitrary attribute storage classes</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.format.html">pypsi.format - Stream output formatting</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.stream.html">3. pypsi.stream - File streams</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.utils.html">pypsi.utils - Utility functions</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.wizard.html">pypsi.wizard - Prompt Wizards</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.demo.html">4. Pypsi Demo Shell</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.namespace.html">8. pypsi.namespace - Arbitrary attribute storage classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.format.html">9. pypsi.format - Stream output formatting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.ansi.html">10. pypsi.ansi - ANSI Escape Code Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.utils.html">11. pypsi.utils - Utility functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.wizard.html">12. pypsi.wizard - Prompt Wizards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pypsi.demo.html">13. Pypsi Demo Shell</a></li>
 </ul>
 </div>
 </div>
@@ -487,74 +473,36 @@ ease.</p>
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li><a class="reference internal" href="genindex.html"><span>Index</span></a></li>
-<li><a class="reference internal" href="py-modindex.html"><span>Module Index</span></a></li>
-<li><a class="reference internal" href="search.html"><span>Search Page</span></a></li>
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
 </ul>
 </div>
 
 
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="pypsi.tutorial.html" class="btn btn-neutral float-right" title="1. Pypsi Shell and Command Tutorial">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-    </div>
-  
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &copy; Copyright 2014, Adam Meily.
-    </p>
-  </div>
-
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
-  
-</footer>
         </div>
       </div>
-
-    </section>
-
-  </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'1.2.1',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
-      });
-  </script>
-   
-
-</body>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pypsi.tutorial.html" title="1. Pypsi Shell and Command Tutorial"
+             >next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">pypsi 1.4.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2014, Adam Meily.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.
+    </div>
+  </body>
 </html>

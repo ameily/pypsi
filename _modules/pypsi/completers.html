@@ -1,0 +1,213 @@
+
+
+<!doctype html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>pypsi.completers &#8212; pypsi 1.4.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.4.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypsi 1.4.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for pypsi.completers</h1><div class="highlight"><pre>
+<span></span><span class="c1">#</span>
+<span class="c1"># Copyright (c) 2015, Adam Meily &lt;meily.adam@gmail.com&gt;</span>
+<span class="c1"># Pypsi - https://github.com/ameily/pypsi</span>
+<span class="c1">#</span>
+<span class="c1"># Permission to use, copy, modify, and/or distribute this software for any</span>
+<span class="c1"># purpose with or without fee is hereby granted, provided that the above</span>
+<span class="c1"># copyright notice and this permission notice appear in all copies.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED &quot;AS IS&quot; AND THE AUTHOR DISCLAIMS ALL WARRANTIES</span>
+<span class="c1"># WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF</span>
+<span class="c1"># MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR</span>
+<span class="c1"># ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES</span>
+<span class="c1"># WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN</span>
+<span class="c1"># ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF</span>
+<span class="c1"># OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.</span>
+<span class="c1">#</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Builtin tab completion functions.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">from</span> <span class="nn">pypsi.os</span> <span class="k">import</span> <span class="n">path_completer</span>  <span class="c1"># noqa</span>
+
+
+<div class="viewcode-block" id="command_completer"><a class="viewcode-back" href="../../pypsi.completers.html#pypsi.completers.command_completer">[docs]</a><span class="k">def</span> <span class="nf">command_completer</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Completion function that can tab complete options, options&#39; values,</span>
+<span class="sd">    and positional parameters. Shell, args, and prefix should be the same</span>
+<span class="sd">    params as passed to the :meth:`pypsi.core.Command.complete` function</span>
+
+<span class="sd">    :param parser: A PypsiArgParser object or an action object returned</span>
+<span class="sd">        from :meth:`PypsiArgParser.add_subparsers`</span>
+<span class="sd">    :param pypsi.shell.Shell shell: The current Shell object</span>
+<span class="sd">    :param list args: The full list of current CLI args</span>
+<span class="sd">    :param str prefix: The partial arg being completed</span>
+<span class="sd">    :param bool case_sensitive: Whether the prefix will be completed</span>
+<span class="sd">        in a case sensitive manner</span>
+<span class="sd">    :return list: A list of possible options based on the prefix</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">cmd_parser</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">completions</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">ops</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">parser</span><span class="p">,</span> <span class="s1">&#39;choices&#39;</span><span class="p">):</span>
+        <span class="c1"># Is a subparser, get all possible subcommands</span>
+        <span class="n">sub_commands</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">parser</span><span class="o">.</span><span class="n">choices</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># User is typing sub command</span>
+            <span class="n">completions</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sub_commands</span>
+                                <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">prefix</span><span class="p">])</span>
+            <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">completions</span><span class="p">)</span>
+
+        <span class="c1"># Get the command parser for the current subcommand</span>
+        <span class="n">cmd_parser</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">choices</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Set an offset so the subcmd is not counted in index</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Is a PyPsiArgumentParser</span>
+        <span class="n">cmd_parser</span> <span class="o">=</span> <span class="n">parser</span>
+
+    <span class="c1"># Get the last complete argument - should always be the second to last</span>
+    <span class="c1"># [&#39;-s&#39;, &#39;tes&lt;cursor&gt;&#39;] --or-- [&#39;-s&#39;, &#39;test&#39;, &#39;&lt;cursor&gt;&#39;]</span>
+    <span class="n">last_arg</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">cmd_parser</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="c1"># Try to get an option&#39;s callback - returns None if no option or cb exists</span>
+    <span class="n">cb</span> <span class="o">=</span> <span class="n">cmd_parser</span><span class="o">.</span><span class="n">get_option_completer</span><span class="p">(</span><span class="n">last_arg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">cb</span><span class="p">)</span> <span class="ow">and</span> <span class="n">cmd_parser</span><span class="o">.</span><span class="n">has_value</span><span class="p">(</span><span class="n">last_arg</span><span class="p">):</span>
+        <span class="c1"># If the option has a callback defined and has a value</span>
+        <span class="n">ops</span> <span class="o">=</span> <span class="n">cb</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">prefix</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">):</span>
+        <span class="c1"># Complete the optional arguments</span>
+        <span class="n">ops</span> <span class="o">=</span> <span class="n">cmd_parser</span><span class="o">.</span><span class="n">get_options</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Else complete the positional args</span>
+
+        <span class="c1"># Get the current POSITIONAL index</span>
+        <span class="c1"># This does NOT include any optional (-v --verbose OPTION) arguments</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">cmd_parser</span><span class="o">.</span><span class="n">get_positional_arg_index</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+        <span class="c1"># Get the callback for the current positional parameter</span>
+        <span class="c1"># Index includes subcmd if there is one, so subtract offset</span>
+        <span class="c1"># Ex: &#39;cmd subcmd &lt;cursor&gt;&#39; would have two args: [&#39;subcmd&#39;, &#39;&#39;] but</span>
+        <span class="c1"># &#39;cmd &lt;cursor&gt; would have one arg: [&#39;&#39;]</span>
+        <span class="c1"># Pass the params index here - if you want the first pos param, pass 0</span>
+        <span class="n">cb</span> <span class="o">=</span> <span class="n">cmd_parser</span><span class="o">.</span><span class="n">get_positional_completer</span><span class="p">(</span><span class="n">index</span> <span class="o">-</span> <span class="n">offset</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">cb</span><span class="p">):</span>
+            <span class="n">ops</span> <span class="o">=</span> <span class="n">cb</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">case_sensitive</span><span class="p">:</span>
+        <span class="n">completions</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">o</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">ops</span>
+                            <span class="k">if</span> <span class="ow">not</span> <span class="n">prefix</span> <span class="ow">or</span> <span class="n">o</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">)])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">completions</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">o</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">ops</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">prefix</span>
+                            <span class="ow">or</span> <span class="n">o</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="o">.</span><span class="n">lower</span><span class="p">())])</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">completions</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="choice_completer"><a class="viewcode-back" href="../../pypsi.completers.html#pypsi.completers.choice_completer">[docs]</a><span class="k">def</span> <span class="nf">choice_completer</span><span class="p">(</span><span class="n">choices</span><span class="p">,</span> <span class="n">case_sensitive</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Tab complete from a list of choices.</span>
+
+<span class="sd">    :param list choices: the list of choices</span>
+<span class="sd">    :param bool case_sensitive: whether the choices are case sensitive</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">complete</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">choice</span> <span class="ow">in</span> <span class="n">choices</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">choice</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span> <span class="k">if</span> <span class="n">case_sensitive</span> <span class="k">else</span> <span class="n">prefix</span><span class="o">.</span><span class="n">lower</span><span class="p">()):</span>
+                <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">choice</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">r</span>
+    <span class="k">return</span> <span class="n">complete</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">pypsi 1.4.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2014, Adam Meily.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.
+    </div>
+  </body>
+</html>

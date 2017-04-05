@@ -1,192 +1,100 @@
 
 
-<!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>pypsi.commands.macro &mdash; pypsi 1.2.1 documentation</title>
-  
+<!doctype html>
 
-  
-  
 
-  
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
-
-  
-  
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-
-  
-
-  
-  
-    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="pypsi 1.2.1 documentation" href="../../../index.html"/>
-        <link rel="up" title="Module code" href="../../index.html"/> 
-
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-
-</head>
-
-<body class="wy-body-for-nav" role="document">
-
-  <div class="wy-grid-for-nav">
-
+    <title>pypsi.commands.macro &#8212; pypsi 1.4.1 documentation</title>
     
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-nav-search">
-        
-          <a href="../../../index.html" class="fa fa-home"> pypsi</a>
-        
-        
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+    <link rel="stylesheet" href="../../../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.4.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">pypsi 1.4.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
 </div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
       </div>
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-        
-          
-          
-              <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/ameily/pypsi">Github</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://pypi.python.org/pypi/pypsi">Releases</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../pypsi.tutorial.html">1. Pypsi Shell and Command Tutorial</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../pypsi.tutorial.html#command-api">1.1. Command API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../pypsi.tutorial.html#shell-api">1.2. Shell API</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../../pypsi.commands.html">Pypsi Builtin Commands</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../../pypsi.plugins.html">Pypsi Builtin Plugins</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../pypsi.plugins.html#module-pypsi.plugins.block">Block Commands</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../pypsi.plugins.html#escape-sequence-processors">Escape Sequence Processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../pypsi.plugins.html#module-pypsi.plugins.history">Shell History</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../pypsi.plugins.html#module-pypsi.plugins.variable">Variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../pypsi.plugins.html#module-pypsi.plugins.cmd">Cmd</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../../pypsi.shell.html">2. pypsi.shell - Pypsi Shell</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../../pypsi.base.html">pypsi.base - Base classes for pluggable features</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../pypsi.base.html#command-objects">Command objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../pypsi.base.html#plugin-objects">Plugin objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../pypsi.base.html#argument-parsing">Argument parsing</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../../pypsi.cmdline.html">pypsi.cmdline - User input processing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../pypsi.cmdline.html#commands-and-expressions">Commands and expressions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../pypsi.cmdline.html#tokens">Tokens</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../pypsi.cmdline.html#statements">Statements</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../../pypsi.namespace.html">pypsi.namespace - Arbitrary attribute storage classes</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../../pypsi.format.html">pypsi.format - Stream output formatting</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../../pypsi.stream.html">3. pypsi.stream - File streams</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../../pypsi.utils.html">pypsi.utils - Utility functions</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../../pypsi.wizard.html">pypsi.wizard - Prompt Wizards</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../../../pypsi.demo.html">4. Pypsi Demo Shell</a></li>
-</ul>
-
-          
-        
-      </div>
-      &nbsp;
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="../../../index.html">pypsi</a>
-      </nav>
-
-
-      
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="breadcrumbs navigation">
-  <ul class="wy-breadcrumbs">
-    <li><a href="../../../index.html">Docs</a> &raquo;</li>
-      
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      
-    <li>pypsi.commands.macro</li>
-      <li class="wy-breadcrumbs-aside">
-        
-      </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main" class="document">
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
             
   <h1>Source code for pypsi.commands.macro</h1><div class="highlight"><pre>
-<span class="c">#</span>
-<span class="c"># Copyright (c) 2014, Adam Meily</span>
-<span class="c"># All rights reserved.</span>
-<span class="c">#</span>
-<span class="c"># Redistribution and use in source and binary forms, with or without modification,</span>
-<span class="c"># are permitted provided that the following conditions are met:</span>
-<span class="c">#</span>
-<span class="c"># * Redistributions of source code must retain the above copyright notice, this</span>
-<span class="c">#   list of conditions and the following disclaimer.</span>
-<span class="c">#</span>
-<span class="c"># * Redistributions in binary form must reproduce the above copyright notice, this</span>
-<span class="c">#   list of conditions and the following disclaimer in the documentation and/or</span>
-<span class="c">#   other materials provided with the distribution.</span>
-<span class="c">#</span>
-<span class="c"># * Neither the name of the {organization} nor the names of its</span>
-<span class="c">#   contributors may be used to endorse or promote products derived from</span>
-<span class="c">#   this software without specific prior written permission.</span>
-<span class="c">#</span>
-<span class="c"># THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND</span>
-<span class="c"># ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED</span>
-<span class="c"># WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE</span>
-<span class="c"># DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR</span>
-<span class="c"># ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES</span>
-<span class="c"># (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;</span>
-<span class="c"># LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON</span>
-<span class="c"># ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</span>
-<span class="c"># (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS</span>
-<span class="c"># SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</span>
-<span class="c">#</span>
+<span></span><span class="c1">#</span>
+<span class="c1"># Copyright (c) 2015, Adam Meily &lt;meily.adam@gmail.com&gt;</span>
+<span class="c1"># Pypsi - https://github.com/ameily/pypsi</span>
+<span class="c1">#</span>
+<span class="c1"># Permission to use, copy, modify, and/or distribute this software for any</span>
+<span class="c1"># purpose with or without fee is hereby granted, provided that the above</span>
+<span class="c1"># copyright notice and this permission notice appear in all copies.</span>
+<span class="c1">#</span>
+<span class="c1"># THE SOFTWARE IS PROVIDED &quot;AS IS&quot; AND THE AUTHOR DISCLAIMS ALL WARRANTIES</span>
+<span class="c1"># WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF</span>
+<span class="c1"># MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR</span>
+<span class="c1"># ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES</span>
+<span class="c1"># WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN</span>
+<span class="c1"># ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF</span>
+<span class="c1"># OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.</span>
+<span class="c1">#</span>
 
-<span class="kn">from</span> <span class="nn">pypsi.plugins.block</span> <span class="kn">import</span> <span class="n">BlockCommand</span>
-<span class="kn">from</span> <span class="nn">pypsi.base</span> <span class="kn">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">PypsiArgParser</span><span class="p">,</span> <span class="n">CommandShortCircuit</span>
-<span class="kn">from</span> <span class="nn">pypsi.format</span> <span class="kn">import</span> <span class="n">Table</span><span class="p">,</span> <span class="n">Column</span><span class="p">,</span> <span class="n">FixedColumnTable</span><span class="p">,</span> <span class="n">title_str</span>
+<span class="kn">from</span> <span class="nn">pypsi.plugins.block</span> <span class="k">import</span> <span class="n">BlockCommand</span>
+<span class="kn">from</span> <span class="nn">pypsi.core</span> <span class="k">import</span> <span class="n">Command</span><span class="p">,</span> <span class="n">PypsiArgParser</span><span class="p">,</span> <span class="n">CommandShortCircuit</span>
+<span class="kn">from</span> <span class="nn">pypsi.format</span> <span class="k">import</span> <span class="n">Table</span><span class="p">,</span> <span class="n">Column</span><span class="p">,</span> <span class="n">title_str</span>
+<span class="kn">from</span> <span class="nn">pypsi.completers</span> <span class="k">import</span> <span class="n">command_completer</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 
 
-<span class="c"># something | macro | something</span>
-<span class="c"># =&gt;</span>
-<span class="c"># something | cmd1 ; cmd2 | something</span>
+<span class="c1"># something | macro | something</span>
+<span class="c1"># =&gt;</span>
+<span class="c1"># something | cmd1 ; cmd2 | something</span>
 
 <span class="k">class</span> <span class="nc">Macro</span><span class="p">(</span><span class="n">Command</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -208,40 +116,39 @@
 <span class="sd">    &#39;&#39;&#39;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">Macro</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Macro</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lines</span> <span class="o">=</span> <span class="n">lines</span>
 
-    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
-        <span class="n">rc</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_var_args</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
 
-        <span class="nb">next</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">fork</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">:</span>
-            <span class="n">rc</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="nb">next</span><span class="p">)</span>
+            <span class="n">rc</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">remove_var_args</span><span class="p">(</span><span class="n">shell</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">rc</span>
 
     <span class="k">def</span> <span class="nf">add_var_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-        <span class="k">if</span> <span class="s">&#39;vars&#39;</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="p">:</span>
-            <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="s">&#39;0&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">if</span> <span class="s1">&#39;vars&#39;</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="p">:</span>
+            <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="s1">&#39;0&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
                     <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+                    <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
     <span class="k">def</span> <span class="nf">remove_var_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">):</span>
-        <span class="k">if</span> <span class="s">&#39;vars&#39;</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">&#39;vars&#39;</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">):</span>
                 <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="p">:</span>
                     <span class="k">del</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">vars</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
 
 
-<span class="n">MacroCmdUsage</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span><span class="si">%(prog)s</span><span class="s"> -l</span>
-<span class="s">   or: </span><span class="si">%(prog)s</span><span class="s"> NAME</span>
-<span class="s">   or: </span><span class="si">%(prog)s</span><span class="s"> [-d] [-s] NAME&quot;&quot;&quot;</span>
+<span class="n">MacroCmdUsage</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="si">%(prog)s</span><span class="s2"> -l</span>
+<span class="s2">   or: </span><span class="si">%(prog)s</span><span class="s2"> NAME</span>
+<span class="s2">   or: </span><span class="si">%(prog)s</span><span class="s2"> [-d] [-s] NAME&quot;&quot;&quot;</span>
 
 
 <div class="viewcode-block" id="MacroCommand"><a class="viewcode-back" href="../../../pypsi.commands.html#pypsi.commands.macro.MacroCommand">[docs]</a><span class="k">class</span> <span class="nc">MacroCommand</span><span class="p">(</span><span class="n">BlockCommand</span><span class="p">):</span>
@@ -250,11 +157,12 @@
 <span class="sd">    command statements. Macros are comparable to Bash functions. Once a macro</span>
 <span class="sd">    has been recorded, a new command is registered in the shell as an instance</span>
 <span class="sd">    of a :class:`Macro`.</span>
-<span class="sd">    </span>
+
 <span class="sd">    This command requires the :class:`pypsi.plugins.block.BlockPlugin` plugin.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">&#39;macro&#39;</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="s">&#39;shell&#39;</span><span class="p">,</span> <span class="n">brief</span><span class="o">=</span><span class="s">&quot;manage registered macros&quot;</span><span class="p">,</span> <span class="n">macros</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;macro&#39;</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="s1">&#39;shell&#39;</span><span class="p">,</span>
+                 <span class="n">brief</span><span class="o">=</span><span class="s2">&quot;manage registered macros&quot;</span><span class="p">,</span> <span class="n">macros</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parser</span> <span class="o">=</span> <span class="n">PypsiArgParser</span><span class="p">(</span>
             <span class="n">prog</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
             <span class="n">description</span><span class="o">=</span><span class="n">brief</span><span class="p">,</span>
@@ -262,182 +170,177 @@
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s">&#39;-l&#39;</span><span class="p">,</span> <span class="s">&#39;--list&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;list all macros&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span>
+            <span class="s1">&#39;-l&#39;</span><span class="p">,</span> <span class="s1">&#39;--list&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;list all macros&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s">&#39;-d&#39;</span><span class="p">,</span> <span class="s">&#39;--delete&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;delete macro&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span>
+            <span class="s1">&#39;-d&#39;</span><span class="p">,</span> <span class="s1">&#39;--delete&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;delete macro&#39;</span><span class="p">,</span>
+            <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;NAME&#39;</span><span class="p">,</span> <span class="n">completer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">complete_macros</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s">&#39;-s&#39;</span><span class="p">,</span> <span class="s">&#39;--show&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;print macro body&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s">&#39;store_true&#39;</span>
+            <span class="s1">&#39;-s&#39;</span><span class="p">,</span> <span class="s1">&#39;--show&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;print macro body&#39;</span><span class="p">,</span>
+            <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;NAME&#39;</span><span class="p">,</span> <span class="n">completer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">complete_macros</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s">&#39;macro name&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s">&#39;?&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s">&#39;NAME&#39;</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;macro name&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;?&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;NAME&#39;</span>
         <span class="p">)</span>
 
-        <span class="nb">super</span><span class="p">(</span><span class="n">MacroCommand</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MacroCommand</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">format_help</span><span class="p">(),</span> <span class="n">brief</span><span class="o">=</span><span class="n">brief</span><span class="p">,</span>
             <span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">base_macros</span> <span class="o">=</span> <span class="n">macros</span> <span class="ow">or</span> <span class="p">{}</span>
 
+    <span class="k">def</span> <span class="nf">complete_macros</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
+        <span class="c1"># returns a list of macro names in the current shell</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">macros</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
+        <span class="c1"># The command_completer function takes in the parser, automatically</span>
+        <span class="c1"># completes optional arguments (ex, &#39;-v&#39;/&#39;--verbose&#39;) or sub-commands,</span>
+        <span class="c1"># and complete any arguments&#39; values by calling a callback function</span>
+        <span class="c1"># with the same arguments as complete if the callback was defined</span>
+        <span class="c1"># when the parser was created.</span>
+        <span class="k">return</span> <span class="n">command_completer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">):</span>
         <span class="n">rc</span> <span class="o">=</span> <span class="mi">0</span>
-        
-        <span class="k">if</span> <span class="s">&#39;macros&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="s1">&#39;macros&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="p">:</span>
             <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">macros</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_macros</span><span class="p">:</span>
             <span class="n">rc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_macro</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">macros</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
-                
+
         <span class="k">return</span> <span class="n">rc</span>
 
-    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">ns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">CommandShortCircuit</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">e</span><span class="o">.</span><span class="n">code</span>
 
         <span class="n">rc</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">if</span> <span class="n">ns</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">ns</span><span class="o">.</span><span class="n">delete</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">ns</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">macros</span><span class="p">:</span>
-                    <span class="k">del</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">macros</span><span class="p">[</span><span class="n">ns</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
-                    <span class="c">#It gets registered as a command too. See line 202 in this file and register() in shell.py</span>
-                    <span class="k">del</span> <span class="n">shell</span><span class="o">.</span><span class="n">commands</span><span class="p">[</span><span class="n">ns</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&quot;unknown macro &quot;</span><span class="p">,</span> <span class="n">ns</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-                    <span class="n">rc</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-            <span class="k">elif</span> <span class="n">ns</span><span class="o">.</span><span class="n">show</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">ns</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">macros</span><span class="p">:</span>
-                    <span class="k">print</span><span class="p">(</span><span class="s">&quot;macro &quot;</span><span class="p">,</span> <span class="n">ns</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">)</span>
-                    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">macros</span><span class="p">[</span><span class="n">ns</span><span class="o">.</span><span class="n">name</span><span class="p">]:</span>
-                        <span class="k">print</span><span class="p">(</span><span class="s">&quot;    &quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">)</span>
-                    <span class="k">print</span><span class="p">(</span><span class="s">&quot;end&quot;</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&quot;unknown macro &quot;</span><span class="p">,</span> <span class="n">ns</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-                    <span class="n">rc</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-            <span class="k">elif</span> <span class="n">ns</span><span class="o">.</span><span class="n">list</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">usage_error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&quot;list option does not take an argument&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ns</span><span class="o">.</span><span class="n">show</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ns</span><span class="o">.</span><span class="n">delete</span> <span class="ow">or</span> <span class="n">ns</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">usage_error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span>
+                                 <span class="s1">&#39;incompatible arguments: -s/--show and &#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;-d/--delete&#39;</span> <span class="k">if</span> <span class="n">ns</span><span class="o">.</span><span class="n">delete</span> <span class="k">else</span> <span class="s1">&#39;NAME&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">if</span> <span class="n">ns</span><span class="o">.</span><span class="n">list</span> <span class="ow">or</span> <span class="n">ns</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">usage_error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span>
+                                 <span class="s1">&#39;incompatible arguments: -s/--show and &#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;-l/--list&#39;</span> <span class="k">if</span> <span class="n">ns</span><span class="o">.</span><span class="n">list</span> <span class="k">else</span> <span class="s1">&#39;NAME&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">ns</span><span class="o">.</span><span class="n">show</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">macros</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;macro &quot;</span><span class="p">,</span> <span class="n">ns</span><span class="o">.</span><span class="n">show</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">macros</span><span class="p">[</span><span class="n">ns</span><span class="o">.</span><span class="n">show</span><span class="p">]:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;    &quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">ns</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">commands</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">ns</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">macros</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&quot;A macro cannot have the same name as an existing command.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s2">&quot;unknown macro &quot;</span><span class="p">,</span> <span class="n">ns</span><span class="o">.</span><span class="n">show</span><span class="p">)</span>
+                <span class="n">rc</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">ns</span><span class="o">.</span><span class="n">delete</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ns</span><span class="o">.</span><span class="n">list</span> <span class="ow">or</span> <span class="n">ns</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">usage_error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span>
+                                 <span class="s1">&#39;incompatible arguments: -d/--delete and &#39;</span><span class="p">,</span>
+                                 <span class="s1">&#39;-l/--list&#39;</span> <span class="k">if</span> <span class="n">ns</span><span class="o">.</span><span class="n">list</span> <span class="k">else</span> <span class="s1">&#39;NAME&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">ns</span><span class="o">.</span><span class="n">delete</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">macros</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">macros</span><span class="p">[</span><span class="n">ns</span><span class="o">.</span><span class="n">delete</span><span class="p">]</span>
+                <span class="c1"># It gets registered as a command too. See line 230 in this</span>
+                <span class="c1"># file and register() in shell.py</span>
+                <span class="k">del</span> <span class="n">shell</span><span class="o">.</span><span class="n">commands</span><span class="p">[</span><span class="n">ns</span><span class="o">.</span><span class="n">delete</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s2">&quot;unknown macro &quot;</span><span class="p">,</span> <span class="n">ns</span><span class="o">.</span><span class="n">delete</span><span class="p">)</span>
+                <span class="n">rc</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">ns</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ns</span><span class="o">.</span><span class="n">list</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">usage_error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span>
+                                 <span class="s2">&quot;list option does not take an argument&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">ns</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">commands</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span>
+                        <span class="n">ns</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">macros</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="n">shell</span><span class="p">,</span> <span class="s2">&quot;A macro cannot have the same name as an &quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;existing command.&quot;</span>
+                    <span class="p">)</span>
                     <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">macro_name</span> <span class="o">=</span> <span class="n">ns</span><span class="o">.</span><span class="n">name</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">begin_block</span><span class="p">(</span><span class="n">shell</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">isatty</span><span class="p">():</span>
-                    <span class="k">print</span><span class="p">(</span><span class="s">&quot;Beginning macro, use the &#39;&quot;</span><span class="p">,</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">block</span><span class="o">.</span><span class="n">end_cmd</span><span class="p">,</span>
-                          <span class="s">&quot;&#39; command to save.&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Beginning macro, use the &#39;&quot;</span><span class="p">,</span>
+                          <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">block</span><span class="o">.</span><span class="n">end_cmd</span><span class="p">,</span> <span class="s2">&quot;&#39; command to save.&quot;</span><span class="p">,</span>
+                          <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
 
                 <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">macro_orig_eof_is_sigint</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="n">eof_is_sigint</span>
-                <span class="n">shell</span><span class="o">.</span><span class="n">eof_is_sigint</span> <span class="o">=</span> <span class="bp">True</span>
+                <span class="n">shell</span><span class="o">.</span><span class="n">eof_is_sigint</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">elif</span> <span class="n">ns</span><span class="o">.</span><span class="n">list</span><span class="p">:</span>
             <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">            Left justified table</span>
 <span class="sd">            &#39;&#39;&#39;</span>
-            <span class="k">print</span><span class="p">(</span><span class="n">title_str</span><span class="p">(</span><span class="s">&quot;Registered Macros&quot;</span><span class="p">,</span> <span class="n">shell</span><span class="o">.</span><span class="n">width</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">title_str</span><span class="p">(</span><span class="s2">&quot;Registered Macros&quot;</span><span class="p">,</span> <span class="n">shell</span><span class="o">.</span><span class="n">width</span><span class="p">))</span>
             <span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">3</span>
-            
+
             <span class="n">tbl</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span>
-                <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="n">Column</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">),</span> <span class="n">Column</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">),</span><span class="n">Column</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">Column</span><span class="o">.</span><span class="n">Grow</span><span class="p">)),</span>
+                <span class="n">columns</span><span class="o">=</span><span class="p">(</span><span class="n">Column</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">),</span> <span class="n">Column</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">Column</span><span class="o">.</span><span class="n">Grow</span><span class="p">)),</span>
                 <span class="n">spacing</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
-                <span class="n">header</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                <span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                 <span class="n">width</span><span class="o">=</span><span class="n">shell</span><span class="o">.</span><span class="n">width</span>
             <span class="p">)</span>
+
             <span class="n">macro_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">macros</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">macro_names</span><span class="p">),</span><span class="n">chunk_size</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">macro_names</span><span class="p">),</span> <span class="n">chunk_size</span><span class="p">):</span>
                 <span class="n">chunk</span> <span class="o">=</span> <span class="n">macro_names</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span>
                 <span class="n">tbl</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
             <span class="n">tbl</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
-            
-            <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">            Old not left justified table</span>
-<span class="sd">            &#39;&#39;&#39;</span>
-            <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">            tbl = FixedColumnTable(widths=[shell.width//3]*3)</span>
-<span class="sd">            print(title_str(&quot;Registered Macros&quot;, shell.width))</span>
-<span class="sd">            for name in shell.ctx.macros:</span>
-<span class="sd">                tbl.add_cell(sys.stdout, name)</span>
-<span class="sd">            tbl.flush(sys.stdout)</span>
-<span class="sd">            &#39;&#39;&#39;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">usage_error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s">&quot;missing required argument: NAME&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">usage_error</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="s2">&quot;missing required argument: NAME&quot;</span><span class="p">)</span>
             <span class="n">rc</span> <span class="o">=</span> <span class="mi">1</span>
 
         <span class="k">return</span> <span class="n">rc</span>
 
     <span class="k">def</span> <span class="nf">end_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">lines</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_macro</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">macro_name</span><span class="p">,</span> <span class="n">lines</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">macro_name</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">macro_name</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">shell</span><span class="o">.</span><span class="n">eof_is_sigint</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">macro_orig_eof_is_sigint</span>
         <span class="k">return</span> <span class="mi">0</span>
 
     <span class="k">def</span> <span class="nf">cancel_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">macro_name</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">macro_name</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">shell</span><span class="o">.</span><span class="n">eof_is_sigint</span> <span class="o">=</span> <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">macro_orig_eof_is_sigint</span>
 
     <span class="k">def</span> <span class="nf">add_macro</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">lines</span><span class="p">):</span>
         <span class="n">shell</span><span class="o">.</span><span class="n">register</span><span class="p">(</span>
-            <span class="n">Macro</span><span class="p">(</span><span class="n">lines</span><span class="o">=</span><span class="n">lines</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="s">&#39;__hidden__&#39;</span><span class="p">)</span>
+            <span class="n">Macro</span><span class="p">(</span><span class="n">lines</span><span class="o">=</span><span class="n">lines</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="s1">&#39;__hidden__&#39;</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="n">shell</span><span class="o">.</span><span class="n">ctx</span><span class="o">.</span><span class="n">macros</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">lines</span>
         <span class="k">return</span> <span class="mi">0</span></div>
 </pre></div>
 
           </div>
-          <footer>
-  
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &copy; Copyright 2014, Adam Meily.
-    </p>
-  </div>
-
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
-  
-</footer>
         </div>
       </div>
-
-    </section>
-
-  </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../../',
-            VERSION:'1.2.1',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="../../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../../_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
-      });
-  </script>
-   
-
-</body>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">pypsi 1.4.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2014, Adam Meily.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.
+    </div>
+  </body>
 </html>

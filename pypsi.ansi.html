@@ -1,0 +1,337 @@
+
+
+<!doctype html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>10. pypsi.ansi - ANSI Escape Code Support &#8212; pypsi 1.4.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.4.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="11. pypsi.utils - Utility functions" href="pypsi.utils.html" />
+    <link rel="prev" title="9. pypsi.format - Stream output formatting" href="pypsi.format.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pypsi.utils.html" title="11. pypsi.utils - Utility functions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pypsi.format.html" title="9. pypsi.format - Stream output formatting"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pypsi 1.4.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pypsi.format.html"
+                        title="previous chapter">9. pypsi.format - Stream output formatting</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pypsi.utils.html"
+                        title="next chapter">11. pypsi.utils - Utility functions</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/pypsi.ansi.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-pypsi.ansi">
+<span id="pypsi-ansi-ansi-escape-code-support"></span><h1>10. pypsi.ansi - ANSI Escape Code Support<a class="headerlink" href="#module-pypsi.ansi" title="Permalink to this headline">¶</a></h1>
+<p>Stream classes for writing to files.</p>
+<dl class="class">
+<dt id="pypsi.ansi.AnsiCode">
+<em class="property">class </em><code class="descclassname">pypsi.ansi.</code><code class="descname">AnsiCode</code><span class="sig-paren">(</span><em>code</em>, <em>s=None</em>, <em>end_code=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/ansi.html#AnsiCode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.ansi.AnsiCode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>A single ansi escape code.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>code</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the ansi escape code, usually begins with &#8216;x1b[&#8216;</li>
+<li><strong>s</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the body of the code, only useful if wrapping a string in
+this code</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="pypsi.ansi.AnsiCode.__call__">
+<code class="descname">__call__</code><span class="sig-paren">(</span><em>s</em>, <em>postfix='\x1b[0m'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/ansi.html#AnsiCode.__call__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.ansi.AnsiCode.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrap a given string in the escape code. This is useful for printing a
+word or sentence in a specific color.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>s</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the input string</li>
+<li><strong>postfix</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the postfix string to (default is the ansi reset
+code)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="pypsi.ansi.AnsiCode.prompt">
+<code class="descname">prompt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/ansi.html#AnsiCode.prompt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.ansi.AnsiCode.prompt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrap non-print-able characters in readline non visible markers. This is
+required if the string is going to be passed into <code class="xref py py-meth docutils literal"><span class="pre">input()</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="pypsi.ansi.AnsiCodesSingleton">
+<em class="property">class </em><code class="descclassname">pypsi.ansi.</code><code class="descname">AnsiCodesSingleton</code><a class="reference internal" href="_modules/pypsi/ansi.html#AnsiCodesSingleton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.ansi.AnsiCodesSingleton" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Holds all supported ansi escape codes.</p>
+<dl class="attribute">
+<dt id="pypsi.ansi.AnsiCodesSingleton.black">
+<code class="descname">black</code><em class="property"> = None</em><a class="headerlink" href="#pypsi.ansi.AnsiCodesSingleton.black" title="Permalink to this definition">¶</a></dt>
+<dd><p>Black</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pypsi.ansi.AnsiCodesSingleton.blue">
+<code class="descname">blue</code><em class="property"> = None</em><a class="headerlink" href="#pypsi.ansi.AnsiCodesSingleton.blue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Blue (bold)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pypsi.ansi.AnsiCodesSingleton.clear_screen">
+<code class="descname">clear_screen</code><em class="property"> = None</em><a class="headerlink" href="#pypsi.ansi.AnsiCodesSingleton.clear_screen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear the screen</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pypsi.ansi.AnsiCodesSingleton.codes">
+<code class="descname">codes</code><em class="property"> = None</em><a class="headerlink" href="#pypsi.ansi.AnsiCodesSingleton.codes" title="Permalink to this definition">¶</a></dt>
+<dd><p>all codes as a dict, useful for formatting an ansi string</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pypsi.ansi.AnsiCodesSingleton.cyan">
+<code class="descname">cyan</code><em class="property"> = None</em><a class="headerlink" href="#pypsi.ansi.AnsiCodesSingleton.cyan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cyan (bold)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pypsi.ansi.AnsiCodesSingleton.gray">
+<code class="descname">gray</code><em class="property"> = None</em><a class="headerlink" href="#pypsi.ansi.AnsiCodesSingleton.gray" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gray</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pypsi.ansi.AnsiCodesSingleton.green">
+<code class="descname">green</code><em class="property"> = None</em><a class="headerlink" href="#pypsi.ansi.AnsiCodesSingleton.green" title="Permalink to this definition">¶</a></dt>
+<dd><p>Green (bold)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pypsi.ansi.AnsiCodesSingleton.purple">
+<code class="descname">purple</code><em class="property"> = None</em><a class="headerlink" href="#pypsi.ansi.AnsiCodesSingleton.purple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Purple (bold)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pypsi.ansi.AnsiCodesSingleton.red">
+<code class="descname">red</code><em class="property"> = None</em><a class="headerlink" href="#pypsi.ansi.AnsiCodesSingleton.red" title="Permalink to this definition">¶</a></dt>
+<dd><p>Red (bold)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pypsi.ansi.AnsiCodesSingleton.reset">
+<code class="descname">reset</code><em class="property"> = None</em><a class="headerlink" href="#pypsi.ansi.AnsiCodesSingleton.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset terminal color and style</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pypsi.ansi.AnsiCodesSingleton.underline">
+<code class="descname">underline</code><em class="property"> = None</em><a class="headerlink" href="#pypsi.ansi.AnsiCodesSingleton.underline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Underline text</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pypsi.ansi.AnsiCodesSingleton.white">
+<code class="descname">white</code><em class="property"> = None</em><a class="headerlink" href="#pypsi.ansi.AnsiCodesSingleton.white" title="Permalink to this definition">¶</a></dt>
+<dd><p>White (bold)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="pypsi.ansi.AnsiCodesSingleton.yellow">
+<code class="descname">yellow</code><em class="property"> = None</em><a class="headerlink" href="#pypsi.ansi.AnsiCodesSingleton.yellow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Yellow (bold)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pypsi.ansi.ansi_center">
+<code class="descclassname">pypsi.ansi.</code><code class="descname">ansi_center</code><span class="sig-paren">(</span><em>s</em>, <em>width</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/ansi.html#ansi_center"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.ansi.ansi_center" title="Permalink to this definition">¶</a></dt>
+<dd><p>Center the provided string for a given width.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>s</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the input string</li>
+<li><strong>width</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; the desired field width</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypsi.ansi.ansi_len">
+<code class="descclassname">pypsi.ansi.</code><code class="descname">ansi_len</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/ansi.html#ansi_len"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.ansi.ansi_len" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the length of the provided <cite>str</cite>, not counting any ansi codes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the input string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypsi.ansi.ansi_ljust">
+<code class="descclassname">pypsi.ansi.</code><code class="descname">ansi_ljust</code><span class="sig-paren">(</span><em>s</em>, <em>width</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/ansi.html#ansi_ljust"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.ansi.ansi_ljust" title="Permalink to this definition">¶</a></dt>
+<dd><p>Left justify an input string, ensuring that it contains width charaters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>s</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the input string</li>
+<li><strong>width</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; the desired output width</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns str:</th><td class="field-body"><p class="first last">the output string</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypsi.ansi.ansi_rjust">
+<code class="descclassname">pypsi.ansi.</code><code class="descname">ansi_rjust</code><span class="sig-paren">(</span><em>s</em>, <em>width</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/ansi.html#ansi_rjust"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.ansi.ansi_rjust" title="Permalink to this definition">¶</a></dt>
+<dd><p>Right justify the input string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>s</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the input string</li>
+<li><strong>width</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; the desired width</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns str:</th><td class="field-body"><p class="first last">the output string</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="data">
+<dt id="pypsi.ansi.AnsiCodes">
+<code class="descclassname">pypsi.ansi.</code><code class="descname">AnsiCodes</code><em class="property"> = &lt;pypsi.ansi.AnsiCodesSingleton object&gt;</em><a class="headerlink" href="#pypsi.ansi.AnsiCodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Global instance for all supported ansi codes (instance of
+<a class="reference internal" href="#pypsi.ansi.AnsiCodesSingleton" title="pypsi.ansi.AnsiCodesSingleton"><code class="xref py py-class docutils literal"><span class="pre">AnsiCodesSingleton</span></code></a>)</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pypsi.utils.html" title="11. pypsi.utils - Utility functions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pypsi.format.html" title="9. pypsi.format - Stream output formatting"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pypsi 1.4.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2014, Adam Meily.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.
+    </div>
+  </body>
+</html>

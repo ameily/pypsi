@@ -1,161 +1,95 @@
 
 
-<!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>pypsi.format - Stream output formatting &mdash; pypsi 1.2.1 documentation</title>
-  
+<!doctype html>
 
-  
-  
 
-  
-  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
-
-  
-  
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-
-  
-
-  
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-    <link rel="top" title="pypsi 1.2.1 documentation" href="index.html"/>
-        <link rel="next" title="3. pypsi.stream - File streams" href="pypsi.stream.html"/>
-        <link rel="prev" title="pypsi.namespace - Arbitrary attribute storage classes" href="pypsi.namespace.html"/> 
-
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
-
-</head>
-
-<body class="wy-body-for-nav" role="document">
-
-  <div class="wy-grid-for-nav">
-
+    <title>9. pypsi.format - Stream output formatting &#8212; pypsi 1.4.1 documentation</title>
     
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-nav-search">
-        
-          <a href="index.html" class="fa fa-home"> pypsi</a>
-        
-        
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.4.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="10. pypsi.ansi - ANSI Escape Code Support" href="pypsi.ansi.html" />
+    <link rel="prev" title="8. pypsi.namespace - Arbitrary attribute storage classes" href="pypsi.namespace.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pypsi.ansi.html" title="10. pypsi.ansi - ANSI Escape Code Support"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pypsi.namespace.html" title="8. pypsi.namespace - Arbitrary attribute storage classes"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pypsi 1.4.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pypsi.namespace.html"
+                        title="previous chapter">8. pypsi.namespace - Arbitrary attribute storage classes</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pypsi.ansi.html"
+                        title="next chapter">10. pypsi.ansi - ANSI Escape Code Support</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/pypsi.format.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
 </div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
       </div>
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-        
-          
-          
-              <ul class="current">
-<li class="toctree-l1"><a class="reference external" href="https://github.com/ameily/pypsi">Github</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://pypi.python.org/pypi/pypsi">Releases</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.tutorial.html">1. Pypsi Shell and Command Tutorial</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.tutorial.html#command-api">1.1. Command API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.tutorial.html#shell-api">1.2. Shell API</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.commands.html">Pypsi Builtin Commands</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.plugins.html">Pypsi Builtin Plugins</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.block">Block Commands</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#escape-sequence-processors">Escape Sequence Processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.history">Shell History</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.variable">Variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.plugins.html#module-pypsi.plugins.cmd">Cmd</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.shell.html">2. pypsi.shell - Pypsi Shell</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.base.html">pypsi.base - Base classes for pluggable features</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#command-objects">Command objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#plugin-objects">Plugin objects</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.base.html#argument-parsing">Argument parsing</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.cmdline.html">pypsi.cmdline - User input processing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#commands-and-expressions">Commands and expressions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#tokens">Tokens</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pypsi.cmdline.html#statements">Statements</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.namespace.html">pypsi.namespace - Arbitrary attribute storage classes</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">pypsi.format - Stream output formatting</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.stream.html">3. pypsi.stream - File streams</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.utils.html">pypsi.utils - Utility functions</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.wizard.html">pypsi.wizard - Prompt Wizards</a><ul class="simple">
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="pypsi.demo.html">4. Pypsi Demo Shell</a></li>
-</ul>
-
-          
-        
-      </div>
-      &nbsp;
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
-        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-        <a href="index.html">pypsi</a>
-      </nav>
-
-
-      
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="breadcrumbs navigation">
-  <ul class="wy-breadcrumbs">
-    <li><a href="index.html">Docs</a> &raquo;</li>
-      
-    <li>pypsi.format - Stream output formatting</li>
-      <li class="wy-breadcrumbs-aside">
-        
-          <a href="_sources/pypsi.format.txt" rel="nofollow"> View page source</a>
-        
-      </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main" class="document">
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
             
-  <div class="section" id="pypsi-format-stream-output-formatting">
-<h1>pypsi.format - Stream output formatting<a class="headerlink" href="#pypsi-format-stream-output-formatting" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul class="simple">
-</ul>
-</div>
-<span class="target" id="module-pypsi.format"></span><p>Provides functions and classes for dealing with command line input, output, and
-ansi codes.</p>
+  <div class="section" id="module-pypsi.format">
+<span id="pypsi-format-stream-output-formatting"></span><h1>9. pypsi.format - Stream output formatting<a class="headerlink" href="#module-pypsi.format" title="Permalink to this headline">¶</a></h1>
+<p>Provides functions and classes for dealing with command line input and output.</p>
 <dl class="class">
 <dt id="pypsi.format.Column">
 <em class="property">class </em><code class="descclassname">pypsi.format.</code><code class="descname">Column</code><span class="sig-paren">(</span><em>text=''</em>, <em>mode=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/format.html#Column"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.Column" title="Permalink to this definition">¶</a></dt>
@@ -203,8 +137,8 @@ ansi codes.</p>
 <dl class="method">
 <dt id="pypsi.format.FixedColumnTable.add_cell">
 <code class="descname">add_cell</code><span class="sig-paren">(</span><em>fp</em>, <em>col</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/format.html#FixedColumnTable.add_cell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.FixedColumnTable.add_cell" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a single cell to the table. The current row is printed if the column
-completes the row.</p>
+<dd><p>Add a single cell to the table. The current row is printed if the
+column completes the row.</p>
 </dd></dl>
 
 <dl class="method">
@@ -230,7 +164,8 @@ completes the row.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>fp</strong> (<em>file</em>) &#8211; the output file stream (usually sys.stdout or sys.stderr)</li>
+<li><strong>fp</strong> (<em>file</em>) &#8211; the output file stream (usually sys.stdout or
+sys.stderr)</li>
 <li><strong>args</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.4)"><em>list</em></a>) &#8211; the column values for the row</li>
 </ul>
 </td>
@@ -279,8 +214,8 @@ columns</li>
 <dl class="method">
 <dt id="pypsi.format.Table.extend">
 <code class="descname">extend</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/format.html#Table.extend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.Table.extend" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add multiple rows to the table, each argument should be a list of column
-values.</p>
+<dd><p>Add multiple rows to the table, each argument should be a list of
+column values.</p>
 </dd></dl>
 
 <dl class="method">
@@ -297,80 +232,6 @@ values.</p>
 </table>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="function">
-<dt id="pypsi.format.ansi_center">
-<code class="descclassname">pypsi.format.</code><code class="descname">ansi_center</code><span class="sig-paren">(</span><em>s</em>, <em>width</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/format.html#ansi_center"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.ansi_center" title="Permalink to this definition">¶</a></dt>
-<dd><p>Center the provided string for a given width.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>s</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the input string</li>
-<li><strong>width</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; the desired field width</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="pypsi.format.ansi_len">
-<code class="descclassname">pypsi.format.</code><code class="descname">ansi_len</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/format.html#ansi_len"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.ansi_len" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the length of the provided <cite>str</cite>, not counting any ansi codes.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>value</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the input string</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="pypsi.format.ansi_ljust">
-<code class="descclassname">pypsi.format.</code><code class="descname">ansi_ljust</code><span class="sig-paren">(</span><em>s</em>, <em>width</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/format.html#ansi_ljust"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.ansi_ljust" title="Permalink to this definition">¶</a></dt>
-<dd><p>Left justify an input string, ensuring that it contains width charaters.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>s</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the input string</li>
-<li><strong>width</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; the desired output width</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns str:</th><td class="field-body"><p class="first last">the output string</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="pypsi.format.ansi_rjust">
-<code class="descclassname">pypsi.format.</code><code class="descname">ansi_rjust</code><span class="sig-paren">(</span><em>s</em>, <em>width</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/format.html#ansi_rjust"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.ansi_rjust" title="Permalink to this definition">¶</a></dt>
-<dd><p>Right justify the input string.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>s</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; the input string</li>
-<li><strong>width</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; the desired width</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns str:</th><td class="field-body"><p class="first last">the output string</p>
-</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="function">
@@ -428,13 +289,35 @@ contained a newline charater.</td>
 </dd></dl>
 
 <dl class="function">
-<dt id="pypsi.format.title_str">
-<code class="descclassname">pypsi.format.</code><code class="descname">title_str</code><span class="sig-paren">(</span><em>title</em>, <em>width=80</em>, <em>align='left'</em>, <em>hr='='</em>, <em>box=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/format.html#title_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.title_str" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="pypsi.format.obj_str">
+<code class="descclassname">pypsi.format.</code><code class="descname">obj_str</code><span class="sig-paren">(</span><em>obj</em>, <em>max_children=3</em>, <em>stream=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/format.html#obj_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.obj_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pretty format an object with colored type information. Examples:</p>
+<ul class="simple">
+<li><cite>list</cite>: <code class="docutils literal"><span class="pre">list(</span> <span class="pre">item1,</span> <span class="pre">item2,</span> <span class="pre">item3,</span> <span class="pre">...)</span></code></li>
+<li><cite>bool</cite>: <code class="docutils literal"><span class="pre">bool(</span> <span class="pre">True</span> <span class="pre">)</span></code></li>
+<li><cite>None</cite>: <code class="docutils literal"><span class="pre">&lt;null&gt;</span></code></li>
+</ul>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>obj</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#object" title="(in Python v3.4)"><em>object</em></a>) &#8211; object to format</li>
+<li><strong>max_children</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#int" title="(in Python v3.4)"><em>int</em></a>) &#8211; maximum number of children to print for lists</li>
+<li><strong>stream</strong> (<em>file</em>) &#8211; target stream, used to determine if color will be used.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns str:</th><td class="field-body"><p class="first last">the formatted object</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="function">
 <dt id="pypsi.format.wrap_line">
-<code class="descclassname">pypsi.format.</code><code class="descname">wrap_line</code><span class="sig-paren">(</span><em>txt</em>, <em>width</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/format.html#wrap_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.wrap_line" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">pypsi.format.</code><code class="descname">wrap_line</code><span class="sig-paren">(</span><em>txt</em>, <em>width</em>, <em>wrap_prefix=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/format.html#wrap_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.format.wrap_line" title="Permalink to this definition">¶</a></dt>
 <dd><p>Word wrap a single line.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -457,68 +340,31 @@ contained a newline charater.</td>
 
 
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="pypsi.stream.html" class="btn btn-neutral float-right" title="3. pypsi.stream - File streams">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="pypsi.namespace.html" class="btn btn-neutral" title="pypsi.namespace - Arbitrary attribute storage classes"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
-  
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &copy; Copyright 2014, Adam Meily.
-    </p>
-  </div>
-
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
-  
-</footer>
         </div>
       </div>
-
-    </section>
-
-  </div>
-  
-
-
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'1.2.1',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-
-  
-
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
-
-  
-  
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
-      });
-  </script>
-   
-
-</body>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pypsi.ansi.html" title="10. pypsi.ansi - ANSI Escape Code Support"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pypsi.namespace.html" title="8. pypsi.namespace - Arbitrary attribute storage classes"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pypsi 1.4.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2014, Adam Meily.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.
+    </div>
+  </body>
 </html>

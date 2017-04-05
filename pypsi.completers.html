@@ -1,0 +1,170 @@
+
+
+<!doctype html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5. pypsi.completers - Core tab completion functions &#8212; pypsi 1.4.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.4.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="6. pypsi.core - Core classes for pluggable features" href="pypsi.core.html" />
+    <link rel="prev" title="4. pypsi.shell - Pypsi Shell" href="pypsi.shell.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pypsi.core.html" title="6. pypsi.core - Core classes for pluggable features"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="pypsi.shell.html" title="4. pypsi.shell - Pypsi Shell"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pypsi 1.4.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="pypsi.shell.html"
+                        title="previous chapter">4. pypsi.shell - Pypsi Shell</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pypsi.core.html"
+                        title="next chapter">6. pypsi.core - Core classes for pluggable features</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/pypsi.completers.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-pypsi.completers">
+<span id="pypsi-completers-core-tab-completion-functions"></span><h1>5. pypsi.completers - Core tab completion functions<a class="headerlink" href="#module-pypsi.completers" title="Permalink to this headline">¶</a></h1>
+<p>Builtin tab completion functions.</p>
+<dl class="function">
+<dt id="pypsi.completers.choice_completer">
+<code class="descclassname">pypsi.completers.</code><code class="descname">choice_completer</code><span class="sig-paren">(</span><em>choices</em>, <em>case_sensitive=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/completers.html#choice_completer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.completers.choice_completer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tab complete from a list of choices.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>choices</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.4)"><em>list</em></a>) &#8211; the list of choices</li>
+<li><strong>case_sensitive</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a>) &#8211; whether the choices are case sensitive</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="pypsi.completers.command_completer">
+<code class="descclassname">pypsi.completers.</code><code class="descname">command_completer</code><span class="sig-paren">(</span><em>parser</em>, <em>shell</em>, <em>args</em>, <em>prefix</em>, <em>case_sensitive=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pypsi/completers.html#command_completer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pypsi.completers.command_completer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Completion function that can tab complete options, options&#8217; values,
+and positional parameters. Shell, args, and prefix should be the same
+params as passed to the <a class="reference internal" href="pypsi.core.html#pypsi.core.Command.complete" title="pypsi.core.Command.complete"><code class="xref py py-meth docutils literal"><span class="pre">pypsi.core.Command.complete()</span></code></a> function</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>parser</strong> &#8211; A PypsiArgParser object or an action object returned
+from <code class="xref py py-meth docutils literal"><span class="pre">PypsiArgParser.add_subparsers()</span></code></li>
+<li><strong>shell</strong> (<a class="reference internal" href="pypsi.shell.html#pypsi.shell.Shell" title="pypsi.shell.Shell"><em>pypsi.shell.Shell</em></a>) &#8211; The current Shell object</li>
+<li><strong>args</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#list" title="(in Python v3.4)"><em>list</em></a>) &#8211; The full list of current CLI args</li>
+<li><strong>prefix</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/stdtypes.html#str" title="(in Python v3.4)"><em>str</em></a>) &#8211; The partial arg being completed</li>
+<li><strong>case_sensitive</strong> (<a class="reference external" href="http://docs.python.org/3.3/library/functions.html#bool" title="(in Python v3.4)"><em>bool</em></a>) &#8211; Whether the prefix will be completed
+in a case sensitive manner</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return list:</th><td class="field-body"><p class="first last">A list of possible options based on the prefix</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pypsi.core.html" title="6. pypsi.core - Core classes for pluggable features"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="pypsi.shell.html" title="4. pypsi.shell - Pypsi Shell"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">pypsi 1.4.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2014, Adam Meily.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.5.
+    </div>
+  </body>
+</html>
