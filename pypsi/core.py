@@ -363,7 +363,7 @@ class PypsiArgParser(argparse.ArgumentParser):
             # If no positional args are supplied or only one is supplied and
             # it doesn't look like an option string, parse a positional
             # argument ( from argparse )
-            if nargs and nargs in ['+', '*', '...']:
+            if nargs and nargs in ['+', '*', argparse.REMAINDER]:
                 # Positional param can repeat
                 # Currently only stores the last repeating completer specified
                 self._repeating_cb = cb
