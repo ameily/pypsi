@@ -75,7 +75,22 @@ def safe_open(file, mode='r', chunk_size=4096, ascii_is_utf8=True, **kwargs):
 
     for bom in (codecs.BOM_UTF32_BE, codecs.BOM_UTF32_LE, codecs.BOM_UTF8,
                 codecs.BOM_UTF16_BE, codecs.BOM_UTF16_LE):
-        if header.startswith(bom):
+        if header.startswith(bom) and enc[-2:].lower() in ('be', 'le'):
+            #
+            # chardet changed between v2 and v2.
+            #
+            # chardet v2 returned UTF-XXBE and UTF-XXLE for UTF 16 and
+            # UTF 32 encodings. Python didn't handle the BOM for these
+            # specific encodings, so the below code skip the BOM. That
+            # way Python doesn't raise an exception. The above 'if'
+            # statement essentially checks if we are using chardet v2
+            # or v3 (True == chardet v2).
+            #
+            # chardet v3 properly returns UTF-XX, which Python will
+            # automatically handle the encoding specific BOMs. So, we
+            # don't need to skip the BOM since Python will handle it
+            # correctly.
+            #
             fp.seek(len(bom))
             break
 
