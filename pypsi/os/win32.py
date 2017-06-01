@@ -127,14 +127,14 @@ if sys.platform == 'win32':
     import subprocess
 
     win32_popen_lock = threading.Lock()
-    popen = subprocess.Popen
+    popen_ctor = subprocess.Popen.__init__
 
     def PopenWithLock(*args, **kwargs):
         with win32_popen_lock:
-            child = popen(*args, **kwargs)
-        return child
+            popen_ctor(*args, **kwargs)
 
-    subprocess.Popen = PopenWithLock
+    subprocess.Popen.__init__ = PopenWithLock
+
 
 #: Map of ANSI escape color code to Windows Console text attribute
 ANSI_CODE_MAP = {
@@ -308,7 +308,6 @@ def pypsi_win_getpass(prompt='Password: ', stream=None):
     msvcrt.putwch('\r')
     msvcrt.putwch('\n')
     return pw
-
 
 if getpass.win_getpass is getpass.getpass:
     getpass.getpass = pypsi_win_getpass
