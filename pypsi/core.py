@@ -363,7 +363,7 @@ class PypsiArgParser(argparse.ArgumentParser):
             # If no positional args are supplied or only one is supplied and
             # it doesn't look like an option string, parse a positional
             # argument ( from argparse )
-            if nargs and nargs in ['+', '*', argparse.REMAINDER]:
+            if nargs and nargs in ('+', '*', argparse.REMAINDER):
                 # Positional param can repeat
                 # Currently only stores the last repeating completer specified
                 self._repeating_cb = cb
@@ -383,11 +383,11 @@ class PypsiArgParser(argparse.ArgumentParser):
 
 
 def pypsi_print(*args, sep=' ', end='\n', file=None, flush=True, width=None,
-                wrap=True, wrap_prefix=None):
+                wrap=True, wrap_prefix=None, replace_errors=True):
     '''
     Wraps the functionality of the Python builtin `print` function. The
     :meth:`pypsi.shell.Shell.bootstrap` overrides the Python :meth:`print`
-    function with ``pypsi_print``.
+    function with :meth:`pypsi_print`.
 
     :param str sep: string to print between arguments
     :param str end: string to print at the end of the output
@@ -396,10 +396,29 @@ def pypsi_print(*args, sep=' ', end='\n', file=None, flush=True, width=None,
     :param bool flush: whether to flush the output stream
     :param int width: override the stream's width
     :param bool wrap: whether to word wrap the output
+    :param str wrap_prefix: prefix string to print prior to every new line that
+        is wrapped
+    :param bool replace_errors: replace invalid character points with the '?'
+        character
     '''
 
     file = file or sys.stdout
     last = len(args) - 1
+
+    def write_safe(data):
+        '''
+        Write the input str to the file and, if an encoding error occurs and
+        replace_errors is ``True``, remove invalid code points and print again.
+        '''
+
+        try:
+            file.write(data)
+        except UnicodeEncodeError:
+            if replace_errors:
+                enc = getattr(file, 'encoding', sys.getdefaultencoding())
+                file.write(data.encode(enc, errors='replace').decode(enc))
+            else:
+                raise
 
     if wrap and hasattr(file, 'width') and file.width:
         width = width or file.width
@@ -431,18 +450,20 @@ def pypsi_print(*args, sep=' ', end='\n', file=None, flush=True, width=None,
                         file.write('\n')
                     else:
                         first = False
-                    file.write(wrapped)
+
+                    write_safe(wrapped)
 
             if not line or endl:
                 file.write('\n')
     else:
         last = len(args) - 1
         for (i, arg) in enumerate(args):
-            file.write(str(arg))
+            write_safe(str(arg))
+
             if sep and i != last:
-                file.write(sep)
+                write_safe(sep)
 
     if end:
-        file.write(end)
+        write_safe(end)
     if flush:
         file.flush()
