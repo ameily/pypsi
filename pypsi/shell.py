@@ -54,6 +54,7 @@ class Shell(object):
         self.backup_stdin = None
         self.backup_stderr = None
         self.backup_print = None
+        self.running = None
 
         self.width = width
         self.shell_name = shell_name
@@ -209,8 +210,13 @@ class Shell(object):
         sys.stdin._proxy(file)
 
         try:
-            while self.running and not eof:
-                raw = input().replace('\r', '')
+            # self.running will be None if cmdloop() hasn't been called yet
+            # (ie. a file is being included prior to the shell running). So,
+            # we only run if running is True or running is None (not False).
+            raw = sys.stdin.readline()
+            while self.running is not False and not eof and raw:
+                raw = raw.rstrip()
+
                 rc = None
                 try:
                     rc = self.execute(raw)
@@ -224,6 +230,8 @@ class Shell(object):
 
                     for pp in self.postprocessors:
                         pp.on_statement_finished(self, rc)
+
+                    raw = sys.stdin.readline()
         except EOFError:
             print()
             self.on_input_canceled()
