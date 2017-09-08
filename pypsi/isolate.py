@@ -18,6 +18,7 @@
 
 import sys
 import io
+import os
 
 
 class ClosableStream(io.StringIO):
@@ -86,8 +87,11 @@ class IsolatedShell(object):
 
     def execute(self, command):
         stream = ClosableStream(self.atty)
+        devnull = open(os.devnull, 'r')
+
         sys.stdout._proxy(stream, width=80)
         sys.stderr._proxy(stream, width=80)
+        sys.stdin._proxy(devnull)
 
         result = ShellResult(self.shell.get_current_prompt())
 
@@ -100,5 +104,6 @@ class IsolatedShell(object):
             result.set_post_prompt(self.shell.get_current_prompt())
             sys.stdout._unproxy()
             sys.stderr._unproxy()
+            sys.stdin._unproxy()
 
         return result
