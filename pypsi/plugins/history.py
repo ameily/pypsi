@@ -221,15 +221,17 @@ class History(object):
         '''
         Set the history event at ``index``.
         '''
-        index = self.normalize_index(index)
-        readline.replace_history_item(index, value)
+        if hasattr(readline, 'replace_history_item'):
+            index = self.normalize_index(index)
+            readline.replace_history_item(index, value)
 
     def __delitem__(self, index):
         '''
         Delete a history event at ``index``.
         '''
-        index = self.normalize_index(index)
-        readline.remove_history_item(index)
+        if hasattr(readline, 'remove_history_item'):
+            index = self.normalize_index(index)
+            readline.remove_history_item(index)
 
     def __nonzero__(self):
         return len(self) > 0

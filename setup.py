@@ -15,8 +15,8 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-from setuptools import setup
 import platform
+from setuptools import setup
 import pypsi
 
 
@@ -26,7 +26,7 @@ def read(path):
 
 install_requires = ['chardet>=2.0.1']
 if platform.system() == 'Windows':
-    install_requires.append('pyreadline-ais>=2.0.3')
+    install_requires.append('pyreadline')
 
 
 setup(
