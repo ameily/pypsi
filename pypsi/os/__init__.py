@@ -29,6 +29,5 @@ elif sys.platform in ['cygwin', 'darwin'] or sys.platform.startswith('linux'):
 __all__ = [
     'find_bins_in_path',
     'is_path_prefix',
-    'path_completer',
     'make_ansi_stream'
 ]

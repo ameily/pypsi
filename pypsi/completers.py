@@ -19,7 +19,23 @@
 Builtin tab completion functions.
 '''
 
-from pypsi.os import path_completer  # noqa
+import os
+import sys
+
+
+def _filename_startswith(filename, prefix):
+    '''
+    Check if filename begins with a prefix string. This method handles
+    case sensitivity behaviors on Winodws and Linux.
+
+    :param str filename: file name
+    :param str prefix: prefix string to check for
+    :returns bool: the filename begins with the prefix string
+    '''
+    if sys.platform == 'win32':
+        return filename.lower().startswith(prefix.lower())
+    else:
+        return filename.startswith(prefix)
 
 
 def command_completer(parser, shell, args, prefix, case_sensitive=False):
@@ -115,3 +131,39 @@ def choice_completer(choices, case_sensitive=False):
                 r.append(choice)
         return r
     return complete
+
+
+def path_completer(token, prefix=''):
+    '''
+    Tab complete a path, handles both Windows and Linux paths.
+    '''
+    choices = []
+
+    if not token:
+        cwd = '.' + os.path.sep
+        filename_prefix = ''
+    elif token[-1] == os.path.sep:
+        cwd = os.path.expanduser(token[:-1])
+        filename_prefix = ''
+    else:
+        filename_prefix = os.path.basename(token)
+        cwd = os.path.expanduser(os.path.dirname(token) or '.' + os.path.sep)
+
+    if not os.path.exists(cwd):
+        return []
+
+    if not os.path.isdir(cwd):
+        return [token]
+
+    for filename in os.listdir(cwd):
+        if not _filename_startswith(filename, filename_prefix):
+            continue
+
+        if os.path.isdir(os.path.join(cwd, filename)):
+            filename += os.path.sep
+        else:
+            filename += '\0'
+
+        choices.append(prefix + filename[len(filename_prefix):])
+
+    return choices

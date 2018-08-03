@@ -497,33 +497,24 @@ class Shell(object):
         return ''
 
     def _clean_completions(self, completions, quotation):
-        escape_char = self.features.escape_char
+        escape = self.features.escape_char
 
         if len(completions) == 1:
-            if escape_char:
-                if quotation:
-                    # We are quotes. Escape items with the same quotations and
-                    # the escape character itself
-                    completions = [
-                        escape_string(entry, escape_char, quotation, False)
-                        for entry in completions
-                    ]
-                else:
-                    # We are not in quotes. Escape whitespace and the escape
-                    # character
-                    completions = [
-                        escape_string(entry, escape_char)
-                        for entry in completions
-                    ]
+            ans = completions[0]
+            close_quote = ans.endswith('\0')
+            if quotation:
+                completions[0] = ans.replace(quotation, escape + quotation)
+            else:
+                completions[0] = ans.replace(escape, escape * 2).replace(' ', escape + ' ')
+        else:
+            close_quote = False
 
-            # Entries that end in a null byte, \0, need to close the current
-            # quotation or add whitespace so that further tab completions don't
-            # return the same result.
-            completions = [
-                entry[:-1] + (quotation or ' ')
-                if entry.endswith('\0') else entry
-                for entry in completions
-            ]
+        for i, ans in enumerate(completions):
+            if ans.endswith('\0'):
+                ans = ans[:-1]
+            if close_quote:
+                ans = ans + quotation + ' '
+            completions[i] = ans
 
         return completions
 
@@ -569,10 +560,10 @@ class Shell(object):
                     next_arg = True
 
             if loc == 'path':
-                ret = path_completer(''.join(args))
+                ret = path_completer(''.join(args), prefix)
             elif not cmd_name or loc == 'name':
                 if is_path_prefix(cmd_name):
-                    ret = path_completer(cmd_name)
+                    ret = path_completer(cmd_name, prefix)
                 else:
                     ret = self.get_command_name_completions(cmd_name)
             else:
