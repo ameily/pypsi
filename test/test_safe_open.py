@@ -1,9 +1,9 @@
 
-import unittest
 import tempfile
 import os
-from pypsi.utils import safe_open
 import codecs
+import pytest
+from pypsi.utils import safe_open
 
 TEXT = """Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 Duis vestibulum urna lacus, nec dictum tortor auctor at. Donec eu ligula eget
@@ -15,12 +15,12 @@ pretium. Morbi aliquam consequat tristique. Fusce odio lacus, vulputate vitae
 porttitor quis, condimentum sit amet elit."""
 
 
-class SafeOpenTestCase(unittest.TestCase):
+class SafeOpenTestCase:
 
-    def setUp(self):
+    def setup(self):
         self.remove = []
 
-    def tearDown(self):
+    def teardown(self):
         for path in self.remove:
             os.remove(path)
 
@@ -45,8 +45,8 @@ class SafeOpenTestCase(unittest.TestCase):
         fp_data = fp_fp.read()
         fp_fp.close()
 
-        self.assertEqual(path_data, fp_data)
-        self.assertEqual(path_data, expected)
+        assert path_data == fp_data
+        assert path_data == expected
 
     def test_ascii(self):
         self._test_path_and_fileobj(
@@ -77,23 +77,24 @@ class SafeOpenTestCase(unittest.TestCase):
     def test_invalid_ascii(self):
         path = self.mktempfile(b'hello\xC3\x93')
         fp = safe_open(path, 'r', ascii_is_utf8=False, chunk_size=5)
-        self.assertRaises(UnicodeDecodeError, fp.read)
+        with pytest.raises(UnicodeDecodeError):
+            fp.read()
 
     def test_rb_path(self):
         path = self.mktempfile(b"hello")
         fp = safe_open(path, 'rb')
-        self.assertEqual(fp.mode, 'rb')
+        assert fp.mode == 'rb'
 
     def test_rb_fp(self):
         path = self.mktempfile(b"hello")
         fp = open(path, 'rb')
-        self.assertEqual(fp, safe_open(fp, 'rb'))
+        assert fp == safe_open(fp, 'rb')
 
     def test_empty_file_path(self):
         path = self.mktempfile(b'')
-        self.assertEqual(safe_open(path, 'r').mode, 'r')
+        assert safe_open(path, 'r').mode == 'r'
 
     def test_empty_file_fp(self):
         path = self.mktempfile(b'')
         fp = open(path, 'rb')
-        self.assertEqual(fp, safe_open(fp, 'r'))
+        assert fp == safe_open(fp, 'r')
