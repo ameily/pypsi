@@ -15,32 +15,42 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-import platform
+# import platform
+import os
+import sys
 from setuptools import setup
 import pypsi
 
 
-def read(path):
-    return open(path, 'r').read()
+def load_requirements(filename):
+    path = os.path.join(os.path.dirname(__file__), 'requirements', filename)
+    return [line for line in open(path, 'r').readlines() if line.strip() and not line.startswith('#')]
 
 
-install_requires = ['chardet>=2.0.1']
-if platform.system() == 'Windows':
-    install_requires.append('pyreadline')
+requirements = load_requirements('requirements.txt')
+if sys.version_info[:2] == (3, 3):
+    dev_requirements = load_requirements('requirements-dev-py33.txt')
+else:
+    dev_requirements = load_requirements('requirements-dev.txt')
 
+
+print(requirements)
 
 setup(
     name='pypsi',
     version=pypsi.__release__,
     license='ISC',
     description='Python Pluggable Shell Interface',
-    long_description=read("README.rst"),
+    long_description=open("README.rst", 'r').read(),
     author='Adam Meily',
     author_email='meily.adam@gmail.com',
     url='https://github.com/ameily/pypsi',
     download_url='https://pypi.python.org/pypi/pypsi',
     packages=['pypsi', 'pypsi.commands', 'pypsi.plugins', 'pypsi.os'],
-    install_requires=install_requires,
+    install_requires=requirements,
+    extras_require={
+        'dev': dev_requirements
+    },
     keywords=[
         'cli', 'command line', 'command line interface', 'shell', 'terminal',
         'console', 'term', 'command prompt',
