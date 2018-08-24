@@ -23,7 +23,7 @@ import os
 import sys
 import re
 import ctypes
-import msvcrt
+import msvcrt  # pylint: disable=import-error
 import getpass
 
 
