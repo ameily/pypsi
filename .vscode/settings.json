@@ -9,5 +9,7 @@
     "python.venvFolders": [
         ".tox"
     ],
+    "files.insertFinalNewline": true,
+    "trailing-spaces.trimOnSave": true,
     "python.pythonPath": "${workspaceFolder}\\venv\\Scripts\\python.exe"
 }
