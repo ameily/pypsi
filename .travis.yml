@@ -9,8 +9,8 @@ sudo: false
 # command to install dependencies
 install:
   # - pip install wheel
-  # - pip install --upgrade pip
-  - pip freeze
+  - pip install --upgrade pip
+  - pip install setuptools==39.2.0
   - pip --version
   - pip install tox-travis
   - pip install tox
