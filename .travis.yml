@@ -1,16 +1,17 @@
 language: python
 python:
   - "3.3"
-  - "3.4"
-  - "3.5"
-  - "3.6"
-  - "3.7-dev"
+  # - "3.4"
+  # - "3.5"
+  # - "3.6"
+  # - "3.7-dev"
 sudo: false
 # command to install dependencies
 install:
-  - "pip install --upgrade pip"
-  - "pip install tox-travis"
-  - "pip install tox"
+  - pip install wheel
+  - pip install --upgrade pip
+  - pip install tox-travis
+  - pip install tox
 # command to run tests
 script:
   - "tox"
