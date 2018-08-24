@@ -30,8 +30,6 @@ from pypsi.ansi import AnsiCodes
 from pypsi.features import BashFeatures, TabCompletionFeatures
 from pypsi.core import pypsi_print, Plugin, Command
 from pypsi.pipes import ThreadLocalStream, InvocationThread
-from pypsi.utils import escape_string
-
 
 
 class Shell(object):
@@ -39,6 +37,7 @@ class Shell(object):
     The command line interface that the user interacts with. All shell's need
     to inherit this base class.
     '''
+    # pylint: disable=too-many-public-methods
 
     def __init__(self, shell_name='pypsi', width=79, exit_rc=-1024, ctx=None,
                  features=None):
@@ -67,6 +66,8 @@ class Shell(object):
         self.prompt = "{name} )> ".format(name=shell_name)
         self.ctx = ctx or Namespace()
         self.features = features or BashFeatures()
+        self.running = False
+        self.completion_matches = None
 
         self.default_cmd = None
         self.register_base_plugins()
@@ -93,7 +94,7 @@ class Shell(object):
             self.backup_stdin = sys.stdin
             sys.stdin = ThreadLocalStream(sys.stdin)
 
-        if builtins.print != pypsi_print:
+        if builtins.print != pypsi_print:  # pylint: disable=comparison-with-callable
             self.backup_print = print
             builtins.print = pypsi_print
 
@@ -119,7 +120,7 @@ class Shell(object):
         cls = self.__class__
         for name in dir(cls):
             attr = getattr(cls, name)
-            if isinstance(attr, Command) or isinstance(attr, Plugin):
+            if isinstance(attr, (Command, Plugin)):
                 self.register(attr)
 
     def register(self, obj):
@@ -168,20 +169,20 @@ class Shell(object):
 
     def get_current_prompt(self):
         if callable(self.prompt):
-            prompt = self.prompt()
+            prompt = self.prompt()  # pylint: disable=not-callable
         else:
             prompt = self.prompt
 
         return self.preprocess_single(prompt, 'prompt')
 
     def set_readline_completer(self):
-        if readline.get_completer() != self.complete:
+        if readline.get_completer() != self.complete:  # pylint: disable=comparison-with-callable
             readline.parse_and_bind("tab: complete")
             self._backup_completer = readline.get_completer()
             readline.set_completer(self.complete)
 
     def reset_readline_completer(self):
-        if readline.get_completer() == self.complete:
+        if readline.get_completer() == self.complete:  # pylint: disable=comparison-with-callable
             readline.set_completer(self._backup_completer)
 
     def on_input_canceled(self):
@@ -206,8 +207,8 @@ class Shell(object):
         eof = False
 
         # set STDIN to the file
-        stdin = sys.stdin._get_target()
-        sys.stdin._proxy(file)
+        stdin = sys.stdin._get_target()  # pylint: disable=protected-access
+        sys.stdin._proxy(file)  # pylint: disable=protected-access
 
         try:
             while self.running and not eof:
@@ -234,7 +235,7 @@ class Shell(object):
             self.on_input_canceled()
         finally:
             # Reset stdin to a tty
-            sys.stdin._proxy(stdin)
+            sys.stdin._proxy(stdin)  # pylint: disable=protected-access
         return rc
 
     def cmdloop(self):
@@ -368,9 +369,8 @@ class Shell(object):
                     # errors, these are not fatal.
                     self.error(str(e))
                     return -1
-                else:
-                    # Unhandled fatal exception, re-raise it
-                    raise
+                # Unhandled fatal exception, re-raise it
+                raise
 
         # Current pipe being built
         pipe = []
@@ -436,12 +436,12 @@ class Shell(object):
                         rc = -1
                     elif isinstance(e, SystemExit):
                         # The command is requesting to exit the shell.
-                        rc = e.code
+                        rc = e.code  # pylint: disable=no-member
                         print("exiting....")
                         self.running = False
                     elif isinstance(e, RuntimeError):
                         # The command was aborted by a generic exception.
-                        self.error("command aborted: "+str(e))
+                        self.error("command aborted: " + str(e))
                         rc = -1
                     else:
                         # Unhandled fatal exception, re-raise it
@@ -477,7 +477,7 @@ class Shell(object):
 
         return threads, stdin
 
-    def preprocess(self, raw, origin):
+    def preprocess(self, raw, origin):  # pylint: disable=unused-argument
         for pp in self.preprocessors:
             raw = pp.on_input(self, raw)
             if raw is None:
@@ -586,7 +586,7 @@ class Shell(object):
     def get_command_name_completions(self, prefix):
         return [cmd for cmd in self.commands if cmd.startswith(prefix)]
 
-    def complete(self, text, state):
+    def complete(self, text, state):  # pylint: disable=unused-argument
         if state == 0:
             self.completion_matches = []
             begidx = readline.get_begidx()

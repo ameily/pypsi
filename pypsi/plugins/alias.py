@@ -15,9 +15,9 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
+import argparse
 from pypsi.core import Plugin, Command, PypsiArgParser, CommandShortCircuit
 from pypsi.cmdline import StringToken, OperatorToken, Expression
-import argparse
 
 
 class AliasCommand(Command):

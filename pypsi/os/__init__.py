@@ -21,9 +21,9 @@ import sys
 
 
 if sys.platform == 'win32':
-    from pypsi.os.win32 import *
+    from pypsi.os.win32 import *  # pylint: disable=wildcard-import
 elif sys.platform in ['cygwin', 'darwin'] or sys.platform.startswith('linux'):
-    from pypsi.os.unix import *
+    from pypsi.os.unix import *  # pylint: disable=wildcard-import
 
 
 __all__ = [

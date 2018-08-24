@@ -22,11 +22,11 @@ from pypsi.cmdline import StringToken
 class MultilinePlugin(Plugin):
     '''
     Provides the ability to input and execute multiline statements. Input lines
-    that end in the escape character ``\`` can be continued on the subsequent
+    that end in the escape character ``\\`` can be continued on the subsequent
     input line. This allows for the user to type the following and produces the
     the statement:
 
-    | ``echo this is a multiline \``
+    | ``echo this is a multiline \\``
     | ``statement``
 
     `=>`
@@ -66,8 +66,7 @@ class MultilinePlugin(Plugin):
                 ret = self.buffer
                 self.buffer = None
                 return ret
-            else:
-                return tokens
+            return tokens
 
         if not isinstance(tokens[-1], StringToken):
             return self.buffer + tokens if self.buffer else tokens

@@ -19,9 +19,9 @@
 Utility functions and classes.
 '''
 
-import chardet
 import codecs
 import io
+import chardet
 
 
 def safe_open(file, mode='r', chunk_size=4096, ascii_is_utf8=True, **kwargs):

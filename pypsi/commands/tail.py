@@ -15,10 +15,10 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
-from pypsi.completers import path_completer, command_completer
 import time
 import os
+from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
+from pypsi.completers import path_completer, command_completer
 
 TailCmdUsage = "%(prog)s [-n N] [-f] [-h] FILE"
 
@@ -81,7 +81,7 @@ class TailCommand(Command):
 
         return 0
 
-    def complete_path(self, shell, args, prefix):
+    def complete_path(self, shell, args, prefix):  # pylint: disable=unused-argument
         return path_completer(args[-1])
 
     def complete(self, shell, args, prefix):
@@ -133,7 +133,7 @@ class TailCommand(Command):
                         fp.seek(where)
                     else:
                         print(line, end='', flush=True)
-            except (KeyboardInterrupt):
+            except KeyboardInterrupt:
                 print()
                 return 0
 

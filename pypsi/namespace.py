@@ -37,12 +37,6 @@ class Namespace(object):
         for (k, v) in kwargs.items():
             super(Namespace, self).__setattr__(k, v)
 
-    def __setattr__(self, name, value):
-        '''
-        Set an attribute's value.
-        '''
-        super(Namespace, self).__setattr__(name, value)
-
     def __iter__(self):
         return iter(self.__dict__)
 
@@ -50,12 +44,9 @@ class Namespace(object):
         return super(Namespace, self).__getattribute__(name)
 
     def __setitem__(self, name, value):
-        self.__setattr__(name, value)
+        super(Namespace, self).__setattr__(name, value)
 
     def __delitem__(self, name):
-        self.__delattr__(self, name)
-
-    def __delattr__(self, name):
         super(Namespace, self).__delattr__(name)
 
 
@@ -70,7 +61,8 @@ class ScopedNamespaceContext(object):
 
 class ScopedNamespace(object):
     '''
-    Provides a configurable namespace for arbitrary attribute access.
+    Provides a configurable namespace for arbitrary attribute access. This class is used to store
+    variables within the shell, which are scoped and case insensitive.
     '''
 
     def __init__(self, name, case_sensitive=True, locals=None, parent=None):
@@ -110,7 +102,7 @@ class ScopedNamespace(object):
 
     def __setattr__(self, name, value):
         if not name:
-            return -1
+            return
 
         if name[0] == '_':
             super(ScopedNamespace, self).__setattr__(name, value)

@@ -90,7 +90,7 @@ class TestIoRedirection(object):
         assert ci.get_input(fp) == fp
 
     def test_input_file_not_found(self):
-        path = "|file|does|not|exist"
+        path = "/file/does/not/exist"
         ci = CommandInvocation(name='echo')
         with pytest.raises(IORedirectionError):
             ci.get_input(path)

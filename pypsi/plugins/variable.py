@@ -15,15 +15,15 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
+import os
+import sys
+from datetime import datetime
 import argparse
 from pypsi.core import Plugin, Command, PypsiArgParser, CommandShortCircuit
 from pypsi.namespace import ScopedNamespace
 from pypsi.cmdline import (Token, StringToken, TokenContinue, TokenEnd,
                            Expression)
 from pypsi.format import Table, Column, obj_str
-import os
-import sys
-from datetime import datetime
 
 
 class ManagedVariable(object):
@@ -305,7 +305,7 @@ class VariablePlugin(Plugin):
             s = shell.ctx.vars[name]
             if callable(s):
                 return s()
-            elif isinstance(s, ManagedVariable):
+            if isinstance(s, ManagedVariable):
                 return s.getter(shell)
             return s
         return ''
@@ -324,14 +324,6 @@ class VariablePlugin(Plugin):
                     continue
 
                 expanded = self.expand(shell, subt)
-                '''
-                if token.quote:
-                    ret.append(StringToken(subt.index, expanded, token.quote))
-                else:
-                    ws = False
-                    for part in shell.parser.tokenize(expanded):
-                        ret.append(part)
-                '''
                 ret.append(StringToken(subt.index, expanded, '"'))
 
         return ret

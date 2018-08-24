@@ -226,7 +226,7 @@ class OperatorToken(Token):
 class IORedirectionError(Exception):
 
     def __init__(self, path, message):
-        super(IORedirectionError, Exception).__init__(path, message)
+        super(IORedirectionError, self).__init__(message)
         self.path = path
         self.message = message
 
@@ -540,7 +540,7 @@ class StatementSyntaxError(SyntaxError):
         :param str message: error message
         :param int index: index in the statement that caused the error
         '''
-        super(StatementSyntaxError, SyntaxError).__init__(message, index)
+        super(StatementSyntaxError, self).__init__(message)
         self.message = message
         self.index = index
 

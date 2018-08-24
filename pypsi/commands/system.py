@@ -15,10 +15,11 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-from pypsi.core import Command
 import subprocess
 import errno
 import sys
+from pypsi.core import Command
+
 
 SystemUsage = """usage: {name} COMMAND
 
@@ -50,9 +51,9 @@ class SystemCommand(Command):
 
         try:
             proc = subprocess.Popen(
-                args, stdout=sys.stdout._get_target(),
-                stdin=sys.stdin._get_target(),
-                stderr=sys.stderr._get_target(),
+                args, stdout=sys.stdout._get_target(),  # pylint: disable=protected-access
+                stdin=sys.stdin._get_target(),  # pylint: disable=protected-access
+                stderr=sys.stderr._get_target(),  # pylint: disable=protected-access
                 shell=self.use_shell
             )
         except OSError as e:
@@ -60,7 +61,7 @@ class SystemCommand(Command):
                 self.error(shell, args[0], ": command not found")
             else:
                 self.error(shell, args[0], ": ", e.strerror)
-            return -e.errno
+            return -e.errno  # pylint: disable=invalid-unary-operand-type
 
         try:
             rc = proc.wait()

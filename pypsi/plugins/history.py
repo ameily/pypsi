@@ -15,11 +15,12 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
+import readline
+import os
 from pypsi.core import Command, Plugin, PypsiArgParser, CommandShortCircuit
 from pypsi.utils import safe_open
 from pypsi.completers import path_completer
-import readline
-import os
+
 
 CmdUsage = """%(prog)s clear
    or: %(prog)s delete N
@@ -191,7 +192,7 @@ class History(object):
 
         if index < 0 or index >= count:
             raise IndexError(str(index))
-        return index+1
+        return index + 1
 
     def __getitem__(self, index):
         '''
@@ -205,11 +206,11 @@ class History(object):
             step = index.step or 1
             return [
                 readline.get_history_item(i)
-                for i in range(start, stop+1, step)
+                for i in range(start, stop + 1, step)
             ]
-        else:
-            index = self.normalize_index(index)
-            return readline.get_history_item(index)
+
+        index = self.normalize_index(index)
+        return readline.get_history_item(index)
 
     def __len__(self):
         '''
@@ -223,7 +224,7 @@ class History(object):
         '''
         if hasattr(readline, 'replace_history_item'):
             index = self.normalize_index(index)
-            readline.replace_history_item(index, value)
+            readline.replace_history_item(index, value)  # pylint: disable=no-member
 
     def __delitem__(self, index):
         '''
@@ -231,7 +232,7 @@ class History(object):
         '''
         if hasattr(readline, 'remove_history_item'):
             index = self.normalize_index(index)
-            readline.remove_history_item(index)
+            readline.remove_history_item(index)  # pylint: disable=no-member
 
     def __nonzero__(self):
         return len(self) > 0

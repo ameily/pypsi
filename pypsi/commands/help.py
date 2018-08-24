@@ -15,11 +15,11 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
+import sys
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
 from pypsi.format import Table, Column, title_str
 from pypsi.ansi import AnsiCodes
 from pypsi.completers import command_completer
-import sys
 
 
 class Topic(object):
@@ -66,11 +66,11 @@ class HelpCommand(Command):
         shell.ctx.topic_lookup = {t.id: t for t in shell.ctx.topics}
         shell.ctx.topics_dirty = True
 
-    def complete_topics(self, shell, args, prefix):
+    def complete_topics(self, shell, args, prefix):  # pylint: disable=unused-argument
         completions = [
             x.id for x in shell.ctx.topics
             if x.id.startswith(prefix) or not prefix
-            ]
+        ]
 
         completions.extend([
             x for x in shell.commands if x.startswith(prefix) or not prefix
@@ -93,7 +93,7 @@ class HelpCommand(Command):
         for id in shell.ctx.topic_lookup:
             shell.ctx.topic_lookup[id].commands = []
 
-        for (name, cmd) in shell.commands.items():
+        for (_, cmd) in shell.commands.items():
             if cmd.topic == '__hidden__':
                 continue
 

@@ -37,7 +37,7 @@ __all__ = [
 
 
 def is_exe(path):
-    (name, ext) = os.path.splitext(path)
+    (_, ext) = os.path.splitext(path)
     return (
         os.path.isfile(path) and
         ext.lower() in ('.exe', '.bat')
@@ -138,22 +138,22 @@ if sys.platform == 'win32':
 
 #: Map of ANSI escape color code to Windows Console text attribute
 ANSI_CODE_MAP = {
-    '0;30m': 0x0,              # black
-    '0;31m': 0x4,              # red
-    '0;32m': 0x2,              # green
-    '0;33m': 0x4+0x2,          # brown?
-    '0;34m': 0x1,              # blue
-    '0;35m': 0x1+0x4,          # purple
-    '0;36m': 0x2+0x4,          # cyan
-    '0;37m': 0x1+0x2+0x4,      # grey
-    '1;30m': 0x1+0x2+0x4,      # dark gray
-    '1;31m': 0x4+0x8,          # red
-    '1;32m': 0x2+0x8,          # light green
-    '1;33m': 0x4+0x2+0x8,      # yellow
-    '1;34m': 0x1+0x8,          # light blue
-    '1;35m': 0x1+0x4+0x8,      # light purple
-    '1;36m': 0x1+0x2+0x8,      # light cyan
-    '1;37m': 0x1+0x2+0x4+0x8,  # white
+    '0;30m': 0x0,                       # black
+    '0;31m': 0x4,                       # red
+    '0;32m': 0x2,                       # green
+    '0;33m': 0x4 + 0x2,                 # brown?
+    '0;34m': 0x1,                       # blue
+    '0;35m': 0x1 + 0x4,                 # purple
+    '0;36m': 0x2 + 0x4,                 # cyan
+    '0;37m': 0x1 + 0x2 + 0x4,           # grey
+    '1;30m': 0x1 + 0x2 + 0x4,           # dark gray
+    '1;31m': 0x4 + 0x8,                 # red
+    '1;32m': 0x2 + 0x8,                 # light green
+    '1;33m': 0x4 + 0x2 + 0x8,           # yellow
+    '1;34m': 0x1 + 0x8,                 # light blue
+    '1;35m': 0x1 + 0x4 + 0x8,           # light purple
+    '1;36m': 0x1 + 0x2 + 0x8,           # light cyan
+    '1;37m': 0x1 + 0x2 + 0x4 + 0x8,     # white
     '0m': None
 }
 
@@ -272,8 +272,7 @@ class Win32AnsiStream(object):
     def __eq__(self, other):
         if isinstance(other, Win32AnsiStream):
             return self.stream == other.stream
-        else:
-            return self.stream == other
+        return self.stream == other
 
 
 def make_ansi_stream(stream, **kwargs):
@@ -286,9 +285,6 @@ def make_ansi_stream(stream, **kwargs):
 
 
 def pypsi_win_getpass(prompt='Password: ', stream=None):
-    import msvcrt
-    import sys
-
     if not (stream or sys.stdin).isatty():
         return input(prompt)
 
@@ -297,7 +293,7 @@ def pypsi_win_getpass(prompt='Password: ', stream=None):
     pw = ""
     while 1:
         c = msvcrt.getwch()
-        if c == '\r' or c == '\n':
+        if c in ('\r', '\n'):
             break
         if c == '\003':
             raise KeyboardInterrupt

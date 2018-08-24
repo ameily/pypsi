@@ -127,7 +127,7 @@ def highlight(target, term, color='1;32'):
     while end >= 0:
         ret += target[start:end]
         ret += '\x1b[{color}m{term}\x1b[0m'.format(
-            color=color, term=target[end:end+len(term)]
+            color=color, term=target[end:end + len(term)]
         )
         start = end + len(term)
         end = s.find(t, start)
@@ -158,6 +158,20 @@ def file_size_str(value):
     return "{:.2f} {}".format(value, unit)
 
 
+def _format_value(stream, type, value):
+    '''
+    Color format a value as {type}( {value} ).
+
+    :param AnsiStream stream: ANSI stream
+    :param str type: type string
+    :param any value: value to format
+    '''
+    tmpl = "{blue}{type}({reset} {value} {blue}){reset}"
+    if stream:
+        return stream.ansi_format(tmpl, type=type, value=value)
+    return "{type}( {value} )".format(type=type, value=value)
+
+
 def obj_str(obj, max_children=3, stream=None):
     '''
     Pretty format an object with colored type information. Examples:
@@ -171,38 +185,30 @@ def obj_str(obj, max_children=3, stream=None):
     :param file stream: target stream, used to determine if color will be used.
     :returns str: the formatted object
     '''
-    tmpl = "{blue}{type}({reset} {value} {blue}){reset}"
-    if stream:
-        def format_value(type, value):
-            return stream.ansi_format(tmpl, type=type, value=value)
-    else:
-        def format_value(type, value):
-            return "{type}( {value} )".format(type=type, value=value)
 
     if isinstance(obj, bool):
-        return format_value("bool", obj)
-    elif isinstance(obj, int):
-        return format_value("int", "{:d}".format(obj))
-    elif isinstance(obj, float):
-        return format_value("float", "{:g}".format(obj))
-    elif isinstance(obj, (list, tuple)):
-        if max_children > 0 and len(obj) > max_children:
+        return _format_value(stream, "bool", obj)
+    if isinstance(obj, int):
+        return _format_value(stream, "int", "{:d}".format(obj))
+    if isinstance(obj, float):
+        return _format_value(stream, "float", "{:g}".format(obj))
+    if isinstance(obj, (list, tuple)):
+        if len(obj) > max_children > 0:
             obj = [o for o in obj[:max_children]]
             obj.append('...')
 
-        return format_value(
-            "list",
+        return _format_value(
+            stream, "list",
             ', '.join([
                 obj_str(child, max_children=max_children, stream=stream)
                 for child in obj
             ])
         )
-    elif obj is None:
+    if obj is None:
         if stream:
             return stream.ansi_format("{blue}<null>{reset}")
-        else:
-            return "<null>"
-    elif isinstance(obj, str):
+        return "<null>"
+    if isinstance(obj, str):
         return obj
     return str(obj)
 
@@ -210,14 +216,14 @@ def obj_str(obj, max_children=3, stream=None):
 def title_str(title, width=80, align='left', hr='=', box=False):
     lines = []
     if box:
-        border = '+' + ('-'*(width-2)) + '+'
+        border = '+' + ('-' * (width - 2)) + '+'
         t = None
         if align == 'left':
-            t = ansi_ljust(title, width-4)
+            t = ansi_ljust(title, width - 4)
         elif align == 'center':
-            t = ansi_center(title, width-4)
+            t = ansi_center(title, width - 4)
         else:
-            t = ansi_rjust(title, width-4)
+            t = ansi_rjust(title, width - 4)
 
         lines.append(border)
         lines.append('| ' + t + ' |')
@@ -293,7 +299,7 @@ class Table(object):
                     pass
                 else:
                     value = str(value)
-                if(ansi_len(value) <= col.width):
+                if ansi_len(value) <= col.width:
                     fp.write(ansi_ljust(value, col.width))
                 else:
                     wrapped_line = [
@@ -314,7 +320,7 @@ class Table(object):
 
         # Resize columns if last too wide
         # TODO: Smarter column resizing, maybe pick widest column
-        if (total + self.spacing * (len(self.columns)-1)) > self.width:
+        if (total + self.spacing * (len(self.columns) - 1)) > self.width:
             self.columns[-1].mode = Column.Grow
 
         for col in self.columns:
@@ -334,7 +340,7 @@ class Table(object):
                 i += 1
 
             fp.write('\n')
-            fp.write('='*self.width)
+            fp.write('=' * self.width)
             fp.write('\n')
 
         for row in self.rows:

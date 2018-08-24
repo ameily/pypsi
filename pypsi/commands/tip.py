@@ -15,11 +15,11 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
+import random
+import sys
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
 from pypsi.ansi import AnsiCodes
 from pypsi.utils import safe_open
-import random
-import sys
 
 
 class TipCommand(Command):
@@ -88,7 +88,7 @@ class TipCommand(Command):
         i = self.rand.randrange(len(self.tips))
 
         if header:
-            title = "Tip #{}\n".format(i+1)
+            title = "Tip #{}\n".format(i + 1)
             title += '-' * len(title)
             print(AnsiCodes.green, title, AnsiCodes.reset, sep='')
 
@@ -98,6 +98,7 @@ class TipCommand(Command):
             cnt = self.tips[i]
 
         print(cnt)
+        return 0
 
     def print_motd(self, shell):
         if not self.motd:
@@ -118,3 +119,4 @@ class TipCommand(Command):
             AnsiCodes.reset,
             sep=''
         )
+        return 0

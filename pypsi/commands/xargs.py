@@ -15,9 +15,10 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
 import sys
 import argparse
+from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
+
 
 XArgsUsage = """{name} [-h] [-I REPSTR] COMMAND"""
 
