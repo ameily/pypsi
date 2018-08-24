@@ -53,7 +53,7 @@ class Token(object):
         :param int index: the starting index of this token
         '''
         self.index = index
-        self.features = None
+        self.features = features or None
 
 
 class WhitespaceToken(Token):
@@ -75,8 +75,7 @@ class WhitespaceToken(Token):
         if c in (' ', '\t', '\xa0'):
             self.text += c
             return TokenContinue
-        else:
-            return TokenEnd
+        return TokenEnd
 
     def __str__(self):
         return "WhitespaceToken( {} )".format(self.text)
@@ -227,6 +226,7 @@ class OperatorToken(Token):
 class IORedirectionError(Exception):
 
     def __init__(self, path, message):
+        super(IORedirectionError, Exception).__init__(path, message)
         self.path = path
         self.message = message
 
@@ -240,6 +240,7 @@ class CommandNotFoundError(Exception):
     '''
 
     def __init__(self, name):
+        super(CommandNotFoundError, self).__init__(name)
         #: the command name
         self.name = name
 
@@ -286,6 +287,12 @@ class Statement(object):
         '''
         return len(self.invokes)
 
+    def __getitem__(self, index):
+        '''
+        :returns CommandInvocation: invocation at given index
+        '''
+        return self.invokes[index]
+
     def __eq__(self, other):
         return isinstance(other, Statement) and self.invokes == other.invokes
 
@@ -328,7 +335,7 @@ class CommandInvocation(object):
         )
 
     def __str__(self):
-        s = "{name} {args}".format(self.name, ' '.join(self.args))
+        s = "{name} {args}".format(name=self.name, args=' '.join(self.args))
         if self.stdout:
             if isinstance(self.stdout, tuple) and self.stdout[1] == 'a':
                 s += " >> " + self.stdout[0]
@@ -437,6 +444,7 @@ class CommandInvocation(object):
         '''
         Setup stdout, stderr, and stdin by proxying the thread local streams.
         '''
+        # pylint: disable=no-member,protected-access
 
         if self.stdout:
             sys.stdout._proxy(self.stdout)
@@ -449,6 +457,7 @@ class CommandInvocation(object):
         '''
         Close proxied streams and unproxy them.
         '''
+        # pylint: disable=no-member,protected-access
 
         self.close_streams()
 
@@ -531,6 +540,7 @@ class StatementSyntaxError(SyntaxError):
         :param str message: error message
         :param int index: index in the statement that caused the error
         '''
+        super(StatementSyntaxError, SyntaxError).__init__(message, index)
         self.message = message
         self.index = index
 
@@ -617,7 +627,7 @@ class StatementParser(object):
                         raise TrailingEscapeError(self.token.index)
                     elif self.features:
                         self.token.text += self.features.escape_char
-                        self.token.escape = False
+                        self.token.escape = False  # pylint: disable=attribute-defined-outside-init
                 elif self.token.open_quote:
                     if self.features and self.features.multiline:
                         # The last token is an unclosed quotation and the shell

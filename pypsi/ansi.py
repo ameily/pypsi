@@ -60,7 +60,7 @@ class AnsiCode(object):
         return AnsiCode(self.code, s, postfix)
 
 
-class AnsiCodesSingleton(object):
+class AnsiCodesSingleton:  # pylint: disable=too-many-instance-attributes
     '''
     Holds all supported ansi escape codes.
     '''

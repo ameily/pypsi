@@ -15,6 +15,9 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
+import sys
+import os
+import readline
 from pypsi.cmdline import (StatementParser, StatementSyntaxError,
                            IORedirectionError, CommandNotFoundError,
                            StringToken, OperatorToken, WhitespaceToken,
@@ -28,9 +31,7 @@ from pypsi.features import BashFeatures, TabCompletionFeatures
 from pypsi.core import pypsi_print, Plugin, Command
 from pypsi.pipes import ThreadLocalStream, InvocationThread
 from pypsi.utils import escape_string
-import readline
-import sys
-import os
+
 
 
 class Shell(object):

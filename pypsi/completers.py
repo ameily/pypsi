@@ -34,8 +34,7 @@ def _filename_startswith(filename, prefix):
     '''
     if sys.platform == 'win32':
         return filename.lower().startswith(prefix.lower())
-    else:
-        return filename.startswith(prefix)
+    return filename.startswith(prefix)
 
 
 def command_completer(parser, shell, args, prefix, case_sensitive=False):
@@ -124,7 +123,7 @@ def choice_completer(choices, case_sensitive=False):
     :param list choices: the list of choices
     :param bool case_sensitive: whether the choices are case sensitive
     '''
-    def complete(shell, args, prefix):
+    def complete(shell, args, prefix):  # pylint: disable=unused-argument
         r = []
         for choice in choices:
             if choice.startswith(prefix if case_sensitive else prefix.lower()):
