@@ -1,17 +1,17 @@
 language: python
 python:
-  - "3.3"
-  - "3.4"
+  # - "3.3"
+  # - "3.4"
   - "3.5"
   - "3.6"
+  - "3.7"
 sudo: false
 # command to install dependencies
 install:
-  - "python setup.py develop"
-  - "pip install flake8 nose coveralls nose-exclude"
+  - "pip install --upgrade pip"
+  - "pip install tox"
 # command to run tests
 script:
-  - "flake8 pypsi"
-  - "nosetests --exclude-dir=pypsi/os --with-coverage --cover-package=pypsi --cover-inclusive"
-after_success:
-  coveralls
+  - "tox"
+#after_success:
+#  coveralls
