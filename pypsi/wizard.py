@@ -22,7 +22,7 @@ Command line input wizards.
 import os
 import readline
 import re
-from pypsi.os import path_completer
+from pypsi.completers import path_completer
 from pypsi.cmdline import StatementParser, StringToken
 from pypsi.ansi import AnsiCodes
 from pypsi.format import title_str

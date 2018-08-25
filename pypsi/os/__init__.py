@@ -15,10 +15,11 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-# flake8: noqa
-
 import sys
 
+# To make sure we don't break existing code, we import path_completer here since it used to be
+# OS dependent (see issue #)
+from pypsi.completers import path_completer
 
 if sys.platform == 'win32':
     from pypsi.os.win32 import *  # pylint: disable=wildcard-import
@@ -29,5 +30,6 @@ elif sys.platform in ['cygwin', 'darwin'] or sys.platform.startswith('linux'):
 __all__ = [
     'find_bins_in_path',
     'is_path_prefix',
-    'make_ansi_stream'
+    'make_ansi_stream',
+    'path_completer'
 ]

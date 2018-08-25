@@ -24,7 +24,6 @@ import os
 __all__ = [
     'find_bins_in_path',
     'is_path_prefix',
-    'path_completer',
     'make_ansi_stream',
     'UnixAnsiStream'
 ]
@@ -77,32 +76,3 @@ def is_path_prefix(t):
         if t.startswith(prefix):
             return True
     return False
-
-
-def path_completer(path):
-    if not (path.startswith('/') or path.startswith('./') or
-            path.startswith('../')):
-        path = './' + path
-
-    if path.endswith('/'):
-        root = path[:-1] or '/'
-        prefix = ''
-    else:
-        root = os.path.dirname(path)
-        prefix = os.path.basename(path)
-
-    if not os.path.isdir(root):
-        return []
-
-    files = []
-    dirs = []
-    for entry in os.listdir(root):
-        full = os.path.join(root, entry)
-        if not prefix or entry.startswith(prefix):
-            if os.path.isdir(full):
-                dirs.append(entry + '/')
-            else:
-                files.append(entry)
-    files = sorted(files)
-    dirs = sorted(dirs)
-    return dirs + files

@@ -30,7 +30,6 @@ import getpass
 __all__ = [
     'find_bins_in_path',
     'is_path_prefix',
-    'path_completer',
     'make_ansi_stream',
     'Win32AnsiStream'
 ]
@@ -70,39 +69,6 @@ def find_bins_in_path():
             pass
 
     return bins
-
-
-def path_completer(path):
-    path = path.replace('/', '\\')
-
-    if not is_path_prefix(path):
-        path = '.\\' + path
-
-    if path.endswith('\\'):
-        root = path
-        prefix = ''
-    elif path.endswith(':'):
-        root = path + "\\"
-        prefix = ''
-    else:
-        root = os.path.dirname(path)
-        prefix = os.path.basename(path).lower()
-
-    if not os.path.isdir(root):
-        return []
-
-    files = []
-    dirs = []
-    for entry in os.listdir(root):
-        full = os.path.join(root, entry)
-        if not prefix or entry.lower().startswith(prefix):
-            if os.path.isdir(full):
-                dirs.append(entry + '\\')
-            else:
-                files.append(entry + '\0')
-    files = sorted(files)
-    dirs = sorted(dirs)
-    return dirs + files
 
 
 if sys.platform == 'win32':
