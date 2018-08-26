@@ -152,7 +152,7 @@ def path_completer(token, prefix=''):
         return []
 
     if not os.path.isdir(cwd):
-        return [token]
+        return []
 
     for filename in os.listdir(cwd):
         if not _filename_startswith(filename, filename_prefix):
