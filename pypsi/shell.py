@@ -498,6 +498,14 @@ class Shell(object):
         return ''
 
     def _clean_completions(self, completions, quotation):
+        '''
+        Clean completion choices so that they can be displayed to the screen or, if only a single
+        completion is available, be inserted into the line buffer.
+
+        :param list[str] completions: list of completions
+        :param str quotation: active quotation character
+        :returns list[str]: cleaned completions
+        '''
         escape = self.features.escape_char
 
         if len(completions) == 1:
@@ -520,6 +528,13 @@ class Shell(object):
         return completions
 
     def get_completions(self, line, prefix):
+        '''
+        Get the list of completions given a line buffer and a prefix.
+
+        :param str line: line buffer content up to cursor
+        :param str prefix: readline prefix token
+        :returns list[str]: list of completions
+        '''
         try:
             parser = StatementParser(TabCompletionFeatures(self.features))
             tokens = parser.tokenize(line)
@@ -579,14 +594,23 @@ class Shell(object):
 
             ret = self._clean_completions(ret, in_quote)
         except:
-            pass
+            ret = []
 
         return ret
 
     def get_command_name_completions(self, prefix):
-        return [cmd for cmd in self.commands if cmd.startswith(prefix)]
+        '''
+        Get the list of commands that begin with a given prefix token.
+
+        :param str prefix: command prefix
+        :returns list[str]: list of command names that begin with prefix
+        '''
+        return sorted([cmd for cmd in self.commands if cmd.startswith(prefix)])
 
     def complete(self, text, state):  # pylint: disable=unused-argument
+        '''
+        readline tab completion callback.
+        '''
         if state == 0:
             self.completion_matches = []
             begidx = readline.get_begidx()
