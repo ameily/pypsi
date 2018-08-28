@@ -35,7 +35,7 @@ IPV4_RE = re.compile(
     r'(?:/\d{1,2})?$'
 )
 MODULE_NAME_RE = re.compile(
-    r'^(?:[a-zA-Z_][a-zA-Z0-9_]*)(?:\.[a-zA-Z_][a-zA-Z0-9_]*)*'
+    r'^(?:[a-zA-Z_][a-zA-Z0-9_]*)(?:\.[a-zA-Z_][a-zA-Z0-9_]*)*$'
 )
 PACKAGE_NAME_RE = re.compile(r'^[a-zA-Z_][a-zA-Z0-9_]+$')
 
