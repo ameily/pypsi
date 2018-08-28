@@ -69,3 +69,76 @@ class TestWizard:
     def test_hostname_validator_invalid(self):
         with pytest.raises(ValueError):
             wiz.hostname_or_ip_validator(Namespace(), 'asdf\x1b')
+
+    def test_hostname_validator_empty(self):
+        assert wiz.hostname_or_ip_validator(Namespace(), '   ') == ''
+
+    def test_module_name_validator_valid(self):
+        validator = wiz.module_name_validator('mod')
+        assert validator(Namespace(), '  somemod.package.mod') == 'somemod.package.mod'
+
+    def test_module_name_validator_invalid(self):
+        validator = wiz.module_name_validator('mod')
+        with pytest.raises(ValueError):
+            validator(Namespace(), 'not-valid..module')
+
+    def test_module_name_validator_empty(self):
+        validator = wiz.module_name_validator('mod')
+        assert validator(Namespace(), '   ') == ''
+
+    def test_module_name_validator_int(self):
+        validator = wiz.module_name_validator('mod')
+        assert validator(Namespace(), 10) == 10
+
+    def test_package_name_validator_valid(self):
+        validator = wiz.package_name_validator('package')
+        assert validator(Namespace(), 'package_name') == 'package_name'
+
+    def test_package_name_validator_invalid(self):
+        validator = wiz.package_name_validator('package')
+        with pytest.raises(ValueError):
+            validator(Namespace(), 'package.name')
+
+    def test_package_name_validator_empty(self):
+        validator = wiz.package_name_validator('package')
+        assert validator(Namespace(), '   ') == ''
+
+    def test_package_name_validator_int(self):
+        validator = wiz.package_name_validator('package')
+        assert validator(Namespace(), 10) == 10
+
+    def test_choice_validator_valid(self):
+        validator = wiz.choice_validator(['opt1', 'opt2'])
+        assert validator(Namespace(), 'opt1') == 'opt1'
+
+    def test_choice_validator_invalid(self):
+        validator = wiz.choice_validator(['opt1', 'opt2'])
+        with pytest.raises(ValueError):
+            validator(Namespace(), 'option-1')
+
+    def test_choice_validator_empty(self):
+        validator = wiz.choice_validator(['opt1', 'opt2'])
+        assert validator(Namespace(), '   ') == ''
+
+    def test_choice_validator_int(self):
+        validator = wiz.choice_validator(['opt1', 'opt2'])
+        assert validator(Namespace(), 10) == 10
+
+    def test_lowercase_validator(self):
+        assert wiz.lowercase_validator(Namespace(), 'HELlo') == 'hello'
+
+    @pytest.mark.parametrize('val', ('true', 't', '1', 'y', 'yes'))
+    def test_boolean_validator_true(self, val):
+        assert wiz.boolean_validator(Namespace(), val) is True
+
+    @pytest.mark.parametrize('val', ('false', 'f', '0', 'n', 'no'))
+    def test_boolean_validator_false(self, val):
+        assert wiz.boolean_validator(Namespace(), val) is False
+
+    def test_boolean_validator_bool(self):
+        assert wiz.boolean_validator(Namespace(), True) is True
+
+    def test_boolean_validator_invalid(self):
+        with pytest.raises(ValueError):
+            assert wiz.boolean_validator(Namespace(), 'asdf')
+
