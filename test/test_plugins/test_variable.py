@@ -90,10 +90,11 @@ class TestVariablePlugin:
 
     def test_safe_date_format_valid(self):
         dt = datetime(2008, 12, 6, 5, 45, 0)
-        assert safe_date_format('%c', dt) == '12/06/08 05:45:00'
+        assert safe_date_format('%c', dt) == dt.strftime('%c')
 
     def test_safe_date_format_invalid(self):
-        assert safe_date_format('%q', datetime.now()) == '<invalid date time format>'
+        # Behavior of strftime changed between Python 3.3 and 3.7.
+        assert safe_date_format('%q', datetime.now()) in ('<invalid date time format>', '%q')
 
     def test_environ_vars(self):
         assert self.shell.ctx.vars['PATH'] != ''
