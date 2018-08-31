@@ -135,6 +135,7 @@ class VariableCommand(Command):
                     shell.ctx.vars[exp.operand].set(shell, exp.value)
                 except ValueError as e:
                     self.error(shell, "could not set variable: ", str(e))
+                    return -1
             else:
                 shell.ctx.vars[exp.operand] = exp.value
         elif ns.exp:
@@ -165,7 +166,7 @@ class VariableToken(Token):
                 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
                 '0123456789_')
 
-    def __init__(self, prefix, index, var=''):
+    def __init__(self, index, prefix, var=''):
         super(VariableToken, self).__init__(index)
         self.prefix = prefix
         self.var = var
@@ -178,6 +179,11 @@ class VariableToken(Token):
 
     def __str__(self):
         return "VariableToken( {} )".format(self.var)
+
+    def __eq__(self, other):
+        if not isinstance(other, VariableToken):
+            return False
+        return self.prefix == other.prefix and self.var == other.var
 
 
 def get_subtokens(token, prefix, features):
@@ -208,7 +214,7 @@ def get_subtokens(token, prefix, features):
             if subt:
                 yield subt
                 subt = None
-            var = VariableToken(c, index)
+            var = VariableToken(index, c)
         else:
             if c == '\\':
                 escape = True
@@ -272,7 +278,7 @@ class VariablePlugin(Plugin):
         self.var_cmd = VariableCommand(name=var_cmd, topic=topic)
         self.prefix = prefix
 
-        self.base = os.environ if env else {}
+        self.base = dict(os.environ) if env else {}
         self.case_sensitive = case_sensitive
         if locals:
             self.base.update(locals)
@@ -306,7 +312,7 @@ class VariablePlugin(Plugin):
             if callable(s):
                 return s()
             if isinstance(s, ManagedVariable):
-                return s.getter(shell)
+                return s.get(shell)
             return s
         return ''
 
