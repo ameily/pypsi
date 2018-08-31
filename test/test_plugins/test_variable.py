@@ -16,6 +16,7 @@ class TestVariablePlugin:
     def setup(self):
         self.features = BashFeatures()
         self.shell = PluginShell(features=self.features)
+        self.shell.ctx.vars['callable'] = lambda: 'callable'
         self.plugin = self.shell.plugin
         self.cmd = self.shell.commands['var']
 
@@ -69,8 +70,7 @@ class TestVariablePlugin:
         assert self.plugin.expand(self.shell, VariableToken(0, '$', 'does_not_exist')) == ''
 
     def test_expand_callable(self):
-        self.shell.ctx.vars['test_var'] = lambda: 'callable'
-        assert self.plugin.expand(self.shell, VariableToken(0, '$', 'test_var')) == 'callable'
+        assert self.plugin.expand(self.shell, VariableToken(0, '$', 'callable')) == 'callable'
 
     def test_expand_managed_var(self):
         self.shell.ctx.vars['test_var'] = 'message'
@@ -128,8 +128,8 @@ class TestVariablePlugin:
 
     @patch('sys.stderr', new_callable=StringIO)
     def test_cmd_delete_failed(self, stderr):
-        rc = self.cmd.run(self.shell, ['--delete asdfasdfasdfasdf'])
-        assert rc == 1
+        rc = self.cmd.run(self.shell, ['--delete', 'asdfasdfasdfasdf'])
+        assert rc == -1
         assert len(stderr.getvalue()) > 0
 
     def test_cmd_set_valid(self):
@@ -163,11 +163,9 @@ class TestVariablePlugin:
 
     @patch('sys.stdout', new_callable=StringIO)
     def test_cmd_print_callable(self, stdout):
-        self.shell.ctx.vars['callable'] = lambda: 'HELLO'
         rc = self.cmd.run(self.shell, ['callable'])
-        del self.shell.ctx.vars['callable']
         assert rc == 0
-        assert 'HELLO' in stdout.getvalue()
+        assert 'callable' in stdout.getvalue()
 
     @patch('sys.stdout', new_callable=StringIO)
     def test_cmd_print_prompt(self, stdout):

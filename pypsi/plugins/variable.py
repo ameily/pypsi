@@ -105,8 +105,6 @@ class VariableCommand(Command):
                 spacing=4,
             )
             for name in shell.ctx.vars:
-                if name == '_':
-                    continue
                 s = shell.ctx.vars[name]
                 if callable(s):
                     s = s()
@@ -125,6 +123,7 @@ class VariableCommand(Command):
                     del shell.ctx.vars[ns.delete]
             else:
                 self.error(shell, "unknown variable: ", ns.delete)
+                rc = -1
         elif ns.exp and '=' in ''.join(args):
             (remainder, exp) = Expression.parse(args)
             if remainder or not exp:
