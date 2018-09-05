@@ -78,6 +78,9 @@ class TestVariablePlugin:
         self.shell.ctx.vars['managed'] = var
         assert self.plugin.expand(self.shell, VariableToken(0, '$', 'managed')) == 'message'
 
+    def test_var_token_eq_none(self):
+        assert VariableToken(0, '$', 'name') != None
+
     def test_on_tokenize(self):
         self.shell.ctx.vars['token'] = 'first_token'
         self.shell.ctx.vars['message'] = 'second_message'
@@ -178,11 +181,11 @@ class TestVariablePlugin:
     def test_cmd_print_invalid(self, stderr):
         rc = self.cmd.run(self.shell, ['asdfasdfasdf'])
         assert rc == 1
-        assert len(stderr.getvalue) > 0
+        assert len(stderr.getvalue()) > 0
 
     @patch('sys.stderr', new_callable=StringIO)
-    def test_cmd_print_invalid(self, stderr):
-        rc = self.cmd.run(self.shell, ['asdf asdf asdf'])
+    def test_cmd_print_invalid2(self, stderr):
+        rc = self.cmd.run(self.shell, ['asdf', 'asdf', 'asdf'])
         assert rc == 1
         assert len(stderr.getvalue()) > 0
 
