@@ -1,0 +1,15 @@
+{
+    "python.terminal.activateEnvironment": true,
+    "files.eol": "\n",
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.rulers": [
+        100
+    ],
+    "python.venvFolders": [
+        ".tox"
+    ],
+    "files.insertFinalNewline": true,
+    "trailing-spaces.trimOnSave": true,
+    "python.pythonPath": "${workspaceFolder}\\venv\\Scripts\\python.exe"
+}

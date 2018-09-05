@@ -1,7 +1,6 @@
 
-
+import pytest
 from pypsi.cmdline import *
-from nose.tools import *
 import os
 import stat
 import tempfile
@@ -9,11 +8,12 @@ import tempfile
 
 class TestIoRedirection(object):
 
-    def setUp(self):
+    def setup(self):
         self.remove = []
 
     def tearDown(self):
         for path in self.remove:
+            os.chmod(path, stat.S_IREAD | stat.S_IWRITE)
             os.remove(path)
 
     def mktempfile(self, data=None):
@@ -30,7 +30,7 @@ class TestIoRedirection(object):
         path = self.mktempfile(b"hello")
         ci = CommandInvocation(name="echo")
         fp = ci.get_output(path)
-        assert_equal(fp.name, path)
+        assert fp.name == path
         fp.close()
 
     def test_output_nomode_content(self):
@@ -41,7 +41,7 @@ class TestIoRedirection(object):
         fp.close()
 
         fp = open(path, 'r')
-        assert_equal(fp.read(), "goodbye")
+        assert fp.read() == "goodbye"
         fp.close()
 
     def test_output_tuple_path(self):
@@ -49,7 +49,7 @@ class TestIoRedirection(object):
         output = path, 'w'
         ci = CommandInvocation(name="echo")
         fp = ci.get_output(output)
-        assert_equal(fp.name, path)
+        assert fp.name == path
         fp.close()
 
     def test_output_tuple_content(self):
@@ -61,42 +61,44 @@ class TestIoRedirection(object):
         fp.close()
 
         fp = open(path, 'r')
-        assert_equal(fp.read(), "hellogoodbye")
+        assert fp.read() == "hellogoodbye"
         fp.close()
 
     def test_output_stream(self):
         path = self.mktempfile()
         fp = open(path, 'r')
         ci = CommandInvocation(name='echo')
-        assert_equal(ci.get_output(fp), fp)
+        assert ci.get_output(fp) == fp
 
     def test_input_path(self):
         path = self.mktempfile(b'hello')
         ci = CommandInvocation(name='echo')
         fp = ci.get_input(path)
-        assert_equal(fp.name, path)
+        assert fp.name == path
 
     def test_input_content(self):
         path = self.mktempfile(b'hello')
         ci = CommandInvocation(name='echo')
         fp = ci.get_input(path)
-        assert_equal(fp.read(), 'hello')
+        assert fp.read() == 'hello'
         fp.close()
 
     def test_input_stream(self):
         path = self.mktempfile()
         fp = open(path, 'r')
         ci = CommandInvocation(name='echo')
-        assert_equal(ci.get_input(fp), fp)
+        assert ci.get_input(fp) == fp
 
     def test_input_file_not_found(self):
-        path = "|file|does|not|exist"
+        path = "/file/does/not/exist"
         ci = CommandInvocation(name='echo')
-        assert_raises(IORedirectionError, ci.get_input, path)
+        with pytest.raises(IORedirectionError):
+            ci.get_input(path)
 
     def test_output_permission_denied(self):
         path = self.mktempfile()
         os.chmod(path, stat.S_IREAD)
         ci = CommandInvocation(name='echo')
-        assert_raises(IORedirectionError, ci.get_output, path)
-        os.chmod(path, stat.S_IREAD | stat.S_IWRITE)
+        with pytest.raises(IORedirectionError):
+            ci.get_output(path)
+

@@ -15,10 +15,10 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
+import os
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
 from pypsi.utils import safe_open
 from pypsi.completers import path_completer
-import os
 
 
 class IncludeFile(object):

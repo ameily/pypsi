@@ -15,11 +15,11 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
+import sys
 from pypsi.plugins.block import BlockCommand
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
 from pypsi.format import Table, Column, title_str
 from pypsi.completers import command_completer
-import sys
 
 
 # something | macro | something
@@ -64,9 +64,9 @@ class Macro(Command):
             shell.ctx.vars['0'] = self.name
             for i in range(0, 9):
                 if i < len(args):
-                    shell.ctx.vars[str(i+1)] = args[i]
+                    shell.ctx.vars[str(i + 1)] = args[i]
                 else:
-                    shell.ctx.vars[str(i+1)] = ''
+                    shell.ctx.vars[str(i + 1)] = ''
 
     def remove_var_args(self, shell):
         if 'vars' in shell.ctx:
@@ -119,8 +119,9 @@ class MacroCommand(BlockCommand):
             topic=topic, **kwargs
         )
         self.base_macros = macros or {}
+        self.macro_name = None
 
-    def complete_macros(self, shell, args, prefix):
+    def complete_macros(self, shell, args, prefix):  # pylint: disable=unused-argument
         # returns a list of macro names in the current shell
         return list(shell.ctx.macros.keys())
 
@@ -139,7 +140,7 @@ class MacroCommand(BlockCommand):
             shell.ctx.macros = {}
 
         for name in self.base_macros:
-            rc = self.add_macro(shell, name, shell.ctx.macros[name])
+            rc = self.add_macro(shell, name, self.base_macros[name])
 
         return rc
 
@@ -208,9 +209,7 @@ class MacroCommand(BlockCommand):
                 shell.ctx.macro_orig_eof_is_sigint = shell.eof_is_sigint
                 shell.eof_is_sigint = True
         elif ns.list:
-            '''
-            Left justified table
-            '''
+            # Left justified table
             print(title_str("Registered Macros", shell.width))
             chunk_size = 3
 
@@ -223,7 +222,7 @@ class MacroCommand(BlockCommand):
 
             macro_names = list(shell.ctx.macros.keys())
             for i in range(0, len(macro_names), chunk_size):
-                chunk = macro_names[i:i+chunk_size]
+                chunk = macro_names[i:i + chunk_size]
                 tbl.extend(chunk)
             tbl.write(sys.stdout)
         else:

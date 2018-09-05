@@ -1,7 +1,7 @@
-
+import pytest
 from pypsi.shell import Shell
 from pypsi.core import Command
-from nose.tools import *
+
 
 
 class PypsiTestException(Exception):
@@ -46,39 +46,39 @@ class PypsiTestShell(Shell):
 
 class TestShellCommand(object):
 
-    def setUp(self):
+    def setup(self):
         self.shell = PypsiTestShell()
 
-    def tearDown(self):
+    def teardown(self):
         self.shell.test_cmd.reset()
         self.shell.restore()
 
     def test_setup(self):
-        assert_true(self.shell.test_cmd.setup_hit)
+        assert self.shell.test_cmd.setup_hit is True
 
     def test_execute_no_args(self):
         self.shell.execute("test")
-        assert_equal(self.shell.test_cmd.args, [])
-        assert_true(self.shell.test_cmd.run_hit)
+        assert self.shell.test_cmd.args == []
+        assert self.shell.test_cmd.run_hit is True
 
     def test_execute_args(self):
         self.shell.execute("test -x -y 'hello world'")
-        assert_true(self.shell.test_cmd.run_hit)
-        assert_equals(self.shell.test_cmd.args, ['-x', '-y', 'hello world'])
+        assert self.shell.test_cmd.run_hit is True
+        assert self.shell.test_cmd.args == ['-x', '-y', 'hello world']
 
     def test_command_not_found(self):
         self.shell.execute("asdf")
-        assert_true(self.shell.error_hit)
+        assert self.shell.error_hit is True
 
     def test_syntax_error(self):
         self.shell.execute("test > <")
-        assert_true(self.shell.error_hit)
-        assert_false(self.shell.test_cmd.run_hit)
+        assert self.shell.error_hit is True
+        assert self.shell.test_cmd.run_hit is False
 
     def test_sigint(self):
-        assert_raises(KeyboardInterrupt, self.shell.execute,
-                      "test KeyboardInterrupt")
+        with pytest.raises(KeyboardInterrupt):
+            self.shell.execute("test KeyboardInterrupt")
 
     def test_unhandled_exception(self):
-        assert_raises(PypsiTestException, self.shell.execute,
-                      'test PypsiTestException')
+        with pytest.raises(PypsiTestException):
+            self.shell.execute('test PypsiTestException')

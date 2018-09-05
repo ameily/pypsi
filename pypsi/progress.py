@@ -124,6 +124,7 @@ class ThreadedSpinner(threading.Thread):
     def run(self):
         i = itertools.cycle(self.seq)
 
+        # pylint: disable=unexpected-keyword-arg
         while not self.stop_lock.acquire(timeout=self.delta):
             prefix = _prefix(self.activity)
             print('\r', prefix, next(i), sep='', end='', flush=True,

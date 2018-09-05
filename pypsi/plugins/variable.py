@@ -15,15 +15,15 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
+import os
+import sys
+from datetime import datetime
 import argparse
 from pypsi.core import Plugin, Command, PypsiArgParser, CommandShortCircuit
 from pypsi.namespace import ScopedNamespace
 from pypsi.cmdline import (Token, StringToken, TokenContinue, TokenEnd,
                            Expression)
 from pypsi.format import Table, Column, obj_str
-import os
-import sys
-from datetime import datetime
 
 
 class ManagedVariable(object):
@@ -105,8 +105,6 @@ class VariableCommand(Command):
                 spacing=4,
             )
             for name in shell.ctx.vars:
-                if name == '_':
-                    continue
                 s = shell.ctx.vars[name]
                 if callable(s):
                     s = s()
@@ -125,6 +123,7 @@ class VariableCommand(Command):
                     del shell.ctx.vars[ns.delete]
             else:
                 self.error(shell, "unknown variable: ", ns.delete)
+                rc = -1
         elif ns.exp and '=' in ''.join(args):
             (remainder, exp) = Expression.parse(args)
             if remainder or not exp:
@@ -135,6 +134,7 @@ class VariableCommand(Command):
                     shell.ctx.vars[exp.operand].set(shell, exp.value)
                 except ValueError as e:
                     self.error(shell, "could not set variable: ", str(e))
+                    return -1
             else:
                 shell.ctx.vars[exp.operand] = exp.value
         elif ns.exp:
@@ -165,7 +165,7 @@ class VariableToken(Token):
                 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
                 '0123456789_')
 
-    def __init__(self, prefix, index, var=''):
+    def __init__(self, index, prefix, var=''):
         super(VariableToken, self).__init__(index)
         self.prefix = prefix
         self.var = var
@@ -178,6 +178,11 @@ class VariableToken(Token):
 
     def __str__(self):
         return "VariableToken( {} )".format(self.var)
+
+    def __eq__(self, other):
+        if not isinstance(other, VariableToken):
+            return False
+        return self.prefix == other.prefix and self.var == other.var
 
 
 def get_subtokens(token, prefix, features):
@@ -208,7 +213,7 @@ def get_subtokens(token, prefix, features):
             if subt:
                 yield subt
                 subt = None
-            var = VariableToken(c, index)
+            var = VariableToken(index, c)
         else:
             if c == '\\':
                 escape = True
@@ -272,7 +277,7 @@ class VariablePlugin(Plugin):
         self.var_cmd = VariableCommand(name=var_cmd, topic=topic)
         self.prefix = prefix
 
-        self.base = os.environ if env else {}
+        self.base = dict(os.environ) if env else {}
         self.case_sensitive = case_sensitive
         if locals:
             self.base.update(locals)
@@ -305,8 +310,8 @@ class VariablePlugin(Plugin):
             s = shell.ctx.vars[name]
             if callable(s):
                 return s()
-            elif isinstance(s, ManagedVariable):
-                return s.getter(shell)
+            if isinstance(s, ManagedVariable):
+                return s.get(shell)
             return s
         return ''
 
@@ -324,14 +329,6 @@ class VariablePlugin(Plugin):
                     continue
 
                 expanded = self.expand(shell, subt)
-                '''
-                if token.quote:
-                    ret.append(StringToken(subt.index, expanded, token.quote))
-                else:
-                    ws = False
-                    for part in shell.parser.tokenize(expanded):
-                        ret.append(part)
-                '''
                 ret.append(StringToken(subt.index, expanded, '"'))
 
         return ret

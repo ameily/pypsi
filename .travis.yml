@@ -4,14 +4,17 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
+  - "3.7-dev"
 sudo: false
 # command to install dependencies
 install:
-  - "python setup.py develop"
-  - "pip install flake8 nose coveralls nose-exclude"
+  - pip install --upgrade pip
+  - pip install setuptools==39.2.0
+  - pip install tox-travis
+  - pip install coveralls
+  - pip install tox
 # command to run tests
 script:
-  - "flake8 pypsi"
-  - "nosetests --exclude-dir=pypsi/os --with-coverage --cover-package=pypsi --cover-inclusive"
+  - "tox"
 after_success:
-  coveralls
+ coveralls

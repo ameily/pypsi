@@ -53,7 +53,7 @@ class Plugin(object):
         self.preprocess = preprocess
         self.postprocess = postprocess
 
-    def setup(self, shell):
+    def setup(self, shell):  # pylint: disable=unused-argument
         '''
         Called after the plugin has been registered to the active shell.
 
@@ -62,7 +62,7 @@ class Plugin(object):
         '''
         return 0
 
-    def on_input(self, shell, line):
+    def on_input(self, shell, line):  # pylint: disable=unused-argument
         '''
         Called after input from the user has been received. The return value is
         the preprocessed line. This means that modifying the line argument will
@@ -75,7 +75,7 @@ class Plugin(object):
         '''
         return line
 
-    def on_tokenize(self, shell, tokens, origin):
+    def on_tokenize(self, shell, tokens, origin):  # pylint: disable=unused-argument
         '''
         Called after an input string has been tokenized. If this function
         performs no preprocessing, return the tokens unmodified.
@@ -90,7 +90,7 @@ class Plugin(object):
         '''
         return tokens
 
-    def on_input_canceled(self, shell):
+    def on_input_canceled(self, shell):  # pylint: disable=unused-argument
         '''
         Called when the user can canceled entering a statement via SIGINT
         (Ctrl+C).
@@ -100,7 +100,7 @@ class Plugin(object):
         '''
         return 0
 
-    def on_statement_finished(self, shell, rc):
+    def on_statement_finished(self, shell, rc):  # pylint: disable=unused-argument
         '''
         Called when a statement has been completely executed.
 
@@ -140,7 +140,7 @@ class Command(object):
     '''
 
     def __init__(self, name, usage=None, brief=None,
-                 topic=None, parser=None, pipe='str'):
+                 topic=None, pipe='str'):
         '''
         :param str name: the name of the command which the user will reference
             in the shell
@@ -156,7 +156,7 @@ class Command(object):
         self.topic = topic or ''
         self.pipe = pipe or 'str'
 
-    def complete(self, shell, args, prefix):
+    def complete(self, shell, args, prefix):  # pylint: disable=unused-argument
         '''
         Called when the user attempts a tab-completion action for this command.
 
@@ -180,7 +180,7 @@ class Command(object):
         self.error(shell, *args)
         print(AnsiCodes.yellow, self.usage, AnsiCodes.reset, sep='')
 
-    def error(self, shell, *args):
+    def error(self, shell, *args):  # pylint: disable=unused-argument
         '''
         Display an error message to the user.
 
@@ -201,7 +201,7 @@ class Command(object):
         '''
         raise NotImplementedError()
 
-    def setup(self, shell):
+    def setup(self, shell):  # pylint: disable=unused-argument
         '''
         Called when the plugin has been registered to the active shell.
 
@@ -210,7 +210,7 @@ class Command(object):
         '''
         return 0
 
-    def fallback(self, shell, name, args):
+    def fallback(self, shell, name, args):  # pylint: disable=unused-argument
         '''
         Called when this command was set as the fallback command. The only
         difference between this and :meth:`run` is that this method accepts the
@@ -301,6 +301,7 @@ class PypsiArgParser(argparse.ArgumentParser):
         :param str arg: Optional argument to check
         :return: True if arg has a value, false otherwise
         '''
+        # pylint: disable=protected-access
         # _option_string_actions is a dictionary containing all of the optional
         # arguments and the argparse action they should perform. Currently, the
         # only two actions that store a value are _AppendAction/_StoreAction.
@@ -346,7 +347,7 @@ class PypsiArgParser(argparse.ArgumentParser):
         # return zero-based index
         return index - 1
 
-    def add_argument(self, *args, completer=None, **kwargs):
+    def add_argument(self, *args, completer=None, **kwargs):  # pylint: disable=arguments-differ
         '''
         Override add_argument function of argparse.ArgumentParser to
         handle callback functions.

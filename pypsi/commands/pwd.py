@@ -15,8 +15,8 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-from pypsi.core import Command
 import os
+from pypsi.core import Command
 
 
 class PwdCommand(Command):

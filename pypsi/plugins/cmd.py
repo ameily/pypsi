@@ -15,10 +15,10 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-
-from pypsi.core import Plugin, Command
 from io import StringIO
 import sys
+from pypsi.core import Plugin, Command
+
 
 #: Keep command arguments as a list of strings
 CmdArgsList = 0
@@ -67,11 +67,11 @@ class CmdPlugin(Plugin):
 
     def get_help_message(self, shell, name, func):
         usage = ''
-        if hasattr(shell, "help_"+name):
+        if hasattr(shell, "help_" + name):
             stream = StringIO()
             (out, err) = sys.stdout, sys.stderr
             sys.stderr = sys.stdout = stream
-            getattr(shell, "help_"+name)()
+            getattr(shell, "help_" + name)()
             (sys.stdout, sys.stderr) = out, err
             usage = stream.getvalue()
         elif func.__doc__:

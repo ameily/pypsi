@@ -15,8 +15,8 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
 import os
+from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
 
 
 class ChdirCommand(Command):

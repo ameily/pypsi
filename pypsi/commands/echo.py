@@ -15,8 +15,8 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
 import argparse
+from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
 
 EchoCmdUsage = "%(prog)s [-n] [-h] message"
 

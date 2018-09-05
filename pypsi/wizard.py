@@ -22,7 +22,7 @@ Command line input wizards.
 import os
 import readline
 import re
-from pypsi.os import path_completer
+from pypsi.completers import path_completer
 from pypsi.cmdline import StatementParser, StringToken
 from pypsi.ansi import AnsiCodes
 from pypsi.format import title_str
@@ -35,19 +35,19 @@ IPV4_RE = re.compile(
     r'(?:/\d{1,2})?$'
 )
 MODULE_NAME_RE = re.compile(
-    r'^(?:[a-zA-Z_][a-zA-Z0-9_]*)(?:\.[a-zA-Z_][a-zA-Z0-9_]*)*'
+    r'^(?:[a-zA-Z_][a-zA-Z0-9_]*)(?:\.[a-zA-Z_][a-zA-Z0-9_]*)*$'
 )
 PACKAGE_NAME_RE = re.compile(r'^[a-zA-Z_][a-zA-Z0-9_]+$')
 
 
-def wizard_step_path_completer(shell, args, prefix):
+def wizard_step_path_completer(shell, args, prefix):  # pylint: disable=unused-argument
     return [
         i.replace('\0', '')
         for i in path_completer(args[-1] if args else prefix)
     ]
 
 
-def required_validator(ns, value):
+def required_validator(ns, value):  # pylint: disable=unused-argument
     '''
     Required value wizard validator. Raises ValueError on validation error.
 
@@ -76,7 +76,7 @@ def int_validator(min=None, max=None):
     :returns: validator function
     '''
 
-    def validator(ns, value):
+    def validator(ns, value):  # pylint: disable=unused-argument
         if not value:
             return value
 
@@ -89,7 +89,7 @@ def int_validator(min=None, max=None):
     return validator
 
 
-def file_validator(ns, value):
+def file_validator(ns, value):  # pylint: disable=unused-argument
     '''
     File path validator. Raises ValueError on validation error.
 
@@ -103,7 +103,7 @@ def file_validator(ns, value):
     return value
 
 
-def directory_validator(ns, value):
+def directory_validator(ns, value):  # pylint: disable=unused-argument
     '''
     Directory path validator. Raises ValueError on validation error.
 
@@ -117,7 +117,7 @@ def directory_validator(ns, value):
     return value
 
 
-def hostname_or_ip_validator(ns, value):
+def hostname_or_ip_validator(ns, value):  # pylint: disable=unused-argument
     '''
     Network hostname or IPv4 address validator. Raises ValueError on validation
     error.
@@ -152,7 +152,7 @@ def module_name_validator(type_str):
     :returns: validator function
     '''
 
-    def validator(ns, value):
+    def validator(ns, value):  # pylint: disable=unused-argument
         if not isinstance(value, str):
             return value
 
@@ -161,7 +161,7 @@ def module_name_validator(type_str):
             return value
 
         if not MODULE_NAME_RE.match(value):
-            raise ValueError("Invalid "+type_str)
+            raise ValueError("Invalid " + type_str)
         return value
     return validator
 
@@ -175,7 +175,7 @@ def package_name_validator(type_str):
     :returns: validator function
     '''
 
-    def validator(ns, value):
+    def validator(ns, value):  # pylint: disable=unused-argument
         if not isinstance(value, str):
             return value
 
@@ -184,7 +184,7 @@ def package_name_validator(type_str):
             return value
 
         if not PACKAGE_NAME_RE.match(value):
-            raise ValueError("Invalid "+type_str)
+            raise ValueError("Invalid " + type_str)
 
         return value
     return validator
@@ -198,7 +198,7 @@ def choice_validator(choices):
     :returns: validator function
     '''
 
-    def validator(ns, value):
+    def validator(ns, value):  # pylint: disable=unused-argument
         if not isinstance(value, str):
             return value
 
@@ -213,7 +213,7 @@ def choice_validator(choices):
     return validator
 
 
-def boolean_validator(ns, value):
+def boolean_validator(ns, value):  # pylint: disable=unused-argument
     '''
     Boolean validator. Raises ValueError if input isn't a boolean string.
 
@@ -223,16 +223,18 @@ def boolean_validator(ns, value):
     '''
     if isinstance(value, bool):
         return value
+
     if isinstance(value, str):
         t = value.lower()
         if t in ('true', 't', '1', 'y', 'yes'):
             return True
-        elif t in ('false', 'f', '0', 'n', 'no'):
+        if t in ('false', 'f', '0', 'n', 'no'):
             return False
+
     raise ValueError("Value is not true or false")
 
 
-def lowercase_validator(ns, value):
+def lowercase_validator(ns, value):  # pylint: disable=unused-argument
     '''
     Converts input string to lowercase.
 
@@ -345,6 +347,9 @@ class PromptWizard(object):
         self.steps = steps
         self.values = Namespace()
         self.features = features
+        self.completions = None
+        self.old_completer = None
+        self.active_step = None
 
     def run(self, shell, print_header=True):
         '''
@@ -395,7 +400,8 @@ class PromptWizard(object):
                           sep='')
                     readline.set_completer(self.old_completer)
                     return None
-                elif raw.lower() in ('?', 'help'):
+
+                if raw.lower() in ('?', 'help'):
                     print(step.help)
                 else:
                     if not raw.strip() and step.default is not None:
@@ -415,7 +421,7 @@ class PromptWizard(object):
         readline.set_completer(self.old_completer)
         return self.values
 
-    def complete(self, text, state):
+    def complete(self, text, state):  # pylint: disable=unused-argument
         '''
         Tab complete for the current step.
         '''
@@ -435,5 +441,4 @@ class PromptWizard(object):
 
         if state < len(self.completions):
             return self.completions[state]
-        else:
-            return None
+        return None

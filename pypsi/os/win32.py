@@ -23,21 +23,20 @@ import os
 import sys
 import re
 import ctypes
-import msvcrt
+import msvcrt  # pylint: disable=import-error
 import getpass
 
 
 __all__ = [
     'find_bins_in_path',
     'is_path_prefix',
-    'path_completer',
     'make_ansi_stream',
     'Win32AnsiStream'
 ]
 
 
 def is_exe(path):
-    (name, ext) = os.path.splitext(path)
+    (_, ext) = os.path.splitext(path)
     return (
         os.path.isfile(path) and
         ext.lower() in ('.exe', '.bat')
@@ -70,39 +69,6 @@ def find_bins_in_path():
             pass
 
     return bins
-
-
-def path_completer(path):
-    path = path.replace('/', '\\')
-
-    if not is_path_prefix(path):
-        path = '.\\' + path
-
-    if path.endswith('\\'):
-        root = path
-        prefix = ''
-    elif path.endswith(':'):
-        root = path + "\\"
-        prefix = ''
-    else:
-        root = os.path.dirname(path)
-        prefix = os.path.basename(path).lower()
-
-    if not os.path.isdir(root):
-        return []
-
-    files = []
-    dirs = []
-    for entry in os.listdir(root):
-        full = os.path.join(root, entry)
-        if not prefix or entry.lower().startswith(prefix):
-            if os.path.isdir(full):
-                dirs.append(entry + '\\')
-            else:
-                files.append(entry + '\0')
-    files = sorted(files)
-    dirs = sorted(dirs)
-    return dirs + files
 
 
 if sys.platform == 'win32':
@@ -138,22 +104,22 @@ if sys.platform == 'win32':
 
 #: Map of ANSI escape color code to Windows Console text attribute
 ANSI_CODE_MAP = {
-    '0;30m': 0x0,              # black
-    '0;31m': 0x4,              # red
-    '0;32m': 0x2,              # green
-    '0;33m': 0x4+0x2,          # brown?
-    '0;34m': 0x1,              # blue
-    '0;35m': 0x1+0x4,          # purple
-    '0;36m': 0x2+0x4,          # cyan
-    '0;37m': 0x1+0x2+0x4,      # grey
-    '1;30m': 0x1+0x2+0x4,      # dark gray
-    '1;31m': 0x4+0x8,          # red
-    '1;32m': 0x2+0x8,          # light green
-    '1;33m': 0x4+0x2+0x8,      # yellow
-    '1;34m': 0x1+0x8,          # light blue
-    '1;35m': 0x1+0x4+0x8,      # light purple
-    '1;36m': 0x1+0x2+0x8,      # light cyan
-    '1;37m': 0x1+0x2+0x4+0x8,  # white
+    '0;30m': 0x0,                       # black
+    '0;31m': 0x4,                       # red
+    '0;32m': 0x2,                       # green
+    '0;33m': 0x4 + 0x2,                 # brown?
+    '0;34m': 0x1,                       # blue
+    '0;35m': 0x1 + 0x4,                 # purple
+    '0;36m': 0x2 + 0x4,                 # cyan
+    '0;37m': 0x1 + 0x2 + 0x4,           # grey
+    '1;30m': 0x1 + 0x2 + 0x4,           # dark gray
+    '1;31m': 0x4 + 0x8,                 # red
+    '1;32m': 0x2 + 0x8,                 # light green
+    '1;33m': 0x4 + 0x2 + 0x8,           # yellow
+    '1;34m': 0x1 + 0x8,                 # light blue
+    '1;35m': 0x1 + 0x4 + 0x8,           # light purple
+    '1;36m': 0x1 + 0x2 + 0x8,           # light cyan
+    '1;37m': 0x1 + 0x2 + 0x4 + 0x8,     # white
     '0m': None
 }
 
@@ -272,8 +238,7 @@ class Win32AnsiStream(object):
     def __eq__(self, other):
         if isinstance(other, Win32AnsiStream):
             return self.stream == other.stream
-        else:
-            return self.stream == other
+        return self.stream == other
 
 
 def make_ansi_stream(stream, **kwargs):
@@ -286,9 +251,6 @@ def make_ansi_stream(stream, **kwargs):
 
 
 def pypsi_win_getpass(prompt='Password: ', stream=None):
-    import msvcrt
-    import sys
-
     if not (stream or sys.stdin).isatty():
         return input(prompt)
 
@@ -297,7 +259,7 @@ def pypsi_win_getpass(prompt='Password: ', stream=None):
     pw = ""
     while 1:
         c = msvcrt.getwch()
-        if c == '\r' or c == '\n':
+        if c in ('\r', '\n'):
             break
         if c == '\003':
             raise KeyboardInterrupt

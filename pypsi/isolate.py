@@ -35,6 +35,7 @@ class ClosableStream(io.StringIO):
 
     def getvalue(self):
         if not hasattr(self, '_value'):
+            # pylint: disable=attribute-defined-outside-init
             self._value = super(ClosableStream, self).getvalue()
         return self._value
 
@@ -58,6 +59,7 @@ class IsolatedShell(object):
         self.atty = atty
 
     def get_prompt(self):
+        # pylint: disable=protected-access,no-member
         stream = ClosableStream(self.atty)
         sys.stdout._proxy(stream, width=80)
         prompt = self.shell.get_current_prompt()
@@ -66,6 +68,7 @@ class IsolatedShell(object):
         return prompt
 
     def on_cmdloop_begin(self):
+        # pylint: disable=protected-access,no-member
         stream = ClosableStream(self.atty)
         sys.stdout._proxy(stream, width=80)
         sys.stderr._proxy(stream, width=80)
@@ -86,6 +89,7 @@ class IsolatedShell(object):
         return result
 
     def execute(self, command):
+        # pylint: disable=protected-access,no-member
         stream = ClosableStream(self.atty)
         devnull = open(os.devnull, 'r')
 

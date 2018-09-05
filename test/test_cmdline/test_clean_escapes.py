@@ -1,5 +1,5 @@
 
-from nose.tools import *
+import pytest
 from pypsi.cmdline import *
 from pypsi.features import BashFeatures
 
@@ -21,7 +21,7 @@ def copy_tokens(tokens):
 
 class TestCleanEscapes(object):
 
-    def setUp(self):
+    def setup(self):
         self.parser = StatementParser(features=BashFeatures())
 
     def test_simple(self):
@@ -32,19 +32,19 @@ class TestCleanEscapes(object):
         ])
 
         self.parser.clean_escapes(t1)
-        assert_equal(t1, t2)
+        assert t1 == t2
 
     def test_quoted_escape(self):
         t1, t2 = copy_tokens([StringToken(0, "echo\\hello", quote="'")])
         self.parser.clean_escapes(t1)
-        assert_equal(t1, t2)
+        assert t1 == t2
 
     def test_escape_normal_char(self):
         t1 = [StringToken(0, "echo\\hello")]
         self.parser.clean_escapes(t1)
-        assert_equal(t1, [StringToken(0, "echohello")])
+        assert t1 == [StringToken(0, "echohello")]
 
     def test_double_escape(self):
         t1 = [StringToken(0, "echo\\\\hello")]
         self.parser.clean_escapes(t1)
-        assert_equal(t1, [StringToken(0, "echo\\hello")])
+        assert t1 == [StringToken(0, "echo\\hello")]

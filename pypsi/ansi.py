@@ -60,7 +60,7 @@ class AnsiCode(object):
         return AnsiCode(self.code, s, postfix)
 
 
-class AnsiCodesSingleton(object):
+class AnsiCodesSingleton:  # pylint: disable=too-many-instance-attributes
     '''
     Holds all supported ansi escape codes.
     '''
@@ -143,7 +143,7 @@ def ansi_center(s, width):
     if count >= width:
         return s
     diff = (width - count) // 2
-    space = (' '*diff)
+    space = (' ' * diff)
     return space + s + space
 
 
@@ -174,4 +174,4 @@ def ansi_rjust(s, width):
     if count >= width:
         return s
     diff = width - count
-    return (' '*diff) + s
+    return (' ' * diff) + s

@@ -15,6 +15,9 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
+import sys
+import os
+import readline
 from pypsi.cmdline import (StatementParser, StatementSyntaxError,
                            IORedirectionError, CommandNotFoundError,
                            StringToken, OperatorToken, WhitespaceToken,
@@ -27,10 +30,6 @@ from pypsi.ansi import AnsiCodes
 from pypsi.features import BashFeatures, TabCompletionFeatures
 from pypsi.core import pypsi_print, Plugin, Command
 from pypsi.pipes import ThreadLocalStream, InvocationThread
-from pypsi.utils import escape_string
-import readline
-import sys
-import os
 
 
 class Shell(object):
@@ -38,6 +37,7 @@ class Shell(object):
     The command line interface that the user interacts with. All shell's need
     to inherit this base class.
     '''
+    # pylint: disable=too-many-public-methods
 
     def __init__(self, shell_name='pypsi', width=79, exit_rc=-1024, ctx=None,
                  features=None):
@@ -66,6 +66,8 @@ class Shell(object):
         self.prompt = "{name} )> ".format(name=shell_name)
         self.ctx = ctx or Namespace()
         self.features = features or BashFeatures()
+        self.running = False
+        self.completion_matches = None
 
         self.default_cmd = None
         self.register_base_plugins()
@@ -92,7 +94,7 @@ class Shell(object):
             self.backup_stdin = sys.stdin
             sys.stdin = ThreadLocalStream(sys.stdin)
 
-        if builtins.print != pypsi_print:
+        if builtins.print != pypsi_print:  # pylint: disable=comparison-with-callable
             self.backup_print = print
             builtins.print = pypsi_print
 
@@ -118,7 +120,7 @@ class Shell(object):
         cls = self.__class__
         for name in dir(cls):
             attr = getattr(cls, name)
-            if isinstance(attr, Command) or isinstance(attr, Plugin):
+            if isinstance(attr, (Command, Plugin)):
                 self.register(attr)
 
     def register(self, obj):
@@ -167,20 +169,20 @@ class Shell(object):
 
     def get_current_prompt(self):
         if callable(self.prompt):
-            prompt = self.prompt()
+            prompt = self.prompt()  # pylint: disable=not-callable
         else:
             prompt = self.prompt
 
         return self.preprocess_single(prompt, 'prompt')
 
     def set_readline_completer(self):
-        if readline.get_completer() != self.complete:
+        if readline.get_completer() != self.complete:  # pylint: disable=comparison-with-callable
             readline.parse_and_bind("tab: complete")
             self._backup_completer = readline.get_completer()
             readline.set_completer(self.complete)
 
     def reset_readline_completer(self):
-        if readline.get_completer() == self.complete:
+        if readline.get_completer() == self.complete:  # pylint: disable=comparison-with-callable
             readline.set_completer(self._backup_completer)
 
     def on_input_canceled(self):
@@ -205,8 +207,8 @@ class Shell(object):
         eof = False
 
         # set STDIN to the file
-        stdin = sys.stdin._get_target()
-        sys.stdin._proxy(file)
+        stdin = sys.stdin._get_target()  # pylint: disable=protected-access
+        sys.stdin._proxy(file)  # pylint: disable=protected-access
 
         try:
             while self.running and not eof:
@@ -233,7 +235,7 @@ class Shell(object):
             self.on_input_canceled()
         finally:
             # Reset stdin to a tty
-            sys.stdin._proxy(stdin)
+            sys.stdin._proxy(stdin)  # pylint: disable=protected-access
         return rc
 
     def cmdloop(self):
@@ -367,9 +369,8 @@ class Shell(object):
                     # errors, these are not fatal.
                     self.error(str(e))
                     return -1
-                else:
-                    # Unhandled fatal exception, re-raise it
-                    raise
+                # Unhandled fatal exception, re-raise it
+                raise
 
         # Current pipe being built
         pipe = []
@@ -435,12 +436,12 @@ class Shell(object):
                         rc = -1
                     elif isinstance(e, SystemExit):
                         # The command is requesting to exit the shell.
-                        rc = e.code
+                        rc = e.code  # pylint: disable=no-member
                         print("exiting....")
                         self.running = False
                     elif isinstance(e, RuntimeError):
                         # The command was aborted by a generic exception.
-                        self.error("command aborted: "+str(e))
+                        self.error("command aborted: " + str(e))
                         rc = -1
                     else:
                         # Unhandled fatal exception, re-raise it
@@ -476,7 +477,7 @@ class Shell(object):
 
         return threads, stdin
 
-    def preprocess(self, raw, origin):
+    def preprocess(self, raw, origin):  # pylint: disable=unused-argument
         for pp in self.preprocessors:
             raw = pp.on_input(self, raw)
             if raw is None:
@@ -497,37 +498,43 @@ class Shell(object):
         return ''
 
     def _clean_completions(self, completions, quotation):
-        escape_char = self.features.escape_char
+        '''
+        Clean completion choices so that they can be displayed to the screen or, if only a single
+        completion is available, be inserted into the line buffer.
+
+        :param list[str] completions: list of completions
+        :param str quotation: active quotation character
+        :returns list[str]: cleaned completions
+        '''
+        escape = self.features.escape_char
 
         if len(completions) == 1:
-            if escape_char:
-                if quotation:
-                    # We are quotes. Escape items with the same quotations and
-                    # the escape character itself
-                    completions = [
-                        escape_string(entry, escape_char, quotation, False)
-                        for entry in completions
-                    ]
-                else:
-                    # We are not in quotes. Escape whitespace and the escape
-                    # character
-                    completions = [
-                        escape_string(entry, escape_char)
-                        for entry in completions
-                    ]
+            ans = completions[0]
+            close_quote = ans.endswith('\0')
+            if quotation:
+                completions[0] = ans.replace(quotation, escape + quotation)
+            else:
+                completions[0] = ans.replace(escape, escape * 2).replace(' ', escape + ' ')
+        else:
+            close_quote = False
 
-            # Entries that end in a null byte, \0, need to close the current
-            # quotation or add whitespace so that further tab completions don't
-            # return the same result.
-            completions = [
-                entry[:-1] + (quotation or ' ')
-                if entry.endswith('\0') else entry
-                for entry in completions
-            ]
+        for i, ans in enumerate(completions):
+            if ans.endswith('\0'):
+                ans = ans[:-1]
+            if close_quote:
+                ans = ans + quotation + ' '
+            completions[i] = ans
 
         return completions
 
     def get_completions(self, line, prefix):
+        '''
+        Get the list of completions given a line buffer and a prefix.
+
+        :param str line: line buffer content up to cursor
+        :param str prefix: readline prefix token
+        :returns list[str]: list of completions
+        '''
         try:
             parser = StatementParser(TabCompletionFeatures(self.features))
             tokens = parser.tokenize(line)
@@ -569,10 +576,10 @@ class Shell(object):
                     next_arg = True
 
             if loc == 'path':
-                ret = path_completer(''.join(args))
+                ret = path_completer(''.join(args), prefix)
             elif not cmd_name or loc == 'name':
                 if is_path_prefix(cmd_name):
-                    ret = path_completer(cmd_name)
+                    ret = path_completer(cmd_name, prefix)
                 else:
                     ret = self.get_command_name_completions(cmd_name)
             else:
@@ -587,14 +594,23 @@ class Shell(object):
 
             ret = self._clean_completions(ret, in_quote)
         except:
-            pass
+            ret = []
 
         return ret
 
     def get_command_name_completions(self, prefix):
-        return [cmd for cmd in self.commands if cmd.startswith(prefix)]
+        '''
+        Get the list of commands that begin with a given prefix token.
 
-    def complete(self, text, state):
+        :param str prefix: command prefix
+        :returns list[str]: list of command names that begin with prefix
+        '''
+        return sorted([cmd for cmd in self.commands if cmd.startswith(prefix)])
+
+    def complete(self, text, state):  # pylint: disable=unused-argument
+        '''
+        readline tab completion callback.
+        '''
         if state == 0:
             self.completion_matches = []
             begidx = readline.get_begidx()
