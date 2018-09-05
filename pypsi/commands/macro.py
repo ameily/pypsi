@@ -140,7 +140,7 @@ class MacroCommand(BlockCommand):
             shell.ctx.macros = {}
 
         for name in self.base_macros:
-            rc = self.add_macro(shell, name, shell.ctx.macros[name])
+            rc = self.add_macro(shell, name, self.base_macros[name])
 
         return rc
 
