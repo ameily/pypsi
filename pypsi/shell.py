@@ -508,6 +508,7 @@ class Shell(object):
         :returns list[str]: cleaned completions
         '''
         escape = self.features.escape_char
+        quotation = quotation or ''
 
         if len(completions) == 1:
             ans = completions[0]
