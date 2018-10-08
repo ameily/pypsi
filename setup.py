@@ -38,7 +38,7 @@ print(requirements)
 
 setup(
     name='pypsi',
-    version=pypsi.__release__,
+    version=pypsi.__version__,
     license='ISC',
     description='Python Pluggable Shell Interface',
     long_description=open("README.rst", 'r').read(),
