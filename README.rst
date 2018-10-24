@@ -7,19 +7,19 @@ Pypsi - Python Pluggable Shell Interface
 .. image:: https://travis-ci.org/ameily/pypsi.svg?branch=master
   :target: https://travis-ci.org/ameily/pypsi
 
-Develop extensible and powerful command line interface shells with minimal code. Want to jump straight into the API? Take a look at :doc:`pypsi.tutorial`.
+Develop extensible and powerful command line interface shells with minimal code.
 
 Python Pluggable Shell Interface, or pypsi, is a framework for developing
 command line based shell interfaces, akin to bash or csh. It is intended to be
 a replacement for the builtin Python ``cmd`` module.
 
-Pypsi is targetted towards both rapid prototype interfaces and large stable
+Pypsi is targeted towards both large scale and rapid prototype interface
 shells. The bootstraping code is very small with very little boilerplate. Pypsi
 ships with a great deal of capabilities out of the box, all of which can be used
 or ignored. Pypsi is pluggable which allows commands, features, and plugins to be
 developed independently in their own source files and/or Python classes. This
 results in a very clean source repository. The actual code to setup and run the
-shell is exetremely small, on the order of ~20-50 lines of code.
+shell is extremely small, on the order of ~20-50 lines of code.
 
 Pypsi, at its core, is pluggable. There are many hooks that allow plugin authors
 to extend and modify the core behavior of pypsi. Commands are isolated classes
@@ -60,7 +60,7 @@ The following capabilities ship with pypsi and are available out of the box.
 Demo
 ----
 
-The ``demo.py`` source file can be run to show off some of the base commands and
+The ``demo.py`` source file can be run to demonstrate the base commands and
 features that ship with pypsi (the ``demo.py`` file can be downloaded from the
 git repo at https://github.com/ameily/pypsi/blob/master/demo.py). The commands
 displayed below are all optional: pypsi does not require the use of any command
@@ -80,7 +80,7 @@ Variables
 
     My name is Paul, and I belong to House Atredis
 
-    pypsi)> var -l
+    pypsi)> var --list
 
     name     Paul
     house    Atredis
@@ -314,28 +314,7 @@ configuration of components that require a substantial amount of input.
     path         /var/log/dpkg.log
     mode         remote
 
-Background
-----------
-
-I developed Pypsi while working on a commerical product with a command line
-interface. Originally, we used the ``cmd`` module, which was fine when we only
-had a few commands that didn't accept complex arguments. As we added more
-commands and more features, maintainability and extensibility became extremely
-complicated and time consuming.
-
-I took what I had learned from the ``cmd`` module, ORM libraries such as
-MongoEngine, and features from proven great command line interfaces such as Git
-and then I developed Pypsi. In order for Pypsi to be viable for our project, I
-knew that Pypsi had to be compatible with ``cmd``, the porting process had to
-take as little time as possible, and it had to be easy to understand and
-maintain.
-
-The porting process from ``cmd`` to Pypsi for our commerical project took place
-in January 2014. Since then, we've had 4 stable releases, had real world
-feedback, and have successfully created many Pypsi commands and plugins with
-ease.
-
 License
 -------
 
-``pypsi`` is released under the ISC premissive license.
+``pypsi`` is released under the ISC permissive license.
