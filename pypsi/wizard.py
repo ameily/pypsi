@@ -41,9 +41,13 @@ PACKAGE_NAME_RE = re.compile(r'^[a-zA-Z_][a-zA-Z0-9_]+$')
 
 
 def wizard_step_path_completer(shell, args, prefix):  # pylint: disable=unused-argument
+    '''
+    Complete a path within a wizard step. This completer will only return consistent results for
+    wizards that have ``complete_single_token = True``.
+    '''
     return [
         i.replace('\0', '')
-        for i in path_completer(args[-1] if args else prefix)
+        for i in path_completer(args[-1] if args else prefix, prefix)
     ]
 
 
@@ -336,17 +340,20 @@ class PromptWizard(object):
     namespace's ``ip_addr`` attribute.
     '''
 
-    def __init__(self, name, description, steps=None, features=None):
+    def __init__(self, name, description, steps=None, features=None, complete_single_token=False):
         '''
         :param str name: the prompt wizard name to display to the user
         :param str description: a short description of what the wizard does
         :param list steps: a list of :class:`WizardStep` objects
+        :param bool complete_single_token: treat tab completion requests as a literal string and
+            do not tokenize the input (complete args will always be a single item list)
         '''
         self.name = name
         self.description = description
         self.steps = steps
-        self.values = Namespace()
         self.features = features
+        self.complete_single_token = complete_single_token
+        self.values = Namespace()
         self.completions = None
         self.old_completer = None
         self.active_step = None
@@ -434,9 +441,14 @@ class PromptWizard(object):
             prefix = line[begidx:endidx] if line else ''
 
             line = line[:endidx]
-            tokens = parser.tokenize(line)
-            tokens = parser.condense(tokens)
-            args = [t.text for t in tokens if isinstance(t, StringToken)]
+            if self.complete_single_token:
+                # treat the entire line as a single token
+                args = [line]
+            else:
+                # tokenize the line
+                tokens = parser.tokenize(line)
+                tokens = parser.condense(tokens)
+                args = [t.text for t in tokens if isinstance(t, StringToken)]
             self.completions = self.active_step.complete(self, args, prefix)
 
         if state < len(self.completions):
