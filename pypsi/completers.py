@@ -141,7 +141,7 @@ def path_completer(token, prefix=''):
     if not token:
         cwd = '.' + os.path.sep
         filename_prefix = ''
-    elif token[-1] == os.path.sep:
+    elif len(token) > 1 and token[-1] == os.path.sep:
         cwd = os.path.expanduser(token[:-1])
         filename_prefix = ''
     else:

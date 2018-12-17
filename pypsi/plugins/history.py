@@ -49,7 +49,7 @@ class HistoryCommand(Command):
 
         if len(args) == 2:
             if args[0] == 'save' or args[0] == 'load':
-                return path_completer(args[-1])
+                return path_completer(args[-1], prefix=prefix)
         return []
 
     def setup_parser(self, brief):
