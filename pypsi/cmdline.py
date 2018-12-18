@@ -524,8 +524,8 @@ class CommandInvocation(object):
         return (
             not self.chain or (
                 self.chain_uncond() or
-                (self.chain_or() and prev_rc is not 0) or
-                (self.chain_and() and prev_rc is 0)
+                (self.chain_or() and prev_rc != 0) or
+                (self.chain_and() and prev_rc == 0)
             )
         )
 
