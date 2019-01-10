@@ -65,6 +65,12 @@ class TestPathCompleter:
         self.exists_mock.return_value = True
         assert path_completer('a ', '') == ['file\0', 'dir' + os.path.sep]
 
+    def test_root_no_prefix(self):
+        self.listdir_mock.return_value = ['bin', 'sys']
+        self.isdir_mock.side_effect = [True, True, True]
+        self.exists_mock.return_value = True
+        assert path_completer('/', '') == ['bin' + os.path.sep, 'sys' + os.path.sep]
+
     def test_path_sep_token(self):
         self.listdir_mock.return_value = ['file1', 'dir1']
         self.isdir_mock.side_effect = [True, False, True]
