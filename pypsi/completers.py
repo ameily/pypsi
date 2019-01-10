@@ -142,7 +142,7 @@ def path_completer(token, prefix=''):
         cwd = '.' + os.path.sep
         filename_prefix = ''
     elif len(token) > 1 and token[-1] == os.path.sep:
-        cwd = os.path.expanduser(token[:-1])
+         cwd = os.path.expanduser(token[:-1] or os.path.sep)
         filename_prefix = ''
     else:
         filename_prefix = os.path.basename(token)
