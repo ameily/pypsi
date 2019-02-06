@@ -180,6 +180,7 @@ class Shell(object):
             readline.parse_and_bind("tab: complete")
             self._backup_completer = readline.get_completer()
             readline.set_completer(self.complete)
+            readline.set_completer_delims(" ")
 
     def reset_readline_completer(self):
         if readline.get_completer() == self.complete:  # pylint: disable=comparison-with-callable
