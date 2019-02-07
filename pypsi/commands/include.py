@@ -52,7 +52,7 @@ class IncludeCommand(Command):
         self.stack = []
 
     def complete(self, shell, args, prefix):
-        return path_completer(args[-1])
+        return path_completer(args[-1], prefix=prefix)
 
     def run(self, shell, args):
         try:
