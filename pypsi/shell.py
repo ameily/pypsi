@@ -40,7 +40,7 @@ class Shell(object):
     # pylint: disable=too-many-public-methods
 
     def __init__(self, shell_name='pypsi', width=79, exit_rc=-1024, ctx=None,
-                 features=None):
+                 features=None, completer_delims=" "):
         '''
         Subclasses need to call the Shell constructor to properly initialize
         it.
@@ -68,6 +68,7 @@ class Shell(object):
         self.features = features or BashFeatures()
         self.running = False
         self.completion_matches = None
+        self.completer_delims = completer_delims
 
         self.default_cmd = None
         self.register_base_plugins()
@@ -180,7 +181,7 @@ class Shell(object):
             readline.parse_and_bind("tab: complete")
             self._backup_completer = readline.get_completer()
             readline.set_completer(self.complete)
-            readline.set_completer_delims(" ")
+            readline.set_completer_delims(self.completer_delims)
 
     def reset_readline_completer(self):
         if readline.get_completer() == self.complete:  # pylint: disable=comparison-with-callable
