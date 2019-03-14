@@ -625,7 +625,7 @@ class StatementParser(object):
                         # shell supports multiline input. Switch back to the
                         # shell to allow further input.
                         raise TrailingEscapeError(self.token.index)
-                    elif self.features:
+                    if self.features:
                         self.token.text += self.features.escape_char
                         self.token.escape = False  # pylint: disable=attribute-defined-outside-init
                 elif self.token.open_quote:
