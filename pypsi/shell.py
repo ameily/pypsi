@@ -181,7 +181,7 @@ class Shell(object):
             readline.parse_and_bind("tab: complete")
             self._backup_completer = readline.get_completer()
             readline.set_completer(self.complete)
-            if self.completer_delims is not None
+            if self.completer_delims is not None:
                 readline.set_completer_delims(self.completer_delims)
 
     def reset_readline_completer(self):
