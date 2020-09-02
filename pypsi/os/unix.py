@@ -60,14 +60,18 @@ def make_ansi_stream(stream, **kwargs):
 
 def find_bins_in_path():
     bins = set()
-    paths = [x for x in os.environ['PATH'].split(':') if x.strip()]
+    paths = [x for x in os.environ.get('PATH', '').split(':') if x.strip()]
     paths.append('./')
     for path in paths:
         path = path or './'
-        for entry in os.listdir(path):
-            p = os.path.join(path, entry)
-            if os.path.isfile(p) and os.access(p, os.X_OK):
-                bins.add(entry)
+        try:
+            for entry in os.listdir(path):
+                p = os.path.join(path, entry)
+                if os.path.isfile(p) and os.access(p, os.X_OK):
+                    bins.add(entry)
+        except:
+            # bare except here because if this fails, tab completion can be entirely broken
+            pass
     return bins
 
 
