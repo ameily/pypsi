@@ -1,48 +1,54 @@
 from unittest.mock import patch
-import os
+from typing import List
+
 from pypsi.os import find_bins_in_path
+
+
+# Example Data
+DIR1 = ['cat', 'grep', 'find', 'sort']
+DIR2 = ['awk', 'sed', 'ed', 'tr']
+
+
+def mock_listdir(path: str) -> List[str]:
+    print(path)
+    return [path]
 
 
 class TestPathCompleter:
 
     def setup(self):
-        base_path = os.path.dirname(os.path.abspath(__file__))
-        self.actual_path = os.environ.get('PATH', '')
+        self.listdir_patch = patch('os.listdir')
+        self.listdir_mock = self.listdir_patch.start()
 
-        self.environ_patch = patch('os.environ')
-        self.environ_mock = self.environ_patch.start()
+        self.isfile_patch = patch('os.path.isfile')
+        self.isfile_mock = self.isfile_patch.start()
+
+        self.access_patch = patch('os.access')
+        self.access_mock = self.access_patch.start()
+
+        # Always pretend files are real and executable
+        self.isfile_patch.return_value = True
+        self.access_patch.return_value = True
 
     def teardown(self):
-        self.environ_mock.stop()
-
-    def test_path_unset(self):
-        # An empty or missing PATH will result in checking `./`, which checks the current repo
-        self.environ_mock.return_value = f"./"
-        baseline_ans = find_bins_in_path()
-
-        self.environ_mock.return_value = None
-        ans = find_bins_in_path()
-        # if path is unset for some reason,
-        # we should still return zero results
-        assert ans == baseline_ans
-
-    def test_path_set_empty(self):
-        # An empty or missing PATH will result in checking `./`, which checks the current repo
-        self.environ_mock.return_value = f"./"
-        baseline_ans = find_bins_in_path()
-
-        self.environ_mock.return_value = ""
-        ans = find_bins_in_path()
-        # a path of nothing should still return an empty set
-        assert ans == baseline_ans
+        self.listdir_mock.stop()
+        self.isfile_mock.stop()
+        self.access_mock.stop()
 
     def test_path_contains_nonexistent_path(self):
-        self.environ_mock.return_value = f"{self.actual_path}"
-        baseline_ans = find_bins_in_path()
-
-        self.environ_mock.return_value = f"{self.actual_path}:nonexistent"
+        self.listdir_mock.side_effect = [DIR1, FileNotFoundError, DIR2]
         ans = find_bins_in_path()
 
-        # a path variable with a non-existent directory should still return some bins
-        # this isn't a great test, because baseline_ans could still return an empty set
-        assert ans == baseline_ans
+        bins = set()
+        bins.update(DIR1)
+        bins.update(DIR2)
+        assert ans == bins
+
+    def test_permission_denied(self):
+        self.listdir_mock.side_effect = [DIR1, PermissionError, DIR2]
+        ans = find_bins_in_path()
+
+        bins = set()
+        bins.update(DIR1)
+        bins.update(DIR2)
+        assert ans == bins
