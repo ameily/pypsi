@@ -1,5 +1,4 @@
 from unittest.mock import patch
-from typing import List
 
 from pypsi.os import find_bins_in_path
 
@@ -7,11 +6,6 @@ from pypsi.os import find_bins_in_path
 # Example Data
 DIR1 = ['cat', 'grep', 'find', 'sort']
 DIR2 = ['awk', 'sed', 'ed', 'tr']
-
-
-def mock_listdir(path: str) -> List[str]:
-    print(path)
-    return [path]
 
 
 class TestPathCompleter:
