@@ -51,7 +51,7 @@ def is_path_prefix(prefix):
 
 def find_bins_in_path():
     bins = set()
-    paths = [x.strip() for x in os.environ['PATH'].split(';') if x.strip()]
+    paths = [x for x in os.environ.get('PATH', '').split(';') if x.strip()]
     paths.append('.\\')
     for path in paths:
         path = path or '.\\'
