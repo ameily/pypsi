@@ -60,7 +60,7 @@ def command_completer(parser, shell, args, prefix, case_sensitive=False):
 
     if hasattr(parser, 'choices'):
         # Is a subparser, get all possible subcommands
-        sub_commands = [key for key in parser.choices]
+        sub_commands = list(parser.choices)
 
         if len(args) == 1:
             # User is typing sub command

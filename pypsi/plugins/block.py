@@ -29,7 +29,7 @@ class BlockCommand(Command):
     '''
 
     def __init__(self, prompt='> ', **kwargs):
-        super(BlockCommand, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.prompt = prompt
         self.old_prompt = None
 
@@ -69,7 +69,7 @@ class BlockPlugin(Plugin):
         '''
         :param str end_cmd: the statement that will terminate the active block
         '''
-        super(BlockPlugin, self).__init__(preprocess=preprocess, **kwargs)
+        super().__init__(preprocess=preprocess, **kwargs)
         self.end_cmd = end_cmd
 
     def setup(self, shell):

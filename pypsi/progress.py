@@ -112,7 +112,7 @@ class ThreadedSpinner(threading.Thread):
             the spinner
         :param stream: the output stream, defaults to stdout
         '''
-        super(ThreadedSpinner, self).__init__()
+        super().__init__()
         self.delta = delta
         self.seq = seq
         self.activity = activity

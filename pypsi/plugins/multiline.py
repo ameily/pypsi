@@ -39,7 +39,7 @@ class MultilinePlugin(Plugin):
         :param str prompt: the prompt when recording a multiline statement
         '''
 
-        super(MultilinePlugin, self).__init__(preprocess=preprocess, **kwargs)
+        super().__init__(preprocess=preprocess, **kwargs)
         self.prompt = prompt
         self.orig_prompt = None
         self.buffer = None

@@ -62,7 +62,7 @@ class WhitespaceToken(Token):
     '''
 
     def __init__(self, index, c=' ', features=None):
-        super(WhitespaceToken, self).__init__(index, features)
+        super().__init__(index, features)
         self.text = c
 
     def add_char(self, c):
@@ -95,7 +95,7 @@ class StringToken(Token):
         :param str c: the current string or character
         :param str quote: the surrounding quotes, `None` if there isn't any
         '''
-        super(StringToken, self).__init__(index, features)
+        super().__init__(index, features)
         self.quote = quote
         self._escape_char = features.escape_char if features else ''
         self.escape = False
@@ -192,7 +192,7 @@ class OperatorToken(Token):
         '''
         :param str operator: the operator
         '''
-        super(OperatorToken, self).__init__(index)
+        super().__init__(index)
         self.operator = operator
 
     def add_char(self, c):
@@ -226,7 +226,7 @@ class OperatorToken(Token):
 class IORedirectionError(Exception):
 
     def __init__(self, path, message):
-        super(IORedirectionError, self).__init__(message)
+        super().__init__(message)
         self.path = path
         self.message = message
 
@@ -240,7 +240,7 @@ class CommandNotFoundError(Exception):
     '''
 
     def __init__(self, name):
-        super(CommandNotFoundError, self).__init__(name)
+        super().__init__(name)
         #: the command name
         self.name = name
 
@@ -425,9 +425,9 @@ class CommandInvocation(object):
         try:
             fp = func(path, mode=mode)
         except OSError as e:
-            raise IORedirectionError(path, e.strerror)
+            raise IORedirectionError(path, e.strerror) from e
         except Exception as e:
-            raise IORedirectionError(path, str(e))
+            raise IORedirectionError(path, str(e)) from e
         else:
             return fp
 
@@ -540,7 +540,7 @@ class StatementSyntaxError(SyntaxError):
         :param str message: error message
         :param int index: index in the statement that caused the error
         '''
-        super(StatementSyntaxError, self).__init__(message)
+        super().__init__(message)
         self.message = message
         self.index = index
 
@@ -554,7 +554,7 @@ class UnclosedQuotationError(StatementSyntaxError):
     '''
 
     def __init__(self, index):
-        super(UnclosedQuotationError, self).__init__("unclosed quotation",
+        super().__init__("unclosed quotation",
                                                      index)
 
 
@@ -564,7 +564,7 @@ class TrailingEscapeError(StatementSyntaxError):
     '''
 
     def __init__(self, index):
-        super(TrailingEscapeError, self).__init__("trailing escape character",
+        super().__init__("trailing escape character",
                                                   index)
 
 

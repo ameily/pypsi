@@ -37,7 +37,7 @@ class SystemCommand(Command):
 
     def __init__(self, name='system', topic='shell', use_shell=False,
                  **kwargs):
-        super(SystemCommand, self).__init__(
+        super().__init__(
             name=name,
             topic=topic,
             brief='execute a system shell command',

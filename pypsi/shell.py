@@ -82,7 +82,7 @@ class Shell(object):
         self.on_shell_ready()
 
     def bootstrap(self):
-        import builtins
+        import builtins  # pylint: disable=import-outside-toplevel
         if not isinstance(sys.stdout, ThreadLocalStream):
             self.backup_stdout = sys.stdout
             sys.stdout = ThreadLocalStream(sys.stdout, width=self.width)
@@ -110,7 +110,7 @@ class Shell(object):
             sys.stdin = self.backup_stdin
 
         if self.backup_print:
-            import builtins
+            import builtins  # pylint: disable=import-outside-toplevel
             builtins.print = self.backup_print
 
     def register_base_plugins(self):

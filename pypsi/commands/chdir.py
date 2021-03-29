@@ -31,7 +31,7 @@ class ChdirCommand(Command):
 
     def __init__(self, name='cd', brief='change current working directory',
                  topic='shell', **kwargs):
-        super(ChdirCommand, self).__init__(name=name, brief=brief, topic=topic,
+        super().__init__(name=name, brief=brief, topic=topic,
                                            **kwargs)
 
         self.parser = PypsiArgParser(prog=name, description=brief)

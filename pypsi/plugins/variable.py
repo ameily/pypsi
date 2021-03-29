@@ -86,7 +86,7 @@ class VariableCommand(Command):
             help='expression defining variable, in the form of NAME = [VALUE]',
             nargs=argparse.REMAINDER
         )
-        super(VariableCommand, self).__init__(
+        super().__init__(
             name=name, usage=self.parser.format_help(), topic=topic,
             brief=brief, **kwargs
         )
@@ -166,7 +166,7 @@ class VariableToken(Token):
                 '0123456789_')
 
     def __init__(self, index, prefix, var=''):
-        super(VariableToken, self).__init__(index)
+        super().__init__(index)
         self.prefix = prefix
         self.var = var
 
@@ -272,7 +272,7 @@ class VariablePlugin(Plugin):
         :param dict locals: the base variables to register initially
         :param bool case_sensitive: whether variable names are case sensitive
         '''
-        super(VariablePlugin, self).__init__(preprocess=preprocess,
+        super().__init__(preprocess=preprocess,
                                              postprocess=postprocess, **kwargs)
         self.var_cmd = VariableCommand(name=var_cmd, topic=topic)
         self.prefix = prefix

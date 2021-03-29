@@ -30,7 +30,7 @@ class HexCodePlugin(Plugin):
     '''
 
     def __init__(self, preprocess=5, **kwargs):
-        super(HexCodePlugin, self).__init__(preprocess=preprocess, **kwargs)
+        super().__init__(preprocess=preprocess, **kwargs)
 
     def on_tokenize(self, shell, tokens, origin):
         escape_char = shell.features.escape_char

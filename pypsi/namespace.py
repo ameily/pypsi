@@ -35,19 +35,19 @@ class Namespace(object):
         :param kwargs: default attributes and their values are created
         '''
         for (k, v) in kwargs.items():
-            super(Namespace, self).__setattr__(k, v)
+            super().__setattr__(k, v)
 
     def __iter__(self):
         return iter(self.__dict__)
 
     def __getitem__(self, name):
-        return super(Namespace, self).__getattribute__(name)
+        return super().__getattribute__(name)
 
     def __setitem__(self, name, value):
-        super(Namespace, self).__setattr__(name, value)
+        super().__setattr__(name, value)
 
     def __delitem__(self, name):
-        super(Namespace, self).__delattr__(name)
+        super().__delattr__(name)
 
 
 class ScopedNamespaceContext(object):
@@ -92,9 +92,9 @@ class ScopedNamespace(object):
             return ''
 
         if name[0] == '_':
-            return super(ScopedNamespace, self).__getattribute__(name)
+            return super().__getattribute__(name)
 
-        ctx = super(ScopedNamespace, self).__getattribute__('_ctx')
+        ctx = super().__getattribute__('_ctx')
         if not ctx.case_sensitive:
             name = name.lower()
 
@@ -105,9 +105,9 @@ class ScopedNamespace(object):
             return
 
         if name[0] == '_':
-            super(ScopedNamespace, self).__setattr__(name, value)
+            super().__setattr__(name, value)
         else:
-            ctx = super(ScopedNamespace, self).__getattribute__('_ctx')
+            ctx = super().__getattribute__('_ctx')
             if not ctx.case_sensitive:
                 name = name.lower()
 
@@ -120,7 +120,7 @@ class ScopedNamespace(object):
         self.__setattr__(name, value)
 
     def __delattr__(self, name):
-        ctx = super(ScopedNamespace, self).__getattribute__('_ctx')
+        ctx = super().__getattribute__('_ctx')
         if not ctx.case_sensitive:
             name = name.lower()
 
@@ -130,7 +130,7 @@ class ScopedNamespace(object):
         self.__delattr__(name)
 
     def __contains__(self, name):
-        ctx = super(ScopedNamespace, self).__getattribute__('_ctx')
+        ctx = super().__getattribute__('_ctx')
         if not ctx.case_sensitive:
             name = name.lower()
         return name in ctx.locals

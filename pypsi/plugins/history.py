@@ -37,7 +37,7 @@ class HistoryCommand(Command):
     def __init__(self, name='history', brief='manage shell history',
                  topic='shell', **kwargs):
         self.setup_parser(brief)
-        super(HistoryCommand, self).__init__(
+        super().__init__(
             name=name, usage=self.parser.format_help(), topic=topic,
             brief=brief, **kwargs
         )
@@ -152,7 +152,7 @@ class HistoryPlugin(Plugin):
     '''
 
     def __init__(self, history_cmd='history', **kwargs):
-        super(HistoryPlugin, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.history_cmd = HistoryCommand(name=history_cmd)
 
     def setup(self, shell):

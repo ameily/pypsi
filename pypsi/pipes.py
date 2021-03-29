@@ -183,7 +183,7 @@ class InvocationThread(threading.Thread):
         :param stream stderr; override the invocation's stder stream.
         '''
 
-        super(InvocationThread, self).__init__()
+        super().__init__()
         #: The active Shell
         self.shell = shell
         #: The :class:`~pypsi.cmdline.CommandInvocation` to execute.

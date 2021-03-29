@@ -46,7 +46,7 @@ class Macro(Command):
     '''
 
     def __init__(self, lines, **kwargs):
-        super(Macro, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.lines = lines
 
     def run(self, shell, args):
@@ -114,7 +114,7 @@ class MacroCommand(BlockCommand):
             'name', help='macro name', nargs='?', metavar='NAME'
         )
 
-        super(MacroCommand, self).__init__(
+        super().__init__(
             name=name, usage=self.parser.format_help(), brief=brief,
             topic=topic, **kwargs
         )

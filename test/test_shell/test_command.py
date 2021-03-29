@@ -11,7 +11,7 @@ class PypsiTestException(Exception):
 class PypsiTestCommand(Command):
 
     def __init__(self):
-        super(PypsiTestCommand, self).__init__(name='test')
+        super().__init__(name='test')
         self.run_hit = self.setup_hit = False
         self.args = None
 
@@ -37,7 +37,7 @@ class PypsiTestShell(Shell):
     test_cmd = PypsiTestCommand()
 
     def __init__(self):
-        super(PypsiTestShell, self).__init__()
+        super().__init__()
         self.error_hit = False
 
     def error(self, *args, **kwargs):

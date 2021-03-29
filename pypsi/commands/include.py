@@ -45,7 +45,7 @@ class IncludeCommand(Command):
             'path', metavar='PATH', action='store', help='file to execute'
         )
 
-        super(IncludeCommand, self).__init__(
+        super().__init__(
             name=name, topic=topic, brief=brief,
             usage=self.parser.format_help(), **kwargs
         )

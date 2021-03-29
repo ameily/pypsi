@@ -53,7 +53,7 @@ class TailCommand(Command):
             action='store_true'
         )
 
-        super(TailCommand, self).__init__(
+        super().__init__(
             name=name, usage=self.parser.format_help(), topic=topic,
             brief=brief, **kwargs
         )
