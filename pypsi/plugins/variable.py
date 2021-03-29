@@ -272,8 +272,7 @@ class VariablePlugin(Plugin):
         :param dict locals: the base variables to register initially
         :param bool case_sensitive: whether variable names are case sensitive
         '''
-        super().__init__(preprocess=preprocess,
-                                             postprocess=postprocess, **kwargs)
+        super().__init__(preprocess=preprocess, postprocess=postprocess, **kwargs)
         self.var_cmd = VariableCommand(name=var_cmd, topic=topic)
         self.prefix = prefix
 

@@ -554,8 +554,7 @@ class UnclosedQuotationError(StatementSyntaxError):
     '''
 
     def __init__(self, index):
-        super().__init__("unclosed quotation",
-                                                     index)
+        super().__init__("unclosed quotation", index)
 
 
 class TrailingEscapeError(StatementSyntaxError):
@@ -564,8 +563,7 @@ class TrailingEscapeError(StatementSyntaxError):
     '''
 
     def __init__(self, index):
-        super().__init__("trailing escape character",
-                                                  index)
+        super().__init__("trailing escape character", index)
 
 
 class StatementParser(object):

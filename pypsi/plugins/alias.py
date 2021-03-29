@@ -24,8 +24,7 @@ class AliasCommand(Command):
 
     def __init__(self, name='alias', brief='manage command aliases',
                  topic='shell', **kwargs):
-        super().__init__(name=name, brief=brief, topic=topic,
-                                           **kwargs)
+        super().__init__(name=name, brief=brief, topic=topic, **kwargs)
 
         self.parser = PypsiArgParser(prog=name, description=brief)
         self.parser.add_argument('-l', '--list', action='store_true',
