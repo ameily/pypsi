@@ -51,7 +51,7 @@ class HelpCommand(Command):
             nargs='?', completer=self.complete_topics
         )
 
-        super(HelpCommand, self).__init__(
+        super().__init__(
             name=name, brief=brief, usage=self.parser.format_help(),
             topic=topic, **kwargs
         )

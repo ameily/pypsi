@@ -70,7 +70,7 @@ class WizardCommand(Command):
     '''
 
     def __init__(self, name='wizard', **kwargs):
-        super(WizardCommand, self).__init__(name=name, **kwargs)
+        super().__init__(name=name, **kwargs)
 
     def run(self, shell, args):
         ns = ConfigWizard.run(shell)
@@ -172,7 +172,7 @@ class DemoShell(Shell):
 
     def __init__(self):
         # You must call the Shell.__init__() method.
-        super(DemoShell, self).__init__()
+        super().__init__()
 
         try:
             # Attempt to load tips

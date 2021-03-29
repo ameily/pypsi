@@ -39,7 +39,7 @@ class ExitCommand(Command):
             nargs='?', help='exit code to return to parent process'
         )
 
-        super(ExitCommand, self).__init__(
+        super().__init__(
             name=name, usage=self.parser.format_help(), topic=topic,
             brief=brief, **kwargs
         )

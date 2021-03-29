@@ -236,7 +236,7 @@ class CommandShortCircuit(Exception):
         :param int code: the code the command should return
         '''
 
-        super(CommandShortCircuit, self).__init__(code)
+        super().__init__(code)
         self.code = code
 
 
@@ -262,7 +262,7 @@ class PypsiArgParser(argparse.ArgumentParser):
         #  store it's callback here and return it multiple times
         self._repeating_cb = None
 
-        super(PypsiArgParser, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def exit(self, status=0, message=None):
         if message:
@@ -284,7 +284,7 @@ class PypsiArgParser(argparse.ArgumentParser):
         '''
         :return: All optional arguments (ex, '-v'/'--verbose')
         '''
-        return [key for key in self._op_completers]
+        return list(self._op_completers.keys())
 
     def get_option_completer(self, option):
         '''
@@ -374,7 +374,7 @@ class PypsiArgParser(argparse.ArgumentParser):
             for arg in args:
                 self._op_completers[arg] = cb
         # Call argparse.add_argument()
-        return super(PypsiArgParser, self).add_argument(*args, **kwargs)
+        return super().add_argument(*args, **kwargs)
 
     def error(self, message):
         print(AnsiCodes.red, self.prog, ": error: ", message, AnsiCodes.reset,

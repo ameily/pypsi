@@ -69,7 +69,7 @@ def safe_open(file, mode='r', chunk_size=4096, ascii_is_utf8=True, **kwargs):
         enc = 'utf-8'
 
     if is_path:
-        fp = codecs.open(file, mode, encoding=enc, **kwargs)
+        fp = io.TextIOWrapper(open(file, mode + 'b'), encoding=enc, **kwargs)
     else:
         fp = io.TextIOWrapper(file, encoding=enc, **kwargs)
 

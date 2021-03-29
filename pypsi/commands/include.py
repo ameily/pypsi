@@ -45,14 +45,14 @@ class IncludeCommand(Command):
             'path', metavar='PATH', action='store', help='file to execute'
         )
 
-        super(IncludeCommand, self).__init__(
+        super().__init__(
             name=name, topic=topic, brief=brief,
             usage=self.parser.format_help(), **kwargs
         )
         self.stack = []
 
     def complete(self, shell, args, prefix):
-        return path_completer(args[-1])
+        return path_completer(args[-1], prefix=prefix)
 
     def run(self, shell, args):
         try:

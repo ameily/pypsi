@@ -40,7 +40,7 @@ class CommandFunction(Command):
         self.func = func
         self.completer = completer
         self.cmd_args = cmd_args
-        super(CommandFunction, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def run(self, shell, args):
         if self.cmd_args == CmdArgsString:
@@ -63,7 +63,7 @@ class CmdPlugin(Plugin):
             :data:`CmdArgsString`)
         '''
         self.cmd_args = cmd_args
-        super(CmdPlugin, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def get_help_message(self, shell, name, func):
         usage = ''

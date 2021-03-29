@@ -24,7 +24,7 @@ import os
 class ClosableStream(io.StringIO):
 
     def __init__(self, atty=True):
-        super(ClosableStream, self).__init__()
+        super().__init__()
         self.atty = atty
 
     def isatty(self):
@@ -36,7 +36,7 @@ class ClosableStream(io.StringIO):
     def getvalue(self):
         if not hasattr(self, '_value'):
             # pylint: disable=attribute-defined-outside-init
-            self._value = super(ClosableStream, self).getvalue()
+            self._value = super().getvalue()
         return self._value
 
 

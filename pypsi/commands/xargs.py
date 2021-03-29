@@ -47,7 +47,7 @@ class XArgsCommand(Command):
             metavar='COMMAND'
         )
 
-        super(XArgsCommand, self).__init__(
+        super().__init__(
             name=name, topic=topic, usage=self.parser.format_help(),
             brief=brief, **kwargs
         )

@@ -32,7 +32,7 @@ def get_lines(txt):
     '''
 
     if not txt:
-        return iter([])
+        return
 
     start = 0
     try:
@@ -194,7 +194,7 @@ def obj_str(obj, max_children=3, stream=None):
         return _format_value(stream, "float", "{:g}".format(obj))
     if isinstance(obj, (list, tuple)):
         if len(obj) > max_children > 0:
-            obj = [o for o in obj[:max_children]]
+            obj = obj[:max_children]
             obj.append('...')
 
         return _format_value(
@@ -302,9 +302,7 @@ class Table(object):
                 if ansi_len(value) <= col.width:
                     fp.write(ansi_ljust(value, col.width))
                 else:
-                    wrapped_line = [
-                        line for line in wrap_line(value, col.width)
-                    ]
+                    wrapped_line = list(wrap_line(value, col.width))
                     if len(wrapped_line) > 1:
                         overflow[column_idx] = ' '.join(wrapped_line[1:])
                     fp.write(wrapped_line[0])

@@ -42,7 +42,7 @@ class TipCommand(Command):
             help="print the message of the day"
         )
 
-        super(TipCommand, self).__init__(
+        super().__init__(
             name=name, brief=brief, topic=topic,
             usage=self.parser.format_help(), **kwargs
         )

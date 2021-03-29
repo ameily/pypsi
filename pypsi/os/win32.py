@@ -44,10 +44,8 @@ def is_exe(path):
 
 
 def is_path_prefix(prefix):
-    return (
-        any([prefix.startswith(x) for x in ('\\', '.\\', '..\\')]) or (
-            len(prefix) > 2 and prefix[1] == ':' and prefix[2] == '\\'
-        )
+    return prefix.startswith(('\\', '.\\', '..\\')) or (
+        len(prefix) > 2 and prefix[1] == ':' and prefix[2] == '\\'
     )
 
 

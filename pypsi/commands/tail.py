@@ -53,7 +53,7 @@ class TailCommand(Command):
             action='store_true'
         )
 
-        super(TailCommand, self).__init__(
+        super().__init__(
             name=name, usage=self.parser.format_help(), topic=topic,
             brief=brief, **kwargs
         )
@@ -82,7 +82,7 @@ class TailCommand(Command):
         return 0
 
     def complete_path(self, shell, args, prefix):  # pylint: disable=unused-argument
-        return path_completer(args[-1])
+        return path_completer(args[-1], prefix=prefix)
 
     def complete(self, shell, args, prefix):
         # The command_completer function takes in the parser, automatically

@@ -35,7 +35,7 @@ class CommentPlugin(Plugin):
         '''
         :param str prefix: the character(s) to begin a comment
         '''
-        super(CommentPlugin, self).__init__(preprocess=preprocess, **kwargs)
+        super().__init__(preprocess=preprocess, **kwargs)
         self.prefix = prefix
 
     def setup(self, shell):
