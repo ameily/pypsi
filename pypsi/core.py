@@ -26,6 +26,7 @@ from pypsi.ansi import AnsiCodes, AnsiCode
 from pypsi.format import get_lines, wrap_line
 from pypsi import completers
 
+
 class Plugin(object):
     '''
     A plugin is an object that is able to modify a
