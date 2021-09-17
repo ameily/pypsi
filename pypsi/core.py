@@ -24,7 +24,7 @@ import argparse
 import sys
 from pypsi.ansi import AnsiCodes, AnsiCode
 from pypsi.format import get_lines, wrap_line
-
+from pypsi import completers
 
 class Plugin(object):
     '''
@@ -359,6 +359,10 @@ class PypsiArgParser(argparse.ArgumentParser):
         cb = completer
         nargs = kwargs.get('nargs', None)
         chars = self.prefix_chars
+        choices = kwargs.get('choices')
+
+        if not cb and choices:
+            cb = completers.choice_completer(choices)
 
         if not args or len(args) == 1 and args[0][0] not in chars:
             # If no positional args are supplied or only one is supplied and
