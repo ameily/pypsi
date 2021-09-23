@@ -18,29 +18,32 @@
 import sys
 import os
 import readline
+from typing import Union
 from pypsi.cmdline import (StatementParser, StatementSyntaxError,
                            IORedirectionError, CommandNotFoundError,
-                           StringToken, OperatorToken, WhitespaceToken,
+                           StringToken, OperatorToken, Token, WhitespaceToken,
                            UnclosedQuotationError, TrailingEscapeError)
 
 from pypsi.namespace import Namespace
 from pypsi.completers import path_completer
 from pypsi.os import is_path_prefix
-from pypsi.ansi import AnsiCodes
-from pypsi.features import BashFeatures, TabCompletionFeatures
-from pypsi.core import pypsi_print, Plugin, Command
-from pypsi.pipes import ThreadLocalStream, InvocationThread
+from pypsi.ansi import Color, pypsi_print
+from pypsi.profiles import BashProfile, TabCompletionProfile, ShellProfile
+from pypsi.core import Plugin, Command
+from pypsi.pipes import ThreadLocalProxy, InvocationThread
+from .os import make_ansi_stream
 
 
-class Shell(object):
+class Shell:
     '''
     The command line interface that the user interacts with. All shell's need
     to inherit this base class.
     '''
     # pylint: disable=too-many-public-methods
 
-    def __init__(self, shell_name='pypsi', width=79, exit_rc=-1024, ctx=None,
-                 features=None, completer_delims=None):
+    def __init__(self, shell_name: str = 'pypsi', width: int = None, exit_rc: int = -1024,
+                 ctx: Namespace = None, profile: ShellProfile = None, completer_delims: str = None,
+                 colors: bool = True):
         '''
         Subclasses need to call the Shell constructor to properly initialize
         it.
@@ -55,7 +58,6 @@ class Shell(object):
         self.backup_stderr = None
         self.backup_print = None
 
-        self.width = width
         self.shell_name = shell_name
         self.exit_rc = exit_rc
         self.errno = 0
@@ -65,10 +67,11 @@ class Shell(object):
         self.plugins = []
         self.prompt = "{name} )> ".format(name=shell_name)
         self.ctx = ctx or Namespace()
-        self.features = features or BashFeatures()
+        self.profile = profile or BashProfile()
         self.running = False
         self.completion_matches = None
         self.completer_delims = completer_delims
+        self.colors = colors
 
         self.default_cmd = None
         self.register_base_plugins()
@@ -77,29 +80,31 @@ class Shell(object):
         self.eof_is_sigint = False
         self._backup_completer = readline.get_completer()
 
-        self.bootstrap()
+        self.bootstrap(width)
 
         self.on_shell_ready()
 
-    def bootstrap(self):
+    def bootstrap(self, width: int = -1) -> None:
         import builtins  # pylint: disable=import-outside-toplevel
-        if not isinstance(sys.stdout, ThreadLocalStream):
+        if not isinstance(sys.stdout, ThreadLocalProxy):
             self.backup_stdout = sys.stdout
-            sys.stdout = ThreadLocalStream(sys.stdout, width=self.width)
+            stream = make_ansi_stream(sys.stdout, width=width) if self.colors else sys.stdout
+            sys.stdout = ThreadLocalProxy(stream)
 
-        if not isinstance(sys.stderr, ThreadLocalStream):
+        if not isinstance(sys.stderr, ThreadLocalProxy):
             self.backup_stderr = sys.stderr
-            sys.stderr = ThreadLocalStream(sys.stderr, width=self.width)
+            stream = make_ansi_stream(sys.stderr, width=width) if self.colors else sys.stderr
+            sys.stderr = ThreadLocalProxy(stream)
 
-        if not isinstance(sys.stdin, ThreadLocalStream):
+        if not isinstance(sys.stdin, ThreadLocalProxy):
             self.backup_stdin = sys.stdin
-            sys.stdin = ThreadLocalStream(sys.stdin)
+            sys.stdin = ThreadLocalProxy(sys.stdin)
 
-        if builtins.print != pypsi_print:  # pylint: disable=comparison-with-callable
+        if builtins.print is not pypsi_print:  # pylint: disable=comparison-with-callable
             self.backup_print = print
             builtins.print = pypsi_print
 
-    def restore(self):
+    def restore(self) -> None:
         if self.backup_stdout:
             sys.stdout = self.backup_stdout
 
@@ -113,7 +118,7 @@ class Shell(object):
             import builtins  # pylint: disable=import-outside-toplevel
             builtins.print = self.backup_print
 
-    def register_base_plugins(self):
+    def register_base_plugins(self) -> None:
         '''
         Register all base plugins that are defined.
         '''
@@ -124,7 +129,7 @@ class Shell(object):
             if isinstance(attr, (Command, Plugin)):
                 self.register(attr)
 
-    def register(self, obj):
+    def register(self, obj: Union[Plugin, Command]) -> None:
         '''
         Register a :class:`~pypsi.core.Command` or a
         :class:`~pypsi.core.Plugin`.
@@ -145,30 +150,23 @@ class Shell(object):
                                              key=lambda x: x.postprocess)
 
         obj.setup(self)
-        return 0
 
-    def on_shell_ready(self):
+    def on_shell_ready(self) -> None:
         '''
         Hook that is called after the shell has been created.
         '''
 
-        return 0
-
-    def on_cmdloop_begin(self):
+    def on_cmdloop_begin(self) -> None:
         '''
         Hook that is called once the :meth:`cmdloop` function is called.
         '''
 
-        return 0
-
-    def on_cmdloop_end(self):
+    def on_cmdloop_end(self) -> None:
         '''
         Hook that is called once the :meth:`cmdloop` has ended.
         '''
 
-        return 0
-
-    def get_current_prompt(self):
+    def get_current_prompt(self) -> str:
         if callable(self.prompt):
             prompt = self.prompt()  # pylint: disable=not-callable
         else:
@@ -176,7 +174,7 @@ class Shell(object):
 
         return self.preprocess_single(prompt, 'prompt')
 
-    def set_readline_completer(self):
+    def set_readline_completer(self) -> None:
         if readline.get_completer() != self.complete:  # pylint: disable=comparison-with-callable
             readline.parse_and_bind("tab: complete")
             self._backup_completer = readline.get_completer()
@@ -184,22 +182,22 @@ class Shell(object):
             if self.completer_delims is not None:
                 readline.set_completer_delims(self.completer_delims)
 
-    def reset_readline_completer(self):
+    def reset_readline_completer(self) -> None:
         if readline.get_completer() == self.complete:  # pylint: disable=comparison-with-callable
             readline.set_completer(self._backup_completer)
 
-    def on_input_canceled(self):
+    def on_input_canceled(self) -> None:
         for pp in self.preprocessors:
             pp.on_input_canceled(self)
 
-    def on_tokenize(self, tokens, origin):
+    def on_tokenize(self, tokens, origin) -> List[Token]:
         for pp in self.preprocessors:
             tokens = pp.on_tokenize(self, tokens, origin)
             if not tokens:
                 break
         return tokens
 
-    def include(self, file):
+    def include(self, file: str):
         '''
         Read commands from a file and execute them line by line
 
@@ -259,7 +257,7 @@ class Shell(object):
                 except EOFError:
                     print()
                     self.on_input_canceled()
-                    if not self.features.eof_is_sigint:
+                    if not self.profile.eof_is_sigint:
                         self.running = False
                         print("exiting....")
                 except KeyboardInterrupt:
@@ -294,10 +292,7 @@ class Shell(object):
         return rc
 
     def error(self, msg):
-        print(
-            AnsiCodes.red, self.shell_name, ": ", msg, AnsiCodes.reset,
-            file=sys.stderr, sep=''
-        )
+        print(Color.bright_red(self.shell_name, ": ", msg), file=sys.stderr)
 
     def mkpipe(self):
         r, w = os.pipe()
@@ -316,7 +311,7 @@ class Shell(object):
         :returns int: the return code of the statement.
         '''
 
-        parser = StatementParser(self.features)
+        parser = StatementParser(self.profile)
         input_complete = False
         while not input_complete:
             text = self.preprocess(raw, 'input')
@@ -429,10 +424,7 @@ class Shell(object):
                             else:
                                 msg = str(t.exc_info[1])
 
-                            print(
-                                AnsiCodes.red, t.invoke.name, ": ", msg,
-                                AnsiCodes.reset, sep=''
-                            )
+                            print(Color.bright_red(t.invoke.name, ": ", msg), file=sys.stderr)
 
                     if isinstance(e, KeyboardInterrupt):
                         # Ctrl+c was entered
@@ -493,7 +485,7 @@ class Shell(object):
         tokens = self.on_tokenize([StringToken(0, raw, quote='"')], origin)
 
         if tokens:
-            parser = StatementParser(self.features)
+            parser = StatementParser(self.profile)
             parser.clean_escapes(tokens)
             ret = ''
             for token in tokens:
@@ -510,7 +502,7 @@ class Shell(object):
         :param str quotation: active quotation character
         :returns list[str]: cleaned completions
         '''
-        escape = self.features.escape_char
+        escape = self.profile.escape_char
         quotation = quotation or ''
 
         if len(completions) == 1:
@@ -541,7 +533,7 @@ class Shell(object):
         :returns list[str]: list of completions
         '''
         try:
-            parser = StatementParser(TabCompletionFeatures(self.features))
+            parser = StatementParser(TabCompletionProfile(self.profile))
             tokens = parser.tokenize(line)
             parser.clean_escapes(tokens)
 

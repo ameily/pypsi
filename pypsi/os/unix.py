@@ -20,42 +20,18 @@ Unix (Cygwin, Linux, etc) specific functions
 '''
 
 import os
+from typing import TextIO
+from pypsi.ansi import AnsiStream
 
 __all__ = [
     'find_bins_in_path',
     'is_path_prefix',
-    'make_ansi_stream',
-    'UnixAnsiStream'
+    'make_ansi_stream'
 ]
 
 
-class UnixAnsiStream(object):
-
-    def __init__(self, stream, width=None, isatty=None):
-        self._stream = stream
-        self.width = width
-        self._isatty = isatty
-
-    def isatty(self):
-        return self._stream.isatty() if self._isatty is None else self._isatty
-
-    def __getattr__(self, attr):
-        return getattr(self._stream, attr)
-
-    def __eq__(self, other):
-        if isinstance(other, UnixAnsiStream):
-            return self._stream == other.stream
-        return self._stream == other
-
-
-def make_ansi_stream(stream, **kwargs):
-    '''
-    Create an ANSI-code compatible file stream. Unix file streams support ANSI
-    escape codes, so we don't need to do anything special.
-    '''
-    if isinstance(stream, UnixAnsiStream):
-        return stream
-    return UnixAnsiStream(stream, **kwargs)
+def make_ansi_stream(stream: TextIO, **kwargs) -> AnsiStream:
+    return AnsiStream(stream, **kwargs) if not isinstance(stream, AnsiStream) else stream
 
 
 def find_bins_in_path():

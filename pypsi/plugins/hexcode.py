@@ -33,7 +33,7 @@ class HexCodePlugin(Plugin):
         super().__init__(preprocess=preprocess, **kwargs)
 
     def on_tokenize(self, shell, tokens, origin):
-        escape_char = shell.features.escape_char
+        escape_char = shell.profile.escape_char
         for token in tokens:
             if (not isinstance(token, StringToken) or
                     escape_char not in token.text):

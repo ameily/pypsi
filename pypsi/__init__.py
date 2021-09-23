@@ -30,3 +30,7 @@
 #
 
 from pypsi.release import __version__, __release__  # noqa
+from pypsi.core import Plugin, Command, PypsiArgParser, CommandShortCircuit
+from pypsi.shell import Shell
+from pypsi.profiles import BashProfile, PowerShellProfile, ShellProfile
+from pypsi.ansi import Color, wrap, ansi_clear_screen

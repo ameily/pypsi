@@ -18,7 +18,7 @@
 import random
 import sys
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
-from pypsi.ansi import AnsiCodes
+from pypsi.ansi import Color
 from pypsi.utils import safe_open
 
 
@@ -90,7 +90,7 @@ class TipCommand(Command):
         if header:
             title = "Tip #{}\n".format(i + 1)
             title += '-' * len(title)
-            print(AnsiCodes.green, title, AnsiCodes.reset, sep='')
+            print(Color.bright_green(title))
 
         try:
             cnt = sys.stdout.ansi_format(self.tips[i], **self.vars)
@@ -105,18 +105,9 @@ class TipCommand(Command):
             self.error(shell, "no motd available")
             return -1
 
-        try:
-            cnt = sys.stdout.ansi_format(self.motd, **self.vars)
-        except:
-            cnt = self.motd
-
-        print(
-            AnsiCodes.green,
-            "Message of the Day".center(shell.width), '\n',
-            AnsiCodes.green, '>' * shell.width, "\n",
-            AnsiCodes.reset, cnt, '\n',
-            AnsiCodes.green, "<" * shell.width, "\n",
-            AnsiCodes.reset,
-            sep=''
-        )
+        width = sys.stdout.width or 60
+        print(Color.bright_green("Message of the Day".center(width)))
+        print(Color.bright_green('>' * width))
+        print(self.motd)
+        print(Color.bright_green("<" * width))
         return 0

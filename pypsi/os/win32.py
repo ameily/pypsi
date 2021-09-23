@@ -25,13 +25,14 @@ import re
 import ctypes
 import msvcrt  # pylint: disable=import-error
 import getpass
+from typing import TextIO
+from pypsi.ansi import AnsiStream
 
 
 __all__ = [
     'find_bins_in_path',
     'is_path_prefix',
-    'make_ansi_stream',
-    'Win32AnsiStream'
+    'make_ansi_stream'
 ]
 
 
@@ -166,7 +167,7 @@ class CONSOLE_SCREEN_BUFFER_INFO(ctypes.Structure):
 ##############################################################################
 
 
-class Win32AnsiStream(object):
+class Win32AnsiStream(AnsiStream):
     '''
     Windows stream wrapper that translates ANSI escape code to Windows Console
     API calls. Windows stream are not compatible with ANSI escape codes, so
@@ -174,14 +175,11 @@ class Win32AnsiStream(object):
     Windows platforms.
     '''
 
-    def __init__(self, stream, isatty=None, width=None):
-        self.stream = stream
-        self._win32_flush_pending = False
-        self._isatty = isatty
-        self.width = width
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         try:
-            self._win32_handle = msvcrt.get_osfhandle(stream.fileno())
+            self._win32_handle = msvcrt.get_osfhandle(self.stream.fileno())
         except:
             # stream is not a real File (ie. StringIO).
             self._win32_handle = None
@@ -191,9 +189,6 @@ class Win32AnsiStream(object):
             GetConsoleScreenBufferInfo(self._win32_handle, ctypes.byref(csbi))
             self._win32_console_initial_attrs = csbi.wAttributes
             self._win32_current_attrs = self._win32_console_initial_attrs
-
-    def isatty(self):
-        return self.stream.isatty() if self._isatty is None else self._isatty
 
     def _win32_set_console_attrs(self, attrs):
         SetConsoleTextAttribute(self._win32_handle, attrs)
@@ -230,16 +225,8 @@ class Win32AnsiStream(object):
         self.stream.flush()
         self._win32_flush_pending = False
 
-    def __getattr__(self, attr):
-        return getattr(self.stream, attr)
 
-    def __eq__(self, other):
-        if isinstance(other, Win32AnsiStream):
-            return self.stream == other.stream
-        return self.stream == other
-
-
-def make_ansi_stream(stream, **kwargs):
+def make_ansi_stream(stream: TextIO, **kwargs) -> AnsiStream:
     '''
     Used by the Pypsi pipe line to create ANSI escape code compatible streams.
     '''

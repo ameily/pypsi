@@ -19,10 +19,7 @@
 import sys
 import threading
 import itertools
-
-
-def _prefix(s):
-    return str(s) if s is not None else ''
+from typing import TextIO
 
 
 class ProgressBar(object):
@@ -30,7 +27,7 @@ class ProgressBar(object):
     A basic text-based progress bar.
     '''
 
-    def __init__(self, count, stream=None, width=None, activity=None):
+    def __init__(self, count: int, stream: TextIO = None, width: int = None, activity: str = None):
         '''
         :param int count: the total number of items
         :param stream: the output stream, defaults to ``sys.stdout``
@@ -42,7 +39,7 @@ class ProgressBar(object):
         self.stream = stream or sys.stdout
         self.i = 0
         self.current_percent = 0.0
-        self.activity = activity
+        self.activity = activity or ''
         self.width = width
         if width is None:
             if hasattr(self.stream, 'width'):
@@ -54,12 +51,12 @@ class ProgressBar(object):
 
         self.draw()
 
-    def draw(self, cancel=False):
+    def draw(self, cancel: bool = False) -> None:
         '''
         Force a redraw of the progress bar
         '''
         col = 0
-        prefix = _prefix(self.activity)
+        prefix = self.activity
         if prefix:
             col = len(prefix)
 
@@ -83,13 +80,13 @@ class ProgressBar(object):
 
         self.last_draw_percent = percent
 
-    def cancel(self):
+    def cancel(self) -> None:
         '''
         Cancel the progress bar.
         '''
         self.draw(cancel=True)
 
-    def tick(self):
+    def tick(self) -> None:
         '''
         Increment the total number of processed items and redraw if necessarys.
         '''
@@ -104,7 +101,8 @@ class ThreadedSpinner(threading.Thread):
     A basic spinner that updates at regular intervals.
     '''
 
-    def __init__(self, delta=0.1, seq='|/-\\', activity=None, stream=None):
+    def __init__(self, delta: float = 0.1, seq: str = '|/-\\', activity: str = None,
+                 stream: TextIO = None):
         '''
         :param float delta: the number of seconds to wait between updates
         :param str seq: sequence of characters to iterate over
@@ -115,26 +113,26 @@ class ThreadedSpinner(threading.Thread):
         super().__init__()
         self.delta = delta
         self.seq = seq
-        self.activity = activity
+        self.activity = activity or ''
         self.stream = stream or sys.stdout
         self.stop_lock = threading.Lock()
         self.stop_lock.acquire()
         self.complete_msg = ''
 
-    def run(self):
+    def run(self) -> None:
         i = itertools.cycle(self.seq)
 
         # pylint: disable=unexpected-keyword-arg
         while not self.stop_lock.acquire(timeout=self.delta):
-            prefix = _prefix(self.activity)
+            prefix = self.activity
             print('\r', prefix, next(i), sep='', end='', flush=True,
                   file=self.stream)
 
-        prefix = _prefix(self.activity)
+        prefix = self.activity
         print('\r', prefix, self.complete_msg, sep='', flush=True,
               file=self.stream)
 
-    def complete(self, msg='Done'):
+    def complete(self, msg: str = 'Done') -> None:
         self.complete_msg = msg
         self.stop_lock.release()
         self.join()
@@ -142,7 +140,8 @@ class ThreadedSpinner(threading.Thread):
 
 class Spinner(object):
 
-    def __init__(self, count=1, seq='|/-\\', activity=None, stream=None):
+    def __init__(self, count: int = 1, seq: str = '|/-\\', activity: str = None,
+                 stream: TextIO = None):
         '''
         :param int count: the number of ticks before the spinner is updated
         :param str seq: sequence of character to iterate over
@@ -156,15 +155,15 @@ class Spinner(object):
         self.activity = activity
         self.stream = stream or sys.stdout
 
-    def draw(self):
+    def draw(self) -> None:
         '''
         Force a redraw of the spinner.
         '''
-        prefix = _prefix(self.activity)
+        prefix = self.activity
         print('\r', prefix, next(self.iter), end='', flush=True, sep='',
               file=self.stream)
 
-    def tick(self):
+    def tick(self) -> None:
         '''
         Increment proress
         '''
@@ -173,7 +172,7 @@ class Spinner(object):
             self.offset = 0
             self.draw()
 
-    def complete(self, msg='Done'):
+    def complete(self, msg: str =' Done') -> None:
         '''
         Complete the spinner.
 

@@ -20,8 +20,10 @@
 Classes used for parsing user input.
 '''
 
+from contextlib import contextmanager
 import sys
 from pypsi.utils import safe_open
+from .profiles import ShellProfile
 
 
 __all__ = (
@@ -30,6 +32,8 @@ __all__ = (
     'CommandNotFoundError', 'CommandInvocation', 'Expression', 'Statement',
     'TrailingEscapeError'
 )
+
+InvocationStream = Union[Tuple[str, str], str, TextIO]
 
 
 #: The token accepts more characters.
@@ -43,17 +47,17 @@ TokenEnd = 1
 TokenTerm = 2
 
 
-class Token(object):
+class Token:
     '''
     Base class for all tokens.
     '''
 
-    def __init__(self, index, features=None):
+    def __init__(self, index: int, profile: ShellProfile):
         '''
         :param int index: the starting index of this token
         '''
         self.index = index
-        self.features = features or None
+        self.profile = profile
 
 
 class WhitespaceToken(Token):
@@ -61,11 +65,11 @@ class WhitespaceToken(Token):
     Whitespace token that can contain any number of whitespace characters.
     '''
 
-    def __init__(self, index, c=' ', features=None):
-        super().__init__(index, features)
+    def __init__(self, index: int, c: str = ' ', profile: ShellProfile = None):
+        super().__init__(index, profile)
         self.text = c
 
-    def add_char(self, c):
+    def add_char(self, c: str) -> int:
         '''
         Add a character to this token.
 
@@ -77,10 +81,10 @@ class WhitespaceToken(Token):
             return TokenContinue
         return TokenEnd
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "WhitespaceToken( {} )".format(self.text)
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return isinstance(other, WhitespaceToken)
 
 
@@ -90,14 +94,14 @@ class StringToken(Token):
     escaped whitespace characters.
     '''
 
-    def __init__(self, index, c, quote=None, features=None):
+    def __init__(self, index: int, c: str, quote: str = None, profile: ShellProfile = None):
         '''
         :param str c: the current string or character
         :param str quote: the surrounding quotes, `None` if there isn't any
         '''
-        super().__init__(index, features)
+        super().__init__(index, profile)
         self.quote = quote
-        self._escape_char = features.escape_char if features else ''
+        self._escape_char = profile.escape_char if profile else ''
         self.escape = False
         self.text = ''
         self.open_quote = False
@@ -110,7 +114,7 @@ class StringToken(Token):
         elif c:
             self.text += c
 
-    def add_char(self, c):
+    def add_char(self, c: str) -> int:
         '''
         Add a character to this token.
 
@@ -153,13 +157,13 @@ class StringToken(Token):
 
         return ret
 
-    def combine_token(self, token):
+    def combine_token(self, token: 'StringToken') -> 'StringToken':
         self.text += token.text
         self.open_quote = token.open_quote
         self.escape = token.escape
         self.quote = token.quote
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "String( {quote}{text}{quote}, {open_quote}, {escape} )".format(
             quote=self.quote or '',
             text=self.text,
@@ -167,7 +171,7 @@ class StringToken(Token):
             escape=self.escape
         )
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return (
             isinstance(other, StringToken) and
             self.quote == other.quote and
@@ -188,14 +192,14 @@ class OperatorToken(Token):
     #: Valid operator characters
     Operators = '<>|&;'
 
-    def __init__(self, index, operator):
+    def __init__(self, index: int, operator: str):
         '''
         :param str operator: the operator
         '''
         super().__init__(index)
         self.operator = operator
 
-    def add_char(self, c):
+    def add_char(self, c: str) -> int:
         '''
         Add a character to this token.
 
@@ -207,16 +211,16 @@ class OperatorToken(Token):
             return TokenContinue
         return TokenEnd
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "OperatorToken( {} )".format(self.operator)
 
-    def is_chain_operator(self):
+    def is_chain_operator(self) -> bool:
         for c in self.operator:
             if c in ('>', '<'):
                 return False
         return True
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return (
             isinstance(other, OperatorToken) and
             self.operator == other.operator
@@ -225,13 +229,13 @@ class OperatorToken(Token):
 
 class IORedirectionError(Exception):
 
-    def __init__(self, path, message):
+    def __init__(self, path: str, message: str):
         super().__init__(message)
         self.path = path
         self.message = message
 
-    def __str__(self):
-        return "{}: {}".format(self.path, self.message)
+    def __str__(self) -> str:
+        return f"{self.path}: {self.message}"
 
 
 class CommandNotFoundError(Exception):
@@ -239,28 +243,28 @@ class CommandNotFoundError(Exception):
     The specified command does not exist.
     '''
 
-    def __init__(self, name):
+    def __init__(self, name: str):
         super().__init__(name)
         #: the command name
         self.name = name
 
-    def __str__(self):
-        return self.name + ": command not found"
+    def __str__(self) -> str:
+        return f"{self.name}: command not found"
 
 
-class Statement(object):
+class Statement:
     '''
     A parsed statement containing a list of :class:`CommandInvocation`
     instances.
     '''
 
-    def __init__(self, invokes=None):
+    def __init__(self, invokes: List['CommandInvocation'] = None):
         '''
         :param list[CommandInvocation] invokes: list of command invocations
         '''
         self.invokes = invokes or []
 
-    def append(self, invoke):
+    def append(self, invoke: 'CommandInvocation') -> None:
         '''
         Append a new command invocation.
 
@@ -268,42 +272,43 @@ class Statement(object):
         '''
         self.invokes.append(invoke)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator['CommandInvocation']:
         '''
         :returns: an iterator for the :class:`CommandInvocation` instances
         '''
         return iter(self.invokes)
 
-    def __nonzero__(self):
+    def __nonzero__(self) -> bool:
         '''
         :returns bool: :const:`True` if there is at least 1 parsed command
             invocation, :const:`False` otherwise
         '''
         return len(self.invokes) > 0
 
-    def __len__(self):
+    def __len__(self) -> int:
         '''
         :returns int: the number of command invocations
         '''
         return len(self.invokes)
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int) -> 'CommandInvocation':
         '''
         :returns CommandInvocation: invocation at given index
         '''
         return self.invokes[index]
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return isinstance(other, Statement) and self.invokes == other.invokes
 
 
-class CommandInvocation(object):
+class CommandInvocation:
     '''
     An invocation of a command.
     '''
 
-    def __init__(self, name, args=None, stdout=None, stderr=None, stdin=None,
-                 chain=None):
+    def __init__(self, name: str, args: List[str] = None, stdout: InvocationStream = None,
+                 stderr: InvocationStream = None, stdin: Union[str, TextIO] = None,
+                 chain: str = None):
         #: Command name
         self.name = name
         #: List of command arguments
@@ -321,7 +326,7 @@ class CommandInvocation(object):
         #: The fallback command to use if :attr:`cmd` is :const:`None`.
         self.fallback_cmd = None
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return (
             isinstance(other, CommandInvocation) and
             self.name == other.name and
@@ -334,7 +339,7 @@ class CommandInvocation(object):
             self.fallback_cmd == other.fallback_cmd
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         s = "{name} {args}".format(name=self.name, args=' '.join(self.args))
         if self.stdout:
             if isinstance(self.stdout, tuple) and self.stdout[1] == 'a':
@@ -440,34 +445,6 @@ class CommandInvocation(object):
             if fp and hasattr(fp, 'close') and not fp.closed:
                 fp.close()
 
-    def setup_io(self):
-        '''
-        Setup stdout, stderr, and stdin by proxying the thread local streams.
-        '''
-        # pylint: disable=no-member,protected-access
-
-        if self.stdout:
-            sys.stdout._proxy(self.stdout)
-        if self.stderr:
-            sys.stderr._proxy(self.stderr)
-        if self.stdin:
-            sys.stdin._proxy(self.stdin)
-
-    def cleanup_io(self):
-        '''
-        Close proxied streams and unproxy them.
-        '''
-        # pylint: disable=no-member,protected-access
-
-        self.close_streams()
-
-        if self.stdout:
-            sys.stdout._unproxy()
-        if self.stderr:
-            sys.stderr._unproxy()
-        if self.stdin:
-            sys.stdin._unproxy()
-
     def chain_and(self):
         '''
         :returns: :const:`True` if the chain operator is AND (&&)
@@ -496,6 +473,19 @@ class CommandInvocation(object):
 
         return self.chain == '|'
 
+    @contextmanager
+    def proxy_streams(self):
+        sys.stdout.proxy(self.stdout)
+        sys.stderr.proxy(self.stderr)
+        sys.stdin.proxy(self.stdin)
+
+        try:
+            yield
+        finally:
+            sys.stdout.unproxy()
+            sys.stderr.unproxy()
+            sys.stdin.unproxy()
+
     def __call__(self, shell):
         '''
         Invoke the command by proxying streams, running the command, and
@@ -504,14 +494,11 @@ class CommandInvocation(object):
         :returns: the commnd's return code.
         '''
 
-        self.setup_io()
-        try:
+        with self.proxy_streams():
             if self.fallback_cmd:
                 rc = self.fallback_cmd.fallback(shell, self.name, self.args)
             else:
                 rc = self.cmd.run(shell, self.args)
-        finally:
-            self.cleanup_io()
         return rc
 
     def should_continue(self, prev_rc):
@@ -535,7 +522,7 @@ class StatementSyntaxError(SyntaxError):
     Invalid statement syntax was entered.
     '''
 
-    def __init__(self, message, index):
+    def __init__(self, message: str, index: int):
         '''
         :param str message: error message
         :param int index: index in the statement that caused the error
@@ -544,7 +531,7 @@ class StatementSyntaxError(SyntaxError):
         self.message = message
         self.index = index
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "syntax error at {}: {}".format(self.index, self.message)
 
 
@@ -553,7 +540,7 @@ class UnclosedQuotationError(StatementSyntaxError):
     The final token contains an unclosed quotation.
     '''
 
-    def __init__(self, index):
+    def __init__(self, index: int):
         super().__init__("unclosed quotation", index)
 
 
@@ -562,21 +549,21 @@ class TrailingEscapeError(StatementSyntaxError):
     The final token ends with an escape character.
     '''
 
-    def __init__(self, index):
+    def __init__(self, index: int):
         super().__init__("trailing escape character", index)
 
 
-class StatementParser(object):
+class StatementParser:
     '''
     Parses raw user input into a :class:`Statement`.
     '''
 
-    def __init__(self, features=None):
-        self.features = features
+    def __init__(self, profile: ShellProfile):
+        self.profile = profile
         self.tokens = []
         self.token = None
 
-    def process(self, index, c):
+    def process(self, index: int, c: str) -> None:
         '''
         Process a single character of input.
 
@@ -597,13 +584,13 @@ class StatementParser(object):
                 pass
         else:
             if c in (' ', '\t', '\xa0'):
-                self.token = WhitespaceToken(index)
+                self.token = WhitespaceToken(index, profile=self.profile)
             elif c in ('>', '<', '|', '&', ';'):
                 self.token = OperatorToken(index, c)
             else:
-                self.token = StringToken(index, c, features=self.features)
+                self.token = StringToken(index, c, profile=self.profile)
 
-    def tokenize(self, line):
+    def tokenize(self, line: str) -> List[Token]:
         '''
         Transform a `str` into a `list` of :class:`Token` objects.
 
@@ -615,19 +602,19 @@ class StatementParser(object):
             self.process(index, c)
             index += 1
 
-        if self.token and self.features:
+        if self.token:
             if isinstance(self.token, StringToken):
                 if self.token.escape:
-                    if self.features and self.features.multiline:
+                    if self.profile.multiline:
                         # The last character in the input was an escape and the
                         # shell supports multiline input. Switch back to the
                         # shell to allow further input.
                         raise TrailingEscapeError(self.token.index)
-                    if self.features:
-                        self.token.text += self.features.escape_char
-                        self.token.escape = False  # pylint: disable=attribute-defined-outside-init
+
+                    self.token.text += self.profile.escape_char
+                    self.token.escape = False  # pylint: disable=attribute-defined-outside-init
                 elif self.token.open_quote:
-                    if self.features and self.features.multiline:
+                    if self.profile and self.profile.multiline:
                         # The last token is an unclosed quotation and the shell
                         # supports multiline line input. Switch back to the
                         # shell to allow further input.
@@ -638,18 +625,16 @@ class StatementParser(object):
                         raise UnclosedQuotationError(self.token.index)
 
             self.tokens.append(self.token)
-        elif self.token:
-            self.tokens.append(self.token)
 
         return self.tokens
 
-    def clean_escapes(self, tokens):
+    def clean_escapes(self, tokens: List[Token]) -> None:
         '''
         Remove all escape sequences.
 
         :param list tokens: :class:`Token` objects to remove escape sequences
         '''
-        escape_char = self.features.escape_char if self.features else ''
+        escape_char = self.profile.escape_char
         for token in tokens:
             if not isinstance(token, StringToken) or (
                     escape_char not in token.text or token.quote):
@@ -671,7 +656,7 @@ class StatementParser(object):
 
             token.text = text
 
-    def condense(self, tokens):
+    def condense(self, tokens: List[Token]) -> List[Token]:
         '''
         Condenses sequential like :class:`Token` objects into a single
         :class:`Token` of the same type. For example, two sequential
@@ -686,8 +671,7 @@ class StatementParser(object):
         condensed = []
         for token in tokens:
             if isinstance(token, StringToken):
-                if (token.quote and self.features and
-                        self.features.preserve_quotes):
+                if token.quote and  self.profile.preserve_quotes:
                     token.text = "{q}{t}{q}".format(q=token.quote,
                                                     t=token.text)
 
@@ -702,7 +686,7 @@ class StatementParser(object):
 
         return condensed
 
-    def build(self, tokens):
+    def build(self, tokens: List[Token]) -> Statement:
         '''
         Create a :class:`Statement` object from tokenized input and statement
         context. This method will first remove all remaining escape sequences
@@ -808,7 +792,7 @@ class StatementParser(object):
         return statement
 
 
-class Expression(object):
+class Expression:
     '''
     Holds a string-based expression in the form of ``operand operator value``.
     This class makes parsing expressions that may be in a single string or a
@@ -826,15 +810,15 @@ class Expression(object):
     Operators = '-+=/*'
     Whitespace = ' \t'
 
-    def __init__(self, operand, operator, value):
+    def __init__(self, operand: str, operator: str, value: str):
         self.operand = operand
         self.operator = operator
         self.value = value
 
-    def __str__(self):
-        return "{} {} {}".format(self.operand, self.operator, self.value)
+    def __str__(self) -> str:
+        return f"{self.operand} {self.operator} {self.value}"
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return (
             isinstance(other, Expression) and
             self.operand == other.operand and
@@ -843,7 +827,7 @@ class Expression(object):
         )
 
     @classmethod
-    def parse(cls, args):
+    def parse(cls, args: List[str]) -> 'Expression':
         '''
         Create an Expression from a list of strings.
 

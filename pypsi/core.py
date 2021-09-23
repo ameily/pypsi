@@ -19,15 +19,22 @@
 Base classes for developing pluggable commands and plugins.
 '''
 
-
+from __future__ import annotations
+from typing import TYPE_CHECKING, Callable, List, TextIO, Optional
 import argparse
 import sys
-from pypsi.ansi import AnsiCodes, AnsiCode
-from pypsi.format import get_lines, wrap_line
+from .ansi import Color
 from pypsi import completers
 
+if TYPE_CHECKING:
+    from .shell import Shell
+    from .cmdline import Token
 
-class Plugin(object):
+
+TabCompletionMethod = Callable[[Shell, List[str], str], List[str]]
+
+
+class Plugin:
     '''
     A plugin is an object that is able to modify a
     :py:class:`pypsi.shell.Shell` object's behavior. Whereas a command can be
@@ -35,7 +42,7 @@ class Plugin(object):
     function.
     '''
 
-    def __init__(self, preprocess=None, postprocess=None):
+    def __init__(self, preprocess: int = None, postprocess: int = None):
         '''
         Constructor can take two parameters: `preprocess` and `postprocess`
         These values determine where the plugin resides inside of the
@@ -54,16 +61,14 @@ class Plugin(object):
         self.preprocess = preprocess
         self.postprocess = postprocess
 
-    def setup(self, shell):  # pylint: disable=unused-argument
+    def setup(self, shell: Shell) -> None:  # pylint: disable=unused-argument
         '''
         Called after the plugin has been registered to the active shell.
 
         :param pypsi.shell.Shell shell: the active shell
-        :returns int: 0 on success, -1 on failure
         '''
-        return 0
 
-    def on_input(self, shell, line):  # pylint: disable=unused-argument
+    def on_input(self, shell: Shell, line: str) -> str:  # pylint: disable=unused-argument
         '''
         Called after input from the user has been received. The return value is
         the preprocessed line. This means that modifying the line argument will
@@ -76,7 +81,7 @@ class Plugin(object):
         '''
         return line
 
-    def on_tokenize(self, shell, tokens, origin):  # pylint: disable=unused-argument
+    def on_tokenize(self, shell: Shell, tokens: List[Token], origin: str):
         '''
         Called after an input string has been tokenized. If this function
         performs no preprocessing, return the tokens unmodified.
@@ -89,29 +94,27 @@ class Plugin(object):
         :returns list: the list of preprocessed :class:`pypsi.cmdline.Token`
             objects
         '''
+        # pylint: disable=unused-argument
         return tokens
 
-    def on_input_canceled(self, shell):  # pylint: disable=unused-argument
+    def on_input_canceled(self, shell: Shell):  # pylint: disable=unused-argument
         '''
         Called when the user can canceled entering a statement via SIGINT
         (Ctrl+C).
 
         :param pypsi.shell.Shell shell: the active shell
-        :returns int: 0 on success, -1 on error
         '''
-        return 0
 
-    def on_statement_finished(self, shell, rc):  # pylint: disable=unused-argument
+    def on_statement_finished(self, shell: Shell, rc: int):  # pylint: disable=unused-argument
         '''
         Called when a statement has been completely executed.
 
         :param pypsi.shell.Shell shell: the active shell
         :returns int: 0 on success, -1 on error
         '''
-        return 0
 
 
-class Command(object):
+class Command:
     '''
     A pluggable command that users can execute. All commands need to derive
     from this class. When a command is executed by a user, the command's
@@ -140,8 +143,8 @@ class Command(object):
     :attr:`sys.stdout` is set to its original stream.
     '''
 
-    def __init__(self, name, usage=None, brief=None,
-                 topic=None, pipe='str'):
+    def __init__(self, name: str, usage: str = None, brief: str = None, topic: str = None,
+                 pipe: str = 'str'):
         '''
         :param str name: the name of the command which the user will reference
             in the shell
@@ -157,7 +160,7 @@ class Command(object):
         self.topic = topic or ''
         self.pipe = pipe or 'str'
 
-    def complete(self, shell, args, prefix):  # pylint: disable=unused-argument
+    def complete(self, shell: Shell, args: List[str], prefix: str):  # pylint: disable=unused-argument
         '''
         Called when the user attempts a tab-completion action for this command.
 
@@ -170,7 +173,7 @@ class Command(object):
         '''
         return []
 
-    def usage_error(self, shell, *args):
+    def usage_error(self, *error: List[str]) -> None:
         '''
         Display an error message that indicates incorrect usage of this
         command. After the error is displayed, the usage is printed.
@@ -178,20 +181,20 @@ class Command(object):
         :param pypsi.shell.Shell shell: the active shell
         :param args: list of strings that are the error message
         '''
-        self.error(shell, *args)
-        print(AnsiCodes.yellow, self.usage, AnsiCodes.reset, sep='')
+        if error:
+            self.error(*error)
+        print(Color.bright_yellow(self.usage))
 
-    def error(self, shell, *args):  # pylint: disable=unused-argument
+    def error(self, *error: List[str]) -> None:  # pylint: disable=unused-argument
         '''
         Display an error message to the user.
 
         :param pypsi.shell.Shell shell: the active shell
         :param args: the error message to display
         '''
-        msg = "{}: {}".format(self.name, ''.join([str(a) for a in args]))
-        print(AnsiCodes.red, msg, AnsiCodes.reset, file=sys.stderr, sep='')
+        print(Color.bright_red(f'{self.name}: ', *error), file=sys.stderr)
 
-    def run(self, shell, args):
+    def run(self, shell: Shell, args: List[str]) -> int:
         '''
         Execute the command. All commands need to implement this method.
 
@@ -202,16 +205,14 @@ class Command(object):
         '''
         raise NotImplementedError()
 
-    def setup(self, shell):  # pylint: disable=unused-argument
+    def setup(self, shell: Shell) -> None:  # pylint: disable=unused-argument
         '''
         Called when the plugin has been registered to the active shell.
 
         :param pypsi.shell.Shell shell: the active shell
-        :returns int: 0 on success, -1 on error
         '''
-        return 0
 
-    def fallback(self, shell, name, args):  # pylint: disable=unused-argument
+    def fallback(self, shell: Shell, name: str, args: List[str]) -> int:  # pylint: disable=unused-argument
         '''
         Called when this command was set as the fallback command. The only
         difference between this and :meth:`run` is that this method accepts the
@@ -223,7 +224,7 @@ class Command(object):
         :returns int: 0 on success, less than 0 on error, and greater than 0 on
             invalid usage
         '''
-        return None
+        return -1
 
 
 class CommandShortCircuit(Exception):
@@ -232,7 +233,7 @@ class CommandShortCircuit(Exception):
     information via the -h and --help flags.
     '''
 
-    def __init__(self, code):
+    def __init__(self, code: int):
         '''
         :param int code: the code the command should return
         '''
@@ -265,29 +266,26 @@ class PypsiArgParser(argparse.ArgumentParser):
 
         super().__init__(*args, **kwargs)
 
-    def exit(self, status=0, message=None):
+    def exit(self, status: int = 0, message: str = None) -> None:
         if message:
-            print(AnsiCodes.red, message, AnsiCodes.reset, file=sys.stderr,
-                  sep='')
+            print(Color.bright_red(message), file=sys.stderr)
         raise CommandShortCircuit(status)
 
-    def print_usage(self, file=None):
+    def print_usage(self, file: TextIO = None) -> None:
         f = file or sys.stderr
-        print(AnsiCodes.yellow, self.format_usage(), AnsiCodes.reset, sep='',
-              file=f)
+        print(Color.bright_yellow(self.format_usage()), file=f)
 
-    def print_help(self, file=None):
+    def print_help(self, file: TextIO = None) -> None:
         f = file or sys.stderr
-        print(AnsiCodes.yellow, self.format_help(), AnsiCodes.reset, sep='',
-              file=f)
+        print(Color.bright_yellow(self.format_help()), file=f)
 
-    def get_options(self):
+    def get_options(self) -> List[str]:
         '''
         :return: All optional arguments (ex, '-v'/'--verbose')
         '''
         return list(self._op_completers.keys())
 
-    def get_option_completer(self, option):
+    def get_option_completer(self, option: str) -> TabCompletionMethod:
         '''
         Returns the callback for the specified optional argument,
         Or None if one was not specified.
@@ -296,7 +294,7 @@ class PypsiArgParser(argparse.ArgumentParser):
         '''
         return self._op_completers.get(option, None)
 
-    def has_value(self, arg):
+    def has_value(self, arg: str) -> bool:
         '''
         Check if the optional argument has a value associated with it.
         :param str arg: Optional argument to check
@@ -309,10 +307,9 @@ class PypsiArgParser(argparse.ArgumentParser):
         # These represent the value passed to 'action' in add_argument:
         # parser.add_argument('-l', '--long', action='store')
         action = self._option_string_actions.get(arg, None)
-        return isinstance(action,
-                          (argparse._AppendAction, argparse._StoreAction))
+        return isinstance(action, (argparse._AppendAction, argparse._StoreAction))
 
-    def get_positional_completer(self, pos):
+    def get_positional_completer(self, pos: int) -> Optional[TabCompletionMethod]:
         '''
         Get the callback for a positional parameter
         :param pos: index of the parameter - first param's index = 0
@@ -326,7 +323,7 @@ class PypsiArgParser(argparse.ArgumentParser):
                 return self._repeating_cb
             return None
 
-    def get_positional_arg_index(self, args):
+    def get_positional_arg_index(self, args: List[str]) -> int:
         '''
         Get the positional index of a cursor, based on
         optional arguments and positional arguments
@@ -348,7 +345,8 @@ class PypsiArgParser(argparse.ArgumentParser):
         # return zero-based index
         return index - 1
 
-    def add_argument(self, *args, completer=None, **kwargs):  # pylint: disable=arguments-differ
+    def add_argument(self, *args, completer: TabCompletionMethod = None, **kwargs):
+        # pylint: disable=arguments-differ
         '''
         Override add_argument function of argparse.ArgumentParser to
         handle callback functions.
@@ -381,95 +379,86 @@ class PypsiArgParser(argparse.ArgumentParser):
         # Call argparse.add_argument()
         return super().add_argument(*args, **kwargs)
 
-    def error(self, message):
-        print(AnsiCodes.red, self.prog, ": error: ", message, AnsiCodes.reset,
-              sep='', file=sys.stderr)
+    def error(self, message: str) -> None:
+        print(Color.bright_red(self.prog, ": error: ", message), file=sys.stderr)
         self.print_usage()
         self.exit(1)
 
-
-def pypsi_print(*args, sep=' ', end='\n', file=None, flush=True, width=None,
-                wrap=True, wrap_prefix=None, replace_errors=True):
-    '''
-    Wraps the functionality of the Python builtin `print` function. The
-    :meth:`pypsi.shell.Shell.bootstrap` overrides the Python :meth:`print`
-    function with :meth:`pypsi_print`.
-
-    :param str sep: string to print between arguments
-    :param str end: string to print at the end of the output
-    :param file file: output stream, if this is :const:`None`, the default is
-        :data:`sys.stdout`
-    :param bool flush: whether to flush the output stream
-    :param int width: override the stream's width
-    :param bool wrap: whether to word wrap the output
-    :param str wrap_prefix: prefix string to print prior to every new line that
-        is wrapped
-    :param bool replace_errors: replace invalid character points with the '?'
-        character
-    '''
-
-    file = file or sys.stdout
-    last = len(args) - 1
-
-    def write_safe(data):
+    def complete(self, shell: Shell, args: List[str], prefix: str) -> List[str]:
         '''
-        Write the input str to the file and, if an encoding error occurs and
-        replace_errors is ``True``, remove invalid code points and print again.
+        Completion function that can tab complete options, options' values,
+        and positional parameters. Shell, args, and prefix should be the same
+        params as passed to the :meth:`pypsi.core.Command.complete` function
+
+        :param parser: A PypsiArgParser object or an action object returned
+            from :meth:`PypsiArgParser.add_subparsers`
+        :param pypsi.shell.Shell shell: The current Shell object
+        :param list args: The full list of current CLI args
+        :param str prefix: The partial arg being completed
+        :param bool case_sensitive: Whether the prefix will be completed
+            in a case sensitive manner
+        :return list: A list of possible options based on the prefix
         '''
 
-        try:
-            file.write(data)
-        except UnicodeEncodeError:
-            if replace_errors:
-                enc = getattr(file, 'encoding', sys.getdefaultencoding())
-                file.write(data.encode(enc, errors='replace').decode(enc))
-            else:
-                raise
+        cmd_parser = None
+        offset = 0
+        completions = []
+        ops = []
+        choices = getattr(self, 'choices', None)
 
-    if wrap and hasattr(file, 'width') and file.width:
-        width = width or file.width
-        parts = []
-        for arg in args:
-            if isinstance(arg, str):
-                parts.append(arg)
-            elif arg is None:
-                parts.append('')
-            elif isinstance(arg, AnsiCode):
-                if file.isatty():
-                    parts.append(str(arg))
-                elif arg.s is not None:
-                    parts.append(str(arg.s))
-            else:
-                parts.append(str(arg))
+        if choices:
+            # Is a subparser, get all possible subcommands
+            sub_commands = list(choices)
 
-        txt = sep.join(parts)
-        for (line, endl) in get_lines(txt):
-            if line:
-                first = True
-                wrapno = 0
-                for wrapped in wrap_line(line, width, wrap_prefix=wrap_prefix):
-                    if not wrapped:
-                        continue
+            if len(args) == 1:
+                # User is typing sub command
+                completions.extend([x for x in sub_commands
+                                    if x.startswith(prefix) or not prefix])
+                return sorted(completions)
 
-                    wrapno += 1
-                    if not first:
-                        file.write('\n')
-                    else:
-                        first = False
+            # Get the command parser for the current subcommand
+            cmd_parser = choices.get(args[0], None)
+            offset = 1  # Set an offset so the subcmd is not counted in index
+        else:
+            # Is a PyPsiArgumentParser
+            cmd_parser = self
 
-                    write_safe(wrapped)
+        # Get the last complete argument - should always be the second to last
+        # ['-s', 'tes<cursor>'] --or-- ['-s', 'test', '<cursor>']
+        last_arg = args[-2] if len(args) >= 2 else ''
 
-            if not line or endl:
-                file.write('\n')
-    else:
-        last = len(args) - 1
-        for (i, arg) in enumerate(args):
-            write_safe(str(arg))
+        if not cmd_parser:
+            return []
 
-            if sep and i != last:
-                write_safe(sep)
+        # Try to get an option's callback - returns None if no option or cb exists
+        cb = cmd_parser.get_option_completer(last_arg)
 
-    if end:
-        write_safe(end)
-    if flush:
-        file.flush()
+        if callable(cb) and cmd_parser.has_value(last_arg):
+            # If the option has a callback defined and has a value
+            ops = cb(shell, args, prefix)
+        elif prefix.startswith('-'):
+            # Complete the optional arguments
+            ops = cmd_parser.get_options()
+        else:
+            # Else complete the positional args
+
+            # Get the current POSITIONAL index
+            # This does NOT include any optional (-v --verbose OPTION) arguments
+            index = cmd_parser.get_positional_arg_index(args)
+
+            # Get the callback for the current positional parameter
+            # Index includes subcmd if there is one, so subtract offset
+            # Ex: 'cmd subcmd <cursor>' would have two args: ['subcmd', ''] but
+            # 'cmd <cursor> would have one arg: ['']
+            # Pass the params index here - if you want the first pos param, pass 0
+            cb = cmd_parser.get_positional_completer(index - offset)
+            if callable(cb):
+                ops = cb(shell, args, prefix)
+
+        if shell.profile.case_sensitive:
+            completions.extend([o for o in ops
+                                if not prefix or o.startswith(prefix)])
+        else:
+            completions.extend([o for o in ops if not prefix
+                                or o.lower().startswith(prefix.lower())])
+        return sorted(completions)

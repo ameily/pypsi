@@ -20,158 +20,204 @@
 Stream classes for writing to files.
 '''
 
+import sys
+import os
+from types import ModuleType
+from typing import Any, Iterator, TextIO, Union
+import importlib.util
+import textwrap
+import builtins
+from enum import Enum
 
-class AnsiCode(object):
+
+class Color(Enum):
     '''
-    A single ansi escape code.
+    ANSI escape code colors. The enum items can be used in multiple ways:
+
+    .. highlight:: python
+
+        >>> print(Color.red, 'hello world', Color.fg_reset, sep='')
+        >>> print(Color.red('hello world'))
     '''
+    black = '\x1b[30m'
+    red = '\x1b[31m'
+    green = '\x1b[32m'
+    yellow = '\x1b[33m'
+    blue = '\x1b[34m'
+    magenta = '\x1b[35m'
+    cyan = '\x1b[36m'
+    white = '\x1b[37m'
+    fg_reset = '\x1b[39m'
 
-    def __init__(self, code, s=None, end_code=None):
+    bright_red = '\x1b[1;31m'
+    bright_green = '\x1b[1;32m'
+    bright_yellow = '\x1b[1;33m'
+    bright_blue = '\x1b[1;34m'
+    bright_magenta = '\x1b[1;35m'
+    bright_cyan = '\x1b[1;36m'
+    bright_white = '\x1b[1;37m'
+
+    bg_black = '\x1b[40m'
+    bg_red = '\x1b[41m'
+    bg_green = '\x1b[42m'
+    bg_yellow = '\x1b[43m'
+    bg_blue = '\x1b[44m'
+    bg_magenta = '\x1b[45m'
+    bg_cyan = '\x1b[46m'
+    bg_white = '\x1b[47m'
+    bg_reset = '\x1b[49m'
+
+    bright = '\x1b[1m'
+    dim = '\x1b[2m'
+    normal = '\x1b[22m'
+
+    reset_all = '\x1b[0m'
+
+    def __call__(self, *items) -> str:
         '''
-        :param str code: the ansi escape code, usually begins with '\\x1b['
-        :param str s: the body of the code, only useful if wrapping a string in
-            this code
+        Wrap the string in the ANSI code, ending with the ``reset_all`` code.
         '''
-        self.code = code
-        self.s = s
-        self.end_code = end_code
+        s = ''.join(str(i) for i in items)
+        return f'{self}{s}{Color.reset_all}'
 
-    def prompt(self):
+    def __str__(self) -> str:
+        return self.value
+
+    def __add__(self, other: Union[str, 'Color']) -> str:
+        if isinstance(other, Color):
+            return self.value + other.value
+        if isinstance(other, str):
+            return self.value + other
+        raise TypeError(f'invalid operand types: Color and {type(other)}')
+
+    @property
+    def prompt(self) -> str:
         '''
-        Wrap non-print-able characters in readline non visible markers. This is
-        required if the string is going to be passed into :meth:`input`.
+        Enclose the escape code in the non-printable character marker, for use within a prompt.
         '''
-        end = "\x01{}\x02".format(self.end_code) if self.end_code else ''
-        return "\x01{code}\x02{s}{end}".format(code=self.code, s=self.s or '',
-                                               end=end)
-
-    def __str__(self):
-        return self.code + (self.s or '') + (self.end_code or '')
-
-    def __call__(self, s, postfix='\x1b[0m'):
-        '''
-        Wrap a given string in the escape code. This is useful for printing a
-        word or sentence in a specific color.
-
-        :param str s: the input string
-        :param str postfix: the postfix string to (default is the ansi reset
-            code)
-        '''
-        return AnsiCode(self.code, s, postfix)
+        return f'\x01{self}\x02'
 
 
-class AnsiCodesSingleton:  # pylint: disable=too-many-instance-attributes
+def ansi_clear_screen() -> None:
     '''
-    Holds all supported ansi escape codes.
+    Clear the screen.
     '''
-
-    def __init__(self):
-        #: Reset terminal color and style
-        self.reset = AnsiCode('\x1b[0m')
-        #: Gray
-        self.gray = AnsiCode('\x1b[1;30m')
-        #: Red (bold)
-        self.red = AnsiCode('\x1b[1;31m')
-        #: Green (bold)
-        self.green = AnsiCode('\x1b[1;32m')
-        #: Yellow (bold)
-        self.yellow = AnsiCode('\x1b[1;33m')
-        #: Blue (bold)
-        self.blue = AnsiCode('\x1b[1;34m')
-        #: Purple (bold)
-        self.purple = AnsiCode('\x1b[1;35m')
-        #: Cyan (bold)
-        self.cyan = AnsiCode('\x1b[1;36m')
-        #: White (bold)
-        self.white = AnsiCode('\x1b[1;37m')
-        #: Black
-        self.black = AnsiCode('\x1b[0;30m')
-        #: Clear the screen
-        self.clear_screen = AnsiCode('\x1b[2J\x1b[;H')
-        #: Underline text
-        self.underline = AnsiCode('\x1b[4m')
-
-        #: all codes as a dict, useful for formatting an ansi string
-        self.codes = dict(
-            reset=self.reset,
-            gray=self.gray,
-            red=self.red,
-            green=self.green,
-            yellow=self.yellow,
-            blue=self.blue,
-            purple=self.purple,
-            cyan=self.cyan,
-            white=self.white,
-            black=self.black,
-            clear_screen=self.clear_screen,
-            underline=self.underline
-        )
+    print('\x1b[2J\x1b[;H')
 
 
-#: Global instance for all supported ansi codes (instance of
-#: :class:`AnsiCodesSingleton`)
-AnsiCodes = AnsiCodesSingleton()
 
-
-def ansi_len(value):
+def load_textwrap() -> ModuleType:
     '''
-    Get the length of the provided `str`, not counting any ansi codes.
-
-    :param str value: the input string
+    Load a copy of the textwrap module.
     '''
-    count = 0
-    esc_code = False
-    for c in value:
-        if c == '\x1b':
-            esc_code = True
-        elif esc_code:
-            if c in 'ABCDEFGHJKSTfmnsulh':
-                esc_code = False
+    spec = importlib.util.find_spec('textwrap')
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def ansi_len(s: str) -> int:
+    length = len(s)
+    ansi_start = s.find('\x1b[')
+    ansi_end = None
+    while ansi_start >= 0:
+        ansi_end = ansi_start
+        while ansi_end < length and s[ansi_end] not in 'ABCDEFGHJKSTfmnsulh\r\n':
+            ansi_end += 1
+        length -= (ansi_end - ansi_start) + 1
+        ansi_start = s.find('\x1b[', ansi_end)
+    return length
+
+
+def strip_ansi_codes(s: str) -> Iterator[str]:
+    '''
+    Strip ANSI escape codes from the string.
+    '''
+    start = 0
+    length = len(s)
+    ansi_start = s.find('\x1b[')
+    while ansi_start >= 0:
+        if start < ansi_start:
+            yield s[start:ansi_start]
+
+        start = ansi_start
+        while start < length and s[start] not in 'ABCDEFGHJKSTfmnsulh':
+            start += 1
+
+        if s[start] not in '\r\n':
+            start += 1
+
+        ansi_start = s.find('\x1b[', start)
+
+    if start < length:
+        yield s[start:]
+
+
+ansi_textwrap = load_textwrap()
+ansi_textwrap.len = ansi_len
+python_print = builtins.print
+
+
+def wrap(s: str, ansi: bool = True, **kwargs) -> Iterator[str]:
+    '''
+    Word-wrap a string.
+    '''
+    kwargs.setdefault('replace_whitespace', False)
+    kwargs.setdefault('drop_whitespace', False)
+    tw_wrap = ansi_textwrap.wrap if ansi else textwrap.wrap
+    for line in s.splitlines(keepends=True):
+        yield from tw_wrap(line, **kwargs)
+
+
+class AnsiStream:
+
+    def __init__(self, stream: TextIO, width: int = -1):
+        self.stream = stream
+        if width < 0 and stream.isatty():
+            self.detect_width()
         else:
-            count += 1
-    return count
+            self._width = width
+
+    def detect_width(self) -> None:
+        try:
+            self._width = os.get_terminal_size(self.stream.fileno()).columns
+        except:
+            self._width = 0
+
+    def width(self) -> int:
+        return self._width
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self.stream, name)
 
 
-def ansi_center(s, width):
-    '''
-    Center the provided string for a given width.
 
-    :param str s: the input string
-    :param int width: the desired field width
-    '''
-    count = ansi_len(s)
-    if count >= width:
-        return s
-    diff = (width - count) // 2
-    space = (' ' * diff)
-    return space + s + space
+def pypsi_print(*items, file: Union[TextIO, AnsiStream] = None, sep: str = None,
+                flush: bool = False, end: str = os.linesep):
+    file = file or sys.stdout
+    if isinstance(file, AnsiStream):
+        width = file.width()
+        ansi = True
+        file = file.stream
+    else:
+        width = 0
+        ansi = False
 
+    sep = sep or ''
+    if ansi:
+        s = sep.join(items)
+    else:
+        s = ''.join(strip_ansi_codes(sep.join(items)))
 
-def ansi_ljust(s, width):
-    '''
-    Left justify an input string, ensuring that it contains width charaters.
+    if end:
+        s += end
 
-    :param str s: the input string
-    :param int width: the desired output width
-    :returns str: the output string
-    '''
-    count = ansi_len(s)
-    if count >= width:
-        return s
-    diff = width - count
-    return s + (' ' * diff)
+    if width:
+        for line in wrap(s, width=width, ansi=ansi):
+            print(line, file=file, end=None)
+    else:
+        print(s, file=file, end=None)
 
+    if flush:
+        file.flush()
 
-def ansi_rjust(s, width):
-    '''
-    Right justify the input string.
-
-    :param str s: the input string
-    :param int width: the desired width
-    :returns str: the output string
-    '''
-    count = ansi_len(s)
-    if count >= width:
-        return s
-    diff = width - count
-    return (' ' * diff) + s

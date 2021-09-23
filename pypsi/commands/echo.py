@@ -16,9 +16,8 @@
 #
 
 import argparse
+import os
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
-
-EchoCmdUsage = "%(prog)s [-n] [-h] message"
 
 
 class EchoCommand(Command):
@@ -26,28 +25,18 @@ class EchoCommand(Command):
     Prints text to the screen.
     '''
 
-    def __init__(self, name='echo', topic='shell',
-                 brief='print a line of text', **kwargs):
-        self.parser = PypsiArgParser(
-            prog=name,
-            description=brief,
-            usage=EchoCmdUsage
-        )
+    def __init__(self, name='echo', topic='shell', **kwargs):
+        brief = 'print a line of text'
+        self.parser = PypsiArgParser(prog=name, description=brief)
 
-        self.parser.add_argument(
-            'message', help='message to print', nargs=argparse.REMAINDER,
-            metavar="MESSAGE"
-        )
+        self.parser.add_argument('message', help='message to print', nargs=argparse.REMAINDER,
+                                 metavar="MESSAGE")
 
-        self.parser.add_argument(
-            '-n', '--nolf', help="don't print newline character",
-            action='store_true'
-        )
+        self.parser.add_argument('-n', '--nolf', help="don't print newline character",
+                                 action='store_true')
 
-        super().__init__(
-            name=name, usage=self.parser.format_help(), topic=topic,
-            brief=brief, **kwargs
-        )
+        super().__init__(name=name, usage=self.parser.format_help(), topic=topic, brief=brief,
+                         **kwargs)
 
     def run(self, shell, args):
         try:
@@ -55,7 +44,7 @@ class EchoCommand(Command):
         except CommandShortCircuit as e:
             return e.code
 
-        tail = '' if ns.nolf else '\n'
+        tail = '' if ns.nolf else os.linesep
 
         print(' '.join(ns.message), sep='', end=tail)
 

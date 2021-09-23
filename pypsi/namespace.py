@@ -29,6 +29,7 @@ class Namespace(object):
     - ``namespace.my_attr = 1``
     - ``namespace['my_attr'] = 1``
     '''
+    # TODO do we need this?
 
     def __init__(self, **kwargs):
         '''
@@ -64,6 +65,7 @@ class ScopedNamespace(object):
     Provides a configurable namespace for arbitrary attribute access. This class is used to store
     variables within the shell, which are scoped and case insensitive.
     '''
+    # TODO do we need this?
 
     def __init__(self, name, case_sensitive=True, locals=None, parent=None):
         '''
