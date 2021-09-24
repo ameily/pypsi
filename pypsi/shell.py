@@ -18,10 +18,9 @@
 import sys
 import os
 import readline
-from typing import Union
-from pypsi.cmdline import (StatementParser, StatementSyntaxError,
-                           IORedirectionError, CommandNotFoundError,
-                           StringToken, OperatorToken, Token, WhitespaceToken,
+from typing import Union, List
+from pypsi.cmdline import (StatementParser, StatementSyntaxError, IORedirectionError,
+                           CommandNotFoundError, StringToken, OperatorToken, Token, WhitespaceToken,
                            UnclosedQuotationError, TrailingEscapeError)
 
 from pypsi.namespace import Namespace
@@ -30,7 +29,8 @@ from pypsi.os import is_path_prefix
 from pypsi.ansi import Color, pypsi_print
 from pypsi.profiles import BashProfile, TabCompletionProfile, ShellProfile
 from pypsi.core import Plugin, Command
-from pypsi.pipes import ThreadLocalProxy, InvocationThread
+from pypsi.pipes import InvocationThread
+from pypsi.proxy import ThreadLocalProxy
 from .os import make_ansi_stream
 
 
@@ -41,7 +41,7 @@ class Shell:
     '''
     # pylint: disable=too-many-public-methods
 
-    def __init__(self, shell_name: str = 'pypsi', width: int = None, exit_rc: int = -1024,
+    def __init__(self, shell_name: str = 'pypsi', width: int = -1, exit_rc: int = -1024,
                  ctx: Namespace = None, profile: ShellProfile = None, completer_delims: str = None,
                  colors: bool = True):
         '''

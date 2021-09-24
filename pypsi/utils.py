@@ -22,9 +22,11 @@ Utility functions and classes.
 import codecs
 import io
 import chardet
+from typing import TextIO, Union, BinaryIO
 
 
-def safe_open(file, mode='r', chunk_size=4096, ascii_is_utf8=True, **kwargs):
+def safe_open(file: Union[str, BinaryIO], mode: str = 'r', chunk_size: int = 4096,
+              ascii_is_utf8: bool = True, **kwargs) -> TextIO:
     '''
     Detect a file's encoding, skip any Byte Order Marks that the are located
     at the beginning of the file, and returns the opened file stream. The

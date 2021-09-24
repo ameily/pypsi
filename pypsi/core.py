@@ -31,7 +31,7 @@ if TYPE_CHECKING:
     from .cmdline import Token
 
 
-TabCompletionMethod = Callable[[Shell, List[str], str], List[str]]
+TabCompletionMethod = Callable[['Shell', List[str], str], List[str]]
 
 
 class Plugin:

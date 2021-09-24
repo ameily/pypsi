@@ -51,9 +51,9 @@ class SystemCommand(Command):
 
         try:
             proc = subprocess.Popen(
-                args, stdout=sys.stdout._get_target(),  # pylint: disable=protected-access
-                stdin=sys.stdin._get_target(),  # pylint: disable=protected-access
-                stderr=sys.stderr._get_target(),  # pylint: disable=protected-access
+                args, stdout=sys.stdout.thread_local_get(),  # pylint: disable=protected-access
+                stdin=sys.stdin.thread_local_get(),  # pylint: disable=protected-access
+                stderr=sys.stderr.thread_local_get(),  # pylint: disable=protected-access
                 shell=self.use_shell
             )
         except OSError as e:

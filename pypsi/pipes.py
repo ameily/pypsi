@@ -16,32 +16,14 @@
 #
 
 
+from __future__ import annotations
+from typing import TYPE_CHECKING, Union, TextIO
 import threading
 import sys
-import os
-from contextlib import contextmanager
-from typing import Text, TextIO, Any, Dict
-from pypsi.os import make_ansi_stream
 
-
-class ThreadLocalProxy:
-
-    def __init__(self, target: Any):
-        self.__target = target
-        self.__proxies: Dict[int, Any] = {}
-
-    def proxy(self, proxy: Any) -> None:
-        self.__proxies[threading.get_ident()] = proxy or self.__target
-
-    def unproxy(self) -> None:
-        self.__proxies.pop(threading.get_ident(), None)
-
-    def __call__(self) -> Any:
-        return self.__proxies.get(threading.get_ident(), self.__target)
-
-    def __getattr__(self, name: str) -> Any:
-        target = self.__proxies.get(threading.get_ident(), self.__target)
-        return getattr(target, name)
+if TYPE_CHECKING:
+    from .shell import Shell
+    from .cmdline import CommandInvocation
 
 
 class InvocationThread(threading.Thread):
@@ -49,7 +31,8 @@ class InvocationThread(threading.Thread):
     An invocation of a command from the command line interface.
     '''
 
-    def __init__(self, shell, invoke, stdin=None, stdout=None, stderr=None):
+    def __init__(self, shell: Shell, invoke: CommandInvocation, stdin: Union[str, TextIO] = None,
+                 stdout: Union[str, TextIO] = None, stderr: Union[str, TextIO] = None):
         '''
         :param pypsi.shell.Shell shell: the active shell.
         :param pypsi.cmdline.CommandInvocation invoke: the invocation to
@@ -77,7 +60,7 @@ class InvocationThread(threading.Thread):
         if stderr:
             self.invoke.stderr = stderr
 
-    def run(self):
+    def run(self) -> None:
         '''
         Run the command invocation.
         '''
@@ -90,7 +73,7 @@ class InvocationThread(threading.Thread):
         finally:
             pass
 
-    def stop(self):
+    def stop(self) -> None:
         '''
         Attempt to stop the thread by explitily closing the stdin, stdout, and
         stderr streams.

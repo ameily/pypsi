@@ -105,7 +105,7 @@ class TipCommand(Command):
             self.error(shell, "no motd available")
             return -1
 
-        width = sys.stdout.width or 60
+        width = getattr(sys.stdout, 'width', None) or 60
         print(Color.bright_green("Message of the Day".center(width)))
         print(Color.bright_green('>' * width))
         print(self.motd)

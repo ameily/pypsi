@@ -179,7 +179,7 @@ class Win32AnsiStream(AnsiStream):
         super().__init__(*args, **kwargs)
 
         try:
-            self._win32_handle = msvcrt.get_osfhandle(self.stream.fileno())
+            self._win32_handle = msvcrt.get_osfhandle(self.fileno())
         except:
             # stream is not a real File (ie. StringIO).
             self._win32_handle = None
@@ -196,7 +196,7 @@ class Win32AnsiStream(AnsiStream):
 
     def write(self, data):
         if not self._win32_handle and self.isatty():
-            return self.stream.write(data)
+            return super().write(data)
 
         in_code = False
         for chunk in ANSI_CODE_RE.split(data):
@@ -208,7 +208,7 @@ class Win32AnsiStream(AnsiStream):
 
                     if attrs is not None:
                         if self._win32_flush_pending:
-                            self.stream.flush()
+                            self.flush()
                         # TODO we only handle foreground colors currently, so
                         # we mask the attributes to the bottom 4 bits. We
                         # should support background colors and other attributes
@@ -216,13 +216,13 @@ class Win32AnsiStream(AnsiStream):
                             (self._win32_current_attrs & 0xfffffff0) | attrs
                         )
                 elif not in_code:
-                    self.stream.write(chunk)
+                    super().write(chunk)
                     self._win32_flush_pending = True
             in_code = not in_code
         return len(data)
 
     def flush(self):
-        self.stream.flush()
+        super().flush()
         self._win32_flush_pending = False
 
 

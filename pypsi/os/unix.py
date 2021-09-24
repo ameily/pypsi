@@ -20,7 +20,7 @@ Unix (Cygwin, Linux, etc) specific functions
 '''
 
 import os
-from typing import TextIO
+from io import TextIOWrapper
 from pypsi.ansi import AnsiStream
 
 __all__ = [
@@ -30,8 +30,8 @@ __all__ = [
 ]
 
 
-def make_ansi_stream(stream: TextIO, **kwargs) -> AnsiStream:
-    return AnsiStream(stream, **kwargs) if not isinstance(stream, AnsiStream) else stream
+def make_ansi_stream(stream: TextIOWrapper, *args, **kwargs) -> AnsiStream:
+    return AnsiStream(stream, *args, **kwargs) if not isinstance(stream, AnsiStream) else stream
 
 
 def find_bins_in_path():

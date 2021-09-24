@@ -18,7 +18,7 @@
 import time
 import os
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
-from pypsi.completers import path_completer, command_completer
+from pypsi.completers import path_completer
 
 TailCmdUsage = "%(prog)s [-n N] [-f] [-h] FILE"
 

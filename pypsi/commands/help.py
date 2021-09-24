@@ -17,9 +17,7 @@
 
 import sys
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
-from pypsi.format import Table, Column, title_str
-from pypsi.ansi import AnsiCodes
-from pypsi.completers import command_completer
+from pypsi.format import Table, Column
 
 
 class Topic(object):

@@ -46,12 +46,11 @@ from pypsi.commands.pwd import PwdCommand
 from pypsi.plugins.comment import CommentPlugin
 
 from pypsi import wizard as wiz
-from pypsi.format import Table, Column, title_str
+from pypsi.format import Table, Column
 from pypsi.completers import path_completer
 
 
-from pypsi.ansi import AnsiCodes
-from pypsi import topics
+from pypsi.ansi import Color, ansi_clear_screen
 
 from pypsi.os import find_bins_in_path
 
@@ -186,21 +185,20 @@ class DemoShell(Shell):
         except:
             self.error("failed to load message of the day file: demo-motd.txt")
 
-        self.prompt = "{gray}[$time]{r} {cyan}pypsi{r} {green})>{r} ".format(
-            gray=AnsiCodes.gray.prompt(), r=AnsiCodes.reset.prompt(),
-            cyan=AnsiCodes.cyan.prompt(), green=AnsiCodes.green.prompt()
-        )
+        self.prompt = (f'{Color.gray.prompt}[$time] {Color.bright_cyan.prompt}pypsi '
+                       f'{Color.bright_green.prompt})> {Color.reset_all.prompt}')
+
         self.fallback_cmd = self.system_cmd
 
         # Register the shell topic for the help command
         self.help_cmd.add_topic(self, Topic("shell", "Builtin Shell Commands"))
         # Add the I/O redirection topic
-        self.help_cmd.add_topic(self, topics.IoRedirection)
+        # self.help_cmd.add_topic(self, topics.IoRedirection)
 
         self._sys_bins = None
 
     def on_cmdloop_begin(self):
-        print(AnsiCodes.clear_screen)
+        ansi_clear_screen()
         if self.tip_cmd.motd:
             self.tip_cmd.print_motd(self)
             print()
@@ -208,10 +206,10 @@ class DemoShell(Shell):
             print("No tips registered. Create the demo-tips.txt file for the tip of the day.")
 
         if self.tip_cmd.tips:
-            print(AnsiCodes.green, "Tip of the Day".center(self.width), sep='')
-            print('>' * self.width, AnsiCodes.reset, sep='')
+            print(Color.bright_green("Tip of the Day".center(self.width)))
+            print('>' * self.width)
             self.tip_cmd.print_random_tip(self, False)
-            print(AnsiCodes.green, '<' * self.width, AnsiCodes.reset, sep='')
+            print(Color.bright_green('<' * self.width))
             print()
         else:
             print("To see the message of the day. Create the demo-motd.txt file for the MOTD.")

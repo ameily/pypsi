@@ -20,6 +20,7 @@
 Classes used for parsing user input.
 '''
 
+from typing import List, Union, Tuple, TextIO, Iterator
 from contextlib import contextmanager
 import sys
 from pypsi.utils import safe_open
@@ -475,16 +476,16 @@ class CommandInvocation:
 
     @contextmanager
     def proxy_streams(self):
-        sys.stdout.proxy(self.stdout)
-        sys.stderr.proxy(self.stderr)
-        sys.stdin.proxy(self.stdin)
+        sys.stdout.thread_local_proxy(self.stdout)
+        sys.stderr.thread_local_proxy(self.stderr)
+        sys.stdin.thread_local_proxy(self.stdin)
 
         try:
             yield
         finally:
-            sys.stdout.unproxy()
-            sys.stderr.unproxy()
-            sys.stdin.unproxy()
+            sys.stdout.thread_local_unproxy()
+            sys.stderr.thread_local_unproxy()
+            sys.stdin.thread_local_unproxy()
 
     def __call__(self, shell):
         '''

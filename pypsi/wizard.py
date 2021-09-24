@@ -24,8 +24,6 @@ import readline
 import re
 from pypsi.completers import path_completer
 from pypsi.cmdline import StatementParser, StringToken
-from pypsi.ansi import AnsiCodes
-from pypsi.format import title_str
 from pypsi.namespace import Namespace
 
 
