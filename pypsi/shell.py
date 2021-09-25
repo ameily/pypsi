@@ -41,9 +41,9 @@ class Shell:
     '''
     # pylint: disable=too-many-public-methods
 
-    def __init__(self, shell_name: str = 'pypsi', width: int = -1, exit_rc: int = -1024,
+    def __init__(self, shell_name: str = 'pypsi', width: int = None, exit_rc: int = -1024,
                  ctx: Namespace = None, profile: ShellProfile = None, completer_delims: str = None,
-                 colors: bool = True):
+                 colors: bool = True, max_width: int = None):
         '''
         Subclasses need to call the Shell constructor to properly initialize
         it.
@@ -79,21 +79,25 @@ class Shell:
 
         self.eof_is_sigint = False
         self._backup_completer = readline.get_completer()
+        self.width = width
+        self.max_width = max_width
 
-        self.bootstrap(width)
+        self.bootstrap()
 
         self.on_shell_ready()
 
-    def bootstrap(self, width: int = -1) -> None:
+    def bootstrap(self) -> None:
         import builtins  # pylint: disable=import-outside-toplevel
         if not isinstance(sys.stdout, ThreadLocalProxy):
             self.backup_stdout = sys.stdout
-            stream = make_ansi_stream(sys.stdout, width=width) if self.colors else sys.stdout
+            stream = make_ansi_stream(sys.stdout, width=self.width, max_width=self.max_width,
+                                      ansi=self.colors)
             sys.stdout = ThreadLocalProxy(stream)
 
         if not isinstance(sys.stderr, ThreadLocalProxy):
             self.backup_stderr = sys.stderr
-            stream = make_ansi_stream(sys.stderr, width=width) if self.colors else sys.stderr
+            stream = make_ansi_stream(sys.stderr, width=self.width, max_width=self.max_width,
+                                      ansi=self.colors)
             sys.stderr = ThreadLocalProxy(stream)
 
         if not isinstance(sys.stdin, ThreadLocalProxy):
@@ -265,6 +269,10 @@ class Shell:
                     self.on_input_canceled()
                 else:
                     rc = None
+                    if self.width is None:
+                        sys.stdout.thread_local_get().detect_width()
+                        sys.stderr.thread_local_get().detect_width()
+
                     try:
                         rc = self.execute(raw)
                         rc = rc or 0

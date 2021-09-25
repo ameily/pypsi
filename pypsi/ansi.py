@@ -24,7 +24,7 @@ import sys
 import os
 from io import TextIOWrapper
 from types import ModuleType
-from typing import Any, Iterator, TextIO, Union
+from typing import Any, Iterator, TextIO, Union, Tuple
 import importlib.util
 import textwrap
 import builtins
@@ -119,15 +119,16 @@ def load_textwrap() -> ModuleType:
 
 def ansi_len(s: str) -> int:
     length = len(s)
+    ansilen = length
     ansi_start = s.find('\x1b[')
     ansi_end = None
     while ansi_start >= 0:
         ansi_end = ansi_start
         while ansi_end < length and s[ansi_end] not in 'ABCDEFGHJKSTfmnsulh\r\n':
             ansi_end += 1
-        length -= (ansi_end - ansi_start) + 1
+        ansilen -= (ansi_end - ansi_start) + 1
         ansi_start = s.find('\x1b[', ansi_end)
-    return length
+    return ansilen
 
 
 def strip_ansi_codes(s: str) -> Iterator[str]:
@@ -159,6 +160,17 @@ ansi_textwrap.len = ansi_len
 python_print = builtins.print
 
 
+def split_line_ending(s: str, default: str = os.linesep) -> Tuple[str, str]:
+    i = len(s) - 1
+    while i >= 0:
+        if not s[i].isspace():
+            return (s[0:i+1], s[i+1:] or default)
+        i -= 1
+
+    return ('', s or default)
+
+
+
 def wrap(s: str, ansi: bool = True, **kwargs) -> Iterator[str]:
     '''
     Word-wrap a string.
@@ -167,52 +179,89 @@ def wrap(s: str, ansi: bool = True, **kwargs) -> Iterator[str]:
     kwargs.setdefault('drop_whitespace', False)
     tw_wrap = ansi_textwrap.wrap if ansi else textwrap.wrap
     for line in s.splitlines(keepends=True):
-        yield from tw_wrap(line, **kwargs)
+        line, end = split_line_ending(line)
+        if line:
+            yield from (wrapped.strip() + end for wrapped in tw_wrap(line, **kwargs))
+        else:
+            yield end
 
 
 class AnsiStream(TextIOWrapper):
 
-    def __init__(self, stream: TextIOWrapper, width: int = -1):
+    def __init__(self, stream: TextIOWrapper, width: int = None, max_width: int = None,
+                 ansi: bool = True):
         super().__init__(stream.buffer, encoding=stream.encoding, errors=stream.errors,
                          newline=None, line_buffering=stream.line_buffering,
                          write_through=stream.write_through)
-        if width < 0 and stream.isatty():
+        self.max_width = max_width
+        self.ansi = ansi
+        if width is None and stream.isatty():
             self.detect_width()
         else:
             self.width = width
 
     def detect_width(self) -> None:
         try:
-            self.width = os.get_terminal_size(self.stream.fileno()).columns
+            width = os.get_terminal_size(self.fileno()).columns - 1
+            if self.max_width:
+                width = min(width, self.max_width)
         except:
-            self.width = 0
+            width = 0
+
+        self.width = width
 
 
 
 def pypsi_print(*items, file: Union[TextIO, AnsiStream] = None, sep: str = None,
-                flush: bool = False, end: str = os.linesep):
+                flush: bool = False, end: str = os.linesep, word_wrap: bool = True):
     file = file or sys.stdout.thread_local_get()
     if isinstance(file, AnsiStream):
         width = file.width
-        ansi = True
+        ansi = file.ansi
     else:
         width = 0
         ansi = False
 
     sep = sep or ''
     if ansi:
-        s = sep.join(items)
+        s = sep.join(str(item) for item in items)
     else:
-        s = ''.join(strip_ansi_codes(sep.join(items)))
+        s = ''.join(strip_ansi_codes(sep.join(str(item) for item in items)))
 
     if end:
         s += end
 
-    if width:
+    if width and word_wrap:
         for line in wrap(s, width=width, ansi=ansi):
-            python_print(line, file=file, end=None)
+            python_print(line, file=file, end='')
     else:
-        python_print(s, file=file, end=None)
+        python_print(s, file=file, end='')
 
     if flush:
         file.flush()
+
+
+def ansi_title(s: str, underline: str = '=') -> str:
+    if len(underline) != 1:
+        raise TypeError('underline must be a single character')
+
+    line = underline * ansi_len(s)
+    return f'{s}{os.linesep}{line}'
+
+
+def ansi_align(s: str, alignment: str, width: int):
+    length = ansi_len(s)
+    if length >= width:
+        return s
+
+    if alignment == 'center':
+        spacing = ' ' * ((width - length) // 2)
+        return f'{spacing}{s}'
+
+    spacing = ' ' * (width - length)
+    if alignment == 'left':
+        return f'{s}{spacing}'
+    if alignment == 'right':
+        return f'{spacing}{s}'
+
+    raise TypeError(f'unrecgonized alignment: {alignment!r}, must be one of: left, right, center')
