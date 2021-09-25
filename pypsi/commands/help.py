@@ -18,6 +18,7 @@
 import sys
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
 from pypsi.format import Table, Column
+from pypsi.ansi import Color, ansi_title
 
 
 class Topic(object):
@@ -84,7 +85,7 @@ class HelpCommand(Command):
         # and complete any arguments' values by calling a callback function
         # with the same arguments as complete if the callback was defined
         # when the parser was created.
-        return command_completer(self.parser, shell, args, prefix)
+        return self.parser.complete(shell, args, prefix)
 
     def reload(self, shell):
         shell.ctx.uncat_topic.commands = []
@@ -115,13 +116,8 @@ class HelpCommand(Command):
 
     def print_topic_commands(self, shell, topic, title=None,
                              name_col_width=20):
-        print(
-            AnsiCodes.yellow,
-            title_str(title or topic.name or topic.id, shell.width),
-            AnsiCodes.reset,
-            sep=''
-        )
-        print(AnsiCodes.yellow, end='')
+        print(Color.yellow(ansi_title(title or topic.name or topic.id)))
+        print(Color.yellow, end='')
         Table(
             columns=(Column(''), Column('', Column.Grow)),
             spacing=4,
@@ -131,7 +127,7 @@ class HelpCommand(Command):
             (' ' + c.name.ljust(name_col_width - 1), c.brief or '')
             for c in topic.commands
         ]).write(sys.stdout)
-        print(AnsiCodes.reset, end='')
+        print(Color.reset_all, end='')
 
     def print_topics(self, shell):
         max_name_width = 0
@@ -159,11 +155,8 @@ class HelpCommand(Command):
 
         if addl:
             addl = sorted(addl, key=lambda x: x.id)
-            print(
-                AnsiCodes.yellow,
-                title_str("Additional Topics", shell.width),
-                sep=''
-            )
+            print(Color.yellow(ansi_title('Additional Topics')))
+            print(Color.yellow, end='')
             Table(
                 columns=(Column(''), Column('', Column.Grow)),
                 spacing=4,
@@ -173,13 +166,13 @@ class HelpCommand(Command):
                 (' ' + topic.id.ljust(max_name_width - 1), topic.name or '')
                 for topic in addl
             ]).write(sys.stdout)
-            print(AnsiCodes.reset)
+            print(Color.reset)
 
     def print_topic(self, shell, id):
         if id not in shell.ctx.topic_lookup:
             if id in shell.commands:
                 cmd = shell.commands[id]
-                print(AnsiCodes.yellow, cmd.usage, AnsiCodes.reset, sep='')
+                print(Color.yellow(cmd.usage))
                 return 0
 
             self.error(shell, "unknown topic: ", id)
@@ -187,7 +180,7 @@ class HelpCommand(Command):
 
         topic = shell.ctx.topic_lookup[id]
         if topic.content:
-            print(title_str(topic.name or topic.id, shell.width))
+            print(ansi_title(topic.name or topic.id, shell.width))
             try:
                 cnt = topic.content.format(**self.vars)
             except:

@@ -24,9 +24,10 @@ from pypsi.namespace import ScopedNamespace
 from pypsi.cmdline import (Token, StringToken, TokenContinue, TokenEnd,
                            Expression)
 from pypsi.format import Table, Column
+from pypsi.profiles import ShellProfile
 
 
-class ManagedVariable(object):
+class ManagedVariable:
     '''
     Represents a variable that is managed by the shell. Managed variables have
     get and set hooks that allow for input validation or read-only enforcement.
@@ -161,12 +162,10 @@ class VariableCommand(Command):
 
 class VariableToken(Token):
 
-    VarChars = ('abcdefghijklmnopqrstuvwxyz'
-                'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-                '0123456789_')
+    VarChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_'
 
-    def __init__(self, index, prefix, var=''):
-        super().__init__(index)
+    def __init__(self, index: int, prefix: str, var: str = '', profile: ShellProfile = None):
+        super().__init__(index, profile)
         self.prefix = prefix
         self.var = var
 

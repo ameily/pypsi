@@ -19,6 +19,7 @@
 Windows specific functions and classes.
 '''
 
+from io import TextIOWrapper
 import os
 import sys
 import re
@@ -226,7 +227,7 @@ class Win32AnsiStream(AnsiStream):
         self._win32_flush_pending = False
 
 
-def make_ansi_stream(stream: TextIO, **kwargs) -> AnsiStream:
+def make_ansi_stream(stream: TextIOWrapper, **kwargs) -> AnsiStream:
     '''
     Used by the Pypsi pipe line to create ANSI escape code compatible streams.
     '''

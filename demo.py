@@ -206,10 +206,11 @@ class DemoShell(Shell):
             print("No tips registered. Create the demo-tips.txt file for the tip of the day.")
 
         if self.tip_cmd.tips:
-            print(Color.bright_green("Tip of the Day".center(self.width)))
-            print('>' * self.width)
+            width = getattr(sys.stdout, 'width', 60)
+            print(Color.bright_green("Tip of the Day".center(width)))
+            print(Color.bright_green('>' * width))
             self.tip_cmd.print_random_tip(self, False)
-            print(Color.bright_green('<' * self.width))
+            print(Color.bright_green('<' * width))
             print()
         else:
             print("To see the message of the day. Create the demo-motd.txt file for the MOTD.")
