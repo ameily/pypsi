@@ -160,14 +160,14 @@ ansi_textwrap.len = ansi_len
 python_print = builtins.print
 
 
-def split_line_ending(s: str, default: str = os.linesep) -> Tuple[str, str]:
+def split_line_ending(s: str) -> Tuple[str, str]:
     i = len(s) - 1
     while i >= 0:
         if not s[i].isspace():
-            return (s[0:i+1], s[i+1:] or default)
+            return (s[0:i+1], s[i+1:])
         i -= 1
 
-    return ('', s or default)
+    return ('', s)
 
 
 
@@ -222,7 +222,9 @@ def pypsi_print(*items, file: Union[TextIO, AnsiStream] = None, sep: str = None,
         width = 0
         ansi = False
 
-    sep = sep or ''
+    if sep is None:
+        sep = ' '
+
     if ansi:
         s = sep.join(str(item) for item in items)
     else:
