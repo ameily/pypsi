@@ -23,7 +23,7 @@ from pypsi.core import Plugin, Command, PypsiArgParser, CommandShortCircuit
 from pypsi.namespace import ScopedNamespace
 from pypsi.cmdline import (Token, StringToken, TokenContinue, TokenEnd,
                            Expression)
-from pypsi.format import Table, Column
+from pypsi.table import Table
 from pypsi.profiles import ShellProfile
 
 

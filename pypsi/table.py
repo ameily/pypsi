@@ -1,5 +1,34 @@
-from typing import List
-from .ansi import ansi_align, ansi_len, wrap
+
+import os
+import sys
+from typing import List, TextIO
+from .ansi import ansi_align, ansi_len, wrap, ansi_title
+
+
+def _build_row(row: List[str], sep: str, column_widths: List[int]) -> str:
+    '''
+    Convert a table row to a word-wrapped string.
+
+    :param row: the table row
+    :param sep: the horizontal seperator between cells
+    :param column_widths: the width, in characters, of each column
+    :return: the word-wrapped table row
+    '''
+    # Word wrap each column. This creates a list of lines in each column
+    columns = [list(wrap(col, width)) for col, width in zip(row, column_widths)]
+    line_count = max(len(col) for col in columns)
+    for column, width in zip(columns, column_widths):
+        if len(column) < line_count:
+            # extend the column with empty strings to make handle cell overflow
+            column.extend([''] * (line_count - len(column)))
+
+        for i in range(len(column)):
+            column[i] = ansi_align(column[i].strip(), 'left', width)
+
+
+    lines = (sep.join(col[i] for col in columns) for i in range(line_count))
+
+    return os.linesep.join(lines)
 
 
 class Table:
@@ -23,28 +52,35 @@ class Table:
         self.header = header
         self.rows = []
 
-    def append(self, *args):
+    def append(self, *row):
         '''
         Add a row to the table.
 
         :param list args: the column values
         '''
-        self.rows.append([str(item) for item in args])
-        self.column_widths = [max(item, ansi_len(value))
-                              for item, value in zip(self.column_widths, self.rows[-1])]
+        if len(row) != self.columns:
+            raise TypeError(f'incorrect number of columns in row: received {len(row)}, expected '
+                            f'{self.columns}')
+
+        self.rows.append([str(col) for col in row])
+        self.column_widths = [max(item, ansi_len(col))
+                              for item, col in zip(self.column_widths, self.rows[-1])]
 
         return self
 
-    def extend(self, *args):
+    def extend(self, *rows):
         '''
         Add multiple rows to the table, each argument should be a list of
         column values.
         '''
-        for row in args:
+        for row in rows:
             self.append(*row)
         return self
 
     def resize(self) -> None:
+        '''
+        Resize the column sizes based on content.
+        '''
         padding = self.spacing * (self.columns - 1)
         if (sum(self.column_widths) + padding) <= self.width:
             return
@@ -72,111 +108,23 @@ class Table:
 
         self.column_widths = columns_widths
 
-    def _build_row(self, row: List[str], sep: str) -> str:
-        columns = [list(wrap(col, width)) for col, width in zip(row, self.column_widths)]
-        line_count = max(len(col) for col in columns)
-        ret = ''
-        for column, width in zip(columns, self.column_widths):
-            if len(column) < line_count:
-                column.extend([''] * (line_count - len(column)))
-
-            for i in range(len(column)):
-                column[i] = [ansi_align(line.strip(), 'left', width) for line in column[i]]
-
-        # TODO
-
-    def write(self, fp):
+    def write(self, file: TextIO = None):
         '''
         Print the table to a specified file stream.
 
-        :param file fp: output stream
+        :param file file: output stream
         '''
+        file = file or sys.stdout.thread_local_get()
         self.resize()
-        for row in self.rows:
-            columns = [list(wrap(col, width)) for col, width in zip(row, self.column_widths)]
-            line_count = max(len(col) for col in columns)
-            for column in columns:
-                if len(column) < line_count:
-                    column.extend([''] * (line_count - len(column)))
-
-        '''
-        def write_overflow(row):
-            overflow = [''] * len(self.columns)
-            column_idx = 0
-            for (col, value) in zip(self.columns, row):
-                if column_idx > 0:
-                    fp.write(' ' * self.spacing)
-                if isinstance(value, str):
-                    pass
-                else:
-                    value = str(value)
-                if ansi_len(value) <= col.width:
-                    fp.write(ansi_ljust(value, col.width))
-                else:
-                    wrapped_line = list(wrap_line(value, col.width))
-                    if len(wrapped_line) > 1:
-                        overflow[column_idx] = ' '.join(wrapped_line[1:])
-                    fp.write(wrapped_line[0])
-                # Move to next column
-                column_idx += 1
-            fp.write('\n')
-
-            # deal with overflowed data
-            if ''.join(overflow):
-                write_overflow(overflow)
-
-        total = sum([col.width for col in self.columns])
-
-        # Resize columns if last too wide
-        # TODO: Smarter column resizing, maybe pick widest column
-        if (total + self.spacing * (len(self.columns) - 1)) > self.width:
-            self.columns[-1].mode = Column.Grow
-
-        for col in self.columns:
-            if col.mode == Column.Grow:
-                remaining = (
-                    self.width - ((len(self.columns) - 1) * self.spacing) -
-                    total
-                )
-                col.width += remaining
+        sep = ' ' * self.spacing
+        rows = iter(self.rows)
 
         if self.header:
-            i = 0
-            for col in self.columns:
-                if i > 0:
-                    fp.write(' ' * self.spacing)
-                fp.write(ansi_ljust(col.text, col.width))
-                i += 1
+            line = _build_row(next(rows), sep, self.column_widths)
+            print(ansi_title(line), word_wrap=False, file=file)
 
-            fp.write('\n')
-            fp.write('=' * self.width)
-            fp.write('\n')
-
-        for row in self.rows:
-            write_overflow(row)
-
-        return 0
-    '''
-
-
-class Column(object):
-    '''
-    A table column.
-    '''
-
-    #: Size mode to have the column shrink to its contents
-    Shrink = 0
-    #: Size mode to have the column grow to the maximum width it can have
-    Grow = 1
-
-    def __init__(self, text='', mode=0):
-        '''
-        :param str text: the column name
-        :param int mode: the column size mode
-        '''
-        self.text = text
-        self.mode = mode
-        self.width = ansi_len(text)
+        for row in rows:
+            print(_build_row(row, sep, self.column_widths), word_wrap=False, file=file)
 
 
 class FixedColumnTable(object):
@@ -184,42 +132,32 @@ class FixedColumnTable(object):
     A table that has preset column widths.
     '''
 
-    def __init__(self, widths):
+    def __init__(self, widths: List[int], spacing: int = 1, file: TextIO = None,
+                 header: bool = True):
         '''
         :param list widths: the list of column widths (`int`)
         '''
-        self.widths = [int(width) for width in widths]
-        self.buffer = []
+        self.widths = widths
+        self.spacing = spacing
+        self.file = file or sys.stdout.thread_local_get()
+        self.columns = len(widths)
+        self.header = header
 
-    def write_row(self, fp, *args):
-        '''
-        Print a single row.
+    def append(self, *row) -> None:
+        if len(row) != self.columns:
+            raise TypeError(f'incorrect number of columns in row: received {len(row)}, expected '
+                            f'{self.columns}')
 
-        :param file fp: the output file stream (usually sys.stdout or
-            sys.stderr)
-        :param list args: the column values for the row
-        '''
-        for (width, value) in zip(self.widths, args):
-            fp.write(ansi_ljust(value, width))
+        padding = ' ' * self.spacing
+        line = _build_row(row, padding, self.widths)
+        if self.header:
+            line = ansi_title(line)
+            self.header = False
 
-        fp.write('\n')
+        print(line, word_wrap=False, file=self.file)
+        return self
 
-    def add_cell(self, fp, col):
-        '''
-        Add a single cell to the table. The current row is printed if the
-        column completes the row.
-        '''
-        self.buffer.append(col)
-        if len(self.buffer) == len(self.widths):
-            self.write_row(fp, *self.buffer)
-            self.buffer = []
-
-    def flush(self, fp):
-        '''
-        Force a write of the table.
-
-        :param file fp: the output file stream
-        '''
-        if self.buffer:
-            self.write_row(fp, *self.buffer)
-            self.buffer = []
+    def extend(self, *rows) -> None:
+        for row in rows:
+            self.append(*row)
+        return self

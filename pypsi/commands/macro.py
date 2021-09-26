@@ -18,7 +18,7 @@
 import sys
 from pypsi.plugins.block import BlockCommand
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
-from pypsi.format import Table, Column
+from pypsi.table import Table
 
 
 # something | macro | something

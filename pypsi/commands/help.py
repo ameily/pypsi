@@ -17,7 +17,7 @@
 
 import sys
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
-from pypsi.format import Table, Column
+from pypsi.table import Table
 from pypsi.ansi import Color, ansi_title
 
 
@@ -119,10 +119,10 @@ class HelpCommand(Command):
         print(Color.yellow(ansi_title(title or topic.name or topic.id)))
         print(Color.yellow, end='')
         Table(
-            columns=(Column(''), Column('', Column.Grow)),
+            columns=2,
             spacing=4,
             header=False,
-            width=shell.width
+            width=getattr(sys.stdout, 'width', 80)
         ).extend(*[
             (' ' + c.name.ljust(name_col_width - 1), c.brief or '')
             for c in topic.commands
@@ -158,10 +158,10 @@ class HelpCommand(Command):
             print(Color.yellow(ansi_title('Additional Topics')))
             print(Color.yellow, end='')
             Table(
-                columns=(Column(''), Column('', Column.Grow)),
+                columns=2,
                 spacing=4,
                 header=False,
-                width=shell.width
+                width=getattr(sys.stdout, 'width', 80)
             ).extend(*[
                 (' ' + topic.id.ljust(max_name_width - 1), topic.name or '')
                 for topic in addl

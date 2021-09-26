@@ -46,7 +46,7 @@ from pypsi.commands.pwd import PwdCommand
 from pypsi.plugins.comment import CommentPlugin
 
 from pypsi import wizard as wiz
-from pypsi.format import Table, Column
+from pypsi.table import Table
 from pypsi.completers import path_completer
 
 
@@ -77,18 +77,12 @@ class WizardCommand(Command):
             print()
             # Create a table with optimally sized columns.
             Table(
-                columns=(
-                    # FIrst column is the configuration ID. This column will be
-                    # the minimum width possible without wrapping
-                    Column('Config ID', Column.Shrink),
-                    # Second column is the configuration value. This column will
-                    # grow to a maximum width possible.
-                    Column('Config Value', Column.Grow)
-                ),
+                columns=2,
                 # Number of spaces between each column.
                 spacing=4
             ).extend(
                 # Each tuple is a row
+                ('Config ID', 'Config Value'),  # header
                 ('ip_addr', ns.ip_addr),
                 ('port', ns.port),
                 ('path', ns.path),
