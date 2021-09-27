@@ -22,6 +22,7 @@ Command line input wizards.
 import os
 import readline
 import re
+import sys
 from pypsi.completers import path_completer
 from pypsi.cmdline import StatementParser, StringToken
 from pypsi.namespace import Namespace
@@ -371,7 +372,7 @@ class PromptWizard(object):
         if print_header:
             print(
                 title_str("Entering " + self.name + " Wizard",
-                          width=shell.width, box=True, align='center'),
+                          width=sys.stdout.width, box=True, align='center'),
                 '\n',
                 self.description, '\n\n',
                 "To exit, enter either Ctrl+C, Ctrl+D, or 'quit'. For help "

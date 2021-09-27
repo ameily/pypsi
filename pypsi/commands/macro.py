@@ -15,6 +15,7 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
+from pypsi.ansi import ansi_title
 import sys
 from pypsi.plugins.block import BlockCommand
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
@@ -209,14 +210,14 @@ class MacroCommand(BlockCommand):
                 shell.eof_is_sigint = True
         elif ns.list:
             # Left justified table
-            print(title_str("Registered Macros", shell.width))
+            print(ansi_title("Registered Macros"))
             chunk_size = 3
 
             tbl = Table(
-                columns=(Column(''), Column(''), Column('', Column.Grow)),
+                columns=3,
                 spacing=4,
                 header=False,
-                width=shell.width
+                width=sys.stdout.width
             )
 
             macro_names = list(shell.ctx.macros.keys())

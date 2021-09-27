@@ -21,7 +21,6 @@ Unix (Cygwin, Linux, etc) specific functions
 
 import os
 from io import TextIOWrapper
-from pypsi.ansi import AnsiStream
 
 __all__ = [
     'find_bins_in_path',
@@ -30,8 +29,8 @@ __all__ = [
 ]
 
 
-def make_ansi_stream(stream: TextIOWrapper, *args, **kwargs) -> AnsiStream:
-    return AnsiStream(stream, *args, **kwargs) if not isinstance(stream, AnsiStream) else stream
+def make_ansi_stream(stream: TextIOWrapper, *args, **kwargs) -> TextIOWrapper:
+    return stream
 
 
 def find_bins_in_path():

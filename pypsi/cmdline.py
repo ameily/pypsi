@@ -83,7 +83,7 @@ class WhitespaceToken(Token):
         return TokenEnd
 
     def __str__(self) -> str:
-        return "WhitespaceToken( {} )".format(self.text)
+        return f"WhitespaceToken( {self.text} )"
 
     def __eq__(self, other) -> bool:
         return isinstance(other, WhitespaceToken)
@@ -115,7 +115,7 @@ class StringToken(Token):
         elif c:
             self.text += c
 
-    def add_char(self, c: str) -> int:
+    def add_char(self, c: str) -> int:  # pylint: disable=too-many-branches
         '''
         Add a character to this token.
 
@@ -193,11 +193,11 @@ class OperatorToken(Token):
     #: Valid operator characters
     Operators = '<>|&;'
 
-    def __init__(self, index: int, operator: str):
+    def __init__(self, index: int, operator: str, profile: ShellProfile):
         '''
         :param str operator: the operator
         '''
-        super().__init__(index)
+        super().__init__(index, profile)
         self.operator = operator
 
     def add_char(self, c: str) -> int:
@@ -213,7 +213,7 @@ class OperatorToken(Token):
         return TokenEnd
 
     def __str__(self) -> str:
-        return "OperatorToken( {} )".format(self.operator)
+        return f"OperatorToken( {self.operator} )"
 
     def is_chain_operator(self) -> bool:
         for c in self.operator:
@@ -302,7 +302,7 @@ class Statement:
         return isinstance(other, Statement) and self.invokes == other.invokes
 
 
-class CommandInvocation:
+class CommandInvocation:  # pylint: disable=too-many-instance-attributes
     '''
     An invocation of a command.
     '''
@@ -310,6 +310,7 @@ class CommandInvocation:
     def __init__(self, name: str, args: List[str] = None, stdout: InvocationStream = None,
                  stderr: InvocationStream = None, stdin: Union[str, TextIO] = None,
                  chain: str = None):
+        # pylint: disable=too-many-arguments
         #: Command name
         self.name = name
         #: List of command arguments
@@ -341,7 +342,7 @@ class CommandInvocation:
         )
 
     def __str__(self) -> str:
-        s = "{name} {args}".format(name=self.name, args=' '.join(self.args))
+        s = f"{self.name} {' '.join(self.args)}"
         if self.stdout:
             if isinstance(self.stdout, tuple) and self.stdout[1] == 'a':
                 s += " >> " + self.stdout[0]
@@ -533,7 +534,7 @@ class StatementSyntaxError(SyntaxError):
         self.index = index
 
     def __str__(self) -> str:
-        return "syntax error at {}: {}".format(self.index, self.message)
+        return f"syntax error at {self.index}: {self.message}"
 
 
 class UnclosedQuotationError(StatementSyntaxError):
@@ -587,7 +588,7 @@ class StatementParser:
             if c in (' ', '\t', '\xa0'):
                 self.token = WhitespaceToken(index, profile=self.profile)
             elif c in ('>', '<', '|', '&', ';'):
-                self.token = OperatorToken(index, c)
+                self.token = OperatorToken(index, c, profile=self.profile)
             else:
                 self.token = StringToken(index, c, profile=self.profile)
 
@@ -698,7 +699,7 @@ class StatementParser:
         :raises: :class:`StatementSyntaxError` on error
         :returns: (:class:`Statement`) the parsed statement
         '''
-
+        # pylint: disable=too-many-branches,too-many-statements
         statement = Statement()
         cmd = None
         prev = None
@@ -719,7 +720,7 @@ class StatementParser:
                             cmd.stdin = token.text
                     else:
                         raise StatementSyntaxError(
-                            message="unexpected token: {}".format(str(token)),
+                            message=f"unexpected token: {token}",
                             index=token.index
                         )
                 elif isinstance(token, StringToken):
@@ -731,10 +732,9 @@ class StatementParser:
                         done = True
                     elif token.operator == '|':
                         if cmd.stdout:
-                            msg = ("unexpected token: {}: duplicate output "
-                                   "redirection is invalid").format(str(token))
                             raise StatementSyntaxError(
-                                message=msg,
+                                message=f"unexpected token: {token}: duplicate output redirection "
+                                        f"is invalid",
                                 index=token.index
                             )
 
@@ -742,10 +742,9 @@ class StatementParser:
                         done = True
                     elif token.operator in ('>', '>>'):
                         if cmd.stdout:
-                            msg = ("unexpected token: {}: duplicate output "
-                                   "redirection is invalid").format(str(token))
                             raise StatementSyntaxError(
-                                message=msg,
+                                message=f"unexpected token: {token}: duplicate output redirection "
+                                        f"is invalid",
                                 index=token.index
                             )
                     elif token.operator == '<':
@@ -753,10 +752,9 @@ class StatementParser:
                                          statement[-1].chain == '|'):
                             # The previous command in was a pipe, so input
                             # redirection is not supported.
-                            msg = ("unexpected token: {} duplicate input "
-                                   "redirection is invalid").format(str(token))
                             raise StatementSyntaxError(
-                                message=msg,
+                                message=f"unexpected token: {token} duplicate input redirection is "
+                                        f"invalid",
                                 index=token.index
                             )
                     else:
@@ -773,7 +771,7 @@ class StatementParser:
                     cmd = CommandInvocation(token.text)
                 elif not isinstance(token, WhitespaceToken):
                     raise StatementSyntaxError(
-                        message="unexpected token: {}".format(str(token)),
+                        message=f"unexpected token: {token}",
                         index=token.index
                     )
             prev = token
@@ -783,7 +781,7 @@ class StatementParser:
             pass
         elif prev:
             raise StatementSyntaxError(
-                message="unexpected token: {}".format(str(prev)),
+                message=f"unexpected token: {prev}",
                 index=prev.index
             )
 
@@ -838,6 +836,7 @@ class Expression:
             has completed, and ``expression`` in the parsed
             :class:`Expression`, or :const:`None` if the expression is invalid.
         '''
+        # pylint: disable=too-many-branches
         state = 'operand'
         operand = operator = value = None
         done = False

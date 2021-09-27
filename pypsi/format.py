@@ -20,7 +20,7 @@ Provides functions and classes for dealing with command line input and output.
 '''
 
 from typing import Union
-from .ansi import ansi_len
+
 
 def humanize_file_size(value: Union[int, float]) -> str:
     '''
@@ -40,7 +40,5 @@ def humanize_file_size(value: Union[int, float]) -> str:
         value = v
         unit = u
     if unit == 'B':
-        return "{} B".format(int(value))
-    return "{:.2f} {}".format(value, unit)
-
-
+        return f"{value} B"
+    return f"{value:.2f} {unit}"

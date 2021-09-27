@@ -22,7 +22,7 @@ import itertools
 from typing import TextIO
 
 
-class ProgressBar(object):
+class ProgressBar:
     '''
     A basic text-based progress bar.
     '''
@@ -65,12 +65,8 @@ class ProgressBar(object):
         bar_width = self.width - col - 9
         percent = self.i / self.count
         fill = '=' * int(percent * bar_width)
-        bar = "{prefix}[{fill}{empty}] {percent:6.1%}".format(
-            prefix=prefix,
-            fill=fill,
-            empty=(' ' * (bar_width - len(fill))),
-            percent=percent
-        )
+        empty=' ' * (bar_width - len(fill))
+        bar = f"{prefix}[{fill}{empty}] {percent:6.1%}"
 
         if self.i < self.count and not cancel:
             end = ''
@@ -122,7 +118,6 @@ class ThreadedSpinner(threading.Thread):
     def run(self) -> None:
         i = itertools.cycle(self.seq)
 
-        # pylint: disable=unexpected-keyword-arg
         while not self.stop_lock.acquire(timeout=self.delta):
             prefix = self.activity
             print('\r', prefix, next(i), sep='', end='', flush=True,
@@ -138,7 +133,7 @@ class ThreadedSpinner(threading.Thread):
         self.join()
 
 
-class Spinner(object):
+class Spinner:
 
     def __init__(self, count: int = 1, seq: str = '|/-\\', activity: str = None,
                  stream: TextIO = None):

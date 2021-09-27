@@ -23,8 +23,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Callable, List, TextIO, Optional
 import argparse
 import sys
+
+from . import completers
 from .ansi import Color
-from pypsi import completers
+
 
 if TYPE_CHECKING:
     from .shell import Shell
@@ -154,6 +156,7 @@ class Command:
         :param str pipe: the type of data that will be read from and written to
             any pipes
         '''
+        # pylint: disable=too-many-arguments
         self.name = name
         self.usage = usage or ''
         self.brief = brief or ''

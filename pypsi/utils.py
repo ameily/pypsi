@@ -21,8 +21,8 @@ Utility functions and classes.
 
 import codecs
 import io
-import chardet
 from typing import TextIO, Union, BinaryIO
+import chardet
 
 
 def safe_open(file: Union[str, BinaryIO], mode: str = 'r', chunk_size: int = 4096,
@@ -49,7 +49,7 @@ def safe_open(file: Union[str, BinaryIO], mode: str = 'r', chunk_size: int = 409
 
     if 'b' in mode:
         # open the file as binary
-        return open(file, mode) if is_path else file
+        return open(file, mode) if is_path else file  # pylint: disable=unspecified-encoding
 
     if is_path:
         # open the file on disk and read the first chunk
@@ -61,7 +61,7 @@ def safe_open(file: Union[str, BinaryIO], mode: str = 'r', chunk_size: int = 409
         file.seek(0)
 
     if not header:
-        return open(file, mode) if is_path else file
+        return open(file, mode) if is_path else file  # pylint: disable=unspecified-encoding
 
     result = chardet.detect(header)
     enc = result['encoding']
@@ -71,6 +71,7 @@ def safe_open(file: Union[str, BinaryIO], mode: str = 'r', chunk_size: int = 409
         enc = 'utf-8'
 
     if is_path:
+        # pylint: disable=unspecified-encoding
         fp = io.TextIOWrapper(open(file, mode + 'b'), encoding=enc, **kwargs)
     else:
         fp = io.TextIOWrapper(file, encoding=enc, **kwargs)

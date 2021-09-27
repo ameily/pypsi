@@ -26,7 +26,7 @@ from pypsi.cmdline import (StatementParser, StatementSyntaxError, IORedirectionE
 from pypsi.namespace import Namespace
 from pypsi.completers import path_completer
 from pypsi.os import is_path_prefix
-from pypsi.ansi import Color, pypsi_print
+from pypsi.ansi import Color, pypsi_print, ThreadLocalAnsiStream
 from pypsi.profiles import BashProfile, TabCompletionProfile, ShellProfile
 from pypsi.core import Plugin, Command
 from pypsi.pipes import InvocationThread
@@ -39,7 +39,7 @@ class Shell:
     The command line interface that the user interacts with. All shell's need
     to inherit this base class.
     '''
-    # pylint: disable=too-many-public-methods
+    # pylint: disable=too-many-public-methods,too-many-instance-attributes
 
     def __init__(self, shell_name: str = 'pypsi', width: int = None, exit_rc: int = -1024,
                  ctx: Namespace = None, profile: ShellProfile = None, completer_delims: str = None,
@@ -53,6 +53,7 @@ class Shell:
             command when the shell needs to end execution
         :param pypsi.namespace.Namespace ctx: the base context
         '''
+        # pylint: disable=too-many-arguments
         self.backup_stdout = None
         self.backup_stdin = None
         self.backup_stderr = None
@@ -65,7 +66,7 @@ class Shell:
         self.preprocessors = []
         self.postprocessors = []
         self.plugins = []
-        self.prompt = "{name} )> ".format(name=shell_name)
+        self.prompt = f"{shell_name} )> "
         self.ctx = ctx or Namespace()
         self.profile = profile or BashProfile()
         self.running = False
@@ -88,17 +89,17 @@ class Shell:
 
     def bootstrap(self) -> None:
         import builtins  # pylint: disable=import-outside-toplevel
-        if not isinstance(sys.stdout, ThreadLocalProxy):
+        if not isinstance(sys.stdout, ThreadLocalAnsiStream):
             self.backup_stdout = sys.stdout
-            stream = make_ansi_stream(sys.stdout, width=self.width, max_width=self.max_width,
-                                      ansi=self.colors)
-            sys.stdout = ThreadLocalProxy(stream)
+            stream = make_ansi_stream(sys.stdout)
+            sys.stdout = ThreadLocalAnsiStream(stream, width=self.width, max_width=self.max_width,
+                                               ansi=self.colors)
 
-        if not isinstance(sys.stderr, ThreadLocalProxy):
+        if not isinstance(sys.stderr, ThreadLocalAnsiStream):
             self.backup_stderr = sys.stderr
-            stream = make_ansi_stream(sys.stderr, width=self.width, max_width=self.max_width,
-                                      ansi=self.colors)
-            sys.stderr = ThreadLocalProxy(stream)
+            stream = make_ansi_stream(sys.stderr)
+            sys.stderr = ThreadLocalAnsiStream(stream, width=self.width, max_width=self.max_width,
+                                               ansi=self.colors)
 
         if not isinstance(sys.stdin, ThreadLocalProxy):
             self.backup_stdin = sys.stdin
@@ -249,7 +250,7 @@ class Shell:
         Begin the input processing loop where the user will be prompted for
         input.
         '''
-
+        # pylint: disable=too-many-branches
         self.running = True
         self.set_readline_completer()
         self.on_cmdloop_begin()
@@ -270,8 +271,8 @@ class Shell:
                 else:
                     rc = None
                     if self.width is None:
-                        sys.stdout.thread_local_get().detect_width()
-                        sys.stderr.thread_local_get().detect_width()
+                        sys.stdout.detect_width()
+                        sys.stderr.detect_width()
 
                     try:
                         rc = self.execute(raw)
@@ -318,7 +319,7 @@ class Shell:
                                 overrides default input function (stdin).
         :returns int: the return code of the statement.
         '''
-
+        # pylint: disable=too-many-locals,too-many-branches,too-many-statements
         parser = StatementParser(self.profile)
         input_complete = False
         while not input_complete:
@@ -410,7 +411,7 @@ class Shell:
                 # Execute the invocation in the current thread.
                 try:
                     rc = invoke(self)
-                except Exception as e:
+                except Exception as e:  # pylint: disable=broad-except
                     # Unhandled exception, stop all threads if any are running.
                     for t in threads:
                         t.stop()
@@ -419,7 +420,7 @@ class Shell:
                     try:
                         for t in threads:
                             t.join()
-                    except:
+                    except:  # pylint: disable=bare-except
                         # Something went wrong or a KeyboardInterrupt was
                         # issued. Stop waiting for threads to terminate.
                         pass
@@ -540,6 +541,7 @@ class Shell:
         :param str prefix: readline prefix token
         :returns list[str]: list of completions
         '''
+        # pylint: disable=too-many-branches,too-many-statements
         try:
             parser = StatementParser(TabCompletionProfile(self.profile))
             tokens = parser.tokenize(line)
@@ -598,7 +600,7 @@ class Shell:
                     ret = cmd.complete(self, args, prefix)
 
             ret = self._clean_completions(ret, in_quote)
-        except:
+        except:  # pylint: disable=bare-except
             ret = []
 
         return ret

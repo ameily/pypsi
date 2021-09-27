@@ -41,7 +41,7 @@ class InvocationThread(threading.Thread):
         :param stream stdout: override the invocation's stdout stream.
         :param stream stderr; override the invocation's stder stream.
         '''
-
+        # pylint: disable=too-many-arguments
         super().__init__()
         #: The active Shell
         self.shell = shell
@@ -67,7 +67,7 @@ class InvocationThread(threading.Thread):
 
         try:
             self.rc = self.invoke(self.shell)
-        except:
+        except:  # pylint: disable=bare-except
             self.exc_info = sys.exc_info()
             self.rc = None
         finally:
@@ -82,5 +82,5 @@ class InvocationThread(threading.Thread):
         if self.is_alive():
             try:
                 self.invoke.close_streams()
-            except:
+            except:  # pylint: disable=bare-except
                 pass

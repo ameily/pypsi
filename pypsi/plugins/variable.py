@@ -16,13 +16,14 @@
 #
 
 import os
+from typing import Callable, Any, List
 import sys
 from datetime import datetime
 import argparse
+from pypsi.shell import Shell
 from pypsi.core import Plugin, Command, PypsiArgParser, CommandShortCircuit
 from pypsi.namespace import ScopedNamespace
-from pypsi.cmdline import (Token, StringToken, TokenContinue, TokenEnd,
-                           Expression)
+from pypsi.cmdline import Token, StringToken, TokenContinue, TokenEnd, Expression, Iterator
 from pypsi.table import Table
 from pypsi.profiles import ShellProfile
 
@@ -38,7 +39,7 @@ class ManagedVariable:
     instance, and the :class:`str` value.
     '''
 
-    def __init__(self, getter, setter=None):
+    def __init__(self, getter: Callable[[Shell], Any], setter: Callable[[Shell, Any], None] = None):
         '''
         :param callable getter: the callable to call when retrieving the
             variable's value (must return a value)
@@ -48,13 +49,13 @@ class ManagedVariable:
         self.getter = getter
         self.setter = setter
 
-    def set(self, shell, value):
+    def set(self, shell: Shell, value: Any) -> None:
         if self.setter:
             self.setter(shell, value)
         else:
             raise ValueError("read-only variable")
 
-    def get(self, shell):
+    def get(self, shell: Shell) -> Any:
         return self.getter(shell)
 
 
@@ -68,8 +69,8 @@ class VariableCommand(Command):
    or: var -l
    or: var -d name"""
 
-    def __init__(self, name='var', brief='manage local variables',
-                 topic='shell', **kwargs):
+    def __init__(self, name: str = 'var', topic='shell', **kwargs):
+        brief = 'manage local variables'
         self.parser = PypsiArgParser(
             prog=name,
             description=brief,
@@ -87,12 +88,10 @@ class VariableCommand(Command):
             help='expression defining variable, in the form of NAME = [VALUE]',
             nargs=argparse.REMAINDER
         )
-        super().__init__(
-            name=name, usage=self.parser.format_help(), topic=topic,
-            brief=brief, **kwargs
-        )
+        super().__init__(name=name, usage=self.parser.format_help(), topic=topic, brief=brief,
+                         **kwargs)
 
-    def run(self, shell, args):
+    def run(self, shell: Shell, args: List[str]) -> int:
         try:
             ns = self.parser.parse_args(args)
         except CommandShortCircuit as e:
@@ -101,17 +100,17 @@ class VariableCommand(Command):
         rc = 0
         if ns.list:
             tbl = Table(
-                columns=(Column("Variable"), Column("Value", Column.Grow)),
-                width=shell.width,
+                columns=2,
+                width=sys.stdout.width,
                 spacing=4,
-            )
+            ).append('Variable', 'Value')
             for name in shell.ctx.vars:
                 s = shell.ctx.vars[name]
                 if callable(s):
                     s = s()
                 elif isinstance(s, ManagedVariable):
                     s = s.get(shell)
-                tbl.append(name, obj_str(s))
+                tbl.append(name, s)
             tbl.write(sys.stdout)
         elif ns.delete:
             if ns.delete in shell.ctx.vars:
@@ -146,7 +145,7 @@ class VariableCommand(Command):
                         s = s()
                     elif isinstance(s, ManagedVariable):
                         s = s.getter(shell)
-                    print(obj_str(s))
+                    print(s)
                 else:
                     self.error(shell, "unknown variable: ", args[0])
                     return 1
@@ -169,22 +168,22 @@ class VariableToken(Token):
         self.prefix = prefix
         self.var = var
 
-    def add_char(self, c):
+    def add_char(self, c: str) -> int:
         if c in self.VarChars:
             self.var += c
             return TokenContinue
         return TokenEnd
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "VariableToken( {} )".format(self.var)
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if not isinstance(other, VariableToken):
             return False
         return self.prefix == other.prefix and self.var == other.var
 
 
-def get_subtokens(token, prefix, profile):
+def get_subtokens(token: StringToken, prefix: str, profile: ShellProfile) -> Iterator[Token]:
     escape = False
     index = token.index
     subt = None
@@ -193,7 +192,7 @@ def get_subtokens(token, prefix, profile):
         if escape:
             escape = False
             if c != prefix:
-                subt.text += '\\'
+                subt.text += profile.escape_char
             subt.text += c
         elif var:
             rc = var.add_char(c)
@@ -203,7 +202,7 @@ def get_subtokens(token, prefix, profile):
                 if c == prefix:
                     var = VariableToken(index, c)
                 else:
-                    if c == '\\':
+                    if c == profile.escape_char:
                         escape = True
                         c = ''
                     subt = StringToken(index, c, token.quote, profile=profile)
@@ -213,7 +212,7 @@ def get_subtokens(token, prefix, profile):
                 subt = None
             var = VariableToken(index, c)
         else:
-            if c == '\\':
+            if c == profile.escape_char:
                 escape = True
                 c = ''
 
@@ -279,7 +278,7 @@ class VariablePlugin(Plugin):
         if locals:
             self.base.update(locals)
 
-    def setup(self, shell):
+    def setup(self, shell: Shell):
         '''
         Register the :class:`VariableCommand` and add the ``vars`` attribute
         (:class:`pypsi.namespace.ScopedNamespace`) to the shell's context.
@@ -296,12 +295,11 @@ class VariablePlugin(Plugin):
             shell.ctx.vars.prompt = ManagedVariable(var_prompt_getter,
                                                     self.set_prompt)
             shell.ctx.vars.errno = ManagedVariable(var_errno_getter)
-        return 0
 
     def set_prompt(self, shell, value):
         shell.prompt = value
 
-    def expand(self, shell, vart):
+    def expand(self, shell: Shell, vart: VariableToken) -> Any:
         name = vart.var
         if name in shell.ctx.vars:
             s = shell.ctx.vars[name]
@@ -312,11 +310,10 @@ class VariablePlugin(Plugin):
             return s
         return ''
 
-    def on_tokenize(self, shell, tokens, origin):
+    def on_tokenize(self, shell: Shell, tokens: List[Token], origin: str) -> List[Token]:
         ret = []
         for token in tokens:
-            if (not isinstance(token, StringToken) or
-                    self.prefix not in token.text):
+            if not isinstance(token, StringToken) or self.prefix not in token.text:
                 ret.append(token)
                 continue
 

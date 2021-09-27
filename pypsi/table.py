@@ -22,7 +22,7 @@ def _build_row(row: List[str], sep: str, column_widths: List[int]) -> str:
             # extend the column with empty strings to make handle cell overflow
             column.extend([''] * (line_count - len(column)))
 
-        for i in range(len(column)):
+        for i in range(len(column)):  # pylint: disable=consider-using-enumerate
             column[i] = ansi_align(column[i].strip(), 'left', width)
 
 
@@ -127,7 +127,7 @@ class Table:
             print(_build_row(row, sep, self.column_widths), word_wrap=False, file=file)
 
 
-class FixedColumnTable(object):
+class FixedColumnTable:
     '''
     A table that has preset column widths.
     '''

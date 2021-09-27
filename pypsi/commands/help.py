@@ -122,7 +122,7 @@ class HelpCommand(Command):
             columns=2,
             spacing=4,
             header=False,
-            width=getattr(sys.stdout, 'width', 80)
+            width=sys.stdout.width
         ).extend(*[
             (' ' + c.name.ljust(name_col_width - 1), c.brief or '')
             for c in topic.commands
@@ -161,7 +161,7 @@ class HelpCommand(Command):
                 columns=2,
                 spacing=4,
                 header=False,
-                width=getattr(sys.stdout, 'width', 80)
+                width=sys.stdout.width
             ).extend(*[
                 (' ' + topic.id.ljust(max_name_width - 1), topic.name or '')
                 for topic in addl

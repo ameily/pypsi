@@ -21,6 +21,7 @@ class ShellProfile:
     def __init__(self, multiline: bool = False, escape_char: str = '\\',
                  case_sensitive: bool = True, eof_is_sigint: bool = False,
                  preserve_quotes: bool = False):
+        # pylint: disable=too-many-arguments
         self.multiline = multiline
         self.case_sensitive = case_sensitive
         self.escape_char = escape_char

@@ -20,7 +20,7 @@ Generic objects to store arbitrary attributes and values.
 '''
 
 
-class Namespace(object):
+class Namespace:
     '''
     Provides dynamic attribute storage and retrieval. Attributes can be
     retrieved and set by either attribute accesses or :class:`dict` key access.
@@ -60,7 +60,7 @@ class ScopedNamespaceContext(object):
         self.parent = parent
 
 
-class ScopedNamespace(object):
+class ScopedNamespace:
     '''
     Provides a configurable namespace for arbitrary attribute access. This class is used to store
     variables within the shell, which are scoped and case insensitive.
