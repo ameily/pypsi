@@ -46,10 +46,10 @@ class ChdirCommand(Command):
             if print_cwd:
                 print(os.getcwd())
         except OSError as e:
-            self.error(shell, path, ": ", e.strerror)
+            self.error(path, ": ", e.strerror)
             return -1
-        except Exception as e:
-            self.error(shell, path, ": ", str(e))
+        except Exception as e:  # pylint: disable=broad-except
+            self.error(path, ": ", str(e))
             return -1
 
         shell.ctx.chdir_last_dir = prev

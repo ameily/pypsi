@@ -21,7 +21,7 @@ from pypsi.table import Table
 from pypsi.ansi import Color, ansi_title
 
 
-class Topic(object):
+class Topic:
 
     def __init__(self, id, name=None, content=None, commands=None):
         self.id = id

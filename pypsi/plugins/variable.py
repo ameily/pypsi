@@ -77,17 +77,10 @@ class VariableCommand(Command):
             usage=VariableCommand.Usage
         )
 
-        self.parser.add_argument(
-            '-l', '--list', help='list variables', action='store_true'
-        )
-        self.parser.add_argument(
-            '-d', '--delete', help='delete variable', metavar='VARIABLE'
-        )
-        self.parser.add_argument(
-            'exp', metavar='EXPRESSION',
-            help='expression defining variable, in the form of NAME = [VALUE]',
-            nargs=argparse.REMAINDER
-        )
+        self.parser.add_argument('-l', '--list', help='list variables', action='store_true')
+        self.parser.add_argument('-d', '--delete', help='delete variable', metavar='VARIABLE')
+        self.parser.add_argument('exp', metavar='EXPRESSION', nargs=argparse.REMAINDER,
+                                 help='expression defining variable, in the form of NAME = [VALUE]')
         super().__init__(name=name, usage=self.parser.format_help(), topic=topic, brief=brief,
                          **kwargs)
 
@@ -99,64 +92,82 @@ class VariableCommand(Command):
 
         rc = 0
         if ns.list:
-            tbl = Table(
-                columns=2,
-                width=sys.stdout.width,
-                spacing=4,
-            ).append('Variable', 'Value')
-            for name in shell.ctx.vars:
-                s = shell.ctx.vars[name]
-                if callable(s):
-                    s = s()
-                elif isinstance(s, ManagedVariable):
-                    s = s.get(shell)
-                tbl.append(name, s)
-            tbl.write(sys.stdout)
+            rc = self.print_list(shell)
         elif ns.delete:
-            if ns.delete in shell.ctx.vars:
-                s = shell.ctx.vars[ns.delete]
-                if isinstance(s, ManagedVariable):
-                    self.error(shell,
-                               "variable is managed and cannot be deleted")
-                    rc = -1
-                else:
-                    del shell.ctx.vars[ns.delete]
-            else:
-                self.error(shell, "unknown variable: ", ns.delete)
-                rc = -1
+            rc = self.delete_variable(shell, ns.delete)
         elif ns.exp and '=' in ''.join(args):
-            (remainder, exp) = Expression.parse(args)
-            if remainder or not exp:
-                self.error(shell, "invalid expression")
-                return 1
-            if isinstance(shell.ctx.vars[exp.operand], ManagedVariable):
-                try:
-                    shell.ctx.vars[exp.operand].set(shell, exp.value)
-                except ValueError as e:
-                    self.error(shell, "could not set variable: ", str(e))
-                    return -1
-            else:
-                shell.ctx.vars[exp.operand] = exp.value
+            rc = self.set_variable(shell, args)
         elif ns.exp:
             if len(args) == 1:
-                if args[0] in shell.ctx.vars:
-                    s = shell.ctx.vars[args[0]]
-                    if callable(s):
-                        s = s()
-                    elif isinstance(s, ManagedVariable):
-                        s = s.getter(shell)
-                    print(s)
-                else:
-                    self.error(shell, "unknown variable: ", args[0])
-                    return 1
+                rc = self.print_variable(shell, args[0])
             else:
                 self.error(shell, "invalid expression")
-                return 1
+                rc = 1
         else:
             self.usage_error(shell, "missing required EXPRESSION")
             rc = 1
 
         return rc
+
+    def print_list(self, shell: Shell) -> int:
+        tbl = Table(
+            columns=2,
+            width=sys.stdout.width,
+            spacing=4,
+        ).append('Variable', 'Value')
+        for name in shell.ctx.vars:
+            s = shell.ctx.vars[name]
+            if callable(s):
+                s = s()
+            elif isinstance(s, ManagedVariable):
+                s = s.get(shell)
+            tbl.append(name, s)
+        tbl.write(sys.stdout)
+        return 0
+
+    def delete_variable(self, shell: Shell, name: str) -> int:
+        if name in shell.ctx.vars:
+            s = shell.ctx.vars[name]
+            if isinstance(s, ManagedVariable):
+                self.error("variable is managed and cannot be deleted")
+                rc = -1
+            else:
+                del shell.ctx.vars[name]
+                rc = 0
+        else:
+            self.error(f"unknown variable: {name}")
+            rc = -1
+
+        return rc
+
+    def set_variable(self, shell: Shell, args: List[str]) -> int:
+        (remainder, exp) = Expression.parse(args)
+        if remainder or not exp:
+            self.error("invalid expression")
+            return 1
+        if isinstance(shell.ctx.vars[exp.operand], ManagedVariable):
+            try:
+                shell.ctx.vars[exp.operand].set(shell, exp.value)
+            except ValueError as e:
+                self.error(f"could not set variable: {e}")
+                return -1
+        else:
+            shell.ctx.vars[exp.operand] = exp.value
+
+        return 0
+
+    def print_variable(self, shell: Shell, name: str) -> int:
+        if name in shell.ctx.vars:
+            s = shell.ctx.vars[name]
+            if callable(s):
+                s = s()
+            elif isinstance(s, ManagedVariable):
+                s = s.getter(shell)
+            print(s)
+            return 0
+
+        self.error(f"unknown variable: {name}")
+        return 1
 
 
 class VariableToken(Token):
@@ -175,7 +186,7 @@ class VariableToken(Token):
         return TokenEnd
 
     def __str__(self) -> str:
-        return "VariableToken( {} )".format(self.var)
+        return f"VariableToken( {self.var} )"
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, VariableToken):
@@ -184,6 +195,7 @@ class VariableToken(Token):
 
 
 def get_subtokens(token: StringToken, prefix: str, profile: ShellProfile) -> Iterator[Token]:
+    # pylint: disable=too-many-branches
     escape = False
     index = token.index
     subt = None
@@ -228,10 +240,10 @@ def get_subtokens(token: StringToken, prefix: str, profile: ShellProfile) -> Ite
         yield var
 
 
-def safe_date_format(format, dt):
+def safe_date_format(fmt: str, dt: datetime):
     try:
-        return dt.strftime(format)
-    except:
+        return dt.strftime(fmt)
+    except:  # pylint: disable=bare-except
         return "<invalid date time format>"
 
 
@@ -269,6 +281,7 @@ class VariablePlugin(Plugin):
         :param dict locals: the base variables to register initially
         :param bool case_sensitive: whether variable names are case sensitive
         '''
+        # pylint: disable=too-many-arguments
         super().__init__(preprocess=preprocess, postprocess=postprocess, **kwargs)
         self.var_cmd = VariableCommand(name=var_cmd, topic=topic)
         self.prefix = prefix
@@ -286,8 +299,8 @@ class VariablePlugin(Plugin):
         shell.register(self.var_cmd)
         if 'vars' not in shell.ctx:
             shell.ctx.vars = ScopedNamespace('globals', self.case_sensitive)
-            for k in self.base:
-                shell.ctx.vars[k] = self.base[k]
+            for key, value in self.base.items():
+                shell.ctx.vars[key] = value
 
             shell.ctx.vars.date = ManagedVariable(var_date_getter)
             shell.ctx.vars.time = ManagedVariable(var_time_getter)
