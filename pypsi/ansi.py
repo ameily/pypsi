@@ -22,13 +22,13 @@ Stream classes for writing to files.
 
 import sys
 import os
-from io import TextIOWrapper
 from types import ModuleType
-from typing import Any, Iterator, TextIO, Union, Tuple
+from typing import Iterator, TextIO, Union, Tuple
 import importlib.util
 import textwrap
 import builtins
 from enum import Enum
+from .proxy import ThreadLocalProxy
 
 
 class Color(Enum):
@@ -186,38 +186,41 @@ def wrap(s: str, ansi: bool = True, **kwargs) -> Iterator[str]:
             yield end
 
 
-class AnsiStream(TextIOWrapper):
+class ThreadLocalAnsiStream(ThreadLocalProxy):
 
-    def __init__(self, stream: TextIOWrapper, width: int = None, max_width: int = None,
-                 ansi: bool = True):
-        super().__init__(stream.buffer, encoding=stream.encoding, errors=stream.errors,
-                         newline=None, line_buffering=stream.line_buffering,
-                         write_through=stream.write_through)
-        self.max_width = max_width
-        self.ansi = ansi
-        if width is None and stream.isatty():
+    def __init__(self, target: TextIO, ansi: bool = True, width: int = None, max_width: int = None):
+        super().__init__(target)
+        self._ansi = ansi
+        self._max_width = max_width
+
+        if width is None and target.isatty():
             self.detect_width()
         else:
             self.width = width
 
+    @property
+    def ansi(self) -> bool:
+        return self._ansi and self.thread_local_get().isatty()
+
     def detect_width(self) -> None:
         try:
-            width = os.get_terminal_size(self.fileno()).columns - 1
-            if self.max_width:
-                width = min(width, self.max_width)
-        except:
-            width = 0
+            width = os.get_terminal_size(self._target.fileno()).columns - 1
+        except:  # pylint: disable=bare-except
+            width = 79
 
-        self.width = width
+        if self._max_width:
+            width = min(width, self._max_width)
+
+        self.width = width or 79
 
 
-
-def pypsi_print(*items, file: Union[TextIO, AnsiStream] = None, sep: str = None,
+def pypsi_print(*items, file: Union[TextIO, ThreadLocalAnsiStream] = None, sep: str = None,
                 flush: bool = False, end: str = os.linesep, word_wrap: bool = True):
-    file = file or sys.stdout.thread_local_get()
-    if isinstance(file, AnsiStream):
+    file = file or sys.stdout
+    if isinstance(file, ThreadLocalAnsiStream):
         width = file.width
         ansi = file.ansi
+        file = file.thread_local_get()
     else:
         width = 0
         ansi = False

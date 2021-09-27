@@ -200,7 +200,7 @@ class DemoShell(Shell):
             print("No tips registered. Create the demo-tips.txt file for the tip of the day.")
 
         if self.tip_cmd.tips:
-            width = getattr(sys.stdout, 'width', 60)
+            width = sys.stdout.width
             print(Color.bright_green("Tip of the Day".center(width)))
             print(Color.bright_green('>' * width))
             self.tip_cmd.print_random_tip(self, False)

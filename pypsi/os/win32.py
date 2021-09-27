@@ -26,8 +26,6 @@ import re
 import ctypes
 import msvcrt  # pylint: disable=import-error
 import getpass
-from typing import TextIO
-from pypsi.ansi import AnsiStream
 
 
 __all__ = [
@@ -168,7 +166,7 @@ class CONSOLE_SCREEN_BUFFER_INFO(ctypes.Structure):
 ##############################################################################
 
 
-class Win32AnsiStream(AnsiStream):
+class Win32AnsiStream(TextIOWrapper):
     '''
     Windows stream wrapper that translates ANSI escape code to Windows Console
     API calls. Windows stream are not compatible with ANSI escape codes, so
@@ -176,8 +174,10 @@ class Win32AnsiStream(AnsiStream):
     Windows platforms.
     '''
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, file: TextIOWrapper):
+        super().__init__(file.buffer, encoding=file.encoding, errors=file.errors,
+                         newline=None, line_buffering=file.line_buffering,
+                         write_through=file.write_through)
 
         try:
             self._win32_handle = msvcrt.get_osfhandle(self.fileno())
@@ -227,7 +227,7 @@ class Win32AnsiStream(AnsiStream):
         self._win32_flush_pending = False
 
 
-def make_ansi_stream(stream: TextIOWrapper, **kwargs) -> AnsiStream:
+def make_ansi_stream(stream: TextIOWrapper, **kwargs) -> TextIOWrapper:
     '''
     Used by the Pypsi pipe line to create ANSI escape code compatible streams.
     '''
