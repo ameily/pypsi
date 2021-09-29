@@ -36,7 +36,7 @@ class ProgressBar:
             progress bar
         '''
         self.count = count
-        self.stream = stream or sys.thread_local_get()
+        self.stream = stream or sys.stdout.thread_local_get()
         self.i = 0
         self.current_percent = 0.0
         self.activity = activity or ''
@@ -110,7 +110,7 @@ class ThreadedSpinner(threading.Thread):
         self.delta = delta
         self.seq = seq
         self.activity = activity or ''
-        self.stream = stream or sys.thread_local_get()
+        self.stream = stream or sys.stdout.thread_local_get()
         self.stop_lock = threading.Lock()
         self.stop_lock.acquire()
         self.complete_msg = ''
@@ -148,7 +148,7 @@ class Spinner:
         self.offset = 0
         self.iter = itertools.cycle(seq)
         self.activity = activity
-        self.stream = stream or sys.thread_local_get()
+        self.stream = stream or sys.stdout.thread_local_get()
 
     def draw(self) -> None:
         '''
