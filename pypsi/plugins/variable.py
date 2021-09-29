@@ -115,13 +115,12 @@ class VariableCommand(Command):
             width=sys.stdout.width,
             spacing=4,
         ).append('Variable', 'Value')
-        for name in shell.ctx.vars:
-            s = shell.ctx.vars[name]
-            if callable(s):
-                s = s()
-            elif isinstance(s, ManagedVariable):
-                s = s.get(shell)
-            tbl.append(name, s)
+        for name, value in shell.ctx.vars:
+            if callable(value):
+                value = value()
+            elif isinstance(value, ManagedVariable):
+                value = value.get(shell)
+            tbl.append(name, value)
         tbl.write(sys.stdout)
         return 0
 
@@ -157,7 +156,8 @@ class VariableCommand(Command):
         return 0
 
     def print_variable(self, shell: Shell, name: str) -> int:
-        if name in shell.ctx.vars:
+        s = shell.ctx.vars[name]
+        if s is not None:
             s = shell.ctx.vars[name]
             if callable(s):
                 s = s()
@@ -298,15 +298,14 @@ class VariablePlugin(Plugin):
         '''
         shell.register(self.var_cmd)
         if 'vars' not in shell.ctx:
-            shell.ctx.vars = ScopedNamespace('globals', self.case_sensitive)
+            shell.ctx.vars = ScopedNamespace()
             for key, value in self.base.items():
                 shell.ctx.vars[key] = value
 
             shell.ctx.vars.date = ManagedVariable(var_date_getter)
             shell.ctx.vars.time = ManagedVariable(var_time_getter)
             shell.ctx.vars.datetime = ManagedVariable(var_datetime_getter)
-            shell.ctx.vars.prompt = ManagedVariable(var_prompt_getter,
-                                                    self.set_prompt)
+            shell.ctx.vars.prompt = ManagedVariable(var_prompt_getter, self.set_prompt)
             shell.ctx.vars.errno = ManagedVariable(var_errno_getter)
 
     def set_prompt(self, shell, value):

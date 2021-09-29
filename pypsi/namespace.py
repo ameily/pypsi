@@ -19,123 +19,112 @@
 Generic objects to store arbitrary attributes and values.
 '''
 
+from typing import Iterator, Any, Tuple
+
 
 class Namespace:
-    '''
-    Provides dynamic attribute storage and retrieval. Attributes can be
-    retrieved and set by either attribute accesses or :class:`dict` key access.
-    The following two lines of code retrieve and set the same attribute:
-
-    - ``namespace.my_attr = 1``
-    - ``namespace['my_attr'] = 1``
-    '''
-    # TODO do we need this?
 
     def __init__(self, **kwargs):
-        '''
-        :param kwargs: default attributes and their values are created
-        '''
-        for (k, v) in kwargs.items():
-            super().__setattr__(k, v)
+        for key, value in kwargs.items():
+            self.__setitem__(key, value)
 
-    def __iter__(self):
-        return iter(self.__dict__)
+    def __getitem__(self, name: str) -> Any:
+        name = str(name)
+        return self.__dict__[name]
 
-    def __getitem__(self, name):
-        return super().__getattribute__(name)
+    def __setitem__(self, name: str, value: Any) -> Any:
+        name = str(name)
+        self.__dict__[name] = value
+        return value
 
-    def __setitem__(self, name, value):
-        super().__setattr__(name, value)
+    def __delitem__(self, name: str) -> None:
+        name = str(name)
+        del self.__dict__[name]
 
-    def __delitem__(self, name):
-        super().__delattr__(name)
+    def __contains__(self, name: str) -> bool:
+        return name in self.__dict__
 
-
-class ScopedNamespaceContext(object):
-
-    def __init__(self, name, case_sensitive, locals, parent):
-        self.name = name
-        self.case_sensitive = case_sensitive
-        self.locals = locals
-        self.parent = parent
+    def __iter__(self, name: str) -> Iterator[Tuple[str, Any]]:
+        return iter(self.__dict__.items())
 
 
 class ScopedNamespace:
-    '''
-    Provides a configurable namespace for arbitrary attribute access. This class is used to store
-    variables within the shell, which are scoped and case insensitive.
-    '''
-    # TODO do we need this?
 
-    def __init__(self, name, case_sensitive=True, locals=None, parent=None):
-        '''
-        :param str name: the root name
-        :param bool case_sensitive: determines whether attribute names are case
-            sensitive
-        :param dict locals: default attributes
-        :param ScopedNamespace parent: the parent namespace
-        '''
-        ctx = ScopedNamespaceContext(
-            name=name,
-            case_sensitive=case_sensitive,
-            locals={},
-            parent=parent
-        )
+    def __init__(self, **kwargs):
+        object.__setattr__(self, '_stack', [dict(kwargs)])
 
-        if locals:
-            for (k, v) in locals.items():
-                if not case_sensitive:
-                    k = k.lower()
-                ctx.locals[k] = v
-        self._ctx = ctx
+    def __get_value(self, name: str) -> Any:
+        name = str(name)
+        for namespace in reversed(self._stack):
+            try:
+                value = namespace[name]
+            except KeyError:
+                pass
+            else:
+                return value
+        return None
 
-    def __getattribute__(self, name):
-        if not name:
-            return ''
-
-        if name[0] == '_':
-            return super().__getattribute__(name)
-
-        ctx = super().__getattribute__('_ctx')
-        if not ctx.case_sensitive:
-            name = name.lower()
-
-        return ctx.locals[name] if name in ctx.locals else ''
-
-    def __setattr__(self, name, value):
-        if not name:
-            return
-
-        if name[0] == '_':
-            super().__setattr__(name, value)
+    def __set_value(self, name: str, value: Any, global_variable: bool = False) -> None:
+        name = str(name)
+        if global_variable:
+            self._stack[0][name] = value
         else:
-            ctx = super().__getattribute__('_ctx')
-            if not ctx.case_sensitive:
-                name = name.lower()
+            self._stack[-1][name] = value
 
-            ctx.locals[name] = value
+    def __getitem__(self, name: str) -> Any:
+        return self.__get_value(name)
 
-    def __getitem__(self, name):
-        return self.__getattribute__(name)
+    def __setitem__(self, name: str, value: Any) -> Any:
+        self.__set_value(name, value)
+        return value
 
-    def __setitem__(self, name, value):
-        self.__setattr__(name, value)
+    def __getattr__(self, name: str) -> Any:
+        return self.__get_value(name)
 
-    def __delattr__(self, name):
-        ctx = super().__getattribute__('_ctx')
-        if not ctx.case_sensitive:
-            name = name.lower()
+    def __setattr__(self, name: str, value: Any) -> Any:
+        self.__set_value(name, value)
+        return value
 
-        del ctx.locals[name]
+    def __del_value(self, name: str) -> None:
+        name = str(name)
+        for namespace in reversed(self._stack):
+            if name in namespace:
+                del namespace[name]
+                return
 
-    def __delitem__(self, name):
-        self.__delattr__(name)
+        raise AttributeError(name)
 
-    def __contains__(self, name):
-        ctx = super().__getattribute__('_ctx')
-        if not ctx.case_sensitive:
-            name = name.lower()
-        return name in ctx.locals
+    def __delitem__(self, name: str) -> None:
+        self.__del_value(name)
 
-    def __iter__(self):
-        return iter(self._ctx.locals)
+    def __delattr__(self, name: str) -> None:
+        self.__del_value(name)
+
+    def __iter__(self) -> Iterator[Tuple[str, Any]]:
+        ctx = {}
+        for namespace in self._stack:
+            ctx.update(namespace)
+        return iter(ctx.items())
+
+    def __contains__(self, name: str) -> bool:
+        try:
+            self.__get_value(name)
+        except AttributeError:
+            return False
+        else:
+            return True
+
+    def __enter__(self) -> 'ScopedNamespace':
+        self._stack.append({})
+        return self
+
+    def __exit__(self, exc_type, exc_value, tb):
+        self._stack.pop()
+        return False
+
+    def __iadd__(self, other: dict) -> 'ScopedNamespace':
+        if not isinstance(other, dict):
+            raise TypeError(f'expected dict object, got {type(other)}')
+
+        self._stack[-1].update(other)
+        return self

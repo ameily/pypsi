@@ -15,8 +15,10 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-from pypsi.ansi import ansi_title
+
 import sys
+from typing import List
+from pypsi.ansi import ansi_title
 from pypsi.plugins.block import BlockCommand
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
 from pypsi.table import Table
@@ -51,29 +53,18 @@ class Macro(Command):
 
     def run(self, shell, args):
         rc = None
-        self.add_var_args(shell, args)
 
-        for line in self.lines:
-            rc = shell.execute(line)
+        with shell.ctx.vars as env:
+            env += self._get_variables(args)
+            for line in self.lines:
+                rc = shell.execute(line)
 
-        self.remove_var_args(shell)
         return rc
 
-    def add_var_args(self, shell, args):
-        if 'vars' in shell.ctx:
-            shell.ctx.vars['0'] = self.name
-            for i in range(0, 9):
-                if i < len(args):
-                    shell.ctx.vars[str(i + 1)] = args[i]
-                else:
-                    shell.ctx.vars[str(i + 1)] = ''
-
-    def remove_var_args(self, shell):
-        if 'vars' in shell.ctx:
-            for i in range(0, 10):
-                s = str(i)
-                if s in shell.ctx.vars:
-                    del shell.ctx.vars[s]
+    def _get_variables(self, args: List[str]) -> dict:
+        variables = {str(i): arg for i, arg in enumerate(args, start=1)}
+        variables['0'] = self.name
+        return variables
 
 
 MacroCmdUsage = """%(prog)s -l
