@@ -348,6 +348,10 @@ class PypsiArgParser(argparse.ArgumentParser):
         # return zero-based index
         return index - 1
 
+    def add_subparsers(self, *args, **kwargs):
+        kwargs.setdefault('parser_class', PypsiArgParser)
+        return super().add_subparsers(*args, **kwargs)
+
     def add_argument(self, *args, completer: TabCompletionMethod = None, **kwargs):
         # pylint: disable=arguments-differ
         '''
@@ -387,7 +391,8 @@ class PypsiArgParser(argparse.ArgumentParser):
         self.print_usage()
         self.exit(1)
 
-    def complete(self, shell: Shell, args: List[str], prefix: str) -> List[str]:
+    def complete(self, shell: Shell, args: List[str], prefix: str,
+                 sub_parser: argparse._SubParsersAction = None) -> List[str]:
         '''
         Completion function that can tab complete options, options' values,
         and positional parameters. Shell, args, and prefix should be the same
@@ -407,7 +412,8 @@ class PypsiArgParser(argparse.ArgumentParser):
         offset = 0
         completions = []
         ops = []
-        choices = getattr(self, 'choices', None)
+
+        choices = getattr(sub_parser, 'choices', None) if sub_parser else None
 
         if choices:
             # Is a subparser, get all possible subcommands
