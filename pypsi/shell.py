@@ -18,7 +18,7 @@
 import sys
 import os
 import readline
-from typing import Union, List
+from typing import Union, List, Dict
 from pypsi.cmdline import (StatementParser, StatementSyntaxError, IORedirectionError,
                            CommandNotFoundError, StringToken, OperatorToken, Token, WhitespaceToken,
                            UnclosedQuotationError, TrailingEscapeError)
@@ -62,9 +62,9 @@ class Shell:
         self.shell_name = shell_name
         self.exit_rc = exit_rc
         self.errno = 0
-        self.commands = {}
-        self.preprocessors = []
-        self.postprocessors = []
+        self.commands: Dict[str, Command] = {}
+        self.preprocessors: List[Plugin] = []
+        self.postprocessors: List[Plugin] = []
         self.plugins = []
         self.prompt = f"{shell_name} )> "
         self.ctx = ctx or Namespace()
@@ -74,9 +74,8 @@ class Shell:
         self.completer_delims = completer_delims
         self.colors = colors
 
-        self.default_cmd = None
         self.register_base_plugins()
-        self.fallback_cmd = None
+        self.fallback_cmd: Command = None
 
         self.eof_is_sigint = False
         self._backup_completer = readline.get_completer()
@@ -528,7 +527,7 @@ class Shell:
             if ans.endswith('\0'):
                 ans = ans[:-1]
             if close_quote:
-                ans = ans + quotation + ' '
+                ans = f'{ans}{quotation} '
             completions[i] = ans
 
         return completions

@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2015, Adam Meily <meily.adam@gmail.com>
+# Copyright (c) 2021, Adam Meily <meily.adam@gmail.com>
 # Pypsi - https://github.com/ameily/pypsi
 #
 # Permission to use, copy, modify, and/or distribute this software for any
@@ -16,16 +16,19 @@
 #
 
 import sys
+from typing import List
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
 from pypsi.table import Table
 from pypsi.ansi import Color, ansi_title
+from pypsi.shell import Shell
 
 
 class Topic:
 
-    def __init__(self, id, name=None, content=None, commands=None):
-        self.id = id
+    def __init__(self, name: str, title: str = None, content: str = None,
+                 commands: List[str] = None):
         self.name = name or ''
+        self.title = title or ''
         self.content = content or ''
         self.commands = commands or []
 
@@ -35,48 +38,35 @@ class HelpCommand(Command):
     Provides access to manpage-esque topics and command usage information.
     '''
 
-    def __init__(self, name='help', topic='shell',
-                 brief='print information on a topic or command', topics=None,
-                 vars=None, **kwargs):
-        self.parser = PypsiArgParser(
-            prog=name,
-            description=brief
-        )
+    def __init__(self, name='help', topic='shell', topics=None, vars=None, **kwargs):
+        brief = 'print information on a topic or command'
+        self.parser = PypsiArgParser(prog=name, description=brief)
 
         # Add a callback to self.complete_topics so tab-complete can
         # return the possible topics you may get help on
-        self.parser.add_argument(
-            "topic", metavar="TOPIC", help="command or topic to print",
-            nargs='?', completer=self.complete_topics
-        )
+        self.parser.add_argument("topic", metavar="TOPIC", help="command or topic to print",
+                                 nargs='?', completer=self.complete_topics)
 
-        super().__init__(
-            name=name, brief=brief, usage=self.parser.format_help(),
-            topic=topic, **kwargs
-        )
+        super().__init__(name=name, brief=brief, usage=self.parser.format_help(), topic=topic,
+                         **kwargs)
 
         self.vars = vars or {}
         self.topics = topics
 
-    def setup(self, shell):
+    def setup(self, shell: Shell) -> None:
         shell.ctx.topics = list(self.topics or [])
-        shell.ctx.uncat_topic = Topic('uncat',
-                                      'Uncategorized Commands & Topics')
-        shell.ctx.topic_lookup = {t.id: t for t in shell.ctx.topics}
+        shell.ctx.uncat_topic = Topic('uncat', 'Uncategorized Commands & Topics')
+        shell.ctx.topic_lookup = {topic.name: topic for topic in shell.ctx.topics}
         shell.ctx.topics_dirty = True
 
-    def complete_topics(self, shell, args, prefix):  # pylint: disable=unused-argument
-        completions = [
-            x.id for x in shell.ctx.topics
-            if x.id.startswith(prefix) or not prefix
-        ]
+    def complete_topics(self, shell: Shell, args: List[str], prefix: str)  -> List[str]:
+        # pylint: disable=unused-argument
+        completions = [x.name for x in shell.ctx.topics if x.name.startswith(prefix) or not prefix]
 
-        completions.extend([
-            x for x in shell.commands if x.startswith(prefix) or not prefix
-        ])
+        completions.extend([x for x in shell.commands if x.startswith(prefix) or not prefix])
         return sorted(completions)
 
-    def complete(self, shell, args, prefix):
+    def complete(self, shell: Shell, args: List[str], prefix: str) -> List[str]:
         if shell.ctx.topics_dirty:
             self.reload(shell)
 
@@ -87,7 +77,7 @@ class HelpCommand(Command):
         # when the parser was created.
         return self.parser.complete(shell, args, prefix)
 
-    def reload(self, shell):
+    def reload(self, shell: Shell) -> None:
         shell.ctx.uncat_topic.commands = []
         for id in shell.ctx.topic_lookup:
             shell.ctx.topic_lookup[id].commands = []
@@ -97,26 +87,28 @@ class HelpCommand(Command):
                 continue
 
             if cmd.topic:
-                if cmd.topic in shell.ctx.topic_lookup:
-                    shell.ctx.topic_lookup[cmd.topic].commands.append(cmd)
-                else:
-                    self.add_topic(shell, Topic(cmd.topic, commands=[cmd]))
+                topic = shell.ctx.topic_lookup.get(cmd.topic)
             else:
-                shell.ctx.uncat_topic.commands.append(cmd)
+                topic = shell.ctx.uncat_topic
+
+            if topic:
+                topic.commands.append(cmd)
+            else:
+                self.add_topic(shell, Topic(cmd.topic, commands=[cmd]))
+
         shell.ctx.topics_dirty = False
 
         for topic in shell.ctx.topics:
             if topic.commands:
                 topic.commands = sorted(topic.commands, key=lambda x: x.name)
 
-    def add_topic(self, shell, topic):
+    def add_topic(self, shell: Shell, topic: Topic) -> None:
         shell.ctx.topics_dirty = True
-        shell.ctx.topic_lookup[topic.id] = topic
+        shell.ctx.topic_lookup[topic.name] = topic
         shell.ctx.topics.append(topic)
 
-    def print_topic_commands(self, shell, topic, title=None,
-                             name_col_width=20):
-        print(Color.yellow(ansi_title(title or topic.name or topic.id)))
+    def print_topic_commands(self, shell: Shell, topic: Topic, title: str = None) -> None:
+        print(Color.yellow(ansi_title(title or topic.title or topic.name)))
         print(Color.yellow, end='')
         Table(
             columns=2,
@@ -124,37 +116,26 @@ class HelpCommand(Command):
             header=False,
             width=sys.stdout.width
         ).extend(*[
-            (' ' + c.name.ljust(name_col_width - 1), c.brief or '')
-            for c in topic.commands
+            (c.name, c.brief or '') for c in topic.commands
         ]).write(sys.stdout)
         print(Color.reset_all, end='')
 
-    def print_topics(self, shell):
-        max_name_width = 0
-        for topic in shell.ctx.topics:
-            for c in topic.commands:
-                max_name_width = max(len(c.name), max_name_width)
-
-        for c in shell.ctx.uncat_topic.commands:
-            max_name_width = max(len(c.name), max_name_width)
-
+    def print_topics(self, shell: Shell) -> int:
         addl = []
         for topic in shell.ctx.topics:
             if topic.content or not topic.commands:
                 addl.append(topic)
 
             if topic.commands:
-                self.print_topic_commands(shell, topic,
-                                          name_col_width=max_name_width)
+                self.print_topic_commands(shell, topic)
                 print()
 
         if shell.ctx.uncat_topic.commands:
-            self.print_topic_commands(shell, shell.ctx.uncat_topic,
-                                      name_col_width=max_name_width)
+            self.print_topic_commands(shell, shell.ctx.uncat_topic)
             print()
 
         if addl:
-            addl = sorted(addl, key=lambda x: x.id)
+            addl = sorted(addl, key=lambda x: x.name)
             print(Color.yellow(ansi_title('Additional Topics')))
             print(Color.yellow, end='')
             Table(
@@ -163,34 +144,32 @@ class HelpCommand(Command):
                 header=False,
                 width=sys.stdout.width
             ).extend(*[
-                (' ' + topic.id.ljust(max_name_width - 1), topic.name or '')
+                (topic.name, topic.title or '')
                 for topic in addl
             ]).write(sys.stdout)
             print(Color.reset)
 
-    def print_topic(self, shell, id):
-        if id not in shell.ctx.topic_lookup:
-            if id in shell.commands:
-                cmd = shell.commands[id]
-                print(Color.yellow(cmd.usage))
-                return 0
+        return 0
 
-            self.error(shell, "unknown topic: ", id)
-            return -1
+    def print_topic(self, shell: Shell, name: str) -> int:
+        topic = shell.ctx.topic_lookup.get(name)
+        command = shell.commands.get(topic)
+        if command:
+            cmd = shell.commands[id]
+            print(Color.yellow(cmd.usage))
+            return 0
 
-        topic = shell.ctx.topic_lookup[id]
+        if not topic:
+            self.error(f'unknown topic: {name}')
+            return 1
+
         if topic.content:
-            print(ansi_title(topic.name or topic.id, shell.width))
-            try:
-                cnt = topic.content.format(**self.vars)
-            except:
-                cnt = topic.content
-
-            print(cnt)
-            print()
+            print(ansi_title(topic.title or topic.name))
+            print(topic.content)
 
         if topic.commands:
             self.print_topic_commands(shell, topic, "Commands")
+
         return 0
 
     def run(self, shell, args):
@@ -204,7 +183,7 @@ class HelpCommand(Command):
 
         rc = 0
         if not ns.topic:
-            self.print_topics(shell)
+            rc = self.print_topics(shell)
         else:
             rc = self.print_topic(shell, ns.topic)
 

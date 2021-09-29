@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2015, Adam Meily <meily.adam@gmail.com>
+# Copyright (c) 2021, Adam Meily <meily.adam@gmail.com>
 # Pypsi - https://github.com/ameily/pypsi
 #
 # Permission to use, copy, modify, and/or distribute this software for any
@@ -17,6 +17,8 @@
 
 import argparse
 import os
+from typing import List
+from pypsi.shell import Shell
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
 
 
@@ -38,7 +40,10 @@ class EchoCommand(Command):
         super().__init__(name=name, usage=self.parser.format_help(), topic=topic, brief=brief,
                          **kwargs)
 
-    def run(self, shell, args):
+    def complete(self, shell: Shell, args: List[str], prefix: str):
+        return self.parser.complete(shell, args, prefix)
+
+    def run(self, shell: Shell, args: List[str]) -> int:
         try:
             ns = self.parser.parse_args(args)
         except CommandShortCircuit as e:

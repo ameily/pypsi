@@ -44,7 +44,7 @@ class Namespace:
     def __contains__(self, name: str) -> bool:
         return name in self.__dict__
 
-    def __iter__(self, name: str) -> Iterator[Tuple[str, Any]]:
+    def __iter__(self) -> Iterator[Tuple[str, Any]]:
         return iter(self.__dict__.items())
 
 

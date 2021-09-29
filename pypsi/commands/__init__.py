@@ -14,3 +14,14 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
+from .chdir import ChdirCommand
+from .echo import EchoCommand
+from .exit import ExitCommand
+from .help import HelpCommand
+from .include import IncludeCommand
+from .macro import MacroCommand
+from .pwd import PwdCommand
+from .system import SystemCommand
+from .tail import TailCommand
+from .tip import TipCommand
+from .xargs import XArgsCommand

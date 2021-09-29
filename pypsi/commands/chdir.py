@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2015, Adam Meily <meily.adam@gmail.com>
+# Copyright (c) 2021, Adam Meily <meily.adam@gmail.com>
 # Pypsi - https://github.com/ameily/pypsi
 #
 # Permission to use, copy, modify, and/or distribute this software for any
@@ -16,6 +16,9 @@
 #
 
 import os
+from typing import List
+from pypsi.shell import Shell
+from pypsi.completers import path_completer
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
 
 
@@ -29,27 +32,28 @@ class ChdirCommand(Command):
     * - - the previous directory
     '''
 
-    def __init__(self, name='cd', brief='change current working directory',
-                 topic='shell', **kwargs):
-        super().__init__(name=name, brief=brief, topic=topic, **kwargs)
+    def __init__(self, name='cd', topic='shell', **kwargs):
+        brief = 'change current working directory'
 
         self.parser = PypsiArgParser(prog=name, description=brief)
-        self.parser.add_argument('path', help='path', metavar="PATH")
+        self.parser.add_argument('path', help='path', metavar="PATH", completer=path_completer)
+        super().__init__(name=name, brief=brief, topic=topic, usage=self.parser.format_help(),
+                         **kwargs)
 
-    def setup(self, shell):
+    def setup(self, shell: Shell):
         shell.ctx.chdir_last_dir = os.getcwd()
 
-    def chdir(self, shell, path, print_cwd=False):
+    def complete(self, shell: Shell, args: List[str], prefix: str) -> List[str]:
+        return self.parser.complete(shell, args, prefix)
+
+    def chdir(self, shell: Shell, path: str, print_cwd: bool = False) -> int:
         prev = os.getcwd()
         try:
             os.chdir(path)
             if print_cwd:
                 print(os.getcwd())
         except OSError as e:
-            self.error(path, ": ", e.strerror)
-            return -1
-        except Exception as e:  # pylint: disable=broad-except
-            self.error(path, ": ", str(e))
+            self.error(f'{path}: {e.strerror}')
             return -1
 
         shell.ctx.chdir_last_dir = prev
@@ -64,7 +68,4 @@ class ChdirCommand(Command):
         if ns.path == '-':
             return self.chdir(shell, shell.ctx.chdir_last_dir, True)
 
-        if ns.path.startswith('~'):
-            return self.chdir(shell, os.path.expanduser(ns.path))
-
-        return self.chdir(shell, ns.path)
+        return self.chdir(shell, os.path.expanduser(ns.path))

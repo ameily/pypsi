@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2015, Adam Meily <meily.adam@gmail.com>
+# Copyright (c) 2021, Adam Meily <meily.adam@gmail.com>
 # Pypsi - https://github.com/ameily/pypsi
 #
 # Permission to use, copy, modify, and/or distribute this software for any
@@ -15,11 +15,9 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-
+from typing import List
+from pypsi.shell import Shell
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
-
-
-ExitCmdUsage = "%(prog)s [CODE]"
 
 
 class ExitCommand(Command):
@@ -27,24 +25,17 @@ class ExitCommand(Command):
     Exit the active shell.
     '''
 
-    def __init__(self, name='exit', topic='shell', brief='exit the shell',
-                 **kwargs):
-        self.parser = PypsiArgParser(
-            prog=name,
-            description=brief
-        )
+    def __init__(self, name='exit', topic='shell', **kwargs):
+        brief = 'exit the shell'
+        self.parser = PypsiArgParser(prog=name, description=brief)
 
-        self.parser.add_argument(
-            'code', metavar='CODE', action='store', default=0, type=int,
-            nargs='?', help='exit code to return to parent process'
-        )
+        self.parser.add_argument('code', metavar='CODE', action='store', default=0, type=int,
+                                 nargs='?', help='exit code to return to parent process')
 
-        super().__init__(
-            name=name, usage=self.parser.format_help(), topic=topic,
-            brief=brief, **kwargs
-        )
+        super().__init__(name=name, usage=self.parser.format_help(), topic=topic, brief=brief,
+                         **kwargs)
 
-    def run(self, shell, args):
+    def run(self, shell: Shell, args: List[str]) -> int:
         try:
             ns = self.parser.parse_args(args)
         except CommandShortCircuit as e:
