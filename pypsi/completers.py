@@ -22,7 +22,7 @@ Builtin tab completion functions.
 from __future__ import annotations
 import os
 import sys
-from typing import TYPE_CHECKING, List, Callable
+from typing import TYPE_CHECKING, List, Callable, Union
 
 if TYPE_CHECKING:
     from .shell import Shell
@@ -43,28 +43,36 @@ def _filename_startswith(filename: str, prefix: str):
     return filename.startswith(prefix)
 
 
-def choice_completer(choices: List[str],
-                     case_sensitive: bool = False) -> Callable[[Shell, List[str], str]]:
+def choice_completer(choices: List[str]) -> Callable[[Shell, List[str], str]]:
     '''
     Tab complete from a list of choices.
 
     :param list choices: the list of choices
     :param bool case_sensitive: whether the choices are case sensitive
     '''
-    def complete(shell, args, prefix):  # pylint: disable=unused-argument
+    def complete(shell: Shell, args: List[str], prefix: str):  # pylint: disable=unused-argument
         r = []
-        for choice in choices:
-            if choice.startswith(prefix if case_sensitive else prefix.lower()):
+        if not shell.profile.case_sensitive:
+            prefix = prefix.lower()
+            available = [choice.lower() for choice in choices]
+        else:
+            available = choices
+
+        for choice in available:
+            if choice.startswith(prefix):
                 r.append(choice)
         return r
     return complete
 
 
-def path_completer(token: str, prefix: str = '') -> List[str]:
+def path_completer(shell: Shell, token: Union[List[str], str], prefix: str = '') -> List[str]:
     '''
     Tab complete a path, handles both Windows and Linux paths.
     '''
+    # pylint: disable=unused-argument
     choices = []
+    if isinstance(token, list):
+        token = token[-1] if token else ''
 
     if not token:
         cwd = '.' + os.path.sep
