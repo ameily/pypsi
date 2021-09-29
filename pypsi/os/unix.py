@@ -30,6 +30,7 @@ __all__ = [
 
 
 def make_ansi_stream(stream: TextIOWrapper, *args, **kwargs) -> TextIOWrapper:
+    # pylint: disable=unused-argument
     return stream
 
 
@@ -44,8 +45,7 @@ def find_bins_in_path():
                 p = os.path.join(path, entry)
                 if os.path.isfile(p) and os.access(p, os.X_OK):
                     bins.add(entry)
-        except:
-            # bare except here because if this fails, tab completion can be entirely broken
+        except OSError:
             pass
     return bins
 

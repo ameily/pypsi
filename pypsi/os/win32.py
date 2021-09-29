@@ -62,7 +62,7 @@ def find_bins_in_path():
                     name, ext = os.path.splitext(entry)
                     if ext.lower() in ('.exe', '.bat'):
                         bins.add(name)
-        except:
+        except OSError:
             # The path doesn't exist
             pass
 
@@ -181,7 +181,7 @@ class Win32AnsiStream(TextIOWrapper):
 
         try:
             self._win32_handle = msvcrt.get_osfhandle(self.fileno())
-        except:
+        except OSError:
             # stream is not a real File (ie. StringIO).
             self._win32_handle = None
             self._win32_console_initial_attrs = None
@@ -190,6 +190,8 @@ class Win32AnsiStream(TextIOWrapper):
             GetConsoleScreenBufferInfo(self._win32_handle, ctypes.byref(csbi))
             self._win32_console_initial_attrs = csbi.wAttributes
             self._win32_current_attrs = self._win32_console_initial_attrs
+
+        self._win32_flush_pending = False
 
     def _win32_set_console_attrs(self, attrs):
         SetConsoleTextAttribute(self._win32_handle, attrs)
@@ -210,7 +212,7 @@ class Win32AnsiStream(TextIOWrapper):
                     if attrs is not None:
                         if self._win32_flush_pending:
                             self.flush()
-                        # TODO we only handle foreground colors currently, so
+                        # we only handle foreground colors currently, so
                         # we mask the attributes to the bottom 4 bits. We
                         # should support background colors and other attributes
                         self._win32_set_console_attrs(

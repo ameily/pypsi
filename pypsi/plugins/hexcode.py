@@ -15,8 +15,10 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
+from typing import List
+from pypsi.shell import Shell
 from pypsi.core import Plugin
-from pypsi.cmdline import StringToken
+from pypsi.cmdline import StringToken, Token
 
 
 class HexCodePlugin(Plugin):
@@ -32,11 +34,11 @@ class HexCodePlugin(Plugin):
     def __init__(self, preprocess=5, **kwargs):
         super().__init__(preprocess=preprocess, **kwargs)
 
-    def on_tokenize(self, shell, tokens, origin):
+    def on_tokenize(self, shell: Shell, tokens: List[Token], origin: str) -> List[Token]:
+        # pylint: disable=too-many-branches
         escape_char = shell.profile.escape_char
         for token in tokens:
-            if (not isinstance(token, StringToken) or
-                    escape_char not in token.text):
+            if not isinstance(token, StringToken) or escape_char not in token.text:
                 continue
 
             escape = False
@@ -57,7 +59,7 @@ class HexCodePlugin(Plugin):
                             text += chr(hexcode)
                             hexcode = None
                         except ValueError:
-                            text += '\\x' + hexcode
+                            text += f'{escape_char}x{hexcode}'
                             hexcode = None
                 elif c == escape_char:
                     escape = True
@@ -65,7 +67,7 @@ class HexCodePlugin(Plugin):
                     text += c
 
             if hexcode:
-                text += '\\x' + hexcode
+                text += f'{escape_char}x{hexcode}'
 
             if escape:
                 text += escape_char

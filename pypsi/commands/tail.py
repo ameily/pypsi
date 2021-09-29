@@ -20,43 +20,29 @@ import os
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
 from pypsi.completers import path_completer
 
-TailCmdUsage = "%(prog)s [-n N] [-f] [-h] FILE"
-
 
 class TailCommand(Command):
     '''
     Displays the last N lines of a file to the screen.
     '''
 
-    def __init__(self, name='tail', topic='shell',
-                 brief='display the last lines of a file', **kwargs):
-        self.parser = PypsiArgParser(
-            prog=name,
-            description=brief,
-            usage=TailCmdUsage
-        )
+    def __init__(self, name='tail', topic='shell', **kwargs):
+        brief = 'display the last lines of a file'
+        self.parser = PypsiArgParser(prog=name, description=brief)
 
         # Add a callback function that will be called when the
         # argument is tab-completed
-        self.parser.add_argument(
-            'input_file', help='file to display',
-            metavar="FILE", completer=self.complete_path
-        )
+        self.parser.add_argument('input_file', help='file to display', metavar="FILE",
+                                 completer=path_completer)
 
-        self.parser.add_argument(
-            '-n', '--lines', metavar="N", type=int, default=10,
-            help="number of lines to display"
-        )
+        self.parser.add_argument('-n', '--lines', metavar="N", type=int, default=10,
+                                 help="number of lines to display")
 
-        self.parser.add_argument(
-            '-f', '--follow', help="continue to output as file grows",
-            action='store_true'
-        )
+        self.parser.add_argument('-f', '--follow', help="continue to output as file grows",
+                                 action='store_true')
 
-        super().__init__(
-            name=name, usage=self.parser.format_help(), topic=topic,
-            brief=brief, **kwargs
-        )
+        super().__init__(name=name, usage=self.parser.format_help(), topic=topic, brief=brief,
+                         **kwargs)
 
     def run(self, shell, args):
         try:
@@ -65,6 +51,7 @@ class TailCommand(Command):
             return e.code
 
         # check for valid input file
+        # TODO change this to try...except on OSError
         if not os.path.isfile(ns.input_file):
             self.error(shell, "invalid file path: ", ns.input_file, "\n")
             return -1
@@ -81,18 +68,15 @@ class TailCommand(Command):
 
         return 0
 
-    def complete_path(self, shell, args, prefix):  # pylint: disable=unused-argument
-        return path_completer(args[-1], prefix=prefix)
-
     def complete(self, shell, args, prefix):
         # The command_completer function takes in the parser, automatically
         # completes optional arguments (ex, '-v'/'--verbose') or sub-commands,
         # and complete any arguments' values by calling a callback function
         # with the same arguments as complete if the callback was defined
         # when the parser was created.
-        return command_completer(self.parser, shell, args, prefix)
+        return self.parser.complete(shell, args, prefix)
 
-    def tail(self, fname, lines=10, block_size=1024):
+    def tail(self, fname: str, lines: int = 10, block_size: int = 1024) -> str:
         data = []
         blocks = -1
         num_lines = 0
@@ -120,7 +104,7 @@ class TailCommand(Command):
 
             return ''.join(data).splitlines()[-lines:]
 
-    def follow_file(self, fname):
+    def follow_file(self, fname: str) -> int:
         with open(fname) as fp:
             # jump to the end of the file
             fp.seek(0, 2)

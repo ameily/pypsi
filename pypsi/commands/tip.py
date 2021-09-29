@@ -15,8 +15,10 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
+from pypsi.shell import Shell
 import random
 import sys
+from typing import List
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
 from pypsi.ansi import Color
 from pypsi.utils import safe_open
@@ -24,30 +26,25 @@ from pypsi.utils import safe_open
 
 class TipCommand(Command):
 
-    def __init__(self, name='tip', brief='print shell tips', topic='shell',
-                 tips=None, motd=None, vars=None, **kwargs):
+    def __init__(self, name='tip', topic='shell', tips: List[str] = None, motd: str = None,
+                 variables: dict = None, **kwargs):
         self.tips = tips or []
         self.motd = motd or ''
         self.vars = vars or {}
         self.rand = random.Random()
         self.rand.seed()
 
-        self.parser = PypsiArgParser(
-            prog=name,
-            description=brief
-        )
+        brief = 'print shell tips'
 
-        self.parser.add_argument(
-            '-m', '--motd', action='store_true',
-            help="print the message of the day"
-        )
+        self.parser = PypsiArgParser(prog=name, description=brief)
 
-        super().__init__(
-            name=name, brief=brief, topic=topic,
-            usage=self.parser.format_help(), **kwargs
-        )
+        self.parser.add_argument('-m', '--motd', action='store_true',
+                                 help="print the message of the day")
 
-    def load_tips(self, path):
+        super().__init__(name=name, brief=brief, topic=topic, usage=self.parser.format_help(),
+                         **kwargs)
+
+    def load_tips(self, path: str) -> None:
         fp = safe_open(path, 'r')
         tip = []
         for line in fp.readlines():
@@ -61,12 +58,12 @@ class TipCommand(Command):
             self.tips.append(' '.join(tip))
         fp.close()
 
-    def load_motd(self, path):
+    def load_motd(self, path: str) -> None:
         fp = safe_open(path, 'r')
         self.motd = fp.read().rstrip()
         fp.close()
 
-    def run(self, shell, args):
+    def run(self, shell: Shell, args: List[str]) -> int:
         try:
             ns = self.parser.parse_args(args)
         except CommandShortCircuit as e:
@@ -93,6 +90,7 @@ class TipCommand(Command):
             print(Color.bright_green(title))
 
         try:
+            # TODO
             cnt = sys.stdout.ansi_format(self.tips[i], **self.vars)
         except:
             cnt = self.tips[i]

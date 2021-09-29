@@ -15,18 +15,12 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
+from typing import List
 import readline
-import os
 from pypsi.core import Command, Plugin, PypsiArgParser, CommandShortCircuit
+from pypsi.shell import Shell
 from pypsi.utils import safe_open
 from pypsi.completers import path_completer
-
-
-CmdUsage = """%(prog)s clear
-   or: %(prog)s delete N
-   or: %(prog)s list [N]
-   or: %(prog)s load PATH
-   or: %(prog)s save PATH"""
 
 
 class HistoryCommand(Command):
@@ -34,61 +28,37 @@ class HistoryCommand(Command):
     Interact with and manage the shell's history.
     '''
 
-    def __init__(self, name='history', brief='manage shell history',
-                 topic='shell', **kwargs):
-        self.setup_parser(brief)
-        super().__init__(
-            name=name, usage=self.parser.format_help(), topic=topic,
-            brief=brief, **kwargs
-        )
+    def __init__(self, name='history', topic='shell', **kwargs):
+        brief = 'manage shell command history'
+        self.parser = PypsiArgParser(prog='history', description=brief)
 
-    def complete(self, shell, args, prefix):
-        if len(args) == 1:
-            return [x for x in ('clear', 'delete', 'list', 'load', 'save')
-                    if x.startswith(prefix)]
-
-        if len(args) == 2:
-            if args[0] == 'save' or args[0] == 'load':
-                return path_completer(args[-1], prefix=prefix)
-        return []
-
-    def setup_parser(self, brief):
-        self.parser = PypsiArgParser(
-            prog='history',
-            description=brief,
-            usage=CmdUsage
-        )
-
-        subcmd = self.parser.add_subparsers(prog='history', dest='subcmd',
-                                            metavar='subcmd')
+        subcmd = self.parser.add_subparsers(prog='history', dest='subcmd', metavar='subcmd')
         subcmd.required = True
+        self.subcmd = subcmd
 
         ls = subcmd.add_parser('list', help='list history events')
-        ls.add_argument(
-            'count', metavar='N', type=int, help='number of events to display',
-            nargs='?'
-        )
+        ls.add_argument('count', metavar='N', type=int, help='number of events to display',
+                        nargs='?')
 
         subcmd.add_parser('clear', help='remove all history events')
-        delete = subcmd.add_parser(
-            'delete', help='delete single history event'
-        )
-        delete.add_argument(
-            'index', metavar='N', type=int, help='remove item at index N',
-        )
+        delete = subcmd.add_parser('delete', help='delete single history event')
+        delete.add_argument('index', metavar='N', type=int, help='remove item at index N')
 
         save = subcmd.add_parser('save', help='save history to a file')
-        save.add_argument(
-            'path', metavar='PATH', help='save history to file located at PATH'
-        )
+        save.add_argument('path', metavar='PATH', help='save history to file located at PATH',
+                          completer=path_completer)
 
         load = subcmd.add_parser('load', help='load history from a file')
-        load.add_argument(
-            'path', metavar='PATH',
-            help='load history from file located at PATH'
-        )
+        load.add_argument('path', metavar='PATH', help='load history from file located at PATH',
+                          completer=path_completer)
 
-    def run(self, shell, args):
+        super().__init__(name=name, usage=self.parser.format_help(), topic=topic, brief=brief,
+                         **kwargs)
+
+    def complete(self, shell: Shell, args: List[str], prefix: str) -> List[str]:
+        return self.parser.complete(shell, args, prefix, sub_parser=self.subcmd)
+
+    def run(self, shell: Shell, args: List[str]) -> int:
         try:
             ns = self.parser.parse_args(args)
         except CommandShortCircuit as e:
@@ -96,52 +66,70 @@ class HistoryCommand(Command):
 
         rc = 0
         if ns.subcmd == 'list':
-            start = 0
-            if ns.count and ns.count > 0:
-                start = len(shell.ctx.history) - ns.count
-                if start < 0:
-                    start = 0
-
-            i = start + 1
-            for event in shell.ctx.history[start:]:
-                print(i, '    ', event, sep='')
-                i += 1
+            rc = self.print_history(shell, ns.count)
         elif ns.subcmd == 'clear':
             shell.ctx.history.clear()
         elif ns.subcmd == 'delete':
-            try:
-                del shell.ctx.history[ns.index - 1]
-            except:
-                self.error(shell, "invalid event index\n")
-                rc = -1
+            rc = self.delete_event(shell, ns.index)
         elif ns.subcmd == 'save':
-            try:
-                with open(ns.path, 'w') as fp:
-                    for event in shell.ctx.history:
-                        fp.write(event)
-                        fp.write('\n')
-            except IOError as e:
-                self.error(shell, "error saving history to file: ",
-                           os.strerror(e.errno), '\n')
-                rc = -1
+            rc = self.save(shell, ns.path)
         elif ns.subcmd == 'load':
-            try:
-                lines = []
-                with safe_open(ns.path, 'r') as fp:
-                    for event in fp:
-                        lines.append(str(event))
+            rc = self.load(shell, ns.path)
 
-                shell.ctx.history.clear()
-                for line in lines:
-                    shell.ctx.history.append(line.strip())
-            except IOError as e:
-                self.error(shell, "error saving history to file: ",
-                           os.strerror(e.errno), '\n')
-                rc = -1
-            except UnicodeEncodeError:
-                self.error(
-                    shell, "error: file contains invalid unicode characters\n"
-                )
+        return rc
+
+    def print_history(self, shell: Shell, count: int = None) -> int:
+        if count:
+            start = max(len(shell.ctx.history) - count, 0)
+        else:
+            start = 0
+
+        for i, event in enumerate(shell.ctx.history[start:], start=start + 1):
+            print(f'{i}    {event}')
+
+        return 0
+
+    def delete_event(self, shell: Shell, event: int) -> int:
+        try:
+            del shell.ctx.history[event - 1]
+            rc = 0
+        except IndexError:
+            self.error("invalid event index")
+            rc = -1
+
+        return rc
+
+    def save(self, shell: Shell, filename: str) -> int:
+        try:
+            with open(filename, 'w', encoding='utf8') as fp:
+                for event in shell.ctx.history:
+                    print(event, file=fp)
+
+            rc = 0
+        except OSError as e:
+            self.error(f"error saving history to file: {e.strerror}")
+            rc = -1
+
+        return rc
+
+    def load(self, shell: Shell, filename: str) -> int:
+        try:
+            with safe_open(filename, 'r') as fp:
+                lines = fp.readlines()
+
+            shell.ctx.history.clear()
+            for line in lines:
+                line = line.strip()
+                if line:
+                    shell.ctx.history.append(line)
+
+            rc = 0
+        except OSError as e:
+            self.error(f"failed to load history to file: {e.strerror}")
+            rc = -1
+        except UnicodeEncodeError:
+            self.error("file contains invalid unicode characters")
+            rc = -1
 
         return rc
 
@@ -166,7 +154,7 @@ class HistoryPlugin(Plugin):
             shell.ctx.history = History()
 
 
-class History(object):
+class History:
     '''
     Wraps the :mod:`readline` module. Provides the following abilities:
 
@@ -181,9 +169,6 @@ class History(object):
     Methods that access an index (or slice) will raise an
     :class:`IndexError` if the index is invalid or out of range of the history.
     '''
-
-    def __init__(self):
-        pass
 
     def normalize_index(self, index):
         count = self.__len__()
