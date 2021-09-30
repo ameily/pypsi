@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2015, Adam Meily <meily.adam@gmail.com>
+# Copyright (c) 2021, Adam Meily <meily.adam@gmail.com>
 # Pypsi - https://github.com/ameily/pypsi
 #
 # Permission to use, copy, modify, and/or distribute this software for any
@@ -17,16 +17,13 @@
 
 
 import sys
-from typing import List
+from typing import List, Dict
 from pypsi.ansi import ansi_title
 from pypsi.plugins.block import BlockCommand
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
 from pypsi.table import Table
+from pypsi.shell import Shell
 
-
-# something | macro | something
-# =>
-# something | cmd1 ; cmd2 | something
 
 class Macro(Command):
     '''
@@ -47,11 +44,11 @@ class Macro(Command):
     are removed.
     '''
 
-    def __init__(self, lines, **kwargs):
+    def __init__(self, lines: List[str], **kwargs):
         super().__init__(**kwargs)
         self.lines = lines
 
-    def run(self, shell, args):
+    def run(self, shell: Shell, args: List[str]) -> int:
         rc = None
 
         with shell.ctx.vars as env:
@@ -67,11 +64,6 @@ class Macro(Command):
         return variables
 
 
-MacroCmdUsage = """%(prog)s -l
-   or: %(prog)s NAME
-   or: %(prog)s [-d] [-s] NAME"""
-
-
 class MacroCommand(BlockCommand):
     '''
     Record and execute command macros. Macros can consist of one or more
@@ -82,60 +74,47 @@ class MacroCommand(BlockCommand):
     This command requires the :class:`pypsi.plugins.block.BlockPlugin` plugin.
     '''
 
-    def __init__(self, name='macro', topic='shell',
-                 brief="manage registered macros", macros=None, **kwargs):
-        self.parser = PypsiArgParser(
-            prog=name,
-            description=brief,
-            usage=MacroCmdUsage
-        )
+    def __init__(self, name='macro', topic='shell', macros: Dict[str, List[str]] = None, **kwargs):
+        brief = "manage registered macros"
+        self.parser = PypsiArgParser(prog=name, description=brief)
 
-        self.parser.add_argument(
-            '-l', '--list', help='list all macros', action='store_true'
-        )
-        self.parser.add_argument(
-            '-d', '--delete', help='delete macro',
-            metavar='NAME', completer=self.complete_macros
-        )
-        self.parser.add_argument(
-            '-s', '--show', help='print macro body',
-            metavar='NAME', completer=self.complete_macros
-        )
-        self.parser.add_argument(
-            'name', help='macro name', nargs='?', metavar='NAME'
-        )
+        self.parser.add_argument('-l', '--list', help='list all macros', action='store_true')
+        self.parser.add_argument('-d', '--delete', help='delete macro', action='store_true')
+        self.parser.add_argument('-s', '--show', help='print macro body', action='store_true')
+        self.parser.add_argument('name', help='macro name', nargs='?', metavar='NAME',
+                                 completer=self.complete_macros)
 
-        super().__init__(
-            name=name, usage=self.parser.format_help(), brief=brief,
-            topic=topic, **kwargs
-        )
+        super().__init__(name=name, usage=self.parser.format_help(), brief=brief, topic=topic,
+                         **kwargs)
         self.base_macros = macros or {}
-        self.macro_name = None
 
-    def complete_macros(self, shell, args, prefix):  # pylint: disable=unused-argument
-        # returns a list of macro names in the current shell
-        return list(shell.ctx.macros.keys())
+    def complete_macros(self, shell: Shell, args: List[str], prefix: str):
+        # pylint: disable=unused-argument
+        registered = list(shell.ctx.macros.keys())
+        if not shell.profile.case_sensitive:
+            registered = [item.lower() for item in registered]
+            prefix = prefix.lower()
 
-    def complete(self, shell, args, prefix):
+        return [item for item in registered if item.startswith(prefix)]
+
+    def complete(self, shell: Shell, args: List[str], prefix: str) -> List[str]:
         # The command_completer function takes in the parser, automatically
         # completes optional arguments (ex, '-v'/'--verbose') or sub-commands,
         # and complete any arguments' values by calling a callback function
         # with the same arguments as complete if the callback was defined
         # when the parser was created.
-        return command_completer(self.parser, shell, args, prefix)
+        return self.parser.complete(shell, args, prefix)
 
-    def setup(self, shell):
-        rc = 0
-
+    def setup(self, shell: Shell) -> None:
         if 'macros' not in shell.ctx:
             shell.ctx.macros = {}
 
-        for name in self.base_macros:
-            rc = self.add_macro(shell, name, self.base_macros[name])
+        shell.ctx.recording_macro_name = None
 
-        return rc
+        for name, lines in self.base_macros.items():
+            self.add_macro(shell, name, lines)
 
-    def run(self, shell, args):
+    def run(self, shell: Shell, args: List[str]) -> int:
         try:
             ns = self.parser.parse_args(args)
         except CommandShortCircuit as e:
@@ -143,98 +122,109 @@ class MacroCommand(BlockCommand):
 
         rc = 0
         if ns.show:
-            if ns.delete or ns.name:
-                self.usage_error(shell,
-                                 'incompatible arguments: -s/--show and ',
-                                 '-d/--delete' if ns.delete else 'NAME')
-                return -1
-            if ns.list or ns.name:
-                self.usage_error(shell,
-                                 'incompatible arguments: -s/--show and ',
-                                 '-l/--list' if ns.list else 'NAME')
-                return -1
+            if ns.delete or ns.list:
+                self.usage_error('-s/--show cannot be used with -d/--delete or -l/--list')
+                return 1
 
-            if ns.show in shell.ctx.macros:
-                print("macro ", ns.show, sep='')
-                for line in shell.ctx.macros[ns.show]:
-                    print("    ", line, sep='')
-                print("end")
-            else:
-                self.error(shell, "unknown macro ", ns.show)
-                rc = -1
+            if not ns.name:
+                self.usage_error('missing required argument: NAME')
+                return 1
+
+            rc = self.print_macro(shell, ns.name)
         elif ns.delete:
-            if ns.list or ns.name:
-                self.usage_error(shell,
-                                 'incompatible arguments: -d/--delete and ',
-                                 '-l/--list' if ns.list else 'NAME')
+            if ns.list:
+                self.usage_error('-d/--delete cannot be used with -l/--list')
+                return 1
+
+            if not ns.name:
+                self.usage_error('missing required argument: NAME')
+                return 1
+
+            rc = self.delete_macro(shell, ns.name)
+        elif ns.list:
+            if ns.name:
+                self.usage_error(f'unrecgonized argument: {ns.name}')
+                return 1
+
+            rc = self.print_macro_list(shell)
+        elif ns.name:
+            if ns.name in shell.commands.keys() and ns.name not in shell.ctx.macros:
+                self.error("A macro cannot have the same name as an existing command")
                 return -1
 
-            if ns.delete in shell.ctx.macros:
-                del shell.ctx.macros[ns.delete]
-                # It gets registered as a command too. See line 230 in this
-                # file and register() in shell.py
-                del shell.commands[ns.delete]
-            else:
-                self.error(shell, "unknown macro ", ns.delete)
-                rc = -1
-        elif ns.name:
-            if ns.list:
-                self.usage_error(shell,
-                                 "list option does not take an argument")
-            else:
-                if (ns.name in shell.commands.keys() and
-                        ns.name not in shell.ctx.macros):
-                    self.error(
-                        shell, "A macro cannot have the same name as an ",
-                        "existing command."
-                    )
-                    return -1
-
-                self.macro_name = ns.name
-                self.begin_block(shell)
-                if sys.stdin.isatty():
-                    print("Beginning macro, use the '",
-                          shell.ctx.block.end_cmd, "' command to save.",
-                          sep='')
-
-                shell.ctx.macro_orig_eof_is_sigint = shell.eof_is_sigint
-                shell.eof_is_sigint = True
-        elif ns.list:
-            # Left justified table
-            print(ansi_title("Registered Macros"))
-            chunk_size = 3
-
-            tbl = Table(
-                columns=3,
-                spacing=4,
-                header=False,
-                width=sys.stdout.width
-            )
-
-            macro_names = list(shell.ctx.macros.keys())
-            for i in range(0, len(macro_names), chunk_size):
-                chunk = macro_names[i:i + chunk_size]
-                tbl.extend(chunk)
-            tbl.write(sys.stdout)
+            rc = self.record_macro(shell, ns.name)
         else:
             self.usage_error(shell, "missing required argument: NAME")
             rc = 1
 
         return rc
 
-    def end_block(self, shell, lines):
-        self.add_macro(shell, self.macro_name, lines)
-        self.macro_name = None
+    def end_block(self, shell: Shell, lines: List[str]) -> None:
+        self.add_macro(shell, shell.ctx.recording_macro_name, lines)
+        shell.ctx.recording_macro_name = None
         shell.eof_is_sigint = shell.ctx.macro_orig_eof_is_sigint
+
+    def cancel_block(self, shell: Shell):
+        shell.ctx.recording_macro_name = None
+        shell.eof_is_sigint = shell.ctx.macro_orig_eof_is_sigint
+
+    def add_macro(self, shell: Shell, name: str, lines: List[str]):
+        shell.register(Macro(lines=lines, name=name, topic='__hidden__'))
+        shell.ctx.macros[name] = lines
+
+    def print_macro(self, shell: Shell, name: str) -> int:
+        macro = shell.ctx.macros.get(name)  # TODO case sensitive?
+        if macro is not None:
+            print(f"macro {name}")
+            for line in macro:
+                print(f"    {line}")
+            print("end")
+            rc = 0
+        else:
+            self.error(f"unknown macro: {name}")
+            rc = -1
+
+        return rc
+
+    def delete_macro(self, shell: Shell, name: str) -> int:
+        if name in shell.ctx.macros:  # TODO case sensitive?
+            del shell.ctx.macros[name]
+            # It gets registered as a command too. See line 230 in this
+            # file and register() in shell.py
+            del shell.commands[name]
+            rc = 0
+        else:
+            self.error(f"unknown macro: {name}")
+            rc = -1
+
+        return rc
+
+    def print_macro_list(self, shell: Shell) -> int:
+        print(ansi_title("Registered Macros"))
+        chunk_size = 3
+
+        tbl = Table(
+            columns=3,
+            spacing=4,
+            header=False,
+            width=sys.stdout.width
+        )
+
+        macro_names = list(shell.ctx.macros.keys())
+        for i in range(0, len(macro_names), chunk_size):
+            chunk = macro_names[i:i + chunk_size]
+            tbl.extend(chunk)
+        tbl.write(sys.stdout)
+
         return 0
 
-    def cancel_block(self, shell):
-        self.macro_name = None
-        shell.eof_is_sigint = shell.ctx.macro_orig_eof_is_sigint
+    def record_macro(self, shell: Shell, name: str) -> int:
+        shell.ctx.recording_macro_name = name
+        self.begin_block(shell)
+        if sys.stdin.isatty():
+            print(f"Beginning macro, use the '{shell.ctx.block.end_cmd}' command to save.")
 
-    def add_macro(self, shell, name, lines):
-        shell.register(
-            Macro(lines=lines, name=name, topic='__hidden__')
-        )
-        shell.ctx.macros[name] = lines
+        shell.ctx.macro_orig_eof_is_sigint = shell.eof_is_sigint
+        shell.eof_is_sigint = True
+
         return 0
