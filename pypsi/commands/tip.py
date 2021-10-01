@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2015, Adam Meily <meily.adam@gmail.com>
+# Copyright (c) 2021, Adam Meily <meily.adam@gmail.com>
 # Pypsi - https://github.com/ameily/pypsi
 #
 # Permission to use, copy, modify, and/or distribute this software for any
@@ -15,22 +15,21 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-from pypsi.shell import Shell
 import random
 import sys
 from typing import List
+from pypsi.shell import Shell
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
-from pypsi.ansi import Color
+from pypsi.ansi import Color, ansi_title
 from pypsi.utils import safe_open
 
 
 class TipCommand(Command):
 
     def __init__(self, name='tip', topic='shell', tips: List[str] = None, motd: str = None,
-                 variables: dict = None, **kwargs):
+                 **kwargs):
         self.tips = tips or []
         self.motd = motd or ''
-        self.vars = vars or {}
         self.rand = random.Random()
         self.rand.seed()
 
@@ -71,36 +70,26 @@ class TipCommand(Command):
 
         rc = None
         if ns.motd:
-            rc = self.print_motd(shell)
+            rc = self.print_motd()
         else:
-            rc = self.print_random_tip(shell)
+            rc = self.print_random_tip()
 
         return rc
 
-    def print_random_tip(self, shell, header=True):
+    def print_random_tip(self) -> int:
         if not self.tips:
-            self.error(shell, "no tips available")
+            self.error("no tips available")
             return -1
 
         i = self.rand.randrange(len(self.tips))
 
-        if header:
-            title = "Tip #{}\n".format(i + 1)
-            title += '-' * len(title)
-            print(Color.bright_green(title))
-
-        try:
-            # TODO
-            cnt = sys.stdout.ansi_format(self.tips[i], **self.vars)
-        except:
-            cnt = self.tips[i]
-
-        print(cnt)
+        print(Color.bright_green(ansi_title(f"Tip #{i + 1}")))
+        print(self.tips[i])
         return 0
 
-    def print_motd(self, shell):
+    def print_motd(self) -> int:
         if not self.motd:
-            self.error(shell, "no motd available")
+            self.error("no message of the day available")
             return -1
 
         width = sys.stdout.width

@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2015, Adam Meily <meily.adam@gmail.com>
+# Copyright (c) 2021, Adam Meily <meily.adam@gmail.com>
 # Pypsi - https://github.com/ameily/pypsi
 #
 # Permission to use, copy, modify, and/or distribute this software for any
@@ -15,10 +15,11 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-import time
-import os
+from typing import List
+from pypsi.shell import Shell
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
 from pypsi.completers import path_completer
+from pypsi.utils import safe_open
 
 
 class TailCommand(Command):
@@ -38,37 +39,30 @@ class TailCommand(Command):
         self.parser.add_argument('-n', '--lines', metavar="N", type=int, default=10,
                                  help="number of lines to display")
 
-        self.parser.add_argument('-f', '--follow', help="continue to output as file grows",
-                                 action='store_true')
-
         super().__init__(name=name, usage=self.parser.format_help(), topic=topic, brief=brief,
                          **kwargs)
 
-    def run(self, shell, args):
+    def run(self, shell: Shell, args: List[str]):
         try:
             ns = self.parser.parse_args(args)
         except CommandShortCircuit as e:
             return e.code
 
-        # check for valid input file
-        # TODO change this to try...except on OSError
-        if not os.path.isfile(ns.input_file):
-            self.error(shell, "invalid file path: ", ns.input_file, "\n")
-            return -1
-
         # print the last N lines
-        last_lines = self.tail(ns.input_file, ns.lines)
+        try:
+            last_lines = self.tail(ns.input_file, ns.lines)
+        except OSError as err:
+            self.error(f'failed to open file {ns.input_file}: {err.strerror}')
+            return err.errno or -1
+
         for line in last_lines:
             print(line)
-        print()
 
-        # continue to follow the file and display new content
-        if ns.follow:
-            self.follow_file(ns.input_file)
+        print()
 
         return 0
 
-    def complete(self, shell, args, prefix):
+    def complete(self, shell: Shell, args: List[str], prefix: str) -> List[str]:
         # The command_completer function takes in the parser, automatically
         # completes optional arguments (ex, '-v'/'--verbose') or sub-commands,
         # and complete any arguments' values by calling a callback function
@@ -76,12 +70,12 @@ class TailCommand(Command):
         # when the parser was created.
         return self.parser.complete(shell, args, prefix)
 
-    def tail(self, fname: str, lines: int = 10, block_size: int = 1024) -> str:
+    def tail(self, filename: str, lines: int = 10, block_size: int = 1024) -> str:
         data = []
         blocks = -1
         num_lines = 0
 
-        with open(fname) as fp:
+        with safe_open(filename, 'r') as fp:
             # seek to the end and get the number of bytes in the file
             fp.seek(0, 2)
             num_bytes = fp.tell()
@@ -103,22 +97,3 @@ class TailCommand(Command):
                 blocks -= 1
 
             return ''.join(data).splitlines()[-lines:]
-
-    def follow_file(self, fname: str) -> int:
-        with open(fname) as fp:
-            # jump to the end of the file
-            fp.seek(0, 2)
-            try:
-                while 1:
-                    where = fp.tell()
-                    line = fp.readline()
-                    if not line:
-                        time.sleep(1)
-                        fp.seek(where)
-                    else:
-                        print(line, end='', flush=True)
-            except KeyboardInterrupt:
-                print()
-                return 0
-
-        return 0

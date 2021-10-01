@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2015, Adam Meily <meily.adam@gmail.com>
+# Copyright (c) 2021, Adam Meily <meily.adam@gmail.com>
 # Pypsi - https://github.com/ameily/pypsi
 #
 # Permission to use, copy, modify, and/or distribute this software for any
@@ -16,6 +16,8 @@
 #
 
 import os
+from typing import List
+from pypsi.shell import Shell
 from pypsi.core import Command
 
 
@@ -24,10 +26,9 @@ class PwdCommand(Command):
     Print the current working directory.
     '''
 
-    def __init__(self, name='pwd', topic='shell',
-                 brief='print current working directory', **kwargs):
-        super().__init__(name=name, topic=topic, brief=brief, **kwargs)
+    def __init__(self, name='pwd', topic='shell', **kwargs):
+        super().__init__(name=name, topic=topic, brief='print current working directory', **kwargs)
 
-    def run(self, shell, args):
+    def run(self, shell: Shell, args: List[str]) -> int:
         print(os.getcwd())
         return 0

@@ -42,7 +42,7 @@ class IncludeCommand(Command):
                          **kwargs)
 
     def setup(self, shell: Shell) -> None:
-        shell.ctx._include_stack = []
+        shell.ctx.include_stack = []
 
     def complete(self, shell: Shell, args: List[str], prefix: str) -> List[str]:
         return self.parser.complete(shell, args, prefix)
@@ -58,7 +58,7 @@ class IncludeCommand(Command):
     def include_file(self, shell: Shell, path: str) -> int:
         fp = None
 
-        stack: List[str] = shell.ctx._include_stack
+        stack: List[str] = shell.ctx.include_stack
         filename = os.path.normcase(os.path.abspath(path))
         if filename in stack:
             self.error(f'recursive file include detected on {filename}')
@@ -85,7 +85,7 @@ class IncludeCommand(Command):
             self.error(f"executing file {filename}: {e}")
             rc = -1
 
-        self.stack.pop()
+        stack.pop()
         fp.close()
 
         return rc

@@ -115,6 +115,7 @@ class MacroCommand(BlockCommand):
             self.add_macro(shell, name, lines)
 
     def run(self, shell: Shell, args: List[str]) -> int:
+        # pylint: disable=too-many-return-statements
         try:
             ns = self.parser.parse_args(args)
         except CommandShortCircuit as e:

@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2015, Adam Meily <meily.adam@gmail.com>
+# Copyright (c) 2021, Adam Meily <meily.adam@gmail.com>
 # Pypsi - https://github.com/ameily/pypsi
 #
 # Permission to use, copy, modify, and/or distribute this software for any
@@ -15,9 +15,11 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
+from typing import List
 import subprocess
 import errno
 import sys
+from pypsi.shell import Shell
 from pypsi.core import Command
 
 
@@ -37,42 +39,38 @@ class SystemCommand(Command):
 
     def __init__(self, name='system', topic='shell', use_shell=False,
                  **kwargs):
-        super().__init__(
-            name=name,
-            topic=topic,
-            brief='execute a system shell command',
-            usage=SystemUsage.format(name=name),
-            **kwargs
-        )
+        super().__init__(name=name, topic=topic, brief='execute a system shell command',
+                         usage=SystemUsage.format(name=name), **kwargs)
         self.use_shell = use_shell
 
-    def run(self, shell, args):
+    def run(self, shell: Shell, args: List[str]) -> int:
         rc = None
 
+        if not args:
+            self.usage_error('missing required argument: COMMAND')
+            return 1
+
         try:
-            proc = subprocess.Popen(
-                args, stdout=sys.stdout.thread_local_get(),  # pylint: disable=protected-access
-                stdin=sys.stdin.thread_local_get(),  # pylint: disable=protected-access
-                stderr=sys.stderr.thread_local_get(),  # pylint: disable=protected-access
-                shell=self.use_shell
-            )
+            proc = subprocess.Popen(args, stdout=sys.stdout.thread_local_get(),
+                                    stdin=sys.stdin.thread_local_get(),
+                                    stderr=sys.stderr.thread_local_get(),  shell=self.use_shell)
         except OSError as e:
             if e.errno == errno.ENOENT:
-                self.error(shell, args[0], ": command not found")
+                self.error(f'{args[0]}: command not found')
             else:
-                self.error(shell, args[0], ": ", e.strerror)
-            return -e.errno  # pylint: disable=invalid-unary-operand-type
+                self.error(f'{args[0]}: {e.strerror}')
+            return e.errno or -1
 
         try:
             rc = proc.wait()
         except KeyboardInterrupt:
             proc.kill()
             proc.communicate()
-            rc = proc.wait()
+            rc = proc.wait() or -1
 
         return rc
 
-    def fallback(self, shell, name, args):
+    def fallback(self, shell: Shell, name: str, args: List[str]) -> int:
         '''
         Pass the command to the parent shell.
         '''

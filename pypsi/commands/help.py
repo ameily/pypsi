@@ -38,7 +38,7 @@ class HelpCommand(Command):
     Provides access to manpage-esque topics and command usage information.
     '''
 
-    def __init__(self, name='help', topic='shell', topics=None, vars=None, **kwargs):
+    def __init__(self, name='help', topic='shell', topics=None, **kwargs):
         brief = 'print information on a topic or command'
         self.parser = PypsiArgParser(prog=name, description=brief)
 
@@ -50,7 +50,6 @@ class HelpCommand(Command):
         super().__init__(name=name, brief=brief, usage=self.parser.format_help(), topic=topic,
                          **kwargs)
 
-        self.vars = vars or {}
         self.topics = topics
 
     def setup(self, shell: Shell) -> None:
@@ -79,8 +78,8 @@ class HelpCommand(Command):
 
     def reload(self, shell: Shell) -> None:
         shell.ctx.uncat_topic.commands = []
-        for id in shell.ctx.topic_lookup:
-            shell.ctx.topic_lookup[id].commands = []
+        for name in shell.ctx.topic_lookup:
+            shell.ctx.topic_lookup[name].commands = []
 
         for (_, cmd) in shell.commands.items():
             if cmd.topic == '__hidden__':
@@ -107,7 +106,7 @@ class HelpCommand(Command):
         shell.ctx.topic_lookup[topic.name] = topic
         shell.ctx.topics.append(topic)
 
-    def print_topic_commands(self, shell: Shell, topic: Topic, title: str = None) -> None:
+    def print_topic_commands(self, topic: Topic, title: str = None) -> None:
         print(Color.yellow(ansi_title(title or topic.title or topic.name)))
         print(Color.yellow, end='')
         Table(
@@ -127,11 +126,11 @@ class HelpCommand(Command):
                 addl.append(topic)
 
             if topic.commands:
-                self.print_topic_commands(shell, topic)
+                self.print_topic_commands( topic)
                 print()
 
         if shell.ctx.uncat_topic.commands:
-            self.print_topic_commands(shell, shell.ctx.uncat_topic)
+            self.print_topic_commands(shell.ctx.uncat_topic)
             print()
 
         if addl:
@@ -147,7 +146,7 @@ class HelpCommand(Command):
                 (topic.name, topic.title or '')
                 for topic in addl
             ]).write(sys.stdout)
-            print(Color.reset)
+            print(Color.fg_reset)
 
         return 0
 
@@ -168,7 +167,7 @@ class HelpCommand(Command):
             print(topic.content)
 
         if topic.commands:
-            self.print_topic_commands(shell, topic, "Commands")
+            self.print_topic_commands(topic, "Commands")
 
         return 0
 

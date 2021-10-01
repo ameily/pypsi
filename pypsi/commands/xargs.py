@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2015, Adam Meily <meily.adam@gmail.com>
+# Copyright (c) 2021, Adam Meily <meily.adam@gmail.com>
 # Pypsi - https://github.com/ameily/pypsi
 #
 # Permission to use, copy, modify, and/or distribute this software for any
@@ -15,12 +15,11 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
+from typing import List
 import sys
 import argparse
+from pypsi.shell import Shell
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
-
-
-XArgsUsage = """{name} [-h] [-I REPSTR] COMMAND"""
 
 
 class XArgsCommand(Command):
@@ -28,31 +27,20 @@ class XArgsCommand(Command):
     Execute a command for each line of input from :data:`sys.stdin`.
     '''
 
-    def __init__(self, name='xargs', topic='shell',
-                 brief='build and execute command lines from stdin', **kwargs):
-        self.parser = PypsiArgParser(
-            prog=name,
-            description=brief,
-            usage=XArgsUsage.format(name=name)
-        )
+    def __init__(self, name='xargs', topic='shell', **kwargs):
+        brief = 'build and execute command lines from stdin'
+        self.parser = PypsiArgParser(prog=name, description=brief)
 
-        self.parser.add_argument(
-            '-I', default='{}', action='store',
-            metavar='REPSTR', help='string token to replace',
-            dest='token'
-        )
+        self.parser.add_argument('-I', default='{}', action='store', metavar='REPSTR',
+                                 help='string token to replace', dest='token')
 
-        self.parser.add_argument(
-            'command', nargs=argparse.REMAINDER, help="command to execute",
-            metavar='COMMAND'
-        )
+        self.parser.add_argument('command', nargs=argparse.REMAINDER, help="command to execute",
+                                 metavar='COMMAND')
 
-        super().__init__(
-            name=name, topic=topic, usage=self.parser.format_help(),
-            brief=brief, **kwargs
-        )
+        super().__init__(name=name, topic=topic, usage=self.parser.format_help(), brief=brief,
+                         **kwargs)
 
-    def run(self, shell, args):
+    def run(self, shell: Shell, args: List[str]) -> int:
         try:
             ns = self.parser.parse_args(args)
         except CommandShortCircuit as e:
@@ -62,12 +50,13 @@ class XArgsCommand(Command):
             self.error(shell, "missing command")
             return 1
 
-        base = ' '.join([
-            '"{}"'.format(c.replace('"', '\\"')) for c in ns.command
-        ])
+        # pylint: disable=consider-using-f-string
+        base = ' '.join('"{}"'.format(c.replace('"', f'{shell.profile.escape_char}"'))
+                        for c in ns.command)
 
+        rc = 0
         for line in sys.stdin:
             cmd = base.replace(ns.token, line.strip())
-            shell.execute(cmd)
+            rc = shell.execute(cmd)
 
-        return 0
+        return rc
