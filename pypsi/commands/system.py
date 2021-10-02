@@ -47,13 +47,14 @@ class SystemCommand(Command):
         self.use_shell = use_shell
 
     def run(self, shell, args):
+        # pylint: disable=protected-access,consider-using-with
         rc = None
 
         try:
             proc = subprocess.Popen(
-                args, stdout=sys.stdout._get_target(),  # pylint: disable=protected-access
-                stdin=sys.stdin._get_target(),  # pylint: disable=protected-access
-                stderr=sys.stderr._get_target(),  # pylint: disable=protected-access
+                args, stdout=sys.stdout._get_target(),
+                stdin=sys.stdin._get_target(),
+                stderr=sys.stderr._get_target(),
                 shell=self.use_shell
             )
         except OSError as e:

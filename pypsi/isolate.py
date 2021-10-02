@@ -89,9 +89,9 @@ class IsolatedShell(object):
         return result
 
     def execute(self, command):
-        # pylint: disable=protected-access,no-member
+        # pylint: disable=protected-access,no-member,consider-using-with
         stream = ClosableStream(self.atty)
-        devnull = open(os.devnull, 'r')
+        devnull = open(os.devnull, 'r', encoding='utf-8')
 
         sys.stdout._proxy(stream, width=80)
         sys.stderr._proxy(stream, width=80)

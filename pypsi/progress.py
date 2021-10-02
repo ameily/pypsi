@@ -118,14 +118,14 @@ class ThreadedSpinner(threading.Thread):
         self.activity = activity
         self.stream = stream or sys.stdout
         self.stop_lock = threading.Lock()
-        self.stop_lock.acquire()
+        self.stop_lock.acquire()  # pylint: disable=consider-using-with
         self.complete_msg = ''
 
     def run(self):
         i = itertools.cycle(self.seq)
 
         # pylint: disable=unexpected-keyword-arg
-        while not self.stop_lock.acquire(timeout=self.delta):
+        while not self.stop_lock.acquire(timeout=self.delta):  # pylint: disable=consider-using-with
             prefix = _prefix(self.activity)
             print('\r', prefix, next(i), sep='', end='', flush=True,
                   file=self.stream)

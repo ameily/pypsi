@@ -19,6 +19,8 @@ import time
 import os
 from pypsi.core import Command, PypsiArgParser, CommandShortCircuit
 from pypsi.completers import path_completer, command_completer
+from pypsi.utils import safe_open
+
 
 TailCmdUsage = "%(prog)s [-n N] [-f] [-h] FILE"
 
@@ -97,7 +99,7 @@ class TailCommand(Command):
         blocks = -1
         num_lines = 0
 
-        with open(fname) as fp:
+        with safe_open(fname, 'r') as fp:
             # seek to the end and get the number of bytes in the file
             fp.seek(0, 2)
             num_bytes = fp.tell()
@@ -121,7 +123,7 @@ class TailCommand(Command):
             return ''.join(data).splitlines()[-lines:]
 
     def follow_file(self, fname):
-        with open(fname) as fp:
+        with safe_open(fname, 'r') as fp:
             # jump to the end of the file
             fp.seek(0, 2)
             try:

@@ -34,7 +34,7 @@ class ThreadLocalStream(object):
     stdout -> thread local stream -> os-specific ansi stream
     '''
 
-    DefaultAnsiStreamKwargs = dict()
+    DefaultAnsiStreamKwargs = {}
 
     def __init__(self, target, **kwargs):
         '''

@@ -41,6 +41,7 @@ def safe_open(file, mode='r', chunk_size=4096, ascii_is_utf8=True, **kwargs):
         :func:`open`.
     :returns file: the opened file stream
     '''
+    # pylint: disable=consider-using-with,unspecified-encoding
 
     is_path = isinstance(file, str)
     header = None

@@ -98,9 +98,7 @@ class HistoryCommand(Command):
         if ns.subcmd == 'list':
             start = 0
             if ns.count and ns.count > 0:
-                start = len(shell.ctx.history) - ns.count
-                if start < 0:
-                    start = 0
+                start = max(len(shell.ctx.history) - ns.count, 0)
 
             i = start + 1
             for event in shell.ctx.history[start:]:
@@ -116,7 +114,7 @@ class HistoryCommand(Command):
                 rc = -1
         elif ns.subcmd == 'save':
             try:
-                with open(ns.path, 'w') as fp:
+                with open(ns.path, 'w', encoding='utf-8') as fp:
                     for event in shell.ctx.history:
                         fp.write(event)
                         fp.write('\n')

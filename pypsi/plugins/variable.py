@@ -289,8 +289,8 @@ class VariablePlugin(Plugin):
         shell.register(self.var_cmd)
         if 'vars' not in shell.ctx:
             shell.ctx.vars = ScopedNamespace('globals', self.case_sensitive)
-            for k in self.base:
-                shell.ctx.vars[k] = self.base[k]
+            for key, value in self.base.items():
+                shell.ctx.vars[key] = value
 
             shell.ctx.vars.date = ManagedVariable(var_date_getter)
             shell.ctx.vars.time = ManagedVariable(var_time_getter)

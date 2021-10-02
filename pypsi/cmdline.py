@@ -423,7 +423,7 @@ class CommandInvocation(object):
 
         func = safe_open if safe else open
         try:
-            fp = func(path, mode=mode)
+            fp = func(path, mode=mode)  # pylint: disable=consider-using-with
         except OSError as e:
             raise IORedirectionError(path, e.strerror) from e
         except Exception as e:
