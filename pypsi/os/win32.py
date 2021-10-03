@@ -228,6 +228,9 @@ class Win32AnsiStream(TextIOWrapper):
         super().flush()
         self._win32_flush_pending = False
 
+    def close(self):
+        pass  # TODO: is this correct?
+
 
 def make_ansi_stream(stream: TextIOWrapper, **kwargs) -> TextIOWrapper:
     '''

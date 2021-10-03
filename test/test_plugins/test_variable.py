@@ -4,7 +4,7 @@ from datetime import datetime
 from pypsi.plugins.variable import *
 from pypsi.cmdline import StringToken, WhitespaceToken
 from pypsi.shell import Shell
-from pypsi.features import BashFeatures
+from pypsi.profiles import BashProfile
 
 
 class PluginShell(Shell):
@@ -14,8 +14,8 @@ class PluginShell(Shell):
 class TestVariablePlugin:
 
     def setup(self):
-        self.features = BashFeatures()
-        self.shell = PluginShell(features=self.features)
+        self.features = BashProfile()
+        self.shell = PluginShell(profile=self.features)
         self.shell.ctx.vars['callable'] = lambda: 'callable'
         self.plugin = self.shell.plugin
         self.cmd = self.shell.commands['var']

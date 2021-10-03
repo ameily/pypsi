@@ -1,7 +1,7 @@
 
 import pytest
 from pypsi.cmdline import *
-from pypsi.features import BashFeatures, PypsiFeatures
+from pypsi.profiles import BashProfile, ShellProfile
 
 
 OPERATORS = ('>', '<', '>>', '&', '&&', '|', '||', ';')
@@ -10,7 +10,7 @@ OPERATORS = ('>', '<', '>>', '&', '&&', '|', '||', ';')
 class TestCmdlineTokenize(object):
 
     def setup(self):
-        self.parser = StatementParser(features=BashFeatures())
+        self.parser = StatementParser(profile=BashProfile())
 
     def test_simple(self):
         tokens = self.parser.tokenize("echo \thello")
@@ -167,7 +167,7 @@ class TestCmdlineTokenize(object):
         ]
 
     def test_trailing_escape_no_multiline(self):
-        self.parser.features = PypsiFeatures(escape_char='\\', multiline=False)
+        self.parser.features = ShellProfile(escape_char='\\', multiline=False)
         t = StringToken(2, "")
         t.text = "\\"
         assert self.parser.tokenize("echo \\") == [

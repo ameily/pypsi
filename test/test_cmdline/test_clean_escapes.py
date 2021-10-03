@@ -1,7 +1,7 @@
 
 import pytest
 from pypsi.cmdline import *
-from pypsi.features import BashFeatures
+from pypsi.profiles import BashProfile
 
 def copy_tokens(tokens):
     result = []
@@ -22,7 +22,7 @@ def copy_tokens(tokens):
 class TestCleanEscapes(object):
 
     def setup(self):
-        self.parser = StatementParser(features=BashFeatures())
+        self.parser = StatementParser(profile=BashProfile())
 
     def test_simple(self):
         t1, t2 = copy_tokens([

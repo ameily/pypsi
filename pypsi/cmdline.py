@@ -444,7 +444,8 @@ class CommandInvocation:  # pylint: disable=too-many-instance-attributes
         '''
 
         for fp in (self.stdout, self.stderr, self.stdin):
-            if fp and hasattr(fp, 'close') and not fp.closed:
+            # TODO this is borked
+            if fp and hasattr(fp, 'close') and not fp.closed and False:
                 fp.close()
 
     def chain_and(self):

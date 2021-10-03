@@ -1,13 +1,13 @@
 
 import pytest
 from pypsi.cmdline import *
-from pypsi.features import BashFeatures
+from pypsi.profiles import BashProfile
 
 
 class TestCmdlineBuild:
 
     def setup(self):
-        self.parser = StatementParser(features=BashFeatures())
+        self.parser = StatementParser(profile=BashProfile())
 
     def test_simple(self):
         assert (

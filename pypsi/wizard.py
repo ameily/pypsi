@@ -339,7 +339,7 @@ class PromptWizard(object):
     namespace's ``ip_addr`` attribute.
     '''
 
-    def __init__(self, name, description, steps=None, features=None, complete_single_token=False):
+    def __init__(self, name, description, steps=None, profile=None, complete_single_token=False):
         '''
         :param str name: the prompt wizard name to display to the user
         :param str description: a short description of what the wizard does

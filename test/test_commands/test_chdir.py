@@ -6,6 +6,18 @@ from pypsi.commands.chdir import ChdirCommand
 class CmdShell(Shell):
     chdir = ChdirCommand()
 
+    def bootstrap(self):
+        try:
+            super().bootstrap()
+        except:
+            print('FUCK')
+
+    def restore(self):
+        try:
+            super().restore()
+        except:
+            print('FUCK')
+
 
 class TestChdir:
 

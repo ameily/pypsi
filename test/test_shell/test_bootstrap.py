@@ -1,9 +1,9 @@
 
 import sys
 import pytest
-from pypsi.pipes import ThreadLocalStream
+from pypsi.proxy import ThreadLocalProxy
 from pypsi.shell import Shell
-from pypsi.core import pypsi_print
+from pypsi.ansi import pypsi_print
 
 
 
@@ -27,7 +27,7 @@ class TestShellBootstrap(object):
     @pytest.mark.parametrize('attr', ('stdout', 'stderr', 'stdin'))
     def test_bootstrap_stream_type(self, attr):
         self.shell = PypsiTestShell()
-        assert isinstance(getattr(sys, attr), ThreadLocalStream)
+        assert isinstance(getattr(sys, attr), ThreadLocalProxy)
 
     @pytest.mark.parametrize('attr', ('stdout', 'stderr', 'stdin'))
     def test_bootstrap_stream_instance(self, attr):
@@ -47,7 +47,7 @@ class TestShellBootstrap(object):
     def test_restore_stream_type(self, attr):
         self.shell = PypsiTestShell()
         self.shell.restore()
-        assert not isinstance(getattr(sys, attr), ThreadLocalStream)
+        assert not isinstance(getattr(sys, attr), ThreadLocalProxy)
 
     @pytest.mark.parametrize('attr', ('stdout', 'stderr', 'stdin'))
     def test_restore_stream_instance(self, attr):
