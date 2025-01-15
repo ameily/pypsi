@@ -17,6 +17,15 @@
 
 import sys
 import os
+
+if sys.platform == "win32":
+    import collections
+    if not hasattr(collections, "Callable"):
+        # This is a patch to make the Windows readline package work on modern Python releases. We
+        # need to do this _prior_ to importing readline on Windows.
+        import collections.abc
+        collections.Callable = collections.abc.Callable
+
 import readline
 from pypsi.cmdline import (StatementParser, StatementSyntaxError,
                            IORedirectionError, CommandNotFoundError,
