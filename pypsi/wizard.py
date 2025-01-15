@@ -19,6 +19,7 @@
 Command line input wizards.
 '''
 
+import getpass
 import os
 import readline
 import re
@@ -256,7 +257,7 @@ class WizardStep(object):
     '''
 
     def __init__(self, id, name, help, default=None, completer=None,
-                 validators=None):
+                 validators=None, secure=False):
         '''
         :param str id: the step io, used for referencing the step's value
         :param str name: the name to display for input to the user
@@ -265,6 +266,8 @@ class WizardStep(object):
             "Return"
         :param completer: a completion function
         :param validators: a single or a list of validators
+        :param secure: use :meth:`~getpass.getpass` to read input from the user and hide the user's
+            answer from the terminal
         '''
 
         self.id = id
@@ -278,6 +281,8 @@ class WizardStep(object):
             self.validators = [validators]
         else:
             self.validators = []
+        
+        self.secure = secure
 
     def validate(self, ns, value):
         '''
@@ -317,6 +322,14 @@ class WizardStep(object):
         '''
 
         return self.completer(wizard, args, prefix) if self.completer else []
+
+    def get_input(self, prompt) -> str:
+        """
+        Get the input from the user.
+        """
+        if self.secure:
+            return getpass.getpass(prompt)
+        return input(prompt)
 
 
 class PromptWizard(object):
@@ -387,14 +400,19 @@ class PromptWizard(object):
                 print()
                 raw = None
                 prompt = step.name
-                if step.default is not None:
-                    d = step.default
-                    if callable(d):
-                        d = d(self.values)
-                    prompt += ' [{}]'.format(d)
+                default = step.default
+                if default is not None:
+                    if callable(default):
+                        default = default(self.values)
+                    
+                    if step.secure:
+                        prompt += ' [{}]'.format('*' * len(default))
+                    else:
+                        prompt += ' [{}]'.format(default)
+                
                 prompt += ': '
                 try:
-                    raw = input(prompt)
+                    raw = step.get_input(prompt)
                 except (KeyboardInterrupt, EOFError):
                     print()
                     print(AnsiCodes.red, "Wizard canceled", AnsiCodes.reset,
@@ -411,8 +429,8 @@ class PromptWizard(object):
                 if raw.lower() in ('?', 'help'):
                     print(step.help)
                 else:
-                    if not raw.strip() and step.default is not None:
-                        raw = step.default
+                    if not raw.strip() and default is not None:
+                        raw = default
 
                     try:
                         value = step.validate(self.values, raw)
