@@ -93,7 +93,8 @@ class WizardCommand(Command):
                 ('ip_addr', ns.ip_addr),
                 ('port', ns.port),
                 ('path', ns.path),
-                ('mode', ns.mode)
+                ('mode', ns.mode),
+                ('secret_key', ns.secret_key)
             ).write(sys.stdout) # Write the table to stdout
         else:
             pass
@@ -136,6 +137,13 @@ ConfigWizard = wiz.PromptWizard(
             help='Mode of the shell',
             default='local',
             validators=(wiz.required_validator, wiz.choice_validator(['local', 'remote']))
+        ),
+        wiz.WizardStep(
+            id='secret_key',
+            name='Secret Key',
+            help='The encryption secret key',
+            default=lambda _: "super-secret",
+            secure=True
         )
     )
 )
